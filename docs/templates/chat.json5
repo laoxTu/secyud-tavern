@@ -1,0 +1,37 @@
+﻿// docs/templates/chat.json5
+{
+  // 存档唯一标识符，UUID
+  id: "string",
+  // 用户自定义的存档名称
+  name: "string",
+  // 当前激活的预设ID列表
+  presets: [
+    {
+      presetId: "string",
+      version: "string"
+    }
+  ],
+  // 对话消息记录
+  entries: {
+    history: [
+      {
+        // 标识符
+        id: "number",
+        // 消息角色：user/assistant/system
+        role: "string",
+        // 消息正文
+        content: "string",
+        // 消息时间戳
+        timestamp: "string",
+        // 是否对AI不可见，默认false
+        invisible: "boolean",
+        // 本轮产生的变量变更, json string
+        variableChanges: "any"
+      }
+    ]
+  },
+  content: {
+    // 根节点变量表，始终为合并后的最新完整状态 json string
+    variables: "any"
+  }
+}
