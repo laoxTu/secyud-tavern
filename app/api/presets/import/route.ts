@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {PresetModel} from "@/models/preset-model";
+import {presetRepository} from "@/db/repositories/preset-repository";
 
 /**
  * POST /api/presets/import
@@ -8,13 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * 选项：overwrite 是否覆盖同名预设
  */
 export async function POST(request: NextRequest) {
-    const body = await request.json();
-    const overwrite = request.nextUrl.searchParams.get('overwrite') === 'true';
-    // TODO: 实现导入逻辑
-    return NextResponse.json({
-        message: '导入预设',
-        overwrite,
-        imported: [],
-        failed: []
-    });
+    const model = await request.json() as PresetModel;
+    const res = await presetRepository.create(model);
+    return NextResponse.json(res);
 }

@@ -1,15 +1,8 @@
 ﻿// models/preset-model.ts
-export interface PresetModel {
-    id: string,
-    name: string,
+import {BaseModel} from "@/models/common-types";
+
+export interface PresetModel extends BaseModel {
     version: string;
     tags: string[],
-    entries?: any,
-    content: any,
-    requires?: PresetRefModel[],
 }
 
-export interface PresetRefModel {
-    presetId: string,
-    version: string,
-}

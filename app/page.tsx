@@ -1,10 +1,9 @@
 export default function Home() {
     return (
-        <div>
+        <div className="st-app">
 
 
-
-
+            welcome to secyud tavern
         </div>
     );
 }

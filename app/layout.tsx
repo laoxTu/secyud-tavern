@@ -1,17 +1,18 @@
+import {Metadata} from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Secyud Tavern",
     description: "Secyud Tavern"
 };
 
-export default function RootLayout({children,}) {
+export default function RootLayout({
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
+}>) {
     return (
         <html lang="en">
-        <body>
-        <div className="st-app">
-            {children}
-        </div>
-        </body>
+        <body>{children}</body>
         </html>
     );
 }
