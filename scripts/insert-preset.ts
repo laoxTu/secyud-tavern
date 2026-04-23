@@ -1,5 +1,5 @@
 ﻿// tests/insert-preset.ts
-import {createPreset} from "@/db/repositories/preset-repository";
+import {createPreset} from "@/src/business/preset/repository";
 
 const testPreset = {
     id: "test.cat-girl",

@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "migrate": "npx drizzle-kit generate",
-    "create-db": "npx tsx db/migrate.ts",
+    "create-db": "npx tsx src/db/migrate.ts",
     "test": "npx tsx scripts/insert-preset.ts",
     "lint": "eslint"
   },
@@ -16,7 +16,9 @@
     "@libsql/client": "^0.17.2",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.8.0",
     "next": "16.2.4",
+    "next-intl": "^4.9.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "uuid": "^14.0.0",

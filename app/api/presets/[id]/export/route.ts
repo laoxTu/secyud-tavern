@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * POST /api/presets/export
+ * POST /api/db/export
  * 批量导出多个预设
  *
  * 请求体：{ ids: string[] }

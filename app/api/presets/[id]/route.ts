@@ -7,7 +7,7 @@ interface RouteParams {
 }
 
 /**
- * GET /api/presets/:id
+ * GET /api/db/:id
  * 获取单个预设详情
  */
 export async function GET(
@@ -20,7 +20,7 @@ export async function GET(
 }
 
 /**
- * PUT /api/presets/:id
+ * PUT /api/db/:id
  * 更新预设（支持部分更新）
  */
 export async function PUT(
@@ -34,7 +34,7 @@ export async function PUT(
 }
 
 /**
- * DELETE /api/presets/:id
+ * DELETE /api/db/:id
  * 删除预设
  */
 export async function DELETE(

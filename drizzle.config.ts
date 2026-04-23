@@ -1,10 +1,11 @@
-﻿import type { Config } from "drizzle-kit";
+﻿import type {Config} from "drizzle-kit";
+import {dbMigrationFolder, dbUrl} from "@/src/db";
 
 export default {
-    schema: "./db/schema/*.ts",
-    out: "./db/migrations",
+    schema: "src/**/db.ts",
+    out: dbMigrationFolder,
     dialect: "sqlite",
     dbCredentials: {
-        url: "file:secyud-tavern.db",
+        url: dbUrl,
     },
 } satisfies Config;

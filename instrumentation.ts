@@ -1,10 +1,17 @@
 ﻿// instrumentation.ts
-export async function register() {
-    if (process.env.NEXT_RUNTIME === "nodejs") {
-        const { migrate } = await import("drizzle-orm/libsql/migrator");
-        const { db } = await import("./db");
+import {createDb} from "@/src/db";
+import {middleware} from "@/src/middleware";
+import {intlMiddleware} from "@/src/localization";
+import {pluginManager} from "@/src/plugin";
 
-        await migrate(db, { migrationsFolder: "./db/migrations" });
-        console.log("数据库迁移完成");
+export async function register() {
+    if (process.env.NEXT_RUNTIME !== "nodejs") {
+        return; // 只在 Node.js 运行时执行
     }
+
+    await pluginManager.loadServerPlugins();
+    await createDb();
+
+    // middleware
+    middleware.register(intlMiddleware)
 }
