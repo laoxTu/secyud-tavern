@@ -1,10 +1,5 @@
 ﻿// src/business/preset/index.ts
-import {BaseModel} from "@/src/model/require";
-
-export interface PresetModel extends BaseModel {
-    version: string;
-    tags: string[],
-}
+import {BaseModel} from "@/src/models/require";
 
 
 export { default as presetStorage } from "./storage";

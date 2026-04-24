@@ -1,0 +1,90 @@
+{
+  "configPath": "D:\\Projects\\ai\\secyud-tavern\\next.openapi.json",
+  "outputFile": "D:\\Projects\\ai\\secyud-tavern\\public\\openapi.json",
+  "diagnostics": [
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\entries\\route.ts",
+      "routePath": "/presets/{id}/entries"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\entries\\route.ts",
+      "routePath": "/presets/{id}/entries"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryId} contains path parameters id, entryId but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\entries\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryId} contains path parameters id, entryId but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\entries\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/export contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\export\\route.ts",
+      "routePath": "/presets/{id}/export"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\route.ts",
+      "routePath": "/presets/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\route.ts",
+      "routePath": "/presets/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "app\\api\\presets\\[id]\\route.ts",
+      "routePath": "/presets/{id}"
+    }
+  ],
+  "performance": {
+    "prepareTemplateMs": 0.07670000000001664,
+    "loadCustomFragmentsMs": 0.0004999999999881766,
+    "prepareDocumentMs": 0.07720000000000482,
+    "scanRouteFilesMs": 0.6351999999999975,
+    "deriveRoutePathMs": 0.18509999999997717,
+    "filterRouteCandidatesMs": 0.03380000000004202,
+    "sourcePrecheckMs": 0.7131999999999152,
+    "readRouteFilesMs": 0.4417000000001394,
+    "parseRouteFilesMs": 8.76359999999994,
+    "analyzeRouteFilesMs": 6.33909999999986,
+    "typescriptResponseInferenceMs": 0,
+    "processRouteFilesMs": 15.287999999999954,
+    "registerRouteMs": 175.30559999999997,
+    "getSchemaContentMs": 150.8603,
+    "createRequestParamsMs": 0.43309999999985394,
+    "createRequestBodyMs": 0,
+    "processResponsesMs": 23.157100000000128,
+    "createResponseSchemaMs": 0,
+    "buildOperationsMs": 175.34069999999997,
+    "sortAndMergePathsMs": 0.661200000000008,
+    "buildPathsMs": 0.661200000000008,
+    "defaultComponentsAndErrorsMs": 0.19110000000000582,
+    "mergeSchemasMs": 0.19680000000005293,
+    "finalizeDocumentMs": 2.3291000000000395,
+    "totalMs": 196.16809999999998,
+    "scanRoutesMs": 191.26389999999992
+  }
+}

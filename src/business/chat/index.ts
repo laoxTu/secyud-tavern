@@ -1,7 +1,6 @@
 ﻿// src/business/chat/index.ts
-import {BaseModel} from "@/src/model/require";
+import {BaseModel} from "@/src/models/require";
 
-export type ChatModel = BaseModel
 
 
 export { default as chatStorage } from "./storage";

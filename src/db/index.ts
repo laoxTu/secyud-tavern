@@ -14,5 +14,6 @@ export const db = drizzle(client);
 export async function createDb() {
     const {migrate} = await import("drizzle-orm/libsql/migrator");
     await migrate(db, {migrationsFolder: dbMigrationFolder});
-    console.log("数据库迁移完成");
+
+    console.log("[database] db migrated successfully");
 }

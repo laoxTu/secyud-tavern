@@ -2,7 +2,7 @@
 import {chatEntries, chatRequires, chats} from "./db";
 import {createRepository} from "@/src/db/repository-base";
 import storage from "./storage"
-import {ChatModel} from "@/src/business/chat/index";
+import {ChatModel} from "@/src/business/chat/models";
 
 
 export const repository =

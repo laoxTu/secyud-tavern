@@ -2,7 +2,7 @@
 import {presetEntries, presetRequires, presets} from "./db";
 import {createRepository} from "@/src/db/repository-base";
 import storage from "./storage";
-import {PresetModel} from "@/src/business/preset/index";
+import {PresetModel} from "@/src/business/preset/models";
 
 export const repository =
     createRepository<PresetModel, typeof presets.$inferSelect>(

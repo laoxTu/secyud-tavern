@@ -1,47 +1,50 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+﻿// app/api/presets/route.ts
+import {NextResponse} from 'next/server';
+import {repository} from "@/src/business/preset/repository";
+import {interceptor} from "@/src/interceptor";
+import {PresetModel} from "@/src/business/preset/models";
 
-interface RouteParams {
-    params: {
-        id: string;
-    };
-}
 
 /**
- * GET /api/db/:id
- * 获取单个预设详情
+ * 获取预设
+ * @pathParams { id:string }
+ * @params { withDetails:boolean }
+ * @response PresetModel
+ * @openapi
  */
-export async function GET(
-    request: NextRequest,
-    { params }: RouteParams
-) {
-    const { id } = params;
-    // TODO: 实现获取预设详情逻辑
-    return NextResponse.json({ message: `获取预设 ${id}` });
-}
+export const GET = interceptor.createRoute(
+    async (request, records) => {
+        const {id} = await records.context.params;
+        const {withDetails} = records.searchParams;
+        const model = await repository.get(id, withDetails);
+        return NextResponse.json(model);
+    }
+)
 
 /**
- * PUT /api/db/:id
- * 更新预设（支持部分更新）
+ * 更新预设
+ * @pathParams { id:string }
+ * @response PresetModel
+ * @openapi
  */
-export async function PUT(
-    request: NextRequest,
-    { params }: RouteParams
-) {
-    const { id } = params;
-    const body = await request.json();
-    // TODO: 实现更新预设逻辑
-    return NextResponse.json({ message: `更新预设 ${id}`, body });
-}
+export const PUT = interceptor.createRoute(
+    async (request, records) => {
+        const {id} = await records.context.params;
+        const model = records.body as Partial<PresetModel>;
+        await repository.update(id, model);
+        return NextResponse.json(model);
+    }
+)
 
 /**
- * DELETE /api/db/:id
  * 删除预设
+ * @pathParams { id:string }
+ * @openapi
  */
-export async function DELETE(
-    request: NextRequest,
-    { params }: RouteParams
-) {
-    const { id } = params;
-    // TODO: 实现删除预设逻辑
-    return NextResponse.json({ message: `删除预设 ${id}` });
-}
+export const DELETE = interceptor.createRoute(
+    async (request, records) => {
+        const {id} = await records.context.params;
+        await repository.delete(id);
+        return NextResponse.json(null);
+    }
+)

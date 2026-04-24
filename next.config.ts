@@ -1,5 +1,8 @@
 import type {NextConfig} from "next";
-import {withNextIntlConfig} from "@/src/localization";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntlConfig = createNextIntlPlugin('./src/localization/request.ts');
+
 
 const nextConfig: NextConfig = {
     /* config options here */

@@ -1,10 +1,10 @@
 ﻿// src/db/repository-base.ts
 import {db} from "@/src/db/index";
 import {and, eq, sql} from "drizzle-orm";
-import type {PagedResult, PageOptions} from "@/src/model/common";
+import type {PagedResult, PageOptions} from "@/src/models/common";
 import {BaseEntity} from "@/src/db/entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
-import {BaseModel, RequireModel} from "@/src/model/require";
+import {BaseModel, RequireModel} from "@/src/models/require";
 
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,

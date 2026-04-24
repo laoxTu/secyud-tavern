@@ -1,31 +1,33 @@
-﻿import {NextResponse} from 'next/server';
-import {PageOptions} from "@/src/model/common";
+﻿// app/api/presets/route.ts
+import {NextResponse} from 'next/server';
+import {PageOptions} from "@/src/models/common";
 import {repository} from "@/src/business/preset/repository";
 import {interceptor} from "@/src/interceptor";
-import {PresetModel} from "@/src/business/preset";
+import {PresetModel} from "@/src/business/preset/models";
 
 /**
- * GET /api/db
- * 获取当前用户的预设列表
+ * 获取预设分页列表
+ * @params PageOptions
+ * @response PagedResult<PresetModel>
+ * @openapi
  */
 export const GET = interceptor.createRoute(
-    async request => {
-        const options = await request.json() as PageOptions;
+    async (request, records) => {
+        const options = records.searchParams as PageOptions;
         const models = await repository.getList(options);
         return NextResponse.json(models);
     }
 )
 
 /**
- * POST /api/db
- * 创建新预设
- *
- * 请求体：完整的预设 JSON 对象
- * 验证：检查 id 唯一性、格式正确性
+ * 创建预设
+ * @body PresetModel
+ * @response {id: string}
+ * @openapi
  */
 export const POST = interceptor.createRoute(
-    async request => {
-        const model = await request.json() as PresetModel;
+    async (request, records) => {
+        const model = records.body as PresetModel;
         const res = await repository.create(model);
         return NextResponse.json({id: res});
     }

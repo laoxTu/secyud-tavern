@@ -1,10 +1,13 @@
 ﻿// src/interceptor/manager.ts
-import {Registry} from "@/src/model/registerable";
+import {Registry} from "@/src/models/registerable";
 import {NextRequest, NextResponse} from "next/server";
-import {Interceptor, NextHandler} from ".";
+import {Interceptor} from ".";
+
+type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
+type NextHandler = (request: NextRequest, context: RouteContext<any>) => Promise<NextResponse>;
 
 class InterceptorManager extends Registry<Interceptor> {
-    createRoute(route: NextHandler): NextHandler {
+    createRoute(route: NextRouter): NextHandler {
         const interceptors = this.getSorted();
         return this.compose(interceptors, route);
     }
@@ -12,18 +15,22 @@ class InterceptorManager extends Registry<Interceptor> {
     /**
      * 递归执行中间件
      * */
-    compose(interceptors: Interceptor[], route: NextHandler): NextHandler {
-        return async (request: NextRequest): Promise<NextResponse> => {
+    compose(interceptors: Interceptor[], route: NextRouter): NextHandler {
+
+        return async (request: NextRequest, context: RouteContext<any>): Promise<NextResponse> => {
+            const records: Record<string, any> = {
+                context
+            };
+
             const dispatch = async (index: number): Promise<NextResponse> => {
                 if (index >= interceptors.length) {
-                    return await route(request);
+                    return await route(request, records);
                 }
 
                 const interceptor = interceptors[index];
                 const next = () => dispatch(index + 1);
-                return await interceptor.handle(request, next);
+                return interceptor.handle(request, records, next);
             };
-
             return dispatch(0);
         };
     }
