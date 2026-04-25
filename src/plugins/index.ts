@@ -8,7 +8,7 @@ export interface PluginManifest extends Registerable {
     // 前端脚本名称
     clientScript?: string;
     // 目录, 加载后赋值, 默认空字符串
-    directory: string;
+    directory?: string;
 }
 
 export {default as pluginManager} from './manager';

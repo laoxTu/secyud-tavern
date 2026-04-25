@@ -5,14 +5,7 @@ import {useTranslations} from "next-intl";
 
 
 export default function Home() {
-    const tabs = useMemo(() => {
-
-
-            console.log("=== 调试信息 ===");
-            console.log("所有注册的 tabs:", layoutTabManager.getSorted());
-
-        return tabManager.getSorted();
-    }, [])
+    const tabs = useMemo(() => tabManager.getSorted(), [])
     const t = useTranslations();
 
 

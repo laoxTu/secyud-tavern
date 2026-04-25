@@ -25,10 +25,11 @@ export default getRequestConfig(async ({locale}) => {
         try {
             const messages = (await import(`@/${path}/${language}.json`)).default;
             allMessages = {...allMessages, ...messages};
-            console.log(`✅ 加载消息: ${path}/${language}.json`);
-        } catch (error) {
+            console.log(`✅ loading localization file: ${path}/${language}.json`);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_error) {
             // 文件不存在，跳过
-            console.log(`⚠️ 文件不存在: ${path}/${language}.json`);
+            console.log(`⚠️ localization file not found: ${path}/${language}.json`);
         }
     }
 

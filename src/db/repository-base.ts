@@ -12,8 +12,10 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     requires: SQLiteTableWithColumns<any>,
     loadModel: (model: TModel) => Promise<void>,
     saveModel: (model: TModel) => Promise<void>,
-    mapToEntity: (entity: Partial<TModel>) => Partial<TMaster> = e => ({}),
-    mapToModel: (entity: Partial<TMaster>) => Partial<TModel> = m => ({})) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mapToEntity: (entity: Partial<TModel>) => Partial<TMaster> = (_e) => ({}),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mapToModel: (entity: Partial<TMaster>) => Partial<TModel> = (_m) => ({})) {
 
     const repository = {
 

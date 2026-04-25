@@ -1,5 +1,4 @@
 ﻿// src/models/common.ts
-import {NextResponse} from "next/server";
 
 export interface PageOptions<T = string> {
     page?: number;      // 页码，默认0

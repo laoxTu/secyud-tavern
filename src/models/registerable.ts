@@ -17,7 +17,7 @@ export class Registry<T extends Registerable> {
     register(registerable: T): void {
         this.records[registerable.id] = registerable;
         this.invalidateCache();
-        console.log(`[${this.name}] Provider registered: ${registerable.id}`);
+        console.log(`[${this.name}] registered: ${registerable.id}`);
     }
 
     unregister(id: string): boolean {
