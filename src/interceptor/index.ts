@@ -1,7 +1,7 @@
 ﻿// src/interceptor/index.ts
 
 import {NextRequest, NextResponse} from "next/server";
-import {Registerable} from "@/src/models/registerable";
+import {Registerable} from "@/models/registerable";
 
 export interface Interceptor extends Registerable {
     handle: (request: NextRequest, records: Record<string, any>, next: () => Promise<NextResponse>) => Promise<NextResponse>;

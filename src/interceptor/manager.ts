@@ -1,10 +1,10 @@
 ﻿// src/interceptor/manager.ts
-import {Registry} from "@/src/models/registerable";
+import {Registry} from "@/models/registerable";
 import {NextRequest, NextResponse} from "next/server";
 import {Interceptor} from ".";
 
 type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
-type NextHandler = (request: NextRequest, context: RouteContext<any>) => Promise<NextResponse>;
+type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
 
 class InterceptorManager extends Registry<Interceptor> {
     createRoute(route: NextRouter): NextHandler {
@@ -17,7 +17,7 @@ class InterceptorManager extends Registry<Interceptor> {
      * */
     compose(interceptors: Interceptor[], route: NextRouter): NextHandler {
 
-        return async (request: NextRequest, context: RouteContext<any>): Promise<NextResponse> => {
+        return async (request: NextRequest, context: any): Promise<NextResponse> => {
             const records: Record<string, any> = {
                 context
             };

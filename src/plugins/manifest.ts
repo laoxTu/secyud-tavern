@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import {PluginManifest} from "@/src/plugins/index";
+import {PluginManifest} from "@/plugins/index";
 import path from "node:path";
 
 export default async function getPluginManifests(pluginDir: string = "public/plugins/") {

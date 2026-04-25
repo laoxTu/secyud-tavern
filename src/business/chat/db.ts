@@ -1,5 +1,5 @@
-﻿// src/business/chat/db.ts
-import {entryTable, masterTable, requireTable} from "@/src/db/entity-base";
+﻿// src/business/chat/database.ts
+import {entryTable, masterTable, requireTable} from "@/database/entity-base";
 
 // 存档主表
 export const chats = masterTable("chats");

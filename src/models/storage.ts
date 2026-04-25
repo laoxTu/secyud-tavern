@@ -1,6 +1,6 @@
 ﻿// src/models/storage.ts
 
-import {Registerable, Registry} from "@/src/models/registerable";
+import {Registerable, Registry} from "@/models/registerable";
 
 export interface ModelStorageProvider<T> extends Registerable {
     loadModel: (model: T) => Promise<void>,

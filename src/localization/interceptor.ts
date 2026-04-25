@@ -1,7 +1,7 @@
 ﻿// src/localization/interceptor.ts
 import createMiddleware from 'next-intl/middleware';
 import {defaultLocale, locales} from './config';
-import {Interceptor} from "@/src/interceptor";
+import {Interceptor} from "@/interceptor";
 import {NextRequest, NextResponse} from "next/server";
 
 

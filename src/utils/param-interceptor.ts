@@ -1,7 +1,7 @@
 ﻿// src/interceptor/param-interceptor.ts
-import {Interceptor} from "@/src/interceptor";
+import {Interceptor} from "@/interceptor";
 import {NextRequest, NextResponse} from "next/server";
-import {errorInterceptor} from "@/src/utils/error-interceptor";
+import {errorInterceptor} from "@/utils/error-interceptor";
 
 /**
  * 从 URLSearchParams 反序列化为对象

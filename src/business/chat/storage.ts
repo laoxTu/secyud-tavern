@@ -1,5 +1,5 @@
 ﻿// src/business/chat/storage.ts
-import {ModelStorage} from "@/src/models/storage";
+import {ModelStorage} from "@/models/storage";
 import {ChatModel} from "./models";
 
 const storage = new ModelStorage<ChatModel>("preset",)

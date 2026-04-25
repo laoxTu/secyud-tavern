@@ -1,8 +1,8 @@
 ﻿// src/business/chat/repository.ts
 import {chatEntries, chatRequires, chats} from "./db";
-import {createRepository} from "@/src/db/repository-base";
+import {createRepository} from "@/database/repository-base";
 import storage from "./storage"
-import {ChatModel} from "@/src/business/chat/models";
+import {ChatModel} from "@/business/chat/models";
 
 
 export const repository =

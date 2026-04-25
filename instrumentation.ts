@@ -1,11 +1,11 @@
 ﻿// instrumentation.ts
 
-import {createDb} from "@/src/db";
-import {interceptor} from "@/src/interceptor";
-import {pluginManager} from "@/src/plugins";
-import {errorInterceptor} from "@/src/utils/error-interceptor";
-import {paramInterceptor} from "@/src/utils/param-interceptor";
-import i18nInterceptor from "@/src/localization/interceptor";
+import {createDb} from "@/database";
+import {interceptor} from "@/interceptor";
+import {pluginManager} from "@/plugins";
+import {errorInterceptor} from "@/utils/error-interceptor";
+import {paramInterceptor} from "@/utils/param-interceptor";
+import i18nInterceptor from "@/localization/interceptor";
 
 export async function register() {
     if (process.env.NEXT_RUNTIME === 'nodejs') {

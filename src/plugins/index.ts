@@ -1,5 +1,5 @@
 ﻿// src/plugins/index.ts
-import {Registerable} from "@/src/models/registerable";
+import {Registerable} from "@/models/registerable";
 
 export interface PluginManifest extends Registerable {
     version: string;

@@ -1,6 +1,6 @@
 ﻿// src/api/fetch-client.ts
 import type {paths} from './schema.d.ts';
-import {ApiError} from "@/src/api/models";
+import {ApiError} from "@/api/models";
 
 type Paths = paths;
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';

@@ -1,5 +1,5 @@
 ﻿// src/plugins/manager.ts
-import {Registry} from "@/src/models/registerable";
+import {Registry} from "@/models/registerable";
 import {PluginManifest} from ".";
 
 class PluginManager extends Registry<PluginManifest> {

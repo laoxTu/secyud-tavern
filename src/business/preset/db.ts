@@ -1,6 +1,6 @@
-﻿// src/business/preset/db.ts
+﻿// src/business/preset/database.ts
 import {text} from "drizzle-orm/sqlite-core";
-import {entryTable, masterTable, requireTable} from "@/src/db/entity-base";
+import {entryTable, masterTable, requireTable} from "@/database/entity-base";
 
 // 预设主表
 export const presets = masterTable("db", {

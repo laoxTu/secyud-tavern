@@ -1,0 +1,16 @@
+{
+  "default": {
+    "create": "创建",
+    "import": "导入",
+    "turn to": "跳至",
+    "page": "页",
+    "previous page": "上一页",
+    "next page": "下一页",
+    "page showcase": "第 {page} / {pageCount} 页"
+  },
+  "preset": {
+    "name": "预设",
+    "empty_title": "空的预设列表",
+    "empty_description": "似乎没有创建过预设，您可以创建或者导入。"
+  }
+}

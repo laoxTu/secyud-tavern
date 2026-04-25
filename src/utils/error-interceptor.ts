@@ -1,4 +1,4 @@
-﻿import {Interceptor} from "@/src/interceptor";
+﻿import {Interceptor} from "@/interceptor";
 import {NextRequest, NextResponse} from "next/server";
 
 class ErrorInterceptor implements Interceptor {

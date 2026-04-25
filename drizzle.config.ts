@@ -1,5 +1,5 @@
 ﻿import type {Config} from "drizzle-kit";
-import {dbMigrationFolder, dbUrl} from "@/src/db";
+import {dbMigrationFolder, dbUrl} from "@/database";
 
 export default {
     schema: "src/**/db.ts",
