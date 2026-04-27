@@ -54,10 +54,10 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
         const finalParams: PageOptions<TSearch> = {
             page: params?.page ?? pageIndex,
             pageSize: params?.pageSize ?? pageSize,
-            search: params?.search ?? search,
+            search: params?.search,
         };
         void executeFetch(finalParams);
-    }, [executeFetch, pageIndex, pageSize, search]);
+    }, [executeFetch, pageIndex, pageSize]);
 
     // 翻页
     const changePageIndex = useCallback((targetPage: number) => {
@@ -70,7 +70,7 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
     }, [refresh]);
 
     // 搜索
-    const doSearch = useCallback((searchValue: TSearch) => {
+    const doSearch = useCallback((searchValue: TSearch | undefined) => {
         void refresh({page: 0, search: searchValue});
     }, [refresh]);
 

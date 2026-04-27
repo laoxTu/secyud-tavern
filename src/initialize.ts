@@ -1,7 +1,6 @@
 ﻿import {interceptor} from "@/interceptor";
 import {errorInterceptor} from "@/utils/error-interceptor";
 import {paramInterceptor} from "@/utils/param-interceptor";
-import i18nInterceptor from "@/localization/interceptor";
 import {pluginManager} from "@/plugins";
 import {databaseManager} from "@/database";
 
@@ -10,7 +9,6 @@ import {databaseManager} from "@/database";
         const getManifest = await import("@/plugins/manifest");
         interceptor.register(errorInterceptor);
         interceptor.register(paramInterceptor);
-        // interceptor.register(i18nInterceptor);
 
         const manifests = await getManifest.default();
         if (manifests) {
