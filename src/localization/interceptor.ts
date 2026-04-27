@@ -3,6 +3,7 @@ import createMiddleware from 'next-intl/middleware';
 import {defaultLocale, locales} from './config';
 import {Interceptor} from "@/interceptor";
 import {NextRequest, NextResponse} from "next/server";
+import {errorInterceptor} from "@/utils/error-interceptor";
 
 
 const middleware = createMiddleware({
@@ -14,7 +15,7 @@ const middleware = createMiddleware({
 class I18nInterceptor implements Interceptor {
 
     id = "i18n interceptor";
-    requires? = undefined;
+    requires: string[] = [errorInterceptor.id];
 
 
     async handle(request: NextRequest, records: Record<string, any>, next: () => Promise<NextResponse>) {

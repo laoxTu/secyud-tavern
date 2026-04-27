@@ -1,6 +1,7 @@
 ﻿// components/pager/index.ts
-import { useState, useCallback, useRef } from 'react';
-import type { PageOptions, PagedResult } from '@/models/common';
+import {useState, useCallback, useRef, useEffect} from 'react';
+import type {PageOptions, PagedResult} from '@/models/common';
+import {useErrorHandler} from "@/components/message";
 
 interface UsePageOptions<T, S = string> {
     defaultPageSize?: number;
@@ -8,22 +9,24 @@ interface UsePageOptions<T, S = string> {
     fetcher: (params: PageOptions<S>) => Promise<PagedResult<T>>;
 }
 
-export function usePager<T, S = string>(options: UsePageOptions<T, S>) {
-    const { defaultPageSize = 20, defaultSearch, fetcher } = options;
+export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch>) {
+    const {handleError} = useErrorHandler();
+    const {defaultPageSize = 10, defaultSearch, fetcher} = options;
 
     const [data, setData] = useState<T[]>([]);
     const [loading, setLoading] = useState(false);
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(defaultPageSize);
     const [totalCount, setTotalCount] = useState(0);
-    const [search, setSearch] = useState<S | undefined>(defaultSearch);
+    const [search, setSearch] = useState<TSearch | undefined>(defaultSearch);
     const [error, setError] = useState<Error | null>(null);
 
     // 使用 ref 防重复请求
     const loadingRef = useRef(false);
+    const hasRequestedRef = useRef(false);
 
     // 核心请求逻辑（不依赖 state，避免闭包问题）
-    const executeFetch = useCallback(async (params: PageOptions<S>) => {
+    const executeFetch = useCallback(async (params: PageOptions<TSearch>) => {
         if (loadingRef.current) return;
 
         loadingRef.current = true;
@@ -33,44 +36,50 @@ export function usePager<T, S = string>(options: UsePageOptions<T, S>) {
         try {
             const result = await fetcher(params);
             setData(result.data);
-            setTotalCount(result.totalCount);
+            setSearch(params.search);
             setPageIndex(params.page ?? 0);
             setPageSize(params.pageSize ?? defaultPageSize);
-            if (params.search !== undefined) setSearch(params.search);
-            return result;
+            setTotalCount(result.totalCount);
         } catch (err) {
             setError(err as Error);
-            throw err;
+            handleError(err);
         } finally {
             loadingRef.current = false;
             setLoading(false);
         }
-    }, [fetcher, defaultPageSize]);
+    }, [fetcher, defaultPageSize, handleError]);
 
     // 触发请求
-    const refresh = useCallback(async (params?: Partial<PageOptions<S>>) => {
-        const finalParams: PageOptions<S> = {
+    const refresh = useCallback(async (params?: Partial<PageOptions<TSearch>>) => {
+        const finalParams: PageOptions<TSearch> = {
             page: params?.page ?? pageIndex,
             pageSize: params?.pageSize ?? pageSize,
             search: params?.search ?? search,
         };
-        return executeFetch(finalParams);
+        void executeFetch(finalParams);
     }, [executeFetch, pageIndex, pageSize, search]);
 
     // 翻页
     const changePageIndex = useCallback((targetPage: number) => {
-        void refresh({ page: targetPage });
+        void refresh({page: targetPage});
     }, [refresh]);
 
     // 修改每页条数
     const changePageSize = useCallback((size: number) => {
-        void refresh({ page: 0, pageSize: size });
+        void refresh({page: 0, pageSize: size});
     }, [refresh]);
 
     // 搜索
-    const doSearch = useCallback((searchValue: S) => {
-        void refresh({ page: 0, search: searchValue });
+    const doSearch = useCallback((searchValue: TSearch) => {
+        void refresh({page: 0, search: searchValue});
     }, [refresh]);
+
+    useEffect(() => {
+        if (!hasRequestedRef.current) {
+            hasRequestedRef.current = true;
+            void refresh({page: 0, pageSize: defaultPageSize, search: defaultSearch});
+        }
+    }, [refresh, defaultPageSize, defaultSearch]);
 
     return {
         data,

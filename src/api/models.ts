@@ -1,10 +1,11 @@
-﻿
+﻿import {BusinessError} from "@/business";
 
-export class ApiError extends Error {
-    response: Response;
 
-    constructor(response: Response) {
-        super("Internal Server Error");
-        this.response = response;
+export class ApiError extends BusinessError {
+    constructor(message: string, code?: string, data?: any) {
+        super(message, code);
+        if (data) {
+            this.data = {...data};
+        }
     }
 }

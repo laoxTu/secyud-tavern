@@ -4,6 +4,7 @@ import {entryTable, masterTable, requireTable} from "@/database/entity-base";
 
 // 预设主表
 export const presets = masterTable("db", {
+    code: text("code").notNull(),
     version: text("version").notNull(),
     tags: text("tags", {mode: "json"}).$type<string[]>().notNull(),
 });

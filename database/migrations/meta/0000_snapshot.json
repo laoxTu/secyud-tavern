@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a7e2f0ae-f0d4-486f-bb8b-85d5586b4a85",
+  "id": "550cb2f1-b36b-4743-9b02-abf1fcf5958b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chat_entries": {
@@ -322,6 +322,13 @@
         },
         "content": {
           "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,

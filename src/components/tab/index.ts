@@ -5,7 +5,7 @@ import TabManager from "./manager";
 
 export interface TabConfig<T = undefined> extends Registerable {
     label: React.ComponentType<T>;
-    component: React.ComponentType<T>;
+    component?: React.ComponentType<T>;
 }
 
 export {TabManager};

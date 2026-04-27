@@ -33,54 +33,51 @@ export interface PaginationWrapperProps {
 function generatePaginationRange(
     currentPage: number,
     totalPages: number,
-    maxVisiblePages: number = 7
-): (number | string)[] {
+    maxVisiblePages: number = 5
+): number [] {
     // 确保参数是有效数字
     const current = Math.max(0, Math.min(currentPage, totalPages - 1));
     const total = Math.max(0, totalPages);
     const max = Math.max(3, Math.min(maxVisiblePages, total));
 
-    // 如果总页数小于等于最大显示数，显示所有页码
+    // 显示所有页
     if (total <= max) {
-        return Array.from({length: total}, (_, i) => i + 1);
+        return Array.from({length: total}, (_, i) => i);
     }
 
-    const leftSibling = Math.floor((max - 3) / 2);
-    const rightSibling = max - 3 - leftSibling;
-
-    // 计算左右边界
-    let startPage = current - leftSibling;
-    let endPage = current + rightSibling;
+    let startPage = current - Math.floor((max - 3) / 2);
+    let endPage = startPage + max;
 
     // 调整边界
-    if (startPage <= 2) {
-        startPage = 2;
-        endPage = max - 2;
+    if (startPage <= 0) {
+        startPage = 0;
+        endPage = max;
     }
-    if (endPage >= total - 1) {
-        endPage = total - 1;
-        startPage = total - (max - 3);
+    if (endPage >= total) {
+        endPage = total;
+        startPage = total - max;
     }
 
-    const pages: (number | string)[] = [1];
+    const pages: number[] = [];
+
+    pages.push(0);
 
     // 添加左侧省略号
-    if (startPage > 2) {
-        pages.push('...');
+    if (startPage > 0) {
+        pages.push(-1);
     }
 
     // 添加中间的页码
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = startPage + 1; i < endPage - 1; i++) {
         pages.push(i);
     }
 
     // 添加右侧省略号
-    if (endPage < total - 1) {
-        pages.push('...');
+    if (endPage < total) {
+        pages.push(-1);
     }
 
-    // 添加最后一页
-    pages.push(total);
+    pages.push(total - 1);
 
     return pages;
 }
@@ -123,22 +120,22 @@ export function PaginationWrapper({
                                 ? 'pointer-events-none opacity-50'
                                 : 'cursor-pointer'
                         }
-                        text={t("previous page")}
+                        text={t("page.previous")}
                         aria-disabled={isFirstPage}
                     />
                 </PaginationItem>
 
                 {pages.map((page, index) => (
                     <PaginationItem key={index}>
-                        {page === '...' ? (
+                        {page === -1 ? (
                             <PaginationEllipsis/>
                         ) : (
                             <PaginationLink
-                                onClick={() => handlePageIndexChange(page as number)}
+                                onClick={() => handlePageIndexChange(page)}
                                 isActive={defaultPageIndex === page}
                                 className="cursor-pointer"
                             >
-                                {page}
+                                {page + 1}
                             </PaginationLink>
                         )}
                     </PaginationItem>
@@ -153,7 +150,7 @@ export function PaginationWrapper({
                                 : 'cursor-pointer'
                         }
                         aria-disabled={isLastPage}
-                        text={t("next page")}
+                        text={t("page.next")}
                     />
                 </PaginationItem>
             </PaginationContent>

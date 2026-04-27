@@ -3,8 +3,9 @@ import {PluginManifest} from "@/plugins/index";
 import path from "path";
 import {pathToFileURL} from 'url';
 
+const pluginDir = "plugins";
 
-export default async function getPluginManifests(pluginDir: string = "plugins") {
+export default async function getPluginManifests() {
 
     // 检查插件目录是否存在
     try {

@@ -8,8 +8,8 @@ export interface BaseModel {
     id: string,
     name: string,
     requires: RequireModel[],
-    entries?: any,
-    content: any,
+    entries?: Record<string, any>,
+    content: Record<string, any>,
 }
 
 export function mapRequire(other: any): RequireModel {

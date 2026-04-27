@@ -46,6 +46,7 @@ CREATE TABLE `db` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`content` text NOT NULL,
+	`code` text NOT NULL,
 	`version` text NOT NULL,
 	`tags` text NOT NULL,
 	`created_at` text NOT NULL,

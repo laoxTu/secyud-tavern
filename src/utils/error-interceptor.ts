@@ -1,5 +1,6 @@
 ﻿import {Interceptor} from "@/interceptor";
 import {NextRequest, NextResponse} from "next/server";
+import {BusinessError} from "@/business";
 
 class ErrorInterceptor implements Interceptor {
     id: string = "error interceptor";
@@ -8,11 +9,30 @@ class ErrorInterceptor implements Interceptor {
         try {
             return await next();
         } catch (error) {
-            console.error(error);
-            return NextResponse.json(
-                {message: error instanceof Error ? error.message : 'Internal Server Error'},
-                {status: 500}
-            );
+
+            if (error instanceof BusinessError) {
+                return NextResponse.json(
+                    {
+                        message: error.message,
+                        code: error.code,
+                        data: error.data,
+                    },
+                    {status: 500}
+                );
+            }
+
+            if (error instanceof Error) {
+                console.error(error);
+                return NextResponse.json(
+                    {
+                        message: error.message,
+                        data: {}
+                    },
+                    {status: 500}
+                );
+            }
+
+            throw error;
         }
     }
 }

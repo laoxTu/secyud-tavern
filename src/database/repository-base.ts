@@ -1,10 +1,13 @@
 ﻿// src/database/repository-base.ts
-import {db} from "./index";
-import {and, eq, sql} from "drizzle-orm";
+import {databaseManager} from "./index";
+import {and, eq, SQL, sql} from "drizzle-orm";
 import type {PagedResult, PageOptions} from "@/models/common";
 import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseModel, RequireModel} from "@/models/require";
+import {v4 as uuidv4} from 'uuid';
+
+const db = databaseManager.db;
 
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
@@ -79,7 +82,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
         create: async (model: TModel) => {
             const entity = {
-                id: model.id,
+                id: model.id == "" ? uuidv4() : model.id,
                 name: model.name,
                 content: JSON.stringify(model.content),
                 createdAt: new Date().toISOString(),
@@ -115,6 +118,25 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             await db
                 .delete(masters)
                 .where(eq(masters.id, id));
+        },
+
+        /**
+         * 检查记录是否存在（使用 lambda 构建条件）
+         * @param conditions Lambda 函数，传入表对象，返回 SQL 条件
+         * @example
+         * await repository.exist((t) => eq(t.name, 'test'))
+         * await repository.exist((t) => and(eq(t.name, 'test'), eq(t.status, 'active')))
+         */
+        exist: async (conditions: (table: TMaster) => SQL | SQL[]): Promise<boolean> => {
+            const whereClause = conditions(masters);
+
+            const result = await db
+                .select({count: sql<number>`count(*)`})
+                .from(masters)
+                .where(whereClause as SQL)
+                .get();
+
+            return Number(result?.count ?? 0) > 0;
         },
 
         require: {

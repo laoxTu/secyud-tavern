@@ -13,11 +13,18 @@ const getBaseUrl = () => {
 // 基础请求函数
 const baseRequest = async (url: string, options: RequestInit) => {
     const response = await fetch(getBaseUrl() + url, options);
-    if (!response.ok) {
-        console.error(response)
-        throw new ApiError(response);
+    const contentType = response.headers.get("Content-Type");
+
+    if (!contentType?.includes("application/json")) {
+        return response;
     }
-    return await response.json();
+
+    const json = await response.json();
+    if (!response.ok) {
+        throw new ApiError(json.message ?? "Internal Server Error", json.code, json.data);
+    }
+
+    return json;
 }
 
 // 构建 URL

@@ -1,16 +1,36 @@
 {
   "default": {
+    "id": "ID",
     "create": "创建",
-    "import": "导入",
-    "turn to": "跳至",
-    "page": "页",
-    "previous page": "上一页",
-    "next page": "下一页",
-    "page showcase": "第 {page} / {pageCount} 页"
+    "cancel": "取消",
+    "code": "编码",
+    "submit": "提交",
+    "name": "名称",
+    "search": "搜索",
+    "description": "描述",
+    "select_file": "选择一个文件",
+    "selected_file": "当前选择的文件：{name}",
+    "import": "导入"
+  },
+  "page": {
+    "turn_to": "跳至{page}页",
+    "previous": "上一页",
+    "next": "下一页",
+    "page_showcase": "第 {page} / {pageCount} 页"
   },
   "preset": {
     "name": "预设",
+    "create": "创建预设",
+    "create_description": "请创建一个新的预设",
+    "import": "导入预设",
+    "import_description": "请导入一个预设",
     "empty_title": "空的预设列表",
-    "empty_description": "似乎没有创建过预设，您可以创建或者导入。"
+    "empty_description": "似乎没有创建过预设，您可以创建或者导入。",
+    "select_title": "没有选择预设",
+    "select_description": "点击一个预设，然后您可以对它进行编辑。"
+  },
+  "error": {
+    "empty_field": "{field}不可以为空！",
+    "duplicate_field": "已经有一个具有相同{field}的{entity_name}！"
   }
 }
