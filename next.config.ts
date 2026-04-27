@@ -5,7 +5,6 @@ const withNextIntlConfig = createNextIntlPlugin('./src/localization/request.ts')
 
 
 const nextConfig: NextConfig = {
-    /* config options here */
 };
 
 function compose(...plugins: Array<(config: NextConfig) => NextConfig>) {

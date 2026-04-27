@@ -8,7 +8,7 @@ export interface Registerable {
 export class Registry<T extends Registerable> {
     private records: Record<string, T> = {};
     private sorted: T[] | null = null;
-    private readonly name: string;
+    protected readonly name: string;
 
     constructor(name: string) {
         this.name = name;
@@ -25,21 +25,20 @@ export class Registry<T extends Registerable> {
         delete this.records[id];
         this.invalidateCache();
         if (existed) {
-            console.log(`[${this.name}] Provider unregistered: ${id}`);
+            console.log(`[${this.name}] unregistered: ${id}`);
         }
         return existed;
     }
 
     async use(action: (t: T) => Promise<void>, endFlag?: () => boolean) {
         const items = this.getSorted();
-        console.log(`[${this.name}] Loading model through ${items.length} registerables...`);
+        console.log(`[${this.name}] find ${items.length} registrable...`);
 
         for (const item of items) {
             if (endFlag && endFlag()) {
                 break;
             }
             const registerableName = item.id;
-            console.log(`[${this.name}] Loading from: ${registerableName}`);
             await action(item);
         }
     }

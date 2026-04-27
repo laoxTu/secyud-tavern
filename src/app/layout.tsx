@@ -1,12 +1,8 @@
 // app/layout.tsx
 import {Metadata} from "next";
-import {Geist} from "next/font/google";
-import {cn} from "@/lib/utils";
 import {NextIntlClientProvider} from "next-intl";
 import {registerClientPlugins} from "@/components/plugins";
 import "./globals.css"
-
-const geist = Geist({subsets: ['latin'], variable: '--font-sans'});
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
@@ -21,7 +17,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={cn("font-sans", geist.variable)}>
+        <html lang="en" >
         <body>
         <NextIntlClientProvider>
             {children}

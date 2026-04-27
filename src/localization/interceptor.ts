@@ -13,7 +13,7 @@ const middleware = createMiddleware({
 
 class I18nInterceptor implements Interceptor {
 
-    id = "i18n";
+    id = "i18n interceptor";
     requires? = undefined;
 
 

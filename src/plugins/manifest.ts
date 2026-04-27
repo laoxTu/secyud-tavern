@@ -1,14 +1,16 @@
 import fs from "fs/promises";
 import {PluginManifest} from "@/plugins/index";
-import path from "node:path";
+import path from "path";
+import {pathToFileURL} from 'url';
 
-export default async function getPluginManifests(pluginDir: string = "public/plugins/") {
+
+export default async function getPluginManifests(pluginDir: string = "plugins") {
 
     // 检查插件目录是否存在
     try {
         await fs.access(pluginDir);
     } catch {
-        console.log(`📁 plugins folder not found: ${pluginDir}`);
+        console.log(`[plugin loader] 📁 plugins folder not found: ${pluginDir}`);
         return;
     }
 
@@ -18,22 +20,23 @@ export default async function getPluginManifests(pluginDir: string = "public/plu
         .filter(entry => entry.isDirectory())
         .map(entry => entry.name);
 
-    console.log(`📂 find ${folders.length} plugins folder:`, folders);
+    console.log(`[plugin loader] 📂 find ${folders.length} plugins folder:`, folders);
 
     const manifests: PluginManifest[] = [];
     for (const folder of folders) {
-        const pluginPath = path.join(pluginDir, folder);
-        const manifestPath = path.join(pluginPath, `manifest.json`);
+        const pluginPath = path.join(process.cwd(), pluginDir, folder);
+        const manifestPath = path.join(pluginPath, "manifest.json");
 
         try {
             await fs.access(manifestPath);
             const manifestText = await fs.readFile(manifestPath, 'utf-8');
             const manifest = JSON.parse(manifestText) as PluginManifest;
-            manifest.directory = pluginPath;
+            manifest.directory = pathToFileURL(pluginPath).toString();
             manifests.push(manifest);
+            console.log(`[plugin loader] 📂 find plugin: ${pluginDir}/${folder}`);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_e) {
-
+            console.warn(`[plugin loader] 📂 ${pluginDir}/${folder} is not a plugin directory.`);
         }
     }
     return manifests;

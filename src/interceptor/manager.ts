@@ -36,5 +36,5 @@ class InterceptorManager extends Registry<Interceptor> {
     }
 }
 
-const manager = new InterceptorManager("middleware manager");
+const manager = new InterceptorManager("interceptor manager");
 export default manager;

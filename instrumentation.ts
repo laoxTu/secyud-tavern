@@ -1,6 +1,6 @@
 ﻿// instrumentation.ts
 
-import {createDb} from "@/database";
+import {databaseManager} from "@/database";
 import {interceptor} from "@/interceptor";
 import {pluginManager} from "@/plugins";
 import {errorInterceptor} from "@/utils/error-interceptor";
@@ -9,7 +9,7 @@ import i18nInterceptor from "@/localization/interceptor";
 
 export async function register() {
     if (process.env.NEXT_RUNTIME === 'nodejs') {
-        const getManifest = await import("./src/plugins/manifest");
+        const getManifest = await import("@/plugins/manifest");
         interceptor.register(errorInterceptor);
         interceptor.register(paramInterceptor);
         interceptor.register(i18nInterceptor);
@@ -23,6 +23,6 @@ export async function register() {
 
         await pluginManager.loadServerPlugins();
 
-        await createDb();
+        await databaseManager.migrate();
     }
 }

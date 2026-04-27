@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o ./src/api/schema.d.ts",
-    "db-migrate": "npx drizzle-kit generate & npx tsx src/database/migrate.ts"
+    "db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
@@ -18,7 +18,7 @@
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.11.0",
-    "next": "16.2.4",
+    "next": "^16.2.4",
     "next-intl": "^4.9.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",

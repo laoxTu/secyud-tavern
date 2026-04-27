@@ -1,6 +1,5 @@
 import React, {useMemo} from "react";
 import {tabManager} from "..";
-import {useTranslations} from "next-intl";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 export default function HomeContent() {
