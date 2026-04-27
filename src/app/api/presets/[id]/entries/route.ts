@@ -3,6 +3,7 @@ import {NextResponse} from 'next/server';
 import {PageOptions} from "@/models/common";
 import {repository} from "@/business/preset/repository";
 import {interceptor} from "@/interceptor";
+import {like, or, SQL} from "drizzle-orm";
 
 /**
  * 获取条目分页列表
@@ -15,7 +16,14 @@ export const GET = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
         const options = records.searchParams as PageOptions & { type: string };
-        const models = await repository.entry.getList(id, options.type, options);
+        const models = await repository.entry.getList(id, options.type, options, p => {
+            const conditions: SQL[] = [];
+            if (options.search) {
+                conditions.push(like(p.name, `%${options.search}%`));
+            }
+
+            return or(...conditions) ?? [];
+        });
         return NextResponse.json(models);
     }
 )

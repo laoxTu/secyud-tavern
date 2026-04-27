@@ -44,28 +44,23 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             return model;
         },
 
-        getList: async (options: PageOptions): Promise<PagedResult<TModel>> => {
-            const {page = 0, pageSize = 20, search} = options;
+        getList: async (options: PageOptions, conditions: (table: TMaster) => SQL | SQL[]): Promise<PagedResult<TModel>> => {
+            const {page = 0, pageSize = 20} = options;
             const offset = page * pageSize;
 
-            const conditions = [];
-
-            if (search) {
-                const searchPattern = `%${search}%`;
-                const whereClause = sql`(${masters.name} LIKE ${searchPattern})`;
-                conditions.push(whereClause)
-            }
+            const whereClause = conditions(masters);
+            const condition = whereClause instanceof SQL ? whereClause : and(...whereClause);
 
             const [countResult] = await db
                 .select({count: sql<number>`count(*)`})
                 .from(masters)
-                .where(and(...conditions));
+                .where(condition);
             const totalCount = Number(countResult.count);
 
             const entities = await db
                 .select()
                 .from(masters)
-                .where(and(...conditions))
+                .where(condition)
                 .limit(pageSize)
                 .offset(offset);
 
@@ -129,11 +124,12 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
          */
         exist: async (conditions: (table: TMaster) => SQL | SQL[]): Promise<boolean> => {
             const whereClause = conditions(masters);
+            const condition = whereClause instanceof SQL ? whereClause : and(...whereClause);
 
             const result = await db
                 .select({count: sql<number>`count(*)`})
                 .from(masters)
-                .where(whereClause as SQL)
+                .where(condition)
                 .get();
 
             return Number(result?.count ?? 0) > 0;
@@ -170,32 +166,26 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
         entry: {
 
-            getList: async (masterId: string, type: string, options: PageOptions): Promise<PagedResult<any>> => {
-                const {page, pageSize, search} = options;
+            getList: async (masterId: string, type: string, options: PageOptions, conditions: (table: TMaster) => SQL | SQL[]): Promise<PagedResult<any>> => {
+                const {page, pageSize} = options;
 
-                const conditions = [
-                    eq(entries.masterId, masterId),
-                    eq(entries.entryType, type),
-                ];
+                const whereClause = conditions(masters);
+                const condition = whereClause instanceof SQL ? [whereClause] : whereClause;
 
-                if (search) {
-                    const searchPattern = `%${search}%`;
-                    const whereClause = sql`(
-                    ${entries.entryId} LIKE ${searchPattern}
-                )`;
-                    conditions.push(whereClause);
-                }
+                condition.push(eq(entries.masterId, masterId));
+                condition.push(eq(entries.entryType, type));
+
 
                 const [countResult] = await db
                     .select({count: sql<number>`count(*)`})
                     .from(entries)
-                    .where(and(...conditions));
+                    .where(and(...condition));
                 const totalCount = Number(countResult.count);
 
                 let query: any = db
                     .select()
                     .from(entries)
-                    .where(and(...conditions));
+                    .where(and(...condition));
 
                 if (pageSize) {
                     query = query.limit(pageSize);
@@ -258,14 +248,6 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         eq(entries.masterId, masterId),
                         eq(entries.entryType, type),
                         eq(entries.entryId, entryId),
-                    ));
-            },
-
-            batchDelete: async (masterId: string) => {
-                await db
-                    .delete(entries)
-                    .where(and(
-                        eq(entries.masterId, masterId),
                     ));
             },
         },

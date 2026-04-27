@@ -6,7 +6,8 @@ import {PresetModel} from "@/business/preset/models";
 import {useErrorHandler} from "@/components/message";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {presetTabManager} from "@/app/business/preset";
-import {LoadingTemplateCard} from "@/components/loading";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {Skeleton} from "@/components/ui/skeleton";
 
 export default function PresetContent() {
     const params = useParams();
@@ -48,33 +49,39 @@ export default function PresetContent() {
 
     if (!preset) {
         return (
-            <LoadingTemplateCard/>
+            <Card className="w-2/3">
+                <CardHeader>
+                    <Skeleton className="h-5 w-2/3"/>
+                    <Skeleton className="h-5 w-1/2"/>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-2/3 w-full"/>
+                </CardContent>
+            </Card>
         );
     }
 
     return (
-        <div className="w-full h-full">
-            <Tabs defaultValue={firstTab?.id}>
-                <TabsList>
-                    {tabs.map((tab, index) => {
-                        const Component = tab.label;
-                        return (
-                            <TabsTrigger key={index} value={tab.id}>
-                                <Component preset={preset}/>
-                            </TabsTrigger>
-                        );
-                    })}
-                </TabsList>
+        <Tabs defaultValue={firstTab?.id}>
+            <TabsList>
                 {tabs.map((tab, index) => {
-                    const Component = tab.component;
-                    if (!Component) return null;
+                    const Component = tab.label;
                     return (
-                        <TabsContent key={index} value={tab.id}>
+                        <TabsTrigger key={index} value={tab.id}>
                             <Component preset={preset}/>
-                        </TabsContent>
+                        </TabsTrigger>
                     );
                 })}
-            </Tabs>
-        </div>
+            </TabsList>
+            {tabs.map((tab, index) => {
+                const Component = tab.component;
+                if (!Component) return null;
+                return (
+                    <TabsContent key={index} value={tab.id}>
+                        <Component preset={preset}/>
+                    </TabsContent>
+                );
+            })}
+        </Tabs>
     )
 }

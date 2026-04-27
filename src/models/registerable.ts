@@ -38,7 +38,6 @@ export class Registry<T extends Registerable> {
             if (endFlag && endFlag()) {
                 break;
             }
-            const registerableName = item.id;
             await action(item);
         }
     }

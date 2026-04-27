@@ -5,7 +5,7 @@ import {repository} from "@/business/preset/repository";
 import {interceptor} from "@/interceptor";
 import {PresetModel} from "@/business/preset/models";
 import {BusinessError} from "@/business";
-import {eq} from "drizzle-orm";
+import {eq, like, or, SQL} from "drizzle-orm";
 
 /**
  * 获取预设分页列表
@@ -16,7 +16,17 @@ import {eq} from "drizzle-orm";
 export const GET = interceptor.createRoute(
     async (request, records) => {
         const options = records.searchParams as PageOptions;
-        const models = await repository.getList(options);
+        const models = await repository.getList(options,
+            (e): SQL | SQL[] => {
+                const conditions: SQL[] = [];
+                if (options.search)
+                {
+                    conditions.push(like(e.name, `%${options.search}%`));
+                    conditions.push(like(e.code, `%${options.search}%`));
+                }
+
+                return or(...conditions) ?? [];
+            });
         return NextResponse.json(models);
     }
 )

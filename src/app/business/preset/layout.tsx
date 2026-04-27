@@ -8,11 +8,10 @@ import {PaginationWrapper} from "@/components/pager/nodes/PaginationWrapper";
 import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {Button} from "@/components/ui/button";
 import {useTranslations} from "next-intl";
-import {FolderOpenIcon, ArrowUpRightIcon, SearchIcon} from "lucide-react";
+import {FolderOpenIcon, ArrowUpRightIcon, SearchIcon, XIcon} from "lucide-react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import React, {useState} from "react";
 import {useParams} from "next/navigation";
-import {LoadingTemplateCard} from "@/components/loading";
 import {
     Dialog, DialogClose,
     DialogContent,
@@ -27,6 +26,8 @@ import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/components/message";
 import {Item, ItemContent, ItemDescription, ItemGroup, ItemTitle} from "@/components/ui/item";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
+import Link from "next/link";
+import {Skeleton} from "@/components/ui/skeleton";
 
 
 function PresetCreateButtons({idSuffix, onSuccess}: { idSuffix: string; onSuccess?: () => void }) {
@@ -184,9 +185,9 @@ function PresetList() {
                     asChild
                     className="text-muted-foreground"
                     size="sm">
-                    <a href="#">
+                    <Link href="#">
                         Learn More <ArrowUpRightIcon/>
-                    </a>
+                    </Link>
                 </Button>
             </Empty>
         );
@@ -203,6 +204,9 @@ function PresetList() {
                                      defaultValue={pager.search}
                                      placeholder={t("default.search")}/>
                     <InputGroupAddon align={"inline-end"}>
+                        <InputGroupButton onClick={() => pager.doSearch(undefined)}>
+                            <XIcon/>
+                        </InputGroupButton>
                         <InputGroupButton type="submit">
                             <SearchIcon/>
                         </InputGroupButton>
@@ -215,7 +219,7 @@ function PresetList() {
                         <Item key={index}
                               variant={p.id === currentId ? "muted" : "outline"}
                               role="listitem" asChild>
-                            <a href={`/business/preset/${p.id}`}>
+                            <Link href={`/business/preset/${p.id}`}>
                                 <ItemContent>
                                     <ItemTitle className="line-clamp-1">
                                         {p.name} - {" "}
@@ -226,11 +230,15 @@ function PresetList() {
                                 <ItemContent className="flex-none text-center">
                                     <ItemDescription>{p.version}</ItemDescription>
                                 </ItemContent>
-                            </a>
+                            </Link>
                         </Item>
                     ))}
                 </ItemGroup>
-                {pager.loading && <LoadingTemplateCard/>}
+                {pager.loading && <div className="w-full">
+                    <Skeleton className="h-4 w-2/3"/>
+                    <Skeleton className="h-4 w-1/2"/>
+                    <Skeleton className="aspect-video w-full"/>
+                </div>}
             </div>
             <div className="w-full p-1">
                 <PaginationWrapper defaultPageIndex={pager.pageIndex}
@@ -260,7 +268,7 @@ export default function PresetLayout({
             <ResizableHandle withHandle/>
             <ResizablePanel
                 minSize="300px"
-                className="flex justify-center">
+                className="flex w-full h-full justify-center p-28">
                 {children}
             </ResizablePanel>
         </ResizablePanelGroup>
