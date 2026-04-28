@@ -6,6 +6,7 @@ import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseModel, RequireModel} from "@/models/require";
 import {v4 as uuidv4} from 'uuid';
+import {BusinessError} from "@/business";
 
 const db = databaseManager.db;
 
@@ -96,17 +97,29 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
         },
 
         update: async (id: string, model: Partial<TModel>) => {
+            const exist = await repository.get(id);
+            if (!exist)
+                throw new BusinessError('update entity not found', "default.entity_not_found")
+                    .withValue("id", id);
+
             const updateData: Record<string, unknown> = {
                 updatedAt: new Date().toISOString(),
                 ...mapToEntity(model)
             };
+
             if (model.name !== undefined) updateData.name = model.name;
-            if (model.content !== undefined) updateData.content = JSON.stringify(model.content);
+            if (model.content !== undefined) updateData.content = JSON.stringify({
+                ...exist.content,
+                ...model.content
+            });
 
             await db
                 .update(masters)
                 .set(updateData)
                 .where(eq(masters.id, id));
+
+            if (model.requires)
+                await repository.require.set(id, model.requires);
         },
 
         delete: async (id: string) => {
@@ -144,7 +157,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                     .where(eq(requires.masterId, masterId))
                     .all()
                 return entities.map(u => ({
-                    requireId: u.requireId,
+                    code: u.code,
                     version: u.version,
                 }));
             },
@@ -154,13 +167,14 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                     .delete(requires)
                     .where(eq(entries.masterId, masterId),);
 
-                await db
-                    .insert(requires)
-                    .values(data.map(require => ({
-                        masterId: masterId,
-                        requireId: require.requireId,
-                        version: require.version,
-                    })));
+                if (data.length > 0)
+                    await db
+                        .insert(requires)
+                        .values(data.map(require => ({
+                            masterId: masterId,
+                            code: require.code,
+                            version: require.version,
+                        })));
             },
         },
 

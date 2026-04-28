@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "550cb2f1-b36b-4743-9b02-abf1fcf5958b",
+  "id": "f8d4e2af-c5f9-4f11-a69a-26dcaaff018c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chat_entries": {
@@ -75,8 +75,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "require_id": {
-          "name": "require_id",
+        "code": {
+          "name": "code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -105,12 +105,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "chat_requires_require_id_db_id_fk": {
-          "name": "chat_requires_require_id_db_id_fk",
+        "chat_requires_code_db_id_fk": {
+          "name": "chat_requires_code_db_id_fk",
           "tableFrom": "chat_requires",
           "tableTo": "db",
           "columnsFrom": [
-            "require_id"
+            "code"
           ],
           "columnsTo": [
             "id"
@@ -120,12 +120,12 @@
         }
       },
       "compositePrimaryKeys": {
-        "chat_requires_master_id_require_id_pk": {
+        "chat_requires_master_id_code_pk": {
           "columns": [
             "master_id",
-            "require_id"
+            "code"
           ],
-          "name": "chat_requires_master_id_require_id_pk"
+          "name": "chat_requires_master_id_code_pk"
         }
       },
       "uniqueConstraints": {},
@@ -247,8 +247,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "require_id": {
-          "name": "require_id",
+        "code": {
+          "name": "code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -277,12 +277,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "preset_requires_require_id_db_id_fk": {
-          "name": "preset_requires_require_id_db_id_fk",
+        "preset_requires_code_db_id_fk": {
+          "name": "preset_requires_code_db_id_fk",
           "tableFrom": "preset_requires",
           "tableTo": "db",
           "columnsFrom": [
-            "require_id"
+            "code"
           ],
           "columnsTo": [
             "id"
@@ -292,12 +292,12 @@
         }
       },
       "compositePrimaryKeys": {
-        "preset_requires_master_id_require_id_pk": {
+        "preset_requires_master_id_code_pk": {
           "columns": [
             "master_id",
-            "require_id"
+            "code"
           ],
-          "name": "preset_requires_master_id_require_id_pk"
+          "name": "preset_requires_master_id_code_pk"
         }
       },
       "uniqueConstraints": {},

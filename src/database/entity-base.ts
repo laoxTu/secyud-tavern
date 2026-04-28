@@ -35,9 +35,9 @@ export function requireTable(tableName: string, masterRef: () => SQLiteColumn, o
 } | undefined) {
     return sqliteTable(tableName, {
         masterId: text("master_id").notNull().references(masterRef, options),
-        requireId: text("require_id").notNull().references(() => presets.id, {onDelete: "cascade"}),
+        code: text("code").notNull().references(() => presets.id, {onDelete: "cascade"}),
         version: text("version").notNull(),
     }, (table) => [
-        primaryKey({columns: [table.masterId, table.requireId]})
+        primaryKey({columns: [table.masterId, table.code]})
     ]);
 }

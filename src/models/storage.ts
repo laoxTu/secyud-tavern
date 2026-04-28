@@ -1,5 +1,4 @@
 ﻿// src/models/storage.ts
-
 import {Registerable, Registry} from "@/models/registerable";
 
 export interface ModelStorageProvider<T> extends Registerable {

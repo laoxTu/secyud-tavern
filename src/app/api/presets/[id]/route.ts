@@ -3,6 +3,7 @@ import {NextResponse} from 'next/server';
 import {repository} from "@/business/preset/repository";
 import {interceptor} from "@/interceptor";
 import {PresetModel} from "@/business/preset/models";
+import {BusinessError} from "@/business";
 
 
 /**
@@ -31,6 +32,7 @@ export const PUT = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
         const model = records.body as Partial<PresetModel>;
+
         await repository.update(id, model);
         return NextResponse.json(model);
     }

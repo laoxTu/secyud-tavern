@@ -7,5 +7,5 @@ import {ChatModel} from "@/business/chat/models";
 
 export const repository =
     createRepository<ChatModel, typeof chats.$inferSelect>(
-        chats, chatEntries, chatRequires, storage.loadModel, storage.saveModel)
+        chats, chatEntries, chatRequires, storage.loadModel.bind(storage), storage.saveModel.bind(storage))
 

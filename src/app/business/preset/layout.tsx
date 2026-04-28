@@ -68,13 +68,9 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
         try {
             const file = formData.get("filename") as File;
             if (!file) return;
-
-            // 调用导入 API
-            const uploadFormData = new FormData();
-            uploadFormData.append("file", file);
-            await post("/presets/import", uploadFormData);
-
-            console.log("导入文件:", file.name);
+            const text = await file.text();
+            const jsonData = JSON.parse(text);
+            await post("/presets", jsonData);
             setImportOpen(false);
             refreshPresetList();
         } catch (error) {

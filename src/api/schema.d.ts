@@ -76,7 +76,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/presets/{id}/entries/{entryId}": {
+    "/presets/{id}/entries/{entryType}/{entryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -85,10 +85,10 @@ export interface paths {
         };
         get?: never;
         /** 更新条目 */
-        put: operations["put-presets-{id}-entries-{entryId}"];
+        put: operations["put-presets-{id}-entries-{entryType}-{entryId}"];
         post?: never;
         /** 删除条目 */
-        delete: operations["delete-presets-{id}-entries-{entryId}"];
+        delete: operations["delete-presets-{id}-entries-{entryType}-{entryId}"];
         options?: never;
         head?: never;
         patch?: never;
@@ -111,14 +111,14 @@ export interface components {
             totalCount: number;
         };
         RequireModel: {
-            requireId: string;
+            code: string;
             version: string;
         };
         BaseModel: {
             id: string;
             name: string;
             requires: {
-                requireId: string;
+                code: string;
                 version: string;
             }[];
             entries?: {
@@ -132,7 +132,7 @@ export interface components {
             id?: string;
             name?: string;
             requires?: {
-                requireId: string;
+                code: string;
                 version: string;
             }[];
             entries?: {
@@ -150,7 +150,7 @@ export interface components {
                 id?: string;
                 name?: string;
                 requires?: {
-                    requireId: string;
+                    code: string;
                     version: string;
                 }[];
                 entries?: {
@@ -488,7 +488,7 @@ export interface operations {
             500: components["responses"]["500"];
         };
     };
-    "put-presets-{id}-entries-{entryId}": {
+    "put-presets-{id}-entries-{entryType}-{entryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -498,6 +498,11 @@ export interface operations {
                  * @example 123
                  */
                 id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
                 /**
                  * @description Path parameter: entryId
                  * @example 123
@@ -521,7 +526,7 @@ export interface operations {
             500: components["responses"]["500"];
         };
     };
-    "delete-presets-{id}-entries-{entryId}": {
+    "delete-presets-{id}-entries-{entryType}-{entryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -531,6 +536,11 @@ export interface operations {
                  * @example 123
                  */
                 id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
                 /**
                  * @description Path parameter: entryId
                  * @example 123

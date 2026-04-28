@@ -5,7 +5,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {PresetModel} from "@/business/preset/models";
 import {Button} from "@/components/ui/button";
-import {put} from "@/api/client";
+import {get, put} from "@/api/client";
 import {useErrorHandler} from "@/components/message";
 import {
     Combobox, ComboboxChip,
@@ -15,10 +15,12 @@ import {
     ComboboxValue,
     useComboboxAnchor
 } from "@/components/ui/combobox";
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {usePresetContext} from "@/app/business/preset";
+import {RequireModel} from "@/models/require";
+import RequiresCombobox from "@/app/business/preset/RequiresCombobox";
 
 
 export default function PresetNormalContent() {
@@ -32,6 +34,8 @@ export default function PresetNormalContent() {
     const [tags, setTags] = useState(preset.tags);
     const [tagInput, setTagInput] = useState("");
 
+    const [selectRequires, setSelectRequires] = useState<RequireModel[]>(preset.requires);
+
     const handleSubmit = async (data: FormData) => {
         try {
             const name = data.get("name") as string;
@@ -44,7 +48,7 @@ export default function PresetNormalContent() {
                 },
                 version: version,
                 name: name,
-                requires: [],
+                requires: selectRequires,
                 tags: tags,
             };
             await put("/presets/{id}", params, {
@@ -58,7 +62,6 @@ export default function PresetNormalContent() {
             handleError(error);
         }
     };
-
     const handleReset = () => {
         router.refresh();
         refreshPreset();
@@ -132,6 +135,15 @@ export default function PresetNormalContent() {
                                         </ComboboxList>
                                     </ComboboxContent>
                                 </Combobox>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="preset-normal-requires">
+                                    {t("default.requires")}
+                                </FieldLabel>
+                                <RequiresCombobox
+                                    id="preset-normal-requires"
+                                    value={selectRequires}
+                                    onValueChange={e => setSelectRequires(e)}/>
                             </Field>
                         </div>
                         <Field>

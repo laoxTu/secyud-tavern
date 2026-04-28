@@ -55,7 +55,7 @@
       "RequireModel": {
         "type": "object",
         "properties": {
-          "requireId": {
+          "code": {
             "type": "string"
           },
           "version": {
@@ -63,7 +63,7 @@
           }
         },
         "required": [
-          "requireId",
+          "code",
           "version"
         ]
       },
@@ -81,7 +81,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "requireId": {
+                "code": {
                   "type": "string"
                 },
                 "version": {
@@ -89,7 +89,7 @@
                 }
               },
               "required": [
-                "requireId",
+                "code",
                 "version"
               ]
             }
@@ -128,7 +128,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "requireId": {
+                "code": {
                   "type": "string"
                 },
                 "version": {
@@ -136,7 +136,7 @@
                 }
               },
               "required": [
-                "requireId",
+                "code",
                 "version"
               ]
             }
@@ -191,7 +191,7 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "requireId": {
+                      "code": {
                         "type": "string"
                       },
                       "version": {
@@ -199,7 +199,7 @@
                       }
                     },
                     "required": [
-                      "requireId",
+                      "code",
                       "version"
                     ]
                   }
@@ -753,9 +753,9 @@
         }
       }
     },
-    "/presets/{id}/entries/{entryId}": {
+    "/presets/{id}/entries/{entryType}/{entryId}": {
       "put": {
-        "operationId": "put-presets-{id}-entries-{entryId}",
+        "operationId": "put-presets-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
         "description": "",
         "tags": [
@@ -771,6 +771,16 @@
             },
             "example": 123,
             "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           },
           {
             "name": "entryId",
@@ -803,7 +813,7 @@
         }
       },
       "delete": {
-        "operationId": "delete-presets-{id}-entries-{entryId}",
+        "operationId": "delete-presets-{id}-entries-{entryType}-{entryId}",
         "summary": "删除条目",
         "description": "",
         "tags": [
@@ -819,6 +829,16 @@
             },
             "example": 123,
             "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           },
           {
             "name": "entryId",

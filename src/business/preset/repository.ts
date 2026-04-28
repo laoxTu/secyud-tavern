@@ -6,7 +6,7 @@ import {PresetModel} from "@/business/preset/models";
 
 export const repository =
     createRepository<PresetModel, typeof presets.$inferSelect>(
-        presets, presetEntries, presetRequires, storage.loadModel, storage.saveModel,
+        presets, presetEntries, presetRequires, storage.loadModel.bind(storage), storage.saveModel.bind(storage),
         (model) => ({
             code: model.code,
             version: model.version,

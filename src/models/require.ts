@@ -1,6 +1,6 @@
 ﻿// src/models/require.ts
 export interface RequireModel {
-    requireId: string,
+    code: string,
     version: string,
 }
 
@@ -10,11 +10,4 @@ export interface BaseModel {
     requires: RequireModel[],
     entries?: Record<string, any>,
     content: Record<string, any>,
-}
-
-export function mapRequire(other: any): RequireModel {
-    return {
-        requireId: other.requireId,
-        version: other.version
-    }
 }

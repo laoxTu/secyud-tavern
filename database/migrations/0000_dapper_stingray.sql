@@ -9,11 +9,11 @@ CREATE TABLE `chat_entries` (
 --> statement-breakpoint
 CREATE TABLE `chat_requires` (
 	`master_id` text NOT NULL,
-	`require_id` text NOT NULL,
+	`code` text NOT NULL,
 	`version` text NOT NULL,
-	PRIMARY KEY(`master_id`, `require_id`),
+	PRIMARY KEY(`master_id`, `code`),
 	FOREIGN KEY (`master_id`) REFERENCES `chats`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`require_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`code`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `chats` (
@@ -35,11 +35,11 @@ CREATE TABLE `preset_entries` (
 --> statement-breakpoint
 CREATE TABLE `preset_requires` (
 	`master_id` text NOT NULL,
-	`require_id` text NOT NULL,
+	`code` text NOT NULL,
 	`version` text NOT NULL,
-	PRIMARY KEY(`master_id`, `require_id`),
+	PRIMARY KEY(`master_id`, `code`),
 	FOREIGN KEY (`master_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`require_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`code`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `db` (

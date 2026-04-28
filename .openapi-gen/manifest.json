@@ -19,16 +19,16 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
-      "message": "Route /presets/{id}/entries/{entryId} contains path parameters id, entryId but no @pathParams type is defined.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryId]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryId}"
+      "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}"
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
-      "message": "Route /presets/{id}/entries/{entryId} contains path parameters id, entryId but no @pathParams type is defined.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryId]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryId}"
+      "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}"
     },
     {
       "code": "missing-path-params-type",
@@ -60,31 +60,31 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.08140000000003056,
-    "loadCustomFragmentsMs": 0.0004999999999881766,
-    "prepareDocumentMs": 0.08190000000001874,
-    "scanRouteFilesMs": 0.6184999999999263,
-    "deriveRoutePathMs": 0.1971000000003187,
-    "filterRouteCandidatesMs": 0.020400000000222462,
-    "sourcePrecheckMs": 0.5277999999998428,
-    "readRouteFilesMs": 0.412900000000036,
-    "parseRouteFilesMs": 11.408400000000483,
-    "analyzeRouteFilesMs": 7.41190000000006,
+    "prepareTemplateMs": 0.08120000000002392,
+    "loadCustomFragmentsMs": 0.00050000000004502,
+    "prepareDocumentMs": 0.08170000000006894,
+    "scanRouteFilesMs": 0.6180999999999699,
+    "deriveRoutePathMs": 0.24239999999997508,
+    "filterRouteCandidatesMs": 0.030499999999847205,
+    "sourcePrecheckMs": 0.48809999999986076,
+    "readRouteFilesMs": 0.3633999999998423,
+    "parseRouteFilesMs": 12.155199999999866,
+    "analyzeRouteFilesMs": 7.251800000000003,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 19.025800000000118,
-    "registerRouteMs": 382.53139999999973,
-    "getSchemaContentMs": 261.6805999999999,
-    "createRequestParamsMs": 0.529999999999518,
+    "processRouteFilesMs": 19.59360000000015,
+    "registerRouteMs": 339.88419999999996,
+    "getSchemaContentMs": 234.22610000000014,
+    "createRequestParamsMs": 0.44000000000016826,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 119.42440000000022,
+    "processResponsesMs": 104.34599999999989,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 382.57310000000007,
-    "sortAndMergePathsMs": 0.7238000000002103,
-    "buildPathsMs": 0.7238000000002103,
-    "defaultComponentsAndErrorsMs": 0.1933000000001357,
-    "mergeSchemasMs": 0.21239999999988868,
-    "finalizeDocumentMs": 2.0256999999999152,
-    "totalMs": 406.74890000000005,
-    "scanRoutesMs": 402.2174000000001
+    "buildOperationsMs": 339.9221999999999,
+    "sortAndMergePathsMs": 0.7619999999999436,
+    "buildPathsMs": 0.7619999999999436,
+    "defaultComponentsAndErrorsMs": 0.20609999999999218,
+    "mergeSchemasMs": 0.21010000000001128,
+    "finalizeDocumentMs": 2.106400000000008,
+    "totalMs": 364.79560000000004,
+    "scanRoutesMs": 360.13390000000004
   }
 }

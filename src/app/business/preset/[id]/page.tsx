@@ -58,6 +58,14 @@ export default function PresetContent() {
         router.replace("/business/preset");
     }, [router])
 
+    const handleExport = useCallback(async () => {
+        try {
+            if (!preset) return;
+            window.open(`/api/presets/${preset.id}/export`)
+        } catch (err) {
+            handleError(err);
+        }
+    }, [handleError, preset]);
 
     // 处理提交
     const handleCopySubmit = async (data: FormData) => {
@@ -78,7 +86,6 @@ export default function PresetContent() {
             handleError(error);
         }
     };
-
 
     const handleDelete = useCallback(async () => {
         try {
@@ -148,6 +155,7 @@ export default function PresetContent() {
                     </TabsList>
                     <div className="flex gap-2">
                         <Dialog open={copyOpen} onOpenChange={setCopyOpen}>
+                            <Button onClick={handleExport}>{t("default.export")}</Button>
                             <DialogTrigger asChild>
                                 <Button variant="secondary">{t("default.copy")}</Button>
                             </DialogTrigger>
