@@ -1,4 +1,5 @@
-﻿import React, {useMemo} from "react";
+﻿'use client'
+import React, {useMemo} from "react";
 import {
     NavigationMenuItem,
     NavigationMenuList,
@@ -6,6 +7,7 @@ import {
     NavigationMenuIndicator
 } from "@/components/ui/navigation-menu";
 import {businessNavigationManager} from "@/app/business/index";
+import useClientPlugins from "@/app/initialize";
 
 
 export default function BusinessLayout({
@@ -13,6 +15,7 @@ export default function BusinessLayout({
                                        }: Readonly<{
     children: React.ReactNode;
 }>) {
+    useClientPlugins();
     const tabs = useMemo(() => businessNavigationManager.getSorted(), [])
 
     return (

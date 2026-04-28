@@ -1,17 +1,15 @@
 // app/layout.tsx
 import {Metadata} from "next";
 import {NextIntlClientProvider} from "next-intl";
-import {registerClientPlugins} from "@/components/plugins";
 import {Toaster} from "sonner";
 import "./globals.css"
 import "./app.css"
+import "./initialize"
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
     description: "Secyud Tavern"
 };
-
-registerClientPlugins();
 
 export default function RootLayout({
                                        children,

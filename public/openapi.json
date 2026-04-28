@@ -20,128 +20,6 @@
       }
     },
     "schemas": {
-      "RequireModel": {
-        "type": "object",
-        "properties": {
-          "requireId": {
-            "type": "string",
-            "nullable": false
-          },
-          "version": {
-            "type": "string",
-            "nullable": false
-          }
-        },
-        "required": [
-          "requireId",
-          "version"
-        ]
-      },
-      "BaseModel": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": false
-          },
-          "name": {
-            "type": "string",
-            "nullable": false
-          },
-          "requires": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "requireId": {
-                  "type": "string",
-                  "nullable": false
-                },
-                "version": {
-                  "type": "string",
-                  "nullable": false
-                }
-              },
-              "required": [
-                "requireId",
-                "version"
-              ]
-            },
-            "nullable": false
-          },
-          "entries": {
-            "type": "object",
-            "nullable": true
-          },
-          "content": {
-            "type": "object",
-            "nullable": false
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "requires",
-          "content"
-        ]
-      },
-      "PresetModel": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": false
-          },
-          "name": {
-            "type": "string",
-            "nullable": false
-          },
-          "requires": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "requireId": {
-                  "type": "string",
-                  "nullable": false
-                },
-                "version": {
-                  "type": "string",
-                  "nullable": false
-                }
-              },
-              "required": [
-                "requireId",
-                "version"
-              ]
-            },
-            "nullable": false
-          },
-          "entries": {
-            "type": "object",
-            "nullable": true
-          },
-          "content": {
-            "type": "object",
-            "nullable": false
-          },
-          "version": {
-            "type": "string",
-            "nullable": false
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": false
-          }
-        },
-        "required": [
-          "version",
-          "tags"
-        ]
-      },
       "PageOptions": {
         "type": "object",
         "properties": {
@@ -174,6 +52,126 @@
           "totalCount"
         ]
       },
+      "RequireModel": {
+        "type": "object",
+        "properties": {
+          "requireId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requireId",
+          "version"
+        ]
+      },
+      "BaseModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "requireId": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "requireId",
+                "version"
+              ]
+            }
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "requires",
+          "content"
+        ]
+      },
+      "PresetModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "requireId": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "requireId",
+                "version"
+              ]
+            }
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "version",
+          "tags"
+        ]
+      },
       "PagedResult<PresetModel>": {
         "type": "object",
         "properties": {
@@ -183,12 +181,10 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "string",
-                  "nullable": false
+                  "type": "string"
                 },
                 "name": {
-                  "type": "string",
-                  "nullable": false
+                  "type": "string"
                 },
                 "requires": {
                   "type": "array",
@@ -196,42 +192,45 @@
                     "type": "object",
                     "properties": {
                       "requireId": {
-                        "type": "string",
-                        "nullable": false
+                        "type": "string"
                       },
                       "version": {
-                        "type": "string",
-                        "nullable": false
+                        "type": "string"
                       }
                     },
                     "required": [
                       "requireId",
                       "version"
                     ]
-                  },
-                  "nullable": false
+                  }
                 },
                 "entries": {
                   "type": "object",
-                  "nullable": true
+                  "additionalProperties": {
+                    "type": "object"
+                  }
                 },
                 "content": {
                   "type": "object",
-                  "nullable": false
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "code": {
+                  "type": "string"
                 },
                 "version": {
-                  "type": "string",
-                  "nullable": false
+                  "type": "string"
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  },
-                  "nullable": false
+                  }
                 }
               },
               "required": [
+                "code",
                 "version",
                 "tags"
               ]
@@ -474,55 +473,7 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string",
-                      "nullable": false
-                    }
-                  },
-                  "required": [
-                    "id"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/presets/import": {
-      "post": {
-        "operationId": "post-presets-import",
-        "summary": "导入预设",
-        "description": "",
-        "tags": [
-          "Presets"
-        ],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PresetModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "nullable": false
+                      "type": "string"
                     }
                   },
                   "required": [

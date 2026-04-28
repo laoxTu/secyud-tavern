@@ -6,7 +6,6 @@ import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/co
 import {FileTextIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 
-
 export default function PresetContent() {
     const t = useTranslations();
 

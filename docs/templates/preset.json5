@@ -23,7 +23,7 @@
         // 条目名称，可为空
         name: "string",
         match: {
-          // 匹配类型：variable 变量表达式 / content 内容表达式 / constant 常量
+          // 匹配类型：variable 变量表达式 / normal 内容表达式 / constant 常量
           type: "string",
           // 匹配表达式，语法由 type 决定
           expression: "string",

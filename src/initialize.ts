@@ -2,7 +2,6 @@
 import {errorInterceptor} from "@/utils/error-interceptor";
 import {paramInterceptor} from "@/utils/param-interceptor";
 import {pluginManager} from "@/plugins";
-import {databaseManager} from "@/database";
 
 (async function register() {
     if (process.env.NEXT_RUNTIME === 'nodejs') {
@@ -18,7 +17,5 @@ import {databaseManager} from "@/database";
         }
 
         await pluginManager.loadServerPlugins();
-
-        await databaseManager.migrate();
     }
 })();

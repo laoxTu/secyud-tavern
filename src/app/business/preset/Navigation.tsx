@@ -1,4 +1,5 @@
-﻿import {useTranslations} from "next-intl";
+﻿'use client';
+import {useTranslations} from "next-intl";
 import Link from "next/link";
 import {NavigationMenuLink} from "@/components/ui/navigation-menu";
 

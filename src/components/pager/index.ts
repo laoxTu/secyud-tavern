@@ -54,10 +54,10 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
         const finalParams: PageOptions<TSearch> = {
             page: params?.page ?? pageIndex,
             pageSize: params?.pageSize ?? pageSize,
-            search: params?.search,
+            search: params?.search ?? search,
         };
         void executeFetch(finalParams);
-    }, [executeFetch, pageIndex, pageSize]);
+    }, [executeFetch, pageIndex, pageSize, search]);
 
     // 翻页
     const changePageIndex = useCallback((targetPage: number) => {

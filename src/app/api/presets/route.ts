@@ -19,8 +19,7 @@ export const GET = interceptor.createRoute(
         const models = await repository.getList(options,
             (e): SQL | SQL[] => {
                 const conditions: SQL[] = [];
-                if (options.search)
-                {
+                if (options.search) {
                     conditions.push(like(e.name, `%${options.search}%`));
                     conditions.push(like(e.code, `%${options.search}%`));
                 }
