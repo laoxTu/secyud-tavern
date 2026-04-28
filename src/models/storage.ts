@@ -2,7 +2,9 @@
 import {Registerable, Registry} from "@/models/registerable";
 
 export interface ModelStorageProvider<T> extends Registerable {
+    // 加载，导出时使用
     loadModel: (model: T) => Promise<void>,
+    // 仅导入，复制时会使用
     saveModel: (model: T) => Promise<void>,
 }
 

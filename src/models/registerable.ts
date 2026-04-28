@@ -14,10 +14,12 @@ export class Registry<T extends Registerable> {
         this.name = name;
     }
 
-    register(registerable: T): void {
-        this.records[registerable.id] = registerable;
-        this.invalidateCache();
-        console.log(`[${this.name}] registered: ${registerable.id}`);
+    register(...registerableList: T[]): void {
+        for (const registerable of registerableList) {
+            this.records[registerable.id] = registerable;
+            this.invalidateCache();
+            console.log(`[${this.name}] registered: ${registerable.id}`);
+        }
     }
 
     unregister(id: string): boolean {

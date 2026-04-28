@@ -1,6 +1,6 @@
 ﻿// src/business/preset/database.ts
 import {text} from "drizzle-orm/sqlite-core";
-import {entryTable, masterTable, requireTable} from "@/database/entity-base";
+import {entryTable, masterTable} from "@/database/entity-base";
 
 // 预设主表
 export const presets = masterTable("db", {
@@ -12,7 +12,3 @@ export const presets = masterTable("db", {
 // 预设从表
 export const presetEntries = entryTable(
     "preset_entries", () => presets.id, {onDelete: "cascade"});
-
-// 预设依赖
-export const presetRequires = requireTable(
-    "preset_requires", () => presets.id, {onDelete: "cascade"});

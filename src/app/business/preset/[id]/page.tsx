@@ -143,7 +143,7 @@ export default function PresetContent() {
         <PresetContext.Provider value={{preset, refreshPreset}}>
             <Tabs defaultValue={firstTab?.id} key={initialized.toString()}>
                 <div className="flex justify-between">
-                    <TabsList>
+                    <TabsList className="gap-1">
                         {tabs.map((tab, index) => {
                             const Component = tab.label;
                             return (

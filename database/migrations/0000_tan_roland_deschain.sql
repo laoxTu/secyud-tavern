@@ -7,19 +7,11 @@ CREATE TABLE `chat_entries` (
 	FOREIGN KEY (`master_id`) REFERENCES `chats`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `chat_requires` (
-	`master_id` text NOT NULL,
-	`code` text NOT NULL,
-	`version` text NOT NULL,
-	PRIMARY KEY(`master_id`, `code`),
-	FOREIGN KEY (`master_id`) REFERENCES `chats`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`code`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
 CREATE TABLE `chats` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`content` text NOT NULL,
+	`requires` text DEFAULT '[]',
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL
 );
@@ -33,19 +25,11 @@ CREATE TABLE `preset_entries` (
 	FOREIGN KEY (`master_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `preset_requires` (
-	`master_id` text NOT NULL,
-	`code` text NOT NULL,
-	`version` text NOT NULL,
-	PRIMARY KEY(`master_id`, `code`),
-	FOREIGN KEY (`master_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`code`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
 CREATE TABLE `db` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`content` text NOT NULL,
+	`requires` text DEFAULT '[]',
 	`code` text NOT NULL,
 	`version` text NOT NULL,
 	`tags` text NOT NULL,

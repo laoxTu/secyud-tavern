@@ -33,6 +33,7 @@
   "preset": {
     "name": "预设",
     "code": "编码",
+    "lorebook": "世界书",
     "copy": "复制预设",
     "copy_description": "将当前预设复制到新的预设",
     "create": "创建预设",

@@ -4,7 +4,7 @@ import {and, eq, SQL, sql} from "drizzle-orm";
 import type {PagedResult, PageOptions} from "@/models/common";
 import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
-import {BaseModel, RequireModel} from "@/models/require";
+import {BaseModel} from "@/models/require";
 import {v4 as uuidv4} from 'uuid';
 import {BusinessError} from "@/business";
 
@@ -13,13 +13,10 @@ const db = databaseManager.db;
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
     entries: SQLiteTableWithColumns<any>,
-    requires: SQLiteTableWithColumns<any>,
     loadModel: (model: TModel) => Promise<void>,
     saveModel: (model: TModel) => Promise<void>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mapToEntity: (entity: Partial<TModel>) => Partial<TMaster> = (_e) => ({}),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mapToModel: (entity: Partial<TMaster>) => Partial<TModel> = (_m) => ({})) {
+    mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
+    mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined) {
 
     const repository = {
 
@@ -32,8 +29,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 id: entity.id,
                 name: entity.name,
                 content: JSON.parse(entity.content),
-                requires: await repository.require.get(id),
-                ...mapToModel(entity)
+                requires: entity.requires,
+                ...(mapToModel?.(entity) ?? {})
             } as TModel;
 
 
@@ -67,7 +64,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
             const models =
                 entities.map(entity => ({
-                    ...mapToModel(entity),
+                    ...(mapToModel?.(entity) ?? {}),
                     id: entity.id,
                     name: entity.name,
                     content: JSON.parse(entity.content),
@@ -81,9 +78,10 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 id: model.id == "" ? uuidv4() : model.id,
                 name: model.name,
                 content: JSON.stringify(model.content),
+                requires: model.requires,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                ...mapToEntity(model)
+                ...(mapToEntity?.(model) ?? {})
             }
 
             await db
@@ -104,7 +102,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
             const updateData: Record<string, unknown> = {
                 updatedAt: new Date().toISOString(),
-                ...mapToEntity(model)
+                ...(mapToEntity?.(model) ?? {})
             };
 
             if (model.name !== undefined) updateData.name = model.name;
@@ -112,14 +110,23 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 ...exist.content,
                 ...model.content
             });
+            if (model.requires !== undefined) {
+                const isChanged =
+                    model.requires.length !== exist.requires.length ||
+                    model.requires.some((req, i) =>
+                        req.code !== exist.requires[i]?.code ||
+                        req.version !== exist.requires[i]?.version
+                    );
+
+                if (isChanged) {
+                    updateData.requires = model.requires;
+                }
+            }
 
             await db
                 .update(masters)
                 .set(updateData)
                 .where(eq(masters.id, id));
-
-            if (model.requires)
-                await repository.require.set(id, model.requires);
         },
 
         delete: async (id: string) => {
@@ -148,43 +155,14 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             return Number(result?.count ?? 0) > 0;
         },
 
-        require: {
-
-            get: async (masterId: string): Promise<RequireModel[]> => {
-                const entities = await db
-                    .select()
-                    .from(requires)
-                    .where(eq(requires.masterId, masterId))
-                    .all()
-                return entities.map(u => ({
-                    code: u.code,
-                    version: u.version,
-                }));
-            },
-
-            set: async (masterId: string, data: RequireModel[]): Promise<void> => {
-                await db
-                    .delete(requires)
-                    .where(eq(entries.masterId, masterId),);
-
-                if (data.length > 0)
-                    await db
-                        .insert(requires)
-                        .values(data.map(require => ({
-                            masterId: masterId,
-                            code: require.code,
-                            version: require.version,
-                        })));
-            },
-        },
-
         entry: {
 
-            getList: async (masterId: string, type: string, options: PageOptions, conditions: (table: TMaster) => SQL | SQL[]): Promise<PagedResult<any>> => {
+            getList: async (masterId: string, type: string, options: PageOptions = {},
+                            conditions: ((table: TMaster) => SQL | SQL[]) | undefined = undefined): Promise<PagedResult<any>> => {
                 const {page, pageSize} = options;
 
-                const whereClause = conditions(masters);
-                const condition = whereClause instanceof SQL ? [whereClause] : whereClause;
+                const whereClause = conditions?.(masters);
+                const condition = whereClause ? (whereClause instanceof SQL ? [whereClause] : whereClause) : [];
 
                 condition.push(eq(entries.masterId, masterId));
                 condition.push(eq(entries.entryType, type));
@@ -211,6 +189,17 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 const data = (await query).map((u: { content: string; }) => JSON.parse(u.content));
 
                 return {data, totalCount};
+            },
+
+            batchCreate: async (masterId: string, type: string, entryList: any[]) => {
+                await db
+                    .insert(entries)
+                    .values(entryList.map((e, i) => ({
+                        masterId: masterId,
+                        entryType: type,
+                        entryId: i + 1,
+                        content: JSON.stringify(e),
+                    })));
             },
 
             create: async (masterId: string, type: string, entry: any) => {

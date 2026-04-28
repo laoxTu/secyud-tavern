@@ -5,34 +5,28 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {PresetModel} from "@/business/preset/models";
 import {Button} from "@/components/ui/button";
-import {get, put} from "@/api/client";
+import {put} from "@/api/client";
 import {useErrorHandler} from "@/components/message";
-import {
-    Combobox, ComboboxChip,
-    ComboboxChips, ComboboxChipsInput,
-    ComboboxContent,
-    ComboboxEmpty, ComboboxItem, ComboboxList,
-    ComboboxValue,
-    useComboboxAnchor
-} from "@/components/ui/combobox";
-import {useCallback, useEffect, useState} from "react";
+import {useState} from "react";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {usePresetContext} from "@/app/business/preset";
 import {RequireModel} from "@/models/require";
 import RequiresCombobox from "@/app/business/preset/RequiresCombobox";
+import CustomCombobox from "@/components/combobox/CustomCombobox";
 
+export const defaultTags = [
+    "theme", "story", "preset"
+];
 
 export default function PresetNormalContent() {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
-    const anchor = useComboboxAnchor();
     const router = useRouter();
 
     const {preset, refreshPreset} = usePresetContext();
 
     const [tags, setTags] = useState(preset.tags);
-    const [tagInput, setTagInput] = useState("");
 
     const [selectRequires, setSelectRequires] = useState<RequireModel[]>(preset.requires);
 
@@ -104,37 +98,8 @@ export default function PresetNormalContent() {
                                 <FieldLabel htmlFor="preset-normal-tags">
                                     {t("default.tags")}
                                 </FieldLabel>
-                                <Combobox multiple
-                                          autoHighlight
-                                          name="tags"
-                                          id="preset-normal-tags"
-                                          value={tags}
-                                          onValueChange={e => setTags(e)}
-                                          onInputValueChange={e => setTagInput(e)}
-                                          items={[...new Set([...tags, tagInput])]}>
-                                    <ComboboxChips ref={anchor} className="w-full">
-                                        <ComboboxValue>
-                                            {(values) => (
-                                                <>
-                                                    {values.map((value: string) => (
-                                                        <ComboboxChip key={value}>{value}</ComboboxChip>
-                                                    ))}
-                                                    <ComboboxChipsInput/>
-                                                </>
-                                            )}
-                                        </ComboboxValue>
-                                    </ComboboxChips>
-                                    <ComboboxContent anchor={anchor}>
-                                        <ComboboxEmpty>{t("default.empty_items")}</ComboboxEmpty>
-                                        <ComboboxList>
-                                            {(item) => (
-                                                <ComboboxItem key={item} value={item}>
-                                                    {item}
-                                                </ComboboxItem>
-                                            )}
-                                        </ComboboxList>
-                                    </ComboboxContent>
-                                </Combobox>
+                                <CustomCombobox value={tags} onValueChange={e => setTags(e)}
+                                                id="preset-normal-tags" extraValue={defaultTags}/>
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="preset-normal-requires">

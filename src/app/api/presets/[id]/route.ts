@@ -3,8 +3,6 @@ import {NextResponse} from 'next/server';
 import {repository} from "@/business/preset/repository";
 import {interceptor} from "@/interceptor";
 import {PresetModel} from "@/business/preset/models";
-import {BusinessError} from "@/business";
-
 
 /**
  * 获取预设

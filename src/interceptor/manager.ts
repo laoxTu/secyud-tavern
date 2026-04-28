@@ -7,7 +7,7 @@ import "@/initialize"
 type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
 type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
 
-class InterceptorManager extends Registry<Interceptor> {
+export class InterceptorManager extends Registry<Interceptor> {
     createRoute(route: NextRouter): NextHandler {
         return async (request: NextRequest, context: any) => {
             const interceptors = this.getSorted();
@@ -43,5 +43,4 @@ class InterceptorManager extends Registry<Interceptor> {
     }
 }
 
-const manager = new InterceptorManager("interceptor manager");
-export default manager;
+

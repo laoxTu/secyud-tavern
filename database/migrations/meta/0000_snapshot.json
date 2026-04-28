@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f8d4e2af-c5f9-4f11-a69a-26dcaaff018c",
+  "id": "f305f944-6cd6-417d-a358-c35b8675cbb9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chat_entries": {
@@ -65,72 +65,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "chat_requires": {
-      "name": "chat_requires",
-      "columns": {
-        "master_id": {
-          "name": "master_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "code": {
-          "name": "code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "version": {
-          "name": "version",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "chat_requires_master_id_chats_id_fk": {
-          "name": "chat_requires_master_id_chats_id_fk",
-          "tableFrom": "chat_requires",
-          "tableTo": "chats",
-          "columnsFrom": [
-            "master_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "chat_requires_code_db_id_fk": {
-          "name": "chat_requires_code_db_id_fk",
-          "tableFrom": "chat_requires",
-          "tableTo": "db",
-          "columnsFrom": [
-            "code"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "chat_requires_master_id_code_pk": {
-          "columns": [
-            "master_id",
-            "code"
-          ],
-          "name": "chat_requires_master_id_code_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "chats": {
       "name": "chats",
       "columns": {
@@ -154,6 +88,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "requires": {
+          "name": "requires",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'[]'"
         },
         "created_at": {
           "name": "created_at",
@@ -237,72 +179,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "preset_requires": {
-      "name": "preset_requires",
-      "columns": {
-        "master_id": {
-          "name": "master_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "code": {
-          "name": "code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "version": {
-          "name": "version",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "preset_requires_master_id_db_id_fk": {
-          "name": "preset_requires_master_id_db_id_fk",
-          "tableFrom": "preset_requires",
-          "tableTo": "db",
-          "columnsFrom": [
-            "master_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "preset_requires_code_db_id_fk": {
-          "name": "preset_requires_code_db_id_fk",
-          "tableFrom": "preset_requires",
-          "tableTo": "db",
-          "columnsFrom": [
-            "code"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "preset_requires_master_id_code_pk": {
-          "columns": [
-            "master_id",
-            "code"
-          ],
-          "name": "preset_requires_master_id_code_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "db": {
       "name": "db",
       "columns": {
@@ -326,6 +202,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "requires": {
+          "name": "requires",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'[]'"
         },
         "code": {
           "name": "code",

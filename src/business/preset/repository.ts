@@ -1,12 +1,14 @@
 ﻿// src/business/preset/repository.ts
-import {presetEntries, presetRequires, presets} from "./db";
+import {presetEntries, presets} from "./db";
 import {createRepository} from "@/database/repository-base";
-import storage from "./storage";
 import {PresetModel} from "@/business/preset/models";
+import {presetStorage} from "./";
 
 export const repository =
     createRepository<PresetModel, typeof presets.$inferSelect>(
-        presets, presetEntries, presetRequires, storage.loadModel.bind(storage), storage.saveModel.bind(storage),
+        presets, presetEntries,
+        presetStorage.loadModel.bind(presetStorage),
+        presetStorage.saveModel.bind(presetStorage),
         (model) => ({
             code: model.code,
             version: model.version,

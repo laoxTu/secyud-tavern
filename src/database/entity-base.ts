@@ -1,14 +1,32 @@
 ﻿// src/database/entity-base.ts
 import {integer, primaryKey, SQLiteColumn, sqliteTable, text, UpdateDeleteAction} from "drizzle-orm/sqlite-core";
-import {presets} from "@/business/preset/db";
+
+import {customType} from "drizzle-orm/sqlite-core";
+import {RequireModel} from "@/models/require";
 
 export type BaseEntity = { [x: string]: any; };
+
+export const jsonArray = <T = any>(name: string) =>
+    customType<{data: T[]; driverData: string}>({
+        dataType() {
+            return 'text';
+        },
+        fromDriver(value: string): T[] {
+            if (!value) return [];
+            return JSON.parse(value);
+        },
+        toDriver(value: T[]): string {
+            if (!value) return '[]';
+            return JSON.stringify(value);
+        },
+    })(name);
 
 export function masterTable(tableName: string, extraColumns: any = {}) {
     return sqliteTable(tableName, {
         id: text("id").primaryKey(),
         name: text("name").notNull(),
         content: text("content").notNull(),
+        requires: jsonArray<RequireModel>("requires").default([]),
         ...extraColumns,
         createdAt: text("created_at").notNull(),
         updatedAt: text("updated_at").notNull(),
@@ -26,18 +44,5 @@ export function entryTable(tableName: string, masterRef: () => SQLiteColumn, opt
         content: text("content").notNull(),
     }, (table) => [
         primaryKey({columns: [table.masterId, table.entryType, table.entryId]})
-    ]);
-}
-
-export function requireTable(tableName: string, masterRef: () => SQLiteColumn, options: {
-    onUpdate?: UpdateDeleteAction;
-    onDelete?: UpdateDeleteAction;
-} | undefined) {
-    return sqliteTable(tableName, {
-        masterId: text("master_id").notNull().references(masterRef, options),
-        code: text("code").notNull().references(() => presets.id, {onDelete: "cascade"}),
-        version: text("version").notNull(),
-    }, (table) => [
-        primaryKey({columns: [table.masterId, table.code]})
     ]);
 }
