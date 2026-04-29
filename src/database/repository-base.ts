@@ -5,7 +5,7 @@ import type {PagedResult, PageOptions} from "@/models/common";
 import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseModel} from "@/models/require";
-import {v4 as uuidv4} from 'uuid';
+import {v4 as uuidv4, validate} from 'uuid';
 import {BusinessError} from "@/business";
 
 const db = databaseManager.db;
@@ -20,9 +20,9 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
     const repository = {
 
-        get: async (id: string, withDetails: boolean = false): Promise<TModel | null> => {
+        get: async (id: string, withDetails: boolean = false, whereClause: SQL = eq(masters.id, id)): Promise<TModel | null> => {
             const entity =
-                await db.select().from(masters).where(eq(masters.id, id)).get();
+                await db.select().from(masters).where(whereClause).get();
             if (!entity) return null;
 
             const model = {
@@ -75,7 +75,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
         create: async (model: TModel) => {
             const entity = {
-                id: model.id == "" ? uuidv4() : model.id,
+                id: validate(model.id) ? model.id : uuidv4(),
                 name: model.name,
                 content: JSON.stringify(model.content),
                 requires: model.requires,
@@ -186,7 +186,13 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         query = query.limit(page * pageSize);
                     }
                 }
-                const data = (await query).map((u: { content: string; }) => JSON.parse(u.content));
+                const data = (await query).map((u: { entryId: number, disabled: boolean, content: string; }) =>
+                    ({
+                        ...JSON.parse(u.content),
+                        id: u.entryId,
+                        disabled: u.disabled
+                    })
+                );
 
                 return {data, totalCount};
             },
@@ -194,11 +200,15 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             batchCreate: async (masterId: string, type: string, entryList: any[]) => {
                 await db
                     .insert(entries)
-                    .values(entryList.map((e, i) => ({
+                    .values(entryList.map((e) => ({
                         masterId: masterId,
                         entryType: type,
-                        entryId: i + 1,
-                        content: JSON.stringify(e),
+                        entryId: e.id,
+                        content: JSON.stringify({
+                            ...e,
+                            id: undefined,
+                            disabled: undefined
+                        }),
                     })));
             },
 
@@ -220,10 +230,28 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         masterId: masterId,
                         entryType: type,
                         entryId: entryId,
-                        content: JSON.stringify(entry),
+                        disabled: false,
+                        content: JSON.stringify({
+                            ...entry,
+                            id: undefined
+                        }),
                     });
 
                 return entryId;
+            },
+
+            setDisabled: async (masterId: string, type: string, entryId: number, disabled: boolean) => {
+                const updateData: Record<string, unknown> = {
+                    disabled: disabled,
+                };
+                await db
+                    .update(entries)
+                    .set(updateData)
+                    .where(and(
+                        eq(entries.masterId, masterId),
+                        eq(entries.entryType, type),
+                        eq(entries.entryId, entryId),
+                    ));
             },
 
             update: async (masterId: string, type: string, entryId: number, entry: any) => {
@@ -231,7 +259,11 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
                 const updateData: Record<string, unknown> = {
                     updatedAt: new Date().toISOString(),
-                    content: JSON.stringify(entry),
+                    content: JSON.stringify({
+                        ...entry,
+                        id: undefined,
+                        disabled: undefined,
+                    }),
                 };
 
                 await db

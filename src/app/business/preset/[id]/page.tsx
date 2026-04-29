@@ -141,7 +141,8 @@ export default function PresetContent() {
 
     return (
         <PresetContext.Provider value={{preset, refreshPreset}}>
-            <Tabs defaultValue={firstTab?.id} key={initialized.toString()}>
+            <Tabs defaultValue={firstTab?.id} key={initialized.toString()}
+                  className={"flex flex-col overflow-hidden h-full p-4"}>
                 <div className="flex justify-between">
                     <TabsList className="gap-1">
                         {tabs.map((tab, index) => {
@@ -216,7 +217,7 @@ export default function PresetContent() {
                     if (!Component) return null;
                     return (
                         <TabsContent key={index} value={tab.id}
-                                     className="h-full w-full p-8">
+                                     className="flex-1 overflow-hidden">
                             <Component/>
                         </TabsContent>
                     );

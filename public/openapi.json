@@ -20,53 +20,7 @@
       }
     },
     "schemas": {
-      "PageOptions": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number",
-            "description": "页码，默认0"
-          },
-          "pageSize": {
-            "type": "number",
-            "description": "每页条数，默认20"
-          },
-          "search": {
-            "description": "可选搜索项"
-          }
-        }
-      },
-      "PagedResult": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {}
-          },
-          "totalCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "data",
-          "totalCount"
-        ]
-      },
-      "RequireModel": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "code",
-          "version"
-        ]
-      },
+      "any": {},
       "BaseModel": {
         "type": "object",
         "properties": {
@@ -96,15 +50,11 @@
           },
           "entries": {
             "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
+            "additionalProperties": {}
           },
           "content": {
             "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
+            "additionalProperties": {}
           }
         },
         "required": [
@@ -114,62 +64,36 @@
           "content"
         ]
       },
-      "PresetModel": {
+      "PagedResult": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "requires": {
+          "data": {
             "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "code",
-                "version"
-              ]
-            }
+            "items": {}
           },
-          "entries": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
-          },
-          "content": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
-          },
-          "code": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "totalCount": {
+            "type": "number"
           }
         },
         "required": [
-          "code",
-          "version",
-          "tags"
+          "data",
+          "totalCount"
+        ]
+      },
+      "PagedResult<any>": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {}
+          },
+          "totalCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "totalCount"
         ]
       },
       "PagedResult<PresetModel>": {
@@ -206,15 +130,11 @@
                 },
                 "entries": {
                   "type": "object",
-                  "additionalProperties": {
-                    "type": "object"
-                  }
+                  "additionalProperties": {}
                 },
                 "content": {
                   "type": "object",
-                  "additionalProperties": {
-                    "type": "object"
-                  }
+                  "additionalProperties": {}
                 },
                 "code": {
                   "type": "string"
@@ -245,24 +165,92 @@
           "totalCount"
         ]
       },
-      "any": {},
-      "PagedResult<any>": {
+      "PageOptions": {
         "type": "object",
         "properties": {
-          "data": {
-            "type": "array",
-            "items": {}
+          "page": {
+            "type": "number",
+            "description": "页码，默认0"
           },
-          "totalCount": {
-            "type": "number"
+          "pageSize": {
+            "type": "number",
+            "description": "每页条数，默认20"
+          },
+          "search": {
+            "description": "可选搜索项"
+          }
+        }
+      },
+      "PresetModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "version"
+              ]
+            }
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
-          "data",
-          "totalCount"
+          "code",
+          "version",
+          "tags"
         ]
       },
-      "ReadableStream": {}
+      "ReadableStream": {},
+      "RequireModel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "version"
+        ]
+      }
     },
     "responses": {
       "400": {
@@ -550,17 +538,16 @@
             "description": "Path parameter: id"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PresetModel"
-                }
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
               }
             }
-          },
+          }
+        },
+        "responses": {
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -598,9 +585,49 @@
         }
       }
     },
-    "/presets/{id}/entries": {
+    "/presets/{id}/export": {
       "get": {
-        "operationId": "get-presets-{id}-entries",
+        "operationId": "get-presets-{id}-export",
+        "summary": "获取预设",
+        "description": "",
+        "tags": [
+          "Presets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/presets/{id}/entries/{entryType}": {
+      "get": {
+        "operationId": "get-presets-{id}-entries-{entryType}",
         "summary": "获取条目分页列表",
         "description": "",
         "tags": [
@@ -658,7 +685,7 @@
         }
       },
       "post": {
-        "operationId": "post-presets-{id}-entries",
+        "operationId": "post-presets-{id}-entries-{entryType}",
         "summary": "创建条目",
         "description": "",
         "tags": [
@@ -674,6 +701,16 @@
             },
             "example": 123,
             "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           }
         ],
         "requestBody": {
@@ -700,46 +737,6 @@
                   "required": [
                     "id"
                   ]
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/presets/{id}/export": {
-      "get": {
-        "operationId": "get-presets-{id}-export",
-        "summary": "获取预设",
-        "description": "",
-        "tags": [
-          "Presets"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "number"
-            },
-            "example": 123,
-            "description": "Path parameter: id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReadableStream"
                 }
               }
             }
@@ -793,17 +790,16 @@
             "description": "Path parameter: entryId"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PresetModel"
-                }
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
               }
             }
-          },
+          }
+        },
+        "responses": {
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -815,6 +811,56 @@
       "delete": {
         "operationId": "delete-presets-{id}-entries-{entryType}-{entryId}",
         "summary": "删除条目",
+        "description": "",
+        "tags": [
+          "Presets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/presets/{id}/entries/{entryType}/{entryId}/disabled": {
+      "put": {
+        "operationId": "put-presets-{id}-entries-{entryType}-{entryId}-disabled",
+        "summary": "更新条目",
         "description": "",
         "tags": [
           "Presets"

@@ -5,6 +5,7 @@ import {Toaster} from "sonner";
 import "./globals.css"
 import "./app.css"
 import "./initialize"
+import {TooltipProvider} from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
@@ -17,12 +18,14 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className="flex w-full h-full">
-        <body className="flex w-full h-full">
+        <html lang="en">
+        <body>
         <NextIntlClientProvider>
-            {children}
+            <TooltipProvider>
+                {children}
+            </TooltipProvider>
         </NextIntlClientProvider>
-        <Toaster />
+        <Toaster/>
         </body>
         </html>
     );

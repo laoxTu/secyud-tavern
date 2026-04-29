@@ -19,23 +19,19 @@
     lorebooks: [
       {
         // 条目唯一标识，在预设内不可重复
-        id: "string",
+        id: "number",
         // 条目名称，可为空
         name: "string",
-        match: {
-          // 匹配类型：variable 变量表达式 / normal 内容表达式 / constant 常量
-          type: "string",
-          // 匹配表达式，语法由 type 决定
-          expression: "string",
-        },
+        // 匹配类型：variable 变量表达式 / normal 内容表达式 / constant 常量
+        matchType: "string",
+        // 匹配表达式，语法由 type 决定
+        matchExpression: "any",
         // 命中后注入对话上下文的内容
-        context: "string",
-        priority: {
-          // 层级，数值越大排序越靠前
-          layer: "number",
-          // 同层级内的排序，数值越大越靠前
-          order: "number"
-        },
+        content: "string",
+        // 层级，数值越大排序越靠前
+        priorityLayer: "number",
+        // 同层级内的排序，数值越大越靠前
+        priorityOrder: "number",
         // 是否关闭条目
         disabled: "boolean"
       }
@@ -44,7 +40,7 @@
     regexes: [
       {
         // 规则唯一标识
-        id: "string",
+        id: "number",
         // 规则名称
         name: "string",
         // 正则表达式
@@ -66,7 +62,7 @@
     // 样式块列表，预设激活时按优先级注入
     styles: {
       // 样式块标识
-      id: "string",
+      id: "number",
       // 样式名称
       name: "string",
       // 优先级，数值越小越先注入
@@ -80,7 +76,7 @@
     scripts: [
       {
         // 脚本块标识
-        id: "string",
+        id: "number",
         // 脚本块名称
         name: "string",
         // 优先级，数值越小越先执行

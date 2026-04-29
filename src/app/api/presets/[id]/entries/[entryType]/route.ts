@@ -7,16 +7,16 @@ import {like, or, SQL} from "drizzle-orm";
 
 /**
  * 获取条目分页列表
- * @pathParams { id:string }
- * @params PageOptions & { type: string }
+ * @pathParams { id:string, entryType: string }
+ * @params PageOptions
  * @response PagedResult<any>
  * @openapi
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
-        const options = records.searchParams as PageOptions & { type: string };
-        const models = await repository.entry.getList(id, options.type, options, p => {
+        const {id, entryType} = await records.context.params as { id: string, entryType: string };
+        const options = records.searchParams as PageOptions;
+        const models = await repository.entry.getList(id, entryType, options, p => {
             const conditions: SQL[] = [];
             if (options.search) {
                 conditions.push(like(p.name, `%${options.search}%`));
@@ -30,18 +30,16 @@ export const GET = interceptor.createRoute(
 
 /**
  * 创建条目
- * @pathParams { id:string }
- * @params { type:string }
+ * @pathParams { id:string, entryType: string }
  * @body any
  * @response {id: number}
  * @openapi
  */
 export const POST = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
-        const {type} = records.searchParams;
+        const {id, entryType} = await records.context.params as { id: string, entryType: string };
         const model = records.body;
-        const res = await repository.entry.create(id, type, model);
+        const res = await repository.entry.create(id, entryType, model);
         return NextResponse.json({id: res});
     }
 )

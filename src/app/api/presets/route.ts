@@ -32,6 +32,7 @@ export const GET = interceptor.createRoute(
 
 /**
  * 创建预设
+ * @params {isImport?: boolean}
  * @body PresetModel
  * @response {id: string}
  * @openapi
@@ -39,6 +40,7 @@ export const GET = interceptor.createRoute(
 export const POST = interceptor.createRoute(
     async (request, records) => {
         const model = records.body as PresetModel;
+        const {isImport} = records.searchParams as { isImport?: boolean };
         if (model.name === "") {
             throw new BusinessError("No name provided", "error.empty_field")
                 .withValue("field", "default.name");
@@ -48,7 +50,9 @@ export const POST = interceptor.createRoute(
                 .withValue("field", "default.code");
         }
 
-        if (await repository.exist(e => (eq(e.code, model.code)))) {
+        if (isImport) {
+            await repository.delete(model.id)
+        } else if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
                 .withValue("entity_name", "preset.name")

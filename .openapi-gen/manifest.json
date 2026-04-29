@@ -5,16 +5,9 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
-      "message": "Route /presets/{id}/entries contains path parameters id but no @pathParams type is defined.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\route.ts",
-      "routePath": "/presets/{id}/entries"
-    },
-    {
-      "code": "missing-path-params-type",
-      "severity": "warning",
-      "message": "Route /presets/{id}/entries contains path parameters id but no @pathParams type is defined.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\route.ts",
-      "routePath": "/presets/{id}/entries"
+      "message": "Route /presets/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled"
     },
     {
       "code": "missing-path-params-type",
@@ -29,6 +22,20 @@
       "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
       "routePath": "/presets/{id}/entries/{entryType}/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}"
     },
     {
       "code": "missing-path-params-type",
@@ -60,31 +67,31 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.08120000000002392,
+    "prepareTemplateMs": 0.08420000000000982,
     "loadCustomFragmentsMs": 0.00050000000004502,
-    "prepareDocumentMs": 0.08170000000006894,
-    "scanRouteFilesMs": 0.6180999999999699,
-    "deriveRoutePathMs": 0.24239999999997508,
-    "filterRouteCandidatesMs": 0.030499999999847205,
-    "sourcePrecheckMs": 0.48809999999986076,
-    "readRouteFilesMs": 0.3633999999998423,
-    "parseRouteFilesMs": 12.155199999999866,
-    "analyzeRouteFilesMs": 7.251800000000003,
+    "prepareDocumentMs": 0.08470000000005484,
+    "scanRouteFilesMs": 1.3996999999999957,
+    "deriveRoutePathMs": 0.19830000000001746,
+    "filterRouteCandidatesMs": 0.019699999999829743,
+    "sourcePrecheckMs": 0.7744999999999322,
+    "readRouteFilesMs": 0.4940000000000282,
+    "parseRouteFilesMs": 11.414199999999994,
+    "analyzeRouteFilesMs": 8.29810000000009,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 19.59360000000015,
-    "registerRouteMs": 339.88419999999996,
-    "getSchemaContentMs": 234.22610000000014,
-    "createRequestParamsMs": 0.44000000000016826,
+    "processRouteFilesMs": 19.90790000000004,
+    "registerRouteMs": 412.54679999999985,
+    "getSchemaContentMs": 284.417,
+    "createRequestParamsMs": 0.4094999999998663,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 104.34599999999989,
+    "processResponsesMs": 126.62009999999987,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 339.9221999999999,
-    "sortAndMergePathsMs": 0.7619999999999436,
-    "buildPathsMs": 0.7619999999999436,
-    "defaultComponentsAndErrorsMs": 0.20609999999999218,
-    "mergeSchemasMs": 0.21010000000001128,
-    "finalizeDocumentMs": 2.106400000000008,
-    "totalMs": 364.79560000000004,
-    "scanRoutesMs": 360.13390000000004
+    "buildOperationsMs": 412.5975999999999,
+    "sortAndMergePathsMs": 0.5293000000000347,
+    "buildPathsMs": 0.5293000000000347,
+    "defaultComponentsAndErrorsMs": 0.26070000000004256,
+    "mergeSchemasMs": 0.5415000000000418,
+    "finalizeDocumentMs": 2.583500000000072,
+    "totalMs": 439.44199999999995,
+    "scanRoutesMs": 433.9051999999999
   }
 }

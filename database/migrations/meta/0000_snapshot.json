@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f305f944-6cd6-417d-a358-c35b8675cbb9",
+  "id": "18160be2-8bc1-47ab-bf42-5d8b2f3473b1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chat_entries": {
@@ -27,6 +27,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "disabled": {
+          "name": "disabled",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         },
         "content": {
           "name": "content",
@@ -142,6 +150,14 @@
           "notNull": true,
           "autoincrement": false
         },
+        "disabled": {
+          "name": "disabled",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "content": {
           "name": "content",
           "type": "text",
@@ -247,7 +263,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "db_code_unique": {
+          "name": "db_code_unique",
+          "columns": [
+            "code"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

@@ -9,7 +9,6 @@ import {put} from "@/api/client";
 import {useErrorHandler} from "@/components/message";
 import {useState} from "react";
 import {toast} from "sonner";
-import {useRouter} from "next/navigation";
 import {usePresetContext} from "@/app/business/preset";
 import {RequireModel} from "@/models/require";
 import RequiresCombobox from "@/app/business/preset/RequiresCombobox";
@@ -22,27 +21,20 @@ export const defaultTags = [
 export default function PresetNormalContent() {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
-    const router = useRouter();
-
     const {preset, refreshPreset} = usePresetContext();
 
+
     const [tags, setTags] = useState(preset.tags);
-
-    const [selectRequires, setSelectRequires] = useState<RequireModel[]>(preset.requires);
-
+    const [requires, setRequires] = useState<RequireModel[]>(preset.requires);
     const handleSubmit = async (data: FormData) => {
         try {
-            const name = data.get("name") as string;
-            const version = data.get("version") as string;
-            const description = data.get("description") as string;
             const params: Partial<PresetModel> = {
                 content: {
-                    "author": "",
-                    "description": description
+                    "description": data.get("description") as string
                 },
-                version: version,
-                name: name,
-                requires: selectRequires,
+                version: data.get("version") as string,
+                name: data.get("name") as string,
+                requires: requires,
                 tags: tags,
             };
             await put("/presets/{id}", params, {
@@ -51,20 +43,17 @@ export default function PresetNormalContent() {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            handleReset();
+            refreshPreset();
         } catch (error) {
             handleError(error);
         }
     };
-    const handleReset = () => {
-        router.refresh();
-        refreshPreset();
-    }
 
     return (
-        <form action={handleSubmit}>
-            <FieldGroup>
-                <FieldSet>
+        <form className={"h-full"}
+              action={handleSubmit}>
+            <FieldGroup className={"flex flex-col h-full"}>
+                <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
                         <div className="grid grid-cols-2 gap-4">
                             <Field>
@@ -74,6 +63,15 @@ export default function PresetNormalContent() {
                                 <Input disabled name="code"
                                        id="preset-normal-code"
                                        defaultValue={preset.code}
+                                />
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="preset-normal-author">
+                                    {t("default.author")}
+                                </FieldLabel>
+                                <Input disabled name="author"
+                                       id="preset-normal-author"
+                                       defaultValue={preset.content.author}
                                 />
                             </Field>
                             <Field>
@@ -107,8 +105,8 @@ export default function PresetNormalContent() {
                                 </FieldLabel>
                                 <RequiresCombobox
                                     id="preset-normal-requires"
-                                    value={selectRequires}
-                                    onValueChange={e => setSelectRequires(e)}/>
+                                    value={requires}
+                                    onValueChange={e => setRequires(e)}/>
                             </Field>
                         </div>
                         <Field>
@@ -124,7 +122,7 @@ export default function PresetNormalContent() {
                 </FieldSet>
                 <Field orientation="horizontal">
                     <Button type="submit">{t("default.save")}</Button>
-                    <Button type="button" variant={"outline"} onClick={handleReset}>{t("default.reset")}</Button>
+                    <Button type="button" variant={"outline"} onClick={refreshPreset}>{t("default.reset")}</Button>
                 </Field>
             </FieldGroup>
         </form>

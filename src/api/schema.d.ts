@@ -41,24 +41,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/presets/{id}/entries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 获取条目分页列表 */
-        get: operations["get-presets-{id}-entries"];
-        put?: never;
-        /** 创建条目 */
-        post: operations["post-presets-{id}-entries"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/presets/{id}/export": {
         parameters: {
             query?: never;
@@ -70,6 +52,24 @@ export interface paths {
         get: operations["get-presets-{id}-export"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/presets/{id}/entries/{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取条目分页列表 */
+        get: operations["get-presets-{id}-entries-{entryType}"];
+        put?: never;
+        /** 创建条目 */
+        post: operations["post-presets-{id}-entries-{entryType}"];
         delete?: never;
         options?: never;
         head?: never;
@@ -94,26 +94,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/presets/{id}/entries/{entryType}/{entryId}/disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-presets-{id}-entries-{entryType}-{entryId}-disabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        PageOptions: {
-            /** @description 页码，默认0 */
-            page?: number;
-            /** @description 每页条数，默认20 */
-            pageSize?: number;
-            /** @description 可选搜索项 */
-            search?: unknown;
-        };
-        PagedResult: {
-            data: unknown[];
-            totalCount: number;
-        };
-        RequireModel: {
-            code: string;
-            version: string;
-        };
+        any: unknown;
         BaseModel: {
             id: string;
             name: string;
@@ -122,28 +124,19 @@ export interface components {
                 version: string;
             }[];
             entries?: {
-                [key: string]: Record<string, never>;
+                [key: string]: unknown;
             };
             content: {
-                [key: string]: Record<string, never>;
+                [key: string]: unknown;
             };
         };
-        PresetModel: {
-            id?: string;
-            name?: string;
-            requires?: {
-                code: string;
-                version: string;
-            }[];
-            entries?: {
-                [key: string]: Record<string, never>;
-            };
-            content?: {
-                [key: string]: Record<string, never>;
-            };
-            code: string;
-            version: string;
-            tags: string[];
+        PagedResult: {
+            data: unknown[];
+            totalCount: number;
+        };
+        "PagedResult<any>": {
+            data: unknown[];
+            totalCount: number;
         };
         "PagedResult<PresetModel>": {
             data: {
@@ -154,10 +147,10 @@ export interface components {
                     version: string;
                 }[];
                 entries?: {
-                    [key: string]: Record<string, never>;
+                    [key: string]: unknown;
                 };
                 content?: {
-                    [key: string]: Record<string, never>;
+                    [key: string]: unknown;
                 };
                 code: string;
                 version: string;
@@ -165,12 +158,36 @@ export interface components {
             }[];
             totalCount: number;
         };
-        any: unknown;
-        "PagedResult<any>": {
-            data: unknown[];
-            totalCount: number;
+        PageOptions: {
+            /** @description 页码，默认0 */
+            page?: number;
+            /** @description 每页条数，默认20 */
+            pageSize?: number;
+            /** @description 可选搜索项 */
+            search?: unknown;
+        };
+        PresetModel: {
+            id?: string;
+            name?: string;
+            requires?: {
+                code: string;
+                version: string;
+            }[];
+            entries?: {
+                [key: string]: unknown;
+            };
+            content?: {
+                [key: string]: unknown;
+            };
+            code: string;
+            version: string;
+            tags: string[];
         };
         ReadableStream: unknown;
+        RequireModel: {
+            code: string;
+            version: string;
+        };
     };
     responses: {
         /** @description Bad Request */
@@ -363,17 +380,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PresetModel"];
-                };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
             };
+        };
+        responses: {
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
@@ -393,69 +405,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            400: components["responses"]["400"];
-            500: components["responses"]["500"];
-        };
-    };
-    "get-presets-{id}-entries": {
-        parameters: {
-            query?: {
-                /** @description 页码，默认0 */
-                page?: number;
-                /** @description 每页条数，默认20 */
-                pageSize?: number;
-                /** @description 可选搜索项 */
-                search?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PagedResult<any>"];
-                };
-            };
-            400: components["responses"]["400"];
-            500: components["responses"]["500"];
-        };
-    };
-    "post-presets-{id}-entries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Path parameter: id
-                 * @example 123
-                 */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["any"];
-            };
-        };
-        responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        id: number;
-                    };
-                };
-            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
@@ -488,7 +437,108 @@ export interface operations {
             500: components["responses"]["500"];
         };
     };
+    "get-presets-{id}-entries-{entryType}": {
+        parameters: {
+            query?: {
+                /** @description 页码，默认0 */
+                page?: number;
+                /** @description 每页条数，默认20 */
+                pageSize?: number;
+                /** @description 可选搜索项 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-presets-{id}-entries-{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: number;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "put-presets-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-presets-{id}-entries-{entryType}-{entryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -513,20 +563,11 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PresetModel"];
-                };
-            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
     };
-    "delete-presets-{id}-entries-{entryType}-{entryId}": {
+    "put-presets-{id}-entries-{entryType}-{entryId}-disabled": {
         parameters: {
             query?: never;
             header?: never;

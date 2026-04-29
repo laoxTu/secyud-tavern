@@ -55,7 +55,7 @@ export default function RequiresCombobox({value, onValueChange, id}: RequiresCom
             setNeedSearch(false);
         }, 300);
         return () => clearTimeout(timer);
-    }, [handleError, needSearch, searchValue])
+    }, [handleError, needSearch, searchValue]);
 
     return (
         <Combobox multiple
@@ -65,7 +65,11 @@ export default function RequiresCombobox({value, onValueChange, id}: RequiresCom
                   value={value}
                   onValueChange={onValueChange}
                   onInputValueChange={e => handleSearchRequires(e)}
-                  items={[...new Set([...searchRequires, ...value])]}>
+                  items={(() => {
+                      const dict: Record<string, RequireModel> = {};
+                      [...searchRequires, ...value].forEach(item => dict[item.code] = item);
+                      return Object.values(dict);
+                  })()}>
             <ComboboxChips ref={anchor} className="w-full">
                 <ComboboxValue>
                     {(values) => (

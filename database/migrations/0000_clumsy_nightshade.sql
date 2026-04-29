@@ -2,6 +2,7 @@ CREATE TABLE `chat_entries` (
 	`master_id` text NOT NULL,
 	`entry_type` text NOT NULL,
 	`entry_id` integer NOT NULL,
+	`disabled` integer DEFAULT false NOT NULL,
 	`content` text NOT NULL,
 	PRIMARY KEY(`master_id`, `entry_type`, `entry_id`),
 	FOREIGN KEY (`master_id`) REFERENCES `chats`(`id`) ON UPDATE no action ON DELETE cascade
@@ -20,6 +21,7 @@ CREATE TABLE `preset_entries` (
 	`master_id` text NOT NULL,
 	`entry_type` text NOT NULL,
 	`entry_id` integer NOT NULL,
+	`disabled` integer DEFAULT false NOT NULL,
 	`content` text NOT NULL,
 	PRIMARY KEY(`master_id`, `entry_type`, `entry_id`),
 	FOREIGN KEY (`master_id`) REFERENCES `db`(`id`) ON UPDATE no action ON DELETE cascade
@@ -36,3 +38,5 @@ CREATE TABLE `db` (
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX `db_code_unique` ON `db` (`code`);

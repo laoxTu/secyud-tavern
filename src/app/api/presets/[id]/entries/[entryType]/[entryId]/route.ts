@@ -2,21 +2,19 @@
 import {NextResponse} from 'next/server';
 import {repository} from "@/business/preset/repository";
 import {interceptor} from "@/interceptor";
-import {PresetModel} from "@/business/preset/models";
-
 
 /**
  * 更新条目
  * @pathParams { id:string, entryId:number, entryType:string }
- * @response PresetModel
+ * @body any
  * @openapi
  */
 export const PUT = interceptor.createRoute(
     async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;
-        const model = records.body as Partial<PresetModel>;
+        const model = records.body;
         await repository.entry.update(id, entryType, entryId, model);
-        return NextResponse.json(model);
+        return NextResponse.json(null);
     }
 )
 

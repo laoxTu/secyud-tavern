@@ -6,7 +6,7 @@ export interface Registerable {
 }
 
 export class Registry<T extends Registerable> {
-    private records: Record<string, T> = {};
+    records: Record<string, T> = {};
     private sorted: T[] | null = null;
     protected readonly name: string;
 
@@ -82,6 +82,7 @@ export class Registry<T extends Registerable> {
      */
     protected sortByRequires(): T[] {
         const records = this.records;
+        console.debug(`[${this.name}] sort ${Object.keys(records).length} items`);
         const sorted: T[] = [];
         const visited = new Set<string>();
 

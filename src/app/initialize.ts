@@ -1,22 +1,21 @@
-﻿
-"use client"
+﻿"use client"
 
-import { useEffect, useRef } from "react"
-import { initializeBusiness } from "@/app/business"
-import { pluginManager } from "@/plugins"
+import {useEffect, useRef, useState} from "react"
+import {initializeBusiness} from "@/app/business"
+import {pluginManager} from "@/plugins"
 
 const useClientPlugins = () => {
-    const initialized = useRef(false)
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        if (!initialized.current) {
-            initialized.current = true
-            initializeBusiness()
-            pluginManager.loadClientPlugins().then(() => {
-                console.log("[plugin] client plugins loaded")
-            })
-        }
-    }, [])
+        if (initialized) return;
+        initializeBusiness()
+        pluginManager.loadClientPlugins().then(() => {
+            console.log("[plugin] client plugins loaded");
+            setInitialized(true);
+        })
+    }, [initialized]);
+    return initialized;
 }
 
 export default useClientPlugins

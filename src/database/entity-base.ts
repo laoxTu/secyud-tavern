@@ -7,7 +7,7 @@ import {RequireModel} from "@/models/require";
 export type BaseEntity = { [x: string]: any; };
 
 export const jsonArray = <T = any>(name: string) =>
-    customType<{data: T[]; driverData: string}>({
+    customType<{ data: T[]; driverData: string }>({
         dataType() {
             return 'text';
         },
@@ -41,6 +41,7 @@ export function entryTable(tableName: string, masterRef: () => SQLiteColumn, opt
         masterId: text("master_id").notNull().references(masterRef, options),
         entryType: text("entry_type").notNull(),
         entryId: integer("entry_id").notNull(),
+        disabled: integer("disabled", {mode: 'boolean'}).notNull().default(false),
         content: text("content").notNull(),
     }, (table) => [
         primaryKey({columns: [table.masterId, table.entryType, table.entryId]})

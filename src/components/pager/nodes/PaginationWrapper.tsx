@@ -91,7 +91,7 @@ export function PaginationWrapper({
                                       pageCount,
                                       onPageIndexChanged,
                                       visiblePageCount = 7,
-                                      className = '',
+                                      className = undefined,
                                   }: PaginationWrapperProps) {
     const t = useTranslations();
     // 不需要分页的情况

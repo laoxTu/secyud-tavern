@@ -8,19 +8,19 @@ import {
 } from "@/components/ui/navigation-menu";
 import {businessNavigationManager} from "@/app/business/index";
 import useClientPlugins from "@/app/initialize";
+import {Separator} from "@/components/ui/separator";
 
 
-export default function BusinessLayout({
-                                           children,
-                                       }: Readonly<{
+function InnerLayout({
+                         children,
+                     }: Readonly<{
     children: React.ReactNode;
 }>) {
-    useClientPlugins();
-    const tabs = useMemo(() => businessNavigationManager.getSorted(), [])
+    const tabs = useMemo(() => businessNavigationManager.getSorted(), []);
 
     return (
-        <div className="flex flex-col w-full">
-            <div className="flex justify-center text-center p-1">
+        <div className="flex flex-col h-full">
+            <div className="flex p-1 justify-center">
                 <NavigationMenu>
                     <NavigationMenuList>
                         {tabs.map((tab, index) => {
@@ -35,14 +35,29 @@ export default function BusinessLayout({
                     <NavigationMenuIndicator/>
                 </NavigationMenu>
             </div>
-            <div className="w-full h-full px-2">
+            <div className="flex-1 p-1 overflow-hidden">
+                <Separator/>
                 {children}
+                <Separator/>
             </div>
-            <div className="flex p-2">
+            <div className="text-right p-1">
                 <p className="text-xs text-gray-500 m-auto mr-2">
                     Copyright (c) 2026 Secyud
                 </p>
             </div>
         </div>
+    );
+}
+
+export default function BusinessLayout({
+                                           children,
+                                       }: Readonly<{
+    children: React.ReactNode;
+}>) {
+    const initialized = useClientPlugins();
+    if (!initialized) return null;
+
+    return (
+        <InnerLayout>{children}</InnerLayout>
     );
 }

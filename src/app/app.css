@@ -1,3 +1,8 @@
 ﻿.form-reset {
     all: inherit;
 }
+
+body, html {
+    overflow: hidden;
+    height: 100%;
+}

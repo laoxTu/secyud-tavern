@@ -8,7 +8,7 @@ import {PaginationWrapper} from "@/components/pager/nodes/PaginationWrapper";
 import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {Button} from "@/components/ui/button";
 import {useTranslations} from "next-intl";
-import {FolderOpenIcon, ArrowUpRightIcon, SearchIcon, XIcon} from "lucide-react";
+import {FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import React, {useCallback, useState} from "react";
 import {useParams} from "next/navigation";
@@ -31,7 +31,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {PresetListContext, usePresetListContext} from "@/app/business/preset/Context";
 
 
-function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
+function PresetCreateButtons() {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     const [createOpen, setCreateOpen] = useState(false);
@@ -41,8 +41,6 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
     // 处理提交
     const handleCreateSubmit = async (data: FormData) => {
         try {
-            const code = data.get("code") as string;
-            const name = data.get("name") as string;
             const params: PresetModel = {
                 content: {
                     "author": "",
@@ -50,8 +48,8 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
                 },
                 id: "",
                 version: "1.0.0",
-                code: code,
-                name: name,
+                code: data.get("code") as string,
+                name: data.get("name") as string,
                 requires: [],
                 tags: [],
             };
@@ -70,7 +68,11 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
             if (!file) return;
             const text = await file.text();
             const jsonData = JSON.parse(text);
-            await post("/presets", jsonData);
+            await post("/presets", jsonData, {
+                params: {
+                    isImport: true
+                }
+            });
             setImportOpen(false);
             refreshPresetList();
         } catch (error) {
@@ -95,13 +97,13 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
                         </DialogHeader>
                         <FieldGroup>
                             <Field>
-                                <Label htmlFor={`code-${idSuffix}`}>{t("default.code") + "*"}</Label>
-                                <Input id={`code-${idSuffix}`} name="code"
+                                <Label htmlFor={`preset-code`}>{t("default.code") + "*"}</Label>
+                                <Input id={`preset-code`} name="code"
                                        required/>
                             </Field>
                             <Field>
-                                <Label htmlFor={`name-${idSuffix}`}>{t("default.name") + "*"}</Label>
-                                <Input id={`name-${idSuffix}`} name="name"
+                                <Label htmlFor={`preset-name`}>{t("default.name") + "*"}</Label>
+                                <Input id={`preset-name`} name="name"
                                        required/>
                             </Field>
                         </FieldGroup>
@@ -129,9 +131,9 @@ function PresetCreateButtons({idSuffix}: { idSuffix: string; }) {
                         </DialogHeader>
                         <FieldGroup>
                             <Field>
-                                <Label htmlFor={`filename-${idSuffix}`}>{t("default.name")}</Label>
+                                <Label htmlFor={`preset-filename`}>{t("default.name")}</Label>
                                 <Input
-                                    id={`filename-${idSuffix}`}
+                                    id={`preset-filename`}
                                     name="filename"
                                     type="file"
                                     accept=".json"
@@ -172,41 +174,31 @@ export default function PresetLayout({
 
     return (
         <PresetListContext.Provider value={{refreshPresetList: refresh}}>
-            <ResizablePanelGroup orientation="horizontal"
-                                 className="rounded-lg border">
-                <ResizablePanel defaultSize="300px"
-                                minSize="280px"
-                                className="flex justify-center">
-                    {pager.pageCount === 0 && !pager.search ?
-                        <Empty>
-                            <EmptyHeader>
-                                <EmptyMedia variant="icon">
-                                    <FolderOpenIcon/>
-                                </EmptyMedia>
-                                <EmptyTitle>{t("preset.empty_title")}</EmptyTitle>
-                                <EmptyDescription>
-                                    {t("preset.empty_description")}
-                                </EmptyDescription>
-                            </EmptyHeader>
-                            <EmptyContent className="flex-row justify-center gap-2">
-                                <PresetCreateButtons idSuffix="preset-empty"/>
-                            </EmptyContent>
-                            {/* 官方示例 有个帮助按钮，可以留着，以后跳到帮助文档 */}
-                            <Button
-                                variant="link"
-                                asChild
-                                className="text-muted-foreground"
-                                size="sm">
-                                <Link href="#">
-                                    Learn More <ArrowUpRightIcon/>
-                                </Link>
-                            </Button>
-                        </Empty> :
-                        <div className="flex flex-col w-full">
-                            <div className="flex gap-2 flex-row-reverse p-2">
-                                <PresetCreateButtons idSuffix="preset-list"/>
+            <ResizablePanelGroup orientation="horizontal">
+                <ResizablePanel defaultSize="320px"
+                                minSize="300px">
+                    {pager.pageCount === 0 && !pager.search && !pager.loading ?
+                        <div className={"flex justify-center w-full"}>
+                            <Empty>
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <FolderOpenIcon/>
+                                    </EmptyMedia>
+                                    <EmptyTitle>{t("preset.empty_title")}</EmptyTitle>
+                                    <EmptyDescription>
+                                        {t("preset.empty_description")}
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent className="flex-row justify-center gap-2">
+                                    <PresetCreateButtons/>
+                                </EmptyContent>
+                            </Empty>
+                        </div> :
+                        <div className="flex flex-col p-2 gap-1 h-full">
+                            <div className="flex flex-row-reverse gap-2">
+                                <PresetCreateButtons/>
                             </div>
-                            <form className="flex p-2" action={p => pager.doSearch(p.get("search") as string)}>
+                            <form action={p => pager.doSearch(p.get("search") as string)}>
                                 <InputGroup>
                                     <InputGroupInput name="search" id="preset-list-search"
                                                      placeholder={t("default.search")}
@@ -222,8 +214,8 @@ export default function PresetLayout({
                                     </InputGroupAddon>
                                 </InputGroup>
                             </form>
-                            <div className="flex flex-col h-full gap-6 p-2">
-                                <ItemGroup>
+                            <div className="flex-1 h-full overflow-auto">
+                                <ItemGroup className={"p-2 gap-3"}>
                                     {pager.data.map((p, index) => (
                                         <Item key={index}
                                               variant={p.id === currentId ? "muted" : "outline"}
@@ -249,21 +241,15 @@ export default function PresetLayout({
                                     <Skeleton className="aspect-video w-full"/>
                                 </div>}
                             </div>
-                            <div className="w-full p-1">
-                                <PaginationWrapper defaultPageIndex={pager.pageIndex}
-                                                   onPageIndexChanged={pager.changePageIndex}
-                                                   pageCount={pager.pageCount}
-                                                   className="preset-pagination"/>
-                            </div>
+                            <PaginationWrapper defaultPageIndex={pager.pageIndex}
+                                               onPageIndexChanged={pager.changePageIndex}
+                                               pageCount={pager.pageCount}/>
                         </div>
                     }
                 </ResizablePanel>
                 <ResizableHandle withHandle/>
-                <ResizablePanel minSize="300px"
-                                className="p-8">
-                    <div className="h-full w-full">
-                        {children}
-                    </div>
+                <ResizablePanel minSize="480px">
+                    {children}
                 </ResizablePanel>
             </ResizablePanelGroup>
         </PresetListContext.Provider>
