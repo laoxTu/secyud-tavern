@@ -1,9 +1,9 @@
-// app/api/presets/route.ts
+// src/app/api/presets/route.ts
 import {NextResponse} from 'next/server';
-import {PageOptions} from "@/models/common";
-import {repository} from "@/business/preset/repository";
-import {interceptor} from "@/interceptor";
+import {interceptor} from "@/server/interceptor";
+import {presetRepository} from "@/server/business/presets";
 import {like, or, SQL} from "drizzle-orm";
+import {PageOptions} from "@/shared/models";
 
 /**
  * 获取条目分页列表
@@ -16,14 +16,7 @@ export const GET = interceptor.createRoute(
     async (request, records) => {
         const {id, entryType} = await records.context.params as { id: string, entryType: string };
         const options = records.searchParams as PageOptions;
-        const models = await repository.entry.getList(id, entryType, options, p => {
-            const conditions: SQL[] = [];
-            if (options.search) {
-                conditions.push(like(p.search, `%${options.search}%`));
-            }
-
-            return or(...conditions) ?? [];
-        });
+        const models = await presetRepository.entry.getList(id, entryType, options);
         return NextResponse.json(models);
     }
 )
@@ -39,7 +32,7 @@ export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id, entryType} = await records.context.params as { id: string, entryType: string };
         const model = records.body;
-        const res = await repository.entry.create(id, entryType, model);
+        const res = await presetRepository.entry.create(id, entryType, model);
         return NextResponse.json({id: res});
     }
 )

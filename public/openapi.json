@@ -362,7 +362,7 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "An unexpected error occurred"
+                  "example": "An unexpected errors occurred"
                 },
                 "code": {
                   "type": "string",

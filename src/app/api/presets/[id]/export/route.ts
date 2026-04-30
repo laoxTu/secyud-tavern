@@ -1,7 +1,7 @@
 ﻿// app/api/presets/[id]/export/route.ts
 import {NextResponse} from 'next/server';
-import {repository} from "@/business/preset/repository";
-import {interceptor} from "@/interceptor";
+import {presetRepository} from "@/server/business/presets";
+import {interceptor} from "@/server/interceptor";
 
 /**
  * 获取预设
@@ -12,7 +12,7 @@ import {interceptor} from "@/interceptor";
 export const GET = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
-        const model = await repository.get(id, true);
+        const model = await presetRepository.get(id, true);
 
         if (model === null) throw new Error('not found');
 

@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o ./src/api/schema.d.ts",
+    "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/client/schema.d.ts",
     "db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts"
   },
   "dependencies": {

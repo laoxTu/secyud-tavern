@@ -1,7 +1,7 @@
 // app/api/presets/route.ts
 import {NextResponse} from 'next/server';
-import {repository} from "@/business/preset/repository";
-import {interceptor} from "@/interceptor";
+import {presetRepository} from "@/server/business/presets";
+import {interceptor} from "@/server/interceptor";
 
 /**
  * 更新条目
@@ -13,7 +13,7 @@ export const PUT = interceptor.createRoute(
     async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;
         const model = records.body;
-        await repository.entry.update(id, entryType, entryId, model);
+        await presetRepository.entry.update(id, entryType, entryId, model);
         return NextResponse.json(null);
     }
 )
@@ -26,7 +26,7 @@ export const PUT = interceptor.createRoute(
 export const DELETE = interceptor.createRoute(
     async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;
-        await repository.entry.delete(id, entryType, entryId);
+        await presetRepository.entry.delete(id, entryType, entryId);
         return NextResponse.json(null);
     }
 )

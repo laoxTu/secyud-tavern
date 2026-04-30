@@ -1,4 +1,4 @@
-﻿import {databaseManager} from "@/database/manager"
+﻿import {databaseManager} from "@/server/database"
 
 
 await databaseManager.migrate();

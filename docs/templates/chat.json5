@@ -1,4 +1,4 @@
-﻿// docs/templates/chat.json5
+﻿// docs/templates/chats.json5
 {
   // 存档唯一标识符，UUID
   id: "string",

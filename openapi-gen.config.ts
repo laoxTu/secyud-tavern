@@ -90,7 +90,7 @@ const config = {
             "500": {
                 "description": "Internal Server Error",
                 "variables": {
-                    "ERROR_MESSAGE": "An unexpected error occurred",
+                    "ERROR_MESSAGE": "An unexpected errors occurred",
                     "ERROR_CODE": "INTERNAL_ERROR"
                 }
             }
