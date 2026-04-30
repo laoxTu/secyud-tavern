@@ -22,7 +22,9 @@ export default function PresetNormalContent() {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     const {preset, refreshPreset} = usePresetContext();
-
+    if (!preset) {
+        throw new Error("preset.not_found");
+    }
 
     const [tags, setTags] = useState(preset.tags);
     const [requires, setRequires] = useState<RequireModel[]>(preset.requires);
@@ -43,7 +45,7 @@ export default function PresetNormalContent() {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            refreshPreset();
+            await refreshPreset();
         } catch (error) {
             handleError(error);
         }

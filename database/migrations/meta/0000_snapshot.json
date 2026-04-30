@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "18160be2-8bc1-47ab-bf42-5d8b2f3473b1",
+  "id": "d716b2f5-bc68-4da1-ad62-9cb35c850881",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chat_entries": {
@@ -24,6 +24,13 @@
         "entry_id": {
           "name": "entry_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "search": {
+          "name": "search",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -146,6 +153,13 @@
         "entry_id": {
           "name": "entry_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "search": {
+          "name": "search",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

@@ -41,6 +41,7 @@ export function entryTable(tableName: string, masterRef: () => SQLiteColumn, opt
         masterId: text("master_id").notNull().references(masterRef, options),
         entryType: text("entry_type").notNull(),
         entryId: integer("entry_id").notNull(),
+        search: text("search").notNull(),
         disabled: integer("disabled", {mode: 'boolean'}).notNull().default(false),
         content: text("content").notNull(),
     }, (table) => [

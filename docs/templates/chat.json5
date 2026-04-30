@@ -21,11 +21,13 @@
         role: "string",
         // 消息正文
         content: "string",
+        // 思考过程
+        thinking: "string",
         // 消息时间戳
         timestamp: "string",
         // 是否对AI不可见，默认false
         invisible: "boolean",
-        // 本轮产生的变量变更, json string
+        // 本轮产生的变量变更, json
         variableChanges: "any"
       }
     ]

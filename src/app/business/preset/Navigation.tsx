@@ -9,7 +9,7 @@ export default function PresetNavigation() {
     return (
         <NavigationMenuLink asChild>
             <Link href="/business/preset">
-                {t('preset.name')}
+                {t('default.preset')}
             </Link>
         </NavigationMenuLink>
     );

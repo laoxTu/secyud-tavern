@@ -15,6 +15,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     entries: SQLiteTableWithColumns<any>,
     loadModel: (model: TModel) => Promise<void>,
     saveModel: (model: TModel) => Promise<void>,
+    bindSearch: (type: string, entry: any) => string,
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined) {
 
@@ -204,6 +205,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         masterId: masterId,
                         entryType: type,
                         entryId: e.id,
+                        search: bindSearch(type, e),
                         content: JSON.stringify({
                             ...e,
                             id: undefined,
@@ -231,6 +233,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         entryType: type,
                         entryId: entryId,
                         disabled: false,
+                        search: bindSearch(type, entry),
                         content: JSON.stringify({
                             ...entry,
                             id: undefined
@@ -259,6 +262,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
                 const updateData: Record<string, unknown> = {
                     updatedAt: new Date().toISOString(),
+                    search: bindSearch(type, entry),
                     content: JSON.stringify({
                         ...entry,
                         id: undefined,

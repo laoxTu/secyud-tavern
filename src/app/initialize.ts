@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import {useEffect, useRef, useState} from "react"
+import {useEffect, useState} from "react"
 import {initializeBusiness} from "@/app/business"
 import {pluginManager} from "@/plugins"
 

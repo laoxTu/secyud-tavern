@@ -3,15 +3,22 @@
     "author": "作者",
     "cancel": "取消",
     "code": "编码",
+    "content": "内容",
+    "priority": "优先级",
     "copy": "复制",
     "create": "创建",
-    "disable_item": "已禁用",
-    "enable_item": "已启用",
+    "create_description": "请创建一个新的{target}",
+    "create_title": "创建{target}",
     "delete": "删除",
+    "delete_description": "您确定要删除这个{target}吗？这个操作是不可逆的。",
+    "delete_title": "删除{target}",
     "description": "描述",
-    "content": "内容",
-    "enabled": "启用",
+    "disable_item": "已禁用",
+    "empty_description": "似乎没有创建过{target}，您可以进行创建。",
     "empty_items": "空列表",
+    "empty_title": "空的{target}列表",
+    "enable_item": "已启用",
+    "enabled": "启用",
     "entity_not_found": "目标未找到（ID：{id}）",
     "export": "导出",
     "id": "ID",
@@ -27,6 +34,7 @@
     "selected_file": "当前选择的文件：{name}",
     "submit": "提交",
     "tags": "标签",
+    "preset": "预设",
     "version": "版本"
   },
   "page": {
@@ -35,25 +43,17 @@
     "turn_to": "跳至{page}页"
   },
   "preset": {
-    "code": "编码",
     "copy": "复制预设",
     "copy_description": "将当前预设复制到新的预设",
-    "create": "创建预设",
-    "create_description": "请创建一个新的预设",
-    "delete_description": "您确定要删除这个预设吗？这个操作是不可逆的。",
-    "delete_title": "删除预设",
-    "empty_description": "似乎没有创建过预设，您可以创建或者导入。",
-    "empty_title": "空的预设列表",
     "import": "导入预设",
     "import_description": "请导入一个预设",
     "lorebook": "世界书",
-    "name": "预设",
+    "script": "脚本",
     "select_description": "点击一个预设，然后您可以对它进行编辑。",
-    "select_title": "没有选择预设"
+    "select_title": "没有选择预设",
+    "style": "样式"
   },
   "lorebook": {
-    "empty_description": "似乎没有创建过世界书，您可以创建。",
-    "empty_title": "空的世界书列表",
     "include_name": "包含名称",
     "match_type": "匹配类型",
     "priority_layer": "层级",
@@ -61,7 +61,12 @@
     "delete_title": "删除世界书",
     "delete_description": "您确定要删除这个世界书条目吗？这个操作是不可逆的。",
     "match_type_normal": "一般",
+    "include_any_word": "包含词组",
     "include_name_description": "世界书名称将被填充到上下文中。"
+  },
+  "script": {
+  },
+  "style": {
   },
   "error": {
     "empty_field": "{field}不可以为空！",

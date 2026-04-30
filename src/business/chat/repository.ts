@@ -9,5 +9,7 @@ export const repository =
     createRepository<ChatModel, typeof chats.$inferSelect>(
         chats, chatEntries,
         chatStorage.loadModel.bind(chatStorage),
-        chatStorage.saveModel.bind(chatStorage))
+        chatStorage.saveModel.bind(chatStorage),
+        chatStorage.bindSearch.bind(chatStorage),
+    )
 

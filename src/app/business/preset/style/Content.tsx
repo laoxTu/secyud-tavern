@@ -1,9 +1,7 @@
 ﻿'use client';
-
 import {useTranslations} from "next-intl";
 import {useErrorHandler} from "@/components/message";
 import {usePresetContext} from "@/app/business/preset";
-import {PresetModel} from "@/business/preset/models";
 import {del, get, post, put} from "@/api/client";
 import {toast} from "sonner";
 import {PaginationWrapper} from "@/components/pager/nodes/PaginationWrapper";
@@ -13,13 +11,9 @@ import {PagedResult} from "@/models/common";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
-import {Checkbox} from "@/components/ui/checkbox";
 import {Switch} from "@/components/ui/switch";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {lorebookEditorRegistry} from "@/app/business/preset/lorebook/index";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {
     Dialog, DialogClose,
     DialogContent,
@@ -29,7 +23,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {ChevronsDownIcon, ChevronsUpIcon, FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
+import {ChevronsDownIcon, ChevronsUpIcon, FolderOpenIcon} from "lucide-react";
 import {
     Collapsible,
     CollapsibleContent,
@@ -44,13 +38,11 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {Skeleton} from "@/components/ui/skeleton";
-import {Separator} from "@/components/ui/separator";
-import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 
-export const entryType = "lorebook";
+export const entryType = "style";
 
-function PresetLorebookCreateButtons({refreshLorebooks}: {
-    refreshLorebooks: () => Promise<void>
+function PresetStyleCreateButtons({refreshStyles}: {
+    refreshStyles: () => Promise<void>
 }) {
     const t = useTranslations();
     const {preset} = usePresetContext();
@@ -64,11 +56,8 @@ function PresetLorebookCreateButtons({refreshLorebooks}: {
         try {
             const params: any = {
                 name: data.get("name") as string,
-                matchType: "normal",
-                matchExpression: [],
                 content: "",
-                priorityLayer: 100,
-                priorityOrder: 100,
+                priority: 100,
             };
             await post("/presets/{id}/entries/{entryType}", params, {
                 params: {
@@ -77,7 +66,7 @@ function PresetLorebookCreateButtons({refreshLorebooks}: {
                 }
             });
             setCreateOpen(false);
-            await refreshLorebooks();
+            await refreshStyles();
         } catch (error) {
             handleError(error);
         }
@@ -100,8 +89,8 @@ function PresetLorebookCreateButtons({refreshLorebooks}: {
                         </DialogHeader>
                         <FieldGroup>
                             <Field>
-                                <Label htmlFor={`lorebook-name`}>{t("default.name") + "*"}</Label>
-                                <Input id={`lorebook-name`} name="name"
+                                <Label htmlFor={`style-name`}>{t("default.name") + "*"}</Label>
+                                <Input id={`style-name`} name="name"
                                        required/>
                             </Field>
                         </FieldGroup>
@@ -118,9 +107,10 @@ function PresetLorebookCreateButtons({refreshLorebooks}: {
     );
 }
 
-function PresetLorebookEditor({entry, refreshLorebooks}: {
+
+function PresetStyleEditor({entry, refreshStyles}: {
     entry: any,
-    refreshLorebooks: () => Promise<void>
+    refreshStyles: () => Promise<void>
 }) {
 
     const t = useTranslations();
@@ -129,19 +119,13 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
         throw new Error("preset.not_found");
     }
     const {handleError} = useErrorHandler();
-    const [matchType, setMatchType] = useState<string>(entry.matchType);
-    const [editor, setEditor] = useState(lorebookEditorRegistry.records[matchType]);
-    const [matchExpression, setMatchExpression] = useState<string>(entry.matchExpression);
-    const [isOpen, setIsOpen] = React.useState(true)
+    const [isOpen, setIsOpen] = React.useState(true);
     const handleSubmit = async (data: FormData) => {
         try {
             const params: Record<string, any> = {
                 name: data.get("name") as string,
-                matchType: matchType,
-                matchExpression: matchExpression,
                 content: data.get("content") as string,
-                priorityLayer: Number(data.get("priorityLayer")),
-                priorityOrder: Number(data.get("priorityOrder")),
+                priority: Number(data.get("priority")),
             };
 
             await put("/presets/{id}/entries/{entryType}/{entryId}", params, {
@@ -154,7 +138,7 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshStyles();
         } catch (error) {
             handleError(error);
         }
@@ -172,7 +156,7 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshStyles();
         } catch (error) {
             handleError(error);
         }
@@ -190,20 +174,12 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
             toast.success(t(enabled ? "default.enable_item" : "default.disable_item"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshStyles();
         } catch (error) {
             handleError(error);
         }
-    }, [entry.id, handleError, preset.id, refreshLorebooks, t]);
-    const handleMatchTypeChange = useCallback((type: string) => {
-        setMatchType(type);
-        const newEditor = lorebookEditorRegistry.records[type];
-        setEditor(newEditor);
-        const isValid = newEditor.validate(matchExpression);
-        if (!isValid) {
-            setMatchExpression(newEditor.defaultValue);
-        }
-    }, [matchExpression]);
+    }, [entry.id, handleError, preset.id, refreshStyles, t]);
+
 
     return (
         <Card className={"w-full p-2"}>
@@ -219,11 +195,11 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
                         </CollapsibleTrigger>
                         <div className="flex items-center space-x-2"
                              onClick={(e) => e.stopPropagation()}>
-                            <Switch id={`lorebook-disabled-${entry.id}`}
+                            <Switch id={`style-disabled-${entry.id}`}
                                     defaultChecked={!entry.disabled}
                                     onCheckedChange={handleDisableSet}/>
                             <Label className={"min-w-12"}
-                                   htmlFor={`lorebook-disabled-${entry.id}`}>
+                                   htmlFor={`style-disabled-${entry.id}`}>
                                 {t("default.enabled")}
                             </Label>
                         </div>
@@ -260,66 +236,28 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
                                     <FieldGroup>
                                         <div className="grid grid-cols-2 gap-4">
                                             <Field>
-                                                <FieldLabel htmlFor={`lorebook-name-${entry.id}`}>
+                                                <FieldLabel htmlFor={`style-name-${entry.id}`}>
                                                     {t("default.name")}
                                                 </FieldLabel>
                                                 <Input name="name"
-                                                       id={`lorebook-name-${entry.id}`}
+                                                       id={`style-name-${entry.id}`}
                                                        defaultValue={entry.name}/>
                                             </Field>
                                             <Field>
-                                                <FieldLabel>
-                                                    {t("lorebook.match_type")}
+                                                <FieldLabel htmlFor={`style-priority-${entry.id}`}>
+                                                    {t("default.priority")}
                                                 </FieldLabel>
-                                                <Select name="matchType"
-                                                        value={matchType}
-                                                        onValueChange={handleMatchTypeChange}>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue/>
-                                                    </SelectTrigger>
-                                                    <SelectContent position="popper">
-                                                        <SelectGroup>
-                                                            {lorebookEditorRegistry.getSorted().map((e) =>
-                                                                <SelectItem key={e.id} value={e.id}>
-                                                                    {t(`lorebook.match_type_${e.id}`)}
-                                                                </SelectItem>
-                                                            )}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                            </Field>
-                                        </div>
-                                        {editor && (
-                                            () => {
-                                                const EditorComponent = editor.component;
-                                                return <EditorComponent value={matchExpression}
-                                                                        onValueChanged={setMatchExpression}/>;
-                                            }
-                                        )()}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <Field>
-                                                <FieldLabel htmlFor={`lorebook-priorityLayer-${entry.id}`}>
-                                                    {t("lorebook.priority_layer")}
-                                                </FieldLabel>
-                                                <Input name="priorityLayer" type={"number"}
-                                                       id={`lorebook-priorityLayer-${entry.id}`}
-                                                       defaultValue={entry.priorityLayer}/>
-                                            </Field>
-                                            <Field>
-                                                <FieldLabel htmlFor={`lorebook-priorityOrder-${entry.id}`}>
-                                                    {t("lorebook.priority_order")}
-                                                </FieldLabel>
-                                                <Input name="priorityOrder" type={"number"}
-                                                       id={`lorebook-priorityOrder-${entry.id}`}
-                                                       defaultValue={entry.priorityOrder}/>
+                                                <Input name="priority" type={"number"}
+                                                       id={`style-priority-${entry.id}`}
+                                                       defaultValue={entry.priority}/>
                                             </Field>
                                         </div>
                                         <Field>
-                                            <FieldLabel htmlFor={`lorebook-content-${entry.id}`}>
+                                            <FieldLabel htmlFor={`style-content-${entry.id}`}>
                                                 {t("default.content")}
                                             </FieldLabel>
                                             <Textarea name="content"
-                                                      id={`lorebook-content-${entry.id}`}
+                                                      id={`style-content-${entry.id}`}
                                                       defaultValue={entry.content}/>
                                         </Field>
                                     </FieldGroup>
@@ -327,7 +265,7 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
                                 <Field orientation="horizontal">
                                     <Button type="submit">{t("default.save")}</Button>
                                     <Button type="button" variant={"outline"}
-                                            onClick={refreshLorebooks}>{t("default.reset")}</Button>
+                                            onClick={refreshStyles}>{t("default.reset")}</Button>
                                 </Field>
                             </FieldGroup>
                         </form>
@@ -338,14 +276,12 @@ function PresetLorebookEditor({entry, refreshLorebooks}: {
     );
 }
 
-export default function PresetLorebookContent() {
+export default function PresetStyleContent() {
     const t = useTranslations();
-    const {handleError} = useErrorHandler();
-    const {preset, refreshPreset} = usePresetContext();
+    const {preset} = usePresetContext();
     if (!preset) {
         throw new Error("preset.not_found");
     }
-    const [searchInput, setSearchInput] = useState('');
     const pager = usePager({
         fetcher: async params => await get("/presets/{id}/entries/{entryType}",
             {
@@ -358,58 +294,9 @@ export default function PresetLorebookContent() {
         defaultPageSize: 5
     });
 
-    const handleSubmit = async (data: FormData) => {
-        try {
-            const includeName = data.get("includeName") as boolean | null;
-            const params: Partial<PresetModel> = {
-                content: {
-                    "lorebook": {
-                        includeName: includeName ?? false
-                    }
-                },
-            };
-            await put("/presets/{id}", params, {
-                params: {"id": preset.id,}
-            });
-            toast.success(t("default.saved_successfully"), {
-                richColors: true
-            });
-            await refreshPreset();
-        } catch (error) {
-            handleError(error);
-        }
-    };
 
     return (
         <div className={"flex w-full h-full"}>
-            <form action={handleSubmit}
-                  className={"w-48"}>
-                <FieldGroup className={"flex flex-col h-full"}>
-                    <FieldSet className={"flex-1 p-2 overflow-auto"}>
-                        <FieldGroup>
-                            <Field orientation={"horizontal"}>
-                                <Checkbox name="includeName" id="preset-lorebook-includeName"
-                                          defaultChecked={preset.content.lorebook?.includeName ?? false}/>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Label htmlFor="preset-lorebook-includeName">
-                                            {t("lorebook.include_name")}
-                                        </Label>
-                                    </TooltipTrigger>
-                                    <TooltipContent className={"max-w-xs"}>
-                                        <p>{t("lorebook.include_name_description")}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </Field>
-                        </FieldGroup>
-                    </FieldSet>
-                    <Field orientation="horizontal">
-                        <Button type="submit">{t("default.save")}</Button>
-                        <Button type="button" variant={"outline"} onClick={refreshPreset}>{t("default.reset")}</Button>
-                    </Field>
-                </FieldGroup>
-            </form>
-            <Separator orientation={"vertical"}/>
             {pager.pageCount === 0 && !pager.search && !pager.loading ?
                 <div className={"flex-1 flex justify-center"}>
                     <Empty>
@@ -423,35 +310,18 @@ export default function PresetLorebookContent() {
                             </EmptyDescription>
                         </EmptyHeader>
                         <EmptyContent className="flex-row justify-center gap-2">
-                            <PresetLorebookCreateButtons refreshLorebooks={() => pager.refresh()}/>
+                            <PresetStyleCreateButtons refreshStyles={() => pager.refresh()}/>
                         </EmptyContent>
                     </Empty>
                 </div> :
                 <div className={"flex-1 flex flex-col p-2 gap-1"}>
-                    <div className="flex gap-2 p-2">
-                        <form action={p => pager.doSearch(p.get("search") as string)}
-                              className={"flex-1"}>
-                            <InputGroup>
-                                <InputGroupInput name="search" id="preset-list-search"
-                                                 placeholder={t("default.search")}
-                                                 value={searchInput}
-                                                 onChange={(e) => setSearchInput(e.target.value)}/>
-                                <InputGroupAddon align={"inline-end"}>
-                                    <InputGroupButton onClick={() => pager.doSearch(undefined)}>
-                                        <XIcon/>
-                                    </InputGroupButton>
-                                    <InputGroupButton type="submit">
-                                        <SearchIcon/>
-                                    </InputGroupButton>
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </form>
-                        <PresetLorebookCreateButtons refreshLorebooks={() => pager.refresh()}/>
+                    <div className="flex gap-2 flex-row-reverse p-2">
+                        <PresetStyleCreateButtons refreshStyles={() => pager.refresh()}/>
                     </div>
                     <div className="flex-1 overflow-auto space-y-2 p-2">
                         {pager.data.map((data, i) =>
-                            <PresetLorebookEditor key={i} entry={data}
-                                                  refreshLorebooks={() => pager.refresh()}/>
+                            <PresetStyleEditor key={i} entry={data}
+                                                refreshStyles={() => pager.refresh()}/>
                         )}
                     </div>
                     {pager.loading && <div className="w-full">
@@ -465,7 +335,6 @@ export default function PresetLorebookContent() {
                     </div>
                 </div>
             }
-
         </div>
     );
 }

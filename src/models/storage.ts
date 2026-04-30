@@ -6,6 +6,7 @@ export interface ModelStorageProvider<T> extends Registerable {
     loadModel: (model: T) => Promise<void>,
     // 仅导入，复制时会使用
     saveModel: (model: T) => Promise<void>,
+    bindSearch: (entry: any) => string
 }
 
 export class ModelStorage<T> extends Registry<ModelStorageProvider<T>> {
@@ -23,5 +24,10 @@ export class ModelStorage<T> extends Registry<ModelStorageProvider<T>> {
         await this.use(async provider => {
             await provider.saveModel(model);
         })
+    }
+
+    bindSearch(type: string, entry: any) {
+        const provider = this.records[type];
+        return provider.bindSearch(entry);
     }
 }
