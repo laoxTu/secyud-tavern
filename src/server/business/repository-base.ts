@@ -4,9 +4,9 @@ import {and, eq, like, SQL, sql} from "drizzle-orm";
 import type {PagedResult, PageOptions} from "@/shared/models";
 import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
-import {BaseModel} from "../../shared/business";
+import {BaseModel} from "@/shared/business";
 import {v4 as uuidv4, validate} from 'uuid';
-import {BusinessError} from "../../shared/errors";
+import {BusinessError} from "@/shared/errors";
 
 const db = databaseManager.db;
 

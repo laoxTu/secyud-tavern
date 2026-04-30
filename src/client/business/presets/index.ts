@@ -2,11 +2,11 @@
 import {TabManager} from "@/client/components/tab";
 import {PresetModel} from "@/shared/business/presets";
 import {createContext, useContext} from "react";
-import {registerLorebook} from "@/client/business/presets/lorebook";
+import {registerLorebook} from "./lorebooks";
 import {tabConfig as normalTab} from "./normal/page";
-import {tabConfig as lorebookTab} from "./lorebook/page";
-import {tabConfig as styleTab} from "./style/page";
-import {tabConfig as scriptTab} from "./script/page";
+import {tabConfig as lorebookTab} from "./lorebooks/page";
+import {tabConfig as styleTab} from "./styles/page";
+import {tabConfig as scriptTab} from "./scripts/page";
 
 export const presetTabManager = new TabManager("preset tabs");
 

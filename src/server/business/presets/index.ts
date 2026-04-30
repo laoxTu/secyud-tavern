@@ -2,10 +2,10 @@
 import {text} from "drizzle-orm/sqlite-core";
 import {entryTable, masterTable} from "@/server/business/entity-base";
 import {ModelStorage} from "@/server/business/model-storage";
-import {lorebookStorageProvider} from "./lorebook";
-import {regexStorageProvider} from "./regex";
-import {styleStorageProvider} from "./style";
-import {scriptStorageProvider} from "./script";
+import {lorebookStorageProvider} from "./lorebooks";
+import {regexStorageProvider} from "./regexes";
+import {styleStorageProvider} from "./styles";
+import {scriptStorageProvider} from "./scripts";
 import {createRepository} from "@/server/business";
 import {PresetModel} from "@/shared/business/presets";
 
