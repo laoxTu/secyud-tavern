@@ -34,6 +34,7 @@ import {usePresetContext} from "@/client/business/presets";
 import {PagedResult} from "@/shared/models";
 import {PaginationWrapper} from "@/client/components/pager/component";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export const tabConfigId = "regex";
 
@@ -295,23 +296,33 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
                                         <div className="grid grid-cols-2 gap-4">
                                             <Field>
                                                 <FieldLabel htmlFor={`${tabConfigId}-layerMin-${entry.id}`}>
-                                                    {t("regex.layer_min")}
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            {t("regex.layer_min")}
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{t("regex.unlimit_description")}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </FieldLabel>
                                                 <Input name="layerMin"
-                                                       type="text"
-                                                       inputMode="numeric"
-                                                       pattern="[0-9]*"
+                                                       type="number"
                                                        id={`${tabConfigId}-layerMin-${entry.id}`}
                                                        defaultValue={entry.layerMin}/>
                                             </Field>
                                             <Field>
                                                 <FieldLabel htmlFor={`${tabConfigId}-layerMax-${entry.id}`}>
-                                                    {t("regex.layer_max")}
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            {t("regex.layer_max")}
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{t("regex.unlimit_description")}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </FieldLabel>
                                                 <Input name="layerMax"
-                                                       type="text"
-                                                       inputMode="numeric"
-                                                       pattern="[0-9]*"
+                                                       type="number"
                                                        id={`${tabConfigId}-layerMax-${entry.id}`}
                                                        defaultValue={entry.layerMax}/>
                                             </Field>

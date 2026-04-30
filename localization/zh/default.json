@@ -44,6 +44,7 @@
   },
   "preset": {
     "copy": "复制预设",
+    "regex": "正则",
     "copy_description": "将当前预设复制到新的预设",
     "import": "导入预设",
     "import_description": "请导入一个预设",
@@ -67,6 +68,17 @@
   "script": {
   },
   "style": {
+  },
+  "regex": {
+    "pattern": "表达式",
+    "replacement": "替换为",
+    "layer_min": "最小层数",
+    "layer_max": "最大层数",
+    "unlimit_description": "-1表示不限制",
+    "target": "替换目标",
+    "target_both": "全部替换",
+    "target_input": "替换输入",
+    "target_output": "替换输出"
   },
   "error": {
     "empty_field": "{field}不可以为空！",
