@@ -49,12 +49,10 @@
         replacement: "string",
         // 作用目标：input / output / both
         target: "string",
-        layer: {
-          // 生效的最小层数，从最新消息往回数，0 为最新
-          min: "number",
-          // 生效的最大层数，null 表示无上限
-          max: "number",
-        },
+        // 生效的最小层数，从最新消息往回数，0 为最新
+        layerMin: "number",
+        // 生效的最大层数，null 表示无上限
+        layerMax: "number",
         // 是否禁用该规则，默认 false
         disabled: "boolean"
       }

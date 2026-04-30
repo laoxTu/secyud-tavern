@@ -47,9 +47,7 @@ function Navigation() {
     );
 }
 
-function CreateButtons({refreshList}: {
-    refreshList: () => Promise<void>
-}) {
+function CreateButtons({refreshList}: { refreshList: () => Promise<void> }) {
     const t = useTranslations();
     const {preset} = usePresetContext();
     if (!preset) {
@@ -113,10 +111,7 @@ function CreateButtons({refreshList}: {
     );
 }
 
-function Editor({entry, refreshList}: {
-    entry: any,
-    refreshList: () => Promise<void>
-}) {
+function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<void> }) {
 
     const t = useTranslations();
     const {preset} = usePresetContext();

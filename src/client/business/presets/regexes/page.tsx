@@ -1,20 +1,9 @@
-﻿'use client';
-import {useTranslations} from "next-intl";
-import {BookIcon} from "lucide-react";
+﻿import {useTranslations} from "next-intl";
+import {ChevronsDownIcon, ChevronsUpIcon, FolderOpenIcon, ReplaceIcon} from "lucide-react";
+import {TabConfig} from "@/client/components/tab";
 import {useErrorHandler} from "@/client/errors";
+import React, {useCallback, useState} from "react";
 import {del, get, post, put} from "@/client";
-import {toast} from "sonner";
-import React, {useCallback, useMemo, useState} from "react";
-import {usePager} from "@/client/components/pager";
-import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
-import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Switch} from "@/components/ui/switch";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {
     Dialog, DialogClose,
     DialogContent,
@@ -23,14 +12,14 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {ChevronsDownIcon, ChevronsUpIcon, FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import {Button} from "@/components/ui/button";
+import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {toast} from "sonner";
 import {Card, CardContent} from "@/components/ui/card";
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
+import {Switch} from "@/components/ui/switch";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -38,31 +27,28 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {Separator} from "@/components/ui/separator";
-import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import {TabConfig} from "@/client/components/tab";
+import {Textarea} from "@/components/ui/textarea";
+import {usePager} from "@/client/components/pager";
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {usePresetContext} from "@/client/business/presets";
-import {PaginationWrapper} from "@/client/components/pager/component";
-import {lorebookMatchEditorRegistry} from ".";
 import {PagedResult} from "@/shared/models";
-import {PresetModel} from "@/shared/business/presets";
+import {PaginationWrapper} from "@/client/components/pager/component";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
-export const tabConfigId = "lorebook";
+export const tabConfigId = "regex";
 
 function Navigation() {
     const t = useTranslations();
 
     return (
         <>
-            <BookIcon/>
-            {t("preset.lorebook")}
+            <ReplaceIcon/>
+            {t(`preset.${tabConfigId}`)}
         </>
     );
 }
 
-function CreateButtons({refreshLorebooks}: {
-    refreshLorebooks: () => Promise<void>
-}) {
+function CreateButtons({refreshList}: { refreshList: () => Promise<void> }) {
     const t = useTranslations();
     const {preset} = usePresetContext();
     if (!preset) {
@@ -75,11 +61,11 @@ function CreateButtons({refreshLorebooks}: {
         try {
             const params: any = {
                 name: data.get("name") as string,
-                matchType: "normal",
-                matchExpression: [],
-                content: "",
-                priorityLayer: 100,
-                priorityOrder: 100,
+                pattern: "",
+                replacement: "",
+                target: "both",
+                layerMin: -1,
+                layerMax: -1,
             };
             await post("/presets/{id}/entries/{entryType}", params, {
                 params: {
@@ -88,7 +74,7 @@ function CreateButtons({refreshLorebooks}: {
                 }
             });
             setCreateOpen(false);
-            await refreshLorebooks();
+            await refreshList();
         } catch (error) {
             handleError(error);
         }
@@ -111,8 +97,8 @@ function CreateButtons({refreshLorebooks}: {
                         </DialogHeader>
                         <FieldGroup>
                             <Field>
-                                <Label htmlFor={`lorebook-name`}>{t("default.name") + "*"}</Label>
-                                <Input id={`lorebook-name`} name="name"
+                                <Label htmlFor={`${tabConfigId}-name`}>{t("default.name") + "*"}</Label>
+                                <Input id={`${tabConfigId}-name`} name="name"
                                        required/>
                             </Field>
                         </FieldGroup>
@@ -129,31 +115,24 @@ function CreateButtons({refreshLorebooks}: {
     );
 }
 
-function Editor({entry, refreshLorebooks}: {
-    entry: any,
-    refreshLorebooks: () => Promise<void>
-}) {
-    const matchEditorRegistry = useMemo(() => lorebookMatchEditorRegistry, []);
-    const matchEditors = matchEditorRegistry.getSorted();
+function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<void> }) {
+
     const t = useTranslations();
     const {preset} = usePresetContext();
     if (!preset) {
         throw new Error("preset.not_found");
     }
     const {handleError} = useErrorHandler();
-    const [matchType, setMatchType] = useState<string>(entry.matchType);
-    const [editor, setEditor] = useState(matchEditorRegistry.records[matchType]);
-    const [matchExpression, setMatchExpression] = useState<string>(entry.matchExpression);
     const [isOpen, setIsOpen] = React.useState(true)
     const handleSubmit = async (data: FormData) => {
         try {
             const params: Record<string, any> = {
                 name: data.get("name") as string,
-                matchType: matchType,
-                matchExpression: matchExpression,
-                content: data.get("content") as string,
-                priorityLayer: Number(data.get("priorityLayer")),
-                priorityOrder: Number(data.get("priorityOrder")),
+                pattern: data.get("pattern") as string,
+                replacement: data.get("replacement") as string,
+                target: data.get("target") as string,
+                layerMin: Number(data.get("layerMin")),
+                layerMax: Number(data.get("layerMax")),
             };
 
             await put("/presets/{id}/entries/{entryType}/{entryId}", params, {
@@ -166,7 +145,7 @@ function Editor({entry, refreshLorebooks}: {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshList();
         } catch (error) {
             handleError(error);
         }
@@ -184,7 +163,7 @@ function Editor({entry, refreshLorebooks}: {
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshList();
         } catch (error) {
             handleError(error);
         }
@@ -202,20 +181,12 @@ function Editor({entry, refreshLorebooks}: {
             toast.success(t(enabled ? "default.enable_item" : "default.disable_item"), {
                 richColors: true
             });
-            await refreshLorebooks();
+            await refreshList();
         } catch (error) {
             handleError(error);
         }
-    }, [entry.id, handleError, preset.id, refreshLorebooks, t]);
-    const handleMatchTypeChange = useCallback((type: string) => {
-        setMatchType(type);
-        const newEditor = matchEditorRegistry.records[type];
-        setEditor(newEditor);
-        const isValid = newEditor.validate(matchExpression);
-        if (!isValid) {
-            setMatchExpression(newEditor.defaultValue);
-        }
-    }, [matchEditorRegistry, matchExpression]);
+    }, [entry.id, handleError, preset.id, refreshList, t]);
+
 
     return (
         <Card className={"w-full p-2"}>
@@ -231,11 +202,11 @@ function Editor({entry, refreshLorebooks}: {
                         </CollapsibleTrigger>
                         <div className="flex items-center space-x-2"
                              onClick={(e) => e.stopPropagation()}>
-                            <Switch id={`lorebook-disabled-${entry.id}`}
+                            <Switch id={`${tabConfigId}-disabled-${entry.id}`}
                                     defaultChecked={!entry.disabled}
                                     onCheckedChange={handleDisableSet}/>
                             <Label className={"min-w-12"}
-                                   htmlFor={`lorebook-disabled-${entry.id}`}>
+                                   htmlFor={`${tabConfigId}-disabled-${entry.id}`}>
                                 {t("default.enabled")}
                             </Label>
                         </div>
@@ -272,74 +243,85 @@ function Editor({entry, refreshLorebooks}: {
                                     <FieldGroup>
                                         <div className="grid grid-cols-2 gap-4">
                                             <Field>
-                                                <FieldLabel htmlFor={`lorebook-name-${entry.id}`}>
+                                                <FieldLabel htmlFor={`${tabConfigId}-name-${entry.id}`}>
                                                     {t("default.name")}
                                                 </FieldLabel>
                                                 <Input name="name"
-                                                       id={`lorebook-name-${entry.id}`}
+                                                       id={`${tabConfigId}-name-${entry.id}`}
                                                        defaultValue={entry.name}/>
                                             </Field>
                                             <Field>
-                                                <FieldLabel>
-                                                    {t("lorebook.match_type")}
+                                                <FieldLabel htmlFor={`${tabConfigId}-target-${entry.id}`}>
+                                                    {t("regex.target")}
                                                 </FieldLabel>
-                                                <Select name="matchType"
-                                                        value={matchType}
-                                                        onValueChange={handleMatchTypeChange}>
+                                                <Select name="target">
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue/>
+                                                        <SelectValue id={`${tabConfigId}-target-${entry.id}`}
+                                                                     defaultValue={entry.target}/>
                                                     </SelectTrigger>
                                                     <SelectContent position="popper">
                                                         <SelectGroup>
-                                                            {matchEditors.map((e) =>
-                                                                <SelectItem key={e.id} value={e.id}>
-                                                                    {t(`lorebook.match_type_${e.id}`)}
-                                                                </SelectItem>
-                                                            )}
+                                                            <SelectItem value={"both"}>
+                                                                {t(`regex.target_both`)}
+                                                            </SelectItem>
+                                                            <SelectItem value={"input"}>
+                                                                {t(`regex.target_input`)}
+                                                            </SelectItem>
+                                                            <SelectItem value={"output"}>
+                                                                {t(`regex.target_output`)}
+                                                            </SelectItem>
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
                                             </Field>
                                         </div>
-                                        {editor && (
-                                            () => {
-                                                const EditorComponent = editor.component;
-                                                return <EditorComponent value={matchExpression}
-                                                                        onValueChanged={setMatchExpression}/>;
-                                            }
-                                        )()}
+                                        <Field>
+                                            <FieldLabel htmlFor={`${tabConfigId}-pattern-${entry.id}`}>
+                                                {t("regex.pattern")}
+                                            </FieldLabel>
+                                            <Input name="pattern"
+                                                   id={`${tabConfigId}-pattern-${entry.id}`}
+                                                   defaultValue={entry.pattern}/>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor={`${tabConfigId}-replacement-${entry.id}`}>
+                                                {t("regex.replacement")}
+                                            </FieldLabel>
+                                            <Textarea name="replacement"
+                                                      id={`${tabConfigId}-replacement-${entry.id}`}
+                                                      defaultValue={entry.replacement}/>
+                                        </Field>
+
                                         <div className="grid grid-cols-2 gap-4">
                                             <Field>
-                                                <FieldLabel htmlFor={`lorebook-priorityLayer-${entry.id}`}>
-                                                    {t("lorebook.priority_layer")}
+                                                <FieldLabel htmlFor={`${tabConfigId}-layerMin-${entry.id}`}>
+                                                    {t("regex.layer_min")}
                                                 </FieldLabel>
-                                                <Input name="priorityLayer" type={"number"}
-                                                       id={`lorebook-priorityLayer-${entry.id}`}
-                                                       defaultValue={entry.priorityLayer}/>
+                                                <Input name="layerMin"
+                                                       type="text"
+                                                       inputMode="numeric"
+                                                       pattern="[0-9]*"
+                                                       id={`${tabConfigId}-layerMin-${entry.id}`}
+                                                       defaultValue={entry.layerMin}/>
                                             </Field>
                                             <Field>
-                                                <FieldLabel htmlFor={`lorebook-priorityOrder-${entry.id}`}>
-                                                    {t("lorebook.priority_order")}
+                                                <FieldLabel htmlFor={`${tabConfigId}-layerMax-${entry.id}`}>
+                                                    {t("regex.layer_max")}
                                                 </FieldLabel>
-                                                <Input name="priorityOrder" type={"number"}
-                                                       id={`lorebook-priorityOrder-${entry.id}`}
-                                                       defaultValue={entry.priorityOrder}/>
+                                                <Input name="layerMax"
+                                                       type="text"
+                                                       inputMode="numeric"
+                                                       pattern="[0-9]*"
+                                                       id={`${tabConfigId}-layerMax-${entry.id}`}
+                                                       defaultValue={entry.layerMax}/>
                                             </Field>
                                         </div>
-                                        <Field>
-                                            <FieldLabel htmlFor={`lorebook-content-${entry.id}`}>
-                                                {t("default.content")}
-                                            </FieldLabel>
-                                            <Textarea name="content"
-                                                      id={`lorebook-content-${entry.id}`}
-                                                      defaultValue={entry.content}/>
-                                        </Field>
                                     </FieldGroup>
                                 </FieldSet>
                                 <Field orientation="horizontal">
                                     <Button type="submit">{t("default.save")}</Button>
                                     <Button type="button" variant={"outline"}
-                                            onClick={refreshLorebooks}>{t("default.reset")}</Button>
+                                            onClick={refreshList}>{t("default.reset")}</Button>
                                 </Field>
                             </FieldGroup>
                         </form>
@@ -352,12 +334,10 @@ function Editor({entry, refreshLorebooks}: {
 
 function Content() {
     const t = useTranslations();
-    const {handleError} = useErrorHandler();
-    const {preset, refreshPreset} = usePresetContext();
+    const {preset} = usePresetContext();
     if (!preset) {
         throw new Error("preset.not_found");
     }
-    const [searchInput, setSearchInput] = useState('');
     const pager = usePager({
         fetcher: async params => await get("/presets/{id}/entries/{entryType}",
             {
@@ -370,58 +350,9 @@ function Content() {
         defaultPageSize: 5
     });
 
-    const handleSubmit = async (data: FormData) => {
-        try {
-            const includeName = data.get("includeName") as boolean | null;
-            const params: Partial<PresetModel> = {
-                content: {
-                    "lorebook": {
-                        includeName: includeName ?? false
-                    }
-                },
-            };
-            await put("/presets/{id}", params, {
-                params: {"id": preset.id,}
-            });
-            toast.success(t("default.saved_successfully"), {
-                richColors: true
-            });
-            await refreshPreset();
-        } catch (error) {
-            handleError(error);
-        }
-    };
 
     return (
         <div className={"flex w-full h-full"}>
-            <form action={handleSubmit}
-                  className={"w-48"}>
-                <FieldGroup className={"flex flex-col h-full"}>
-                    <FieldSet className={"flex-1 p-2 overflow-auto"}>
-                        <FieldGroup>
-                            <Field orientation={"horizontal"}>
-                                <Checkbox name="includeName" id="preset-lorebook-includeName"
-                                          defaultChecked={preset.content.lorebook?.includeName ?? false}/>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Label htmlFor="preset-lorebook-includeName">
-                                            {t("lorebook.include_name")}
-                                        </Label>
-                                    </TooltipTrigger>
-                                    <TooltipContent className={"max-w-xs"}>
-                                        <p>{t("lorebook.include_name_description")}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </Field>
-                        </FieldGroup>
-                    </FieldSet>
-                    <Field orientation="horizontal">
-                        <Button type="submit">{t("default.save")}</Button>
-                        <Button type="button" variant={"outline"} onClick={refreshPreset}>{t("default.reset")}</Button>
-                    </Field>
-                </FieldGroup>
-            </form>
-            <Separator orientation={"vertical"}/>
             {pager.pageCount === 0 && !pager.search && !pager.loading ?
                 <div className={"flex flex-1 h-full pb-24"}>
                     <Empty className={"m-auto"}>
@@ -435,35 +366,18 @@ function Content() {
                             </EmptyDescription>
                         </EmptyHeader>
                         <EmptyContent className="flex-row justify-center gap-2">
-                            <CreateButtons refreshLorebooks={() => pager.refresh()}/>
+                            <CreateButtons refreshList={() => pager.refresh()}/>
                         </EmptyContent>
                     </Empty>
                 </div> :
                 <div className={"flex-1 flex flex-col p-2 gap-1"}>
-                    <div className="flex gap-2 p-2">
-                        <form action={p => pager.doSearch(p.get("search") as string)}
-                              className={"flex-1"}>
-                            <InputGroup>
-                                <InputGroupInput name="search" id="preset-list-search"
-                                                 placeholder={t("default.search")}
-                                                 value={searchInput}
-                                                 onChange={(e) => setSearchInput(e.target.value)}/>
-                                <InputGroupAddon align={"inline-end"}>
-                                    <InputGroupButton onClick={() => pager.doSearch(undefined)}>
-                                        <XIcon/>
-                                    </InputGroupButton>
-                                    <InputGroupButton type="submit">
-                                        <SearchIcon/>
-                                    </InputGroupButton>
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </form>
-                        <CreateButtons refreshLorebooks={() => pager.refresh()}/>
+                    <div className="flex gap-2 flex-row-reverse p-2">
+                        <CreateButtons refreshList={() => pager.refresh()}/>
                     </div>
                     <div className="flex-1 overflow-auto space-y-2 p-2">
                         {pager.data.map((data, i) =>
                             <Editor key={i} entry={data}
-                                    refreshLorebooks={() => pager.refresh()}/>
+                                    refreshList={() => pager.refresh()}/>
                         )}
                     </div>
                     <div className="w-full p-1">

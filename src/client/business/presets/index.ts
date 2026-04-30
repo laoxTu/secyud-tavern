@@ -7,6 +7,7 @@ import {tabConfig as normalTab} from "./normal/page";
 import {tabConfig as lorebookTab} from "./lorebooks/page";
 import {tabConfig as styleTab} from "./styles/page";
 import {tabConfig as scriptTab} from "./scripts/page";
+import {tabConfig as regexTab} from "./regexes/page";
 
 export const presetTabManager = new TabManager("preset tabs");
 
@@ -34,6 +35,7 @@ export function registerPreset() {
             lorebookTab,
             scriptTab,
             styleTab,
+            regexTab,
         );
     registerLorebook();
 }
