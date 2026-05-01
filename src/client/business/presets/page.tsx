@@ -166,7 +166,7 @@ function Content() {
                     }
                 </ResizablePanel>
                 <ResizableHandle withHandle/>
-                <ResizablePanel minSize="480px">
+                <ResizablePanel minSize="560px">
                     <PresetContent key={key}/>
                 </ResizablePanel>
             </ResizablePanelGroup>

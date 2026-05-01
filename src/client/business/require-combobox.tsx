@@ -12,21 +12,21 @@ import {
     ComboboxValue, useComboboxAnchor
 } from "@/components/ui/combobox";
 import {useTranslations} from "next-intl";
-import {ComboboxChangeHandler} from "@/client/components/combobox";
 import {PagedResult} from "@/shared/models";
 import {PresetModel} from "@/shared/business/presets";
 
 interface RequiresComboboxProps {
-    value: any[]
-    onValueChange?: ComboboxChangeHandler  // 使用类型别名
-    id?: string
+    defaultValue: RequireModel[],
+    name?: string,
+    id?: string,
 }
 
-export default function RequireCombobox({value, onValueChange, id}: RequiresComboboxProps) {
+export default function RequireCombobox({defaultValue, name, id}: RequiresComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();
     const {handleError} = useErrorHandler();
     const [searchRequires, setSearchRequires] = useState<RequireModel[]>([]);
+    const [value, setValue] = useState<RequireModel[]>(defaultValue);
     const [needSearch, setNeedSearch] = useState(true);
     const [searchValue, setSearchValue] = useState<string | undefined>();
     const handleSearchRequires = useCallback(async (search: string | undefined) => {
@@ -59,10 +59,10 @@ export default function RequireCombobox({value, onValueChange, id}: RequiresComb
     return (
         <Combobox multiple
                   autoHighlight
-                  name="requires"
+                  name={name}
                   id={id}
                   value={value}
-                  onValueChange={onValueChange}
+                  onValueChange={setValue}
                   onInputValueChange={e => handleSearchRequires(e)}
                   items={(() => {
                       const dict: Record<string, RequireModel> = {};

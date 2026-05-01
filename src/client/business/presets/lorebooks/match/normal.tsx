@@ -1,23 +1,24 @@
 ﻿'use client';
-import {MatchEditorProps, MatchEditor} from ".";
+import {MatchEditor, MatchEditorProps} from ".";
 import {CustomCombobox} from "@/client/components/combobox";
 import {Field, FieldLabel} from "@/components/ui/field";
 import React from "react";
 import {useTranslations} from "next-intl";
 
 const configId = "normal";
-const defaultValue = [] as const;
-const validate = (value: any) =>
-    Array.isArray(value) && value.every(item => typeof item === 'string');
 
-function Content({value, onValueChanged}: MatchEditorProps) {
+function Content({defaultValue}: MatchEditorProps) {
     const t = useTranslations();
+    if (!Array.isArray(defaultValue) && !defaultValue.every((item: any) => typeof item === "string"))
+        defaultValue = [];
+
     return (
         <Field>
-            <FieldLabel>
+            <FieldLabel htmlFor={"lorebook-keyword"}>
                 {t("lorebook.include_any_word")}
             </FieldLabel>
-            <CustomCombobox value={value} onValueChange={onValueChanged}/>
+            <CustomCombobox id={"lorebook-keyword"} name={"keyword"}
+                            defaultValue={defaultValue}/>
         </Field>
     );
 }
@@ -26,6 +27,7 @@ export const config: MatchEditor =
     {
         id: configId,
         component: Content,
-        defaultValue: defaultValue,
-        validate: validate
+        getValue: (data) => {
+            return data.getAll("keyword") as string[];
+        }
     } as const;

@@ -5,9 +5,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {FileIcon} from "lucide-react";
-import {useState} from "react";
 import {toast} from "sonner";
-import {RequireModel} from "@/shared/business";
 import {PresetModel} from "@/shared/business/presets";
 import {put} from "@/client";
 import {useErrorHandler} from "@/client/errors";
@@ -41,8 +39,6 @@ function Content() {
         throw new Error("preset.not_found");
     }
 
-    const [tags, setTags] = useState(preset.tags);
-    const [requires, setRequires] = useState<RequireModel[]>(preset.requires);
     const handleSubmit = async (data: FormData) => {
         try {
             const params: Partial<PresetModel> = {
@@ -51,8 +47,8 @@ function Content() {
                 },
                 version: data.get("version") as string,
                 name: data.get("name") as string,
-                requires: requires,
-                tags: tags,
+                requires: data.getAll("require").map(u => JSON.parse(u as string)),
+                tags: data.getAll("tag") as string[],
             };
             await put("/presets/{id}", params, {
                 params: {"id": preset.id,}
@@ -113,7 +109,7 @@ function Content() {
                                 <FieldLabel htmlFor="preset-normal-tags">
                                     {t("default.tags")}
                                 </FieldLabel>
-                                <CustomCombobox value={tags} onValueChange={e => setTags(e)}
+                                <CustomCombobox defaultValue={preset.tags} name={"tag"}
                                                 id="preset-normal-tags" extraValue={defaultTags}/>
                             </Field>
                             <Field>
@@ -122,8 +118,8 @@ function Content() {
                                 </FieldLabel>
                                 <RequireCombobox
                                     id="preset-normal-requires"
-                                    value={requires}
-                                    onValueChange={e => setRequires(e)}/>
+                                    name={"require"}
+                                    defaultValue={preset.requires}/>
                             </Field>
                         </div>
                         <Field>
@@ -145,6 +141,7 @@ function Content() {
         </form>
     );
 }
+
 export const tabConfig: TabConfig = {
     id: tabConfigId, label: Navigation, component: Content
 }

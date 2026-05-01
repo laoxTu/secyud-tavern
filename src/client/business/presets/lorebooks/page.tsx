@@ -143,17 +143,16 @@ function Editor({entry, refreshLorebooks}: {
     const {handleError} = useErrorHandler();
     const [matchType, setMatchType] = useState<string>(entry.matchType);
     const [editor, setEditor] = useState(matchEditorRegistry.records[matchType]);
-    const [matchExpression, setMatchExpression] = useState<string>(entry.matchExpression);
     const [isOpen, setIsOpen] = React.useState(true)
     const handleSubmit = async (data: FormData) => {
         try {
             const params: Record<string, any> = {
                 name: data.get("name") as string,
                 matchType: matchType,
-                matchExpression: matchExpression,
+                matchExpression: editor.getValue(data),
                 content: data.get("content") as string,
-                priorityLayer: Number(data.get("priorityLayer")),
-                priorityOrder: Number(data.get("priorityOrder")),
+                priorityLayer: parseInt(data.get("priorityLayer") as string),
+                priorityOrder: parseInt(data.get("priorityOrder") as string),
             };
 
             await put("/presets/{id}/entries/{entryType}/{entryId}", params, {
@@ -211,23 +210,17 @@ function Editor({entry, refreshLorebooks}: {
         setMatchType(type);
         const newEditor = matchEditorRegistry.records[type];
         setEditor(newEditor);
-        const isValid = newEditor.validate(matchExpression);
-        if (!isValid) {
-            setMatchExpression(newEditor.defaultValue);
-        }
-    }, [matchEditorRegistry, matchExpression]);
+    }, [matchEditorRegistry]);
 
     return (
-        <Card className={"w-full p-2"}>
+        <Card className={"w-full"}>
             <CardContent>
-                <Collapsible className="rounded-md"
-                             open={isOpen}
-                             onOpenChange={setIsOpen}>
-                    <div className={"flex w-full gap-4"}>
+                <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                    <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
-                            <label className={"w-full"}>
+                            <div className={"w-full m-auto px-2"}>
                                 {entry.name}
-                            </label>
+                            </div>
                         </CollapsibleTrigger>
                         <div className="flex items-center space-x-2"
                              onClick={(e) => e.stopPropagation()}>
@@ -265,7 +258,7 @@ function Editor({entry, refreshLorebooks}: {
                             </Button>
                         </CollapsibleTrigger>
                     </div>
-                    <CollapsibleContent>
+                    <CollapsibleContent asChild className={"p-1"}>
                         <form action={handleSubmit}>
                             <FieldGroup>
                                 <FieldSet>
@@ -280,13 +273,14 @@ function Editor({entry, refreshLorebooks}: {
                                                        defaultValue={entry.name}/>
                                             </Field>
                                             <Field>
-                                                <FieldLabel>
+                                                <FieldLabel htmlFor={"lorebook-match_type"}>
                                                     {t("lorebook.match_type")}
                                                 </FieldLabel>
                                                 <Select name="matchType"
                                                         value={matchType}
                                                         onValueChange={handleMatchTypeChange}>
-                                                    <SelectTrigger className="w-full">
+                                                    <SelectTrigger className="w-full"
+                                                                   id={"lorebook-match_type"}>
                                                         <SelectValue/>
                                                     </SelectTrigger>
                                                     <SelectContent position="popper">
@@ -304,8 +298,7 @@ function Editor({entry, refreshLorebooks}: {
                                         {editor && (
                                             () => {
                                                 const EditorComponent = editor.component;
-                                                return <EditorComponent value={matchExpression}
-                                                                        onValueChanged={setMatchExpression}/>;
+                                                return <EditorComponent defaultValue={entry.matchExpression}/>;
                                             }
                                         )()}
                                         <div className="grid grid-cols-2 gap-4">

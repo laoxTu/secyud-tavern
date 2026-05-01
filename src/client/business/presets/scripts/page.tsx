@@ -125,7 +125,7 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
             const params: Record<string, any> = {
                 name: data.get("name") as string,
                 content: data.get("content") as string,
-                priority: Number(data.get("priority")),
+                priority: parseInt(data.get("priority") as string),
             };
 
             await put("/presets/{id}/entries/{entryType}/{entryId}", params, {
@@ -182,14 +182,12 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
 
 
     return (
-        <Card className={"w-full p-2"}>
+        <Card className={"w-full"}>
             <CardContent>
-                <Collapsible className="rounded-md"
-                             open={isOpen}
-                             onOpenChange={setIsOpen}>
-                    <div className={"flex w-full gap-4"}>
+                <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                    <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
-                            <label className={"w-full"}>
+                            <label className={"w-full m-auto px-2"}>
                                 {entry.name}
                             </label>
                         </CollapsibleTrigger>
@@ -229,7 +227,7 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
                             </Button>
                         </CollapsibleTrigger>
                     </div>
-                    <CollapsibleContent>
+                    <CollapsibleContent asChild className={"p-1"}>
                         <form action={handleSubmit}>
                             <FieldGroup>
                                 <FieldSet>

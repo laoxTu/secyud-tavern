@@ -132,8 +132,8 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
                 pattern: data.get("pattern") as string,
                 replacement: data.get("replacement") as string,
                 target: data.get("target") as string,
-                layerMin: Number(data.get("layerMin")),
-                layerMax: Number(data.get("layerMax")),
+                layerMin: parseInt(data.get("layerMin") as string),
+                layerMax: parseInt(data.get("layerMax") as string),
             };
 
             await put("/presets/{id}/entries/{entryType}/{entryId}", params, {
@@ -190,14 +190,12 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
 
 
     return (
-        <Card className={"w-full p-2"}>
+        <Card className={"w-full"}>
             <CardContent>
-                <Collapsible className="rounded-md"
-                             open={isOpen}
-                             onOpenChange={setIsOpen}>
-                    <div className={"flex w-full gap-4"}>
+                <Collapsible  open={isOpen} onOpenChange={setIsOpen}>
+                    <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
-                            <label className={"w-full"}>
+                            <label className={"w-full m-auto px-2"}>
                                 {entry.name}
                             </label>
                         </CollapsibleTrigger>
@@ -237,7 +235,7 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
                             </Button>
                         </CollapsibleTrigger>
                     </div>
-                    <CollapsibleContent>
+                    <CollapsibleContent asChild className={"p-1"}>
                         <form action={handleSubmit}>
                             <FieldGroup>
                                 <FieldSet>
@@ -255,10 +253,9 @@ function Editor({entry, refreshList}: { entry: any, refreshList: () => Promise<v
                                                 <FieldLabel htmlFor={`${tabConfigId}-target-${entry.id}`}>
                                                     {t("regex.target")}
                                                 </FieldLabel>
-                                                <Select name="target">
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue id={`${tabConfigId}-target-${entry.id}`}
-                                                                     defaultValue={entry.target}/>
+                                                <Select name="target" defaultValue={entry.target}>
+                                                    <SelectTrigger className="w-full" id={`${tabConfigId}-target-${entry.id}`}>
+                                                        <SelectValue/>
                                                     </SelectTrigger>
                                                     <SelectContent position="popper">
                                                         <SelectGroup>
