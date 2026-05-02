@@ -5,6 +5,69 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}/disabled"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id}/export contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\export\\route.ts",
+      "routePath": "/llmapis/{id}/export"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
+      "routePath": "/llmapis/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
+      "routePath": "/llmapis/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
+      "routePath": "/llmapis/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
       "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled"
@@ -130,31 +193,31 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.09149999999999636,
-    "loadCustomFragmentsMs": 0.0005999999999630745,
-    "prepareDocumentMs": 0.09209999999995944,
-    "scanRouteFilesMs": 2.064199999999971,
-    "deriveRoutePathMs": 0.26129999999977827,
-    "filterRouteCandidatesMs": 0.023700000000076216,
-    "sourcePrecheckMs": 1.2489999999997963,
-    "readRouteFilesMs": 0.9079000000000406,
-    "parseRouteFilesMs": 10.71369999999979,
-    "analyzeRouteFilesMs": 9.173099999999522,
+    "prepareTemplateMs": 0.08789999999999054,
+    "loadCustomFragmentsMs": 0.00050000000004502,
+    "prepareDocumentMs": 0.08840000000003556,
+    "scanRouteFilesMs": 2.621399999999994,
+    "deriveRoutePathMs": 0.32200000000028695,
+    "filterRouteCandidatesMs": 0.134900000000016,
+    "sourcePrecheckMs": 1.668099999999754,
+    "readRouteFilesMs": 1.2763999999996258,
+    "parseRouteFilesMs": 8.954000000000292,
+    "analyzeRouteFilesMs": 8.775699999999631,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 20.090799999999433,
-    "registerRouteMs": 596.8293999999996,
-    "getSchemaContentMs": 422.3843999999999,
-    "createRequestParamsMs": 0.6355999999998971,
+    "processRouteFilesMs": 17.950300000000198,
+    "registerRouteMs": 753.5337999999996,
+    "getSchemaContentMs": 381.39519999999976,
+    "createRequestParamsMs": 0.5497000000002004,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 172.46100000000018,
+    "processResponsesMs": 370.1284000000005,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 596.8791000000001,
-    "sortAndMergePathsMs": 0.4454000000000633,
-    "buildPathsMs": 0.4454000000000633,
-    "defaultComponentsAndErrorsMs": 0.17270000000007713,
-    "mergeSchemasMs": 0.3328000000001339,
-    "finalizeDocumentMs": 2.880100000000084,
-    "totalMs": 625.0661,
-    "scanRoutesMs": 619.0340999999995
+    "buildOperationsMs": 753.5886999999999,
+    "sortAndMergePathsMs": 0.5824000000000069,
+    "buildPathsMs": 0.5824000000000069,
+    "defaultComponentsAndErrorsMs": 0.17699999999990723,
+    "mergeSchemasMs": 0.3987999999999374,
+    "finalizeDocumentMs": 4.043800000000147,
+    "totalMs": 782.2064,
+    "scanRoutesMs": 774.1604000000001
   }
 }

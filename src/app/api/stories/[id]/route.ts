@@ -1,26 +1,20 @@
-﻿
-import {NextResponse} from 'next/server';
-import {validate} from "uuid";
-import {eq} from "drizzle-orm";
-import {presetRepository, presets} from "@/server/business/presets";
+﻿import {storyRepository as repository} from "@/server/business/stories";
 import {interceptor} from "@/server/interceptor";
-import {PresetModel} from "@/shared/business/presets";
+import {
+    generateDeleteModelApi,
+    generateGetModelApi,
+    generateUpdateModelApi
+} from "@/app/api/template";
 
 /**
  * 获取预设
  * @pathParams { id:string }
  * @params { withDetails:boolean }
- * @response PresetModel
+ * @response StoryModel
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    async (request, records) => {
-        const {id} = await records.context.params;
-        const {withDetails} = records.searchParams as { withDetails?: boolean };
-        const model = await presetRepository.get(id, withDetails,
-            eq(validate(id) ? presets.id : presets.code, id));
-        return NextResponse.json(model);
-    }
+    generateGetModelApi(repository)
 )
 
 /**
@@ -30,12 +24,7 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    async (request, records) => {
-        const {id} = await records.context.params;
-        const model = records.body as Partial<PresetModel>;
-        await presetRepository.update(id, model);
-        return NextResponse.json(null);
-    }
+    generateUpdateModelApi(repository)
 )
 
 /**
@@ -44,9 +33,5 @@ export const PUT = interceptor.createRoute(
  * @openapi
  */
 export const DELETE = interceptor.createRoute(
-    async (request, records) => {
-        const {id} = await records.context.params;
-        await presetRepository.delete(id);
-        return NextResponse.json(null);
-    }
+    generateDeleteModelApi(repository)
 )

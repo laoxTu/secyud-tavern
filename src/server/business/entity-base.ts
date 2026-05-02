@@ -1,7 +1,6 @@
 ﻿
 import {integer, primaryKey, SQLiteColumn, sqliteTable, text, UpdateDeleteAction} from "drizzle-orm/sqlite-core";
 import {customType} from "drizzle-orm/sqlite-core";
-import {RequireModel} from "@/shared/business";
 
 export type BaseEntity = { [x: string]: any; };
 
@@ -25,7 +24,6 @@ export function masterTable(tableName: string, extraColumns: any = {}) {
         id: text("id").primaryKey(),
         name: text("name").notNull(),
         content: text("content").notNull(),
-        requires: jsonArray<RequireModel>("requires").default([]),
         ...extraColumns,
         createdAt: text("created_at").notNull(),
         updatedAt: text("updated_at").notNull(),

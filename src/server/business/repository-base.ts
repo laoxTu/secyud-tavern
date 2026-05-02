@@ -8,6 +8,24 @@ import {BaseModel} from "@/shared/business";
 import {v4 as uuidv4, validate} from 'uuid';
 import {BusinessError} from "@/shared/errors";
 
+export type ConditionFunc = (table: any) => SQL;
+
+export interface Repository<TModel> {
+    get: (id: string, withDetails?: boolean, conditionFunc?: ConditionFunc) => Promise<TModel | null>,
+    getList: (options: PageOptions, conditionFunc?: ConditionFunc) => Promise<PagedResult<TModel>>,
+    create: (model: TModel) => Promise<string>,
+    update: (id: string, model: Partial<TModel>) => Promise<void>,
+    delete: (id: string) => Promise<void>,
+    exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
+    entry: {
+        getList: (masterId: string, type: string, options?: PageOptions) => Promise<PagedResult<any>>,
+        batchCreate: (masterId: string, type: string, entryList: any[]) => Promise<void>,
+        create: (masterId: string, type: string, entry: any) => Promise<number>,
+        setDisabled: (masterId: string, type: string, entryId: number, disabled: boolean) => Promise<void>,
+        update: (masterId: string, type: string, entryId: number, entry: any) => Promise<void>,
+        delete: (masterId: string, type: string, entryId: number) => Promise<void>,
+    }
+}
 
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
@@ -16,21 +34,23 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     saveModel: (model: TModel) => Promise<void>,
     bindSearch: (type: string, entry: any) => string,
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
-    mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined) {
+    mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 
     const db = databaseManager.db;
     const repository = {
 
-        get: async (id: string, withDetails: boolean = false, whereClause: SQL = eq(masters.id, id)): Promise<TModel | null> => {
+        get: async (id: string, withDetails: boolean = false, conditionFunc?: ConditionFunc): Promise<TModel | null> => {
+
+            const condition = conditionFunc?.(masters) ?? eq(masters.id, id);
             const entity =
-                await db.select().from(masters).where(whereClause).get();
+                await db.select().from(masters)
+                    .where(condition).get();
             if (!entity) return null;
 
             const model = {
                 id: entity.id,
                 name: entity.name,
                 content: JSON.parse(entity.content),
-                requires: entity.requires,
                 ...(mapToModel?.(entity) ?? {})
             } as TModel;
 
@@ -43,12 +63,11 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             return model;
         },
 
-        getList: async (options: PageOptions, conditions: (table: TMaster) => SQL | SQL[]): Promise<PagedResult<TModel>> => {
+        getList: async (options: PageOptions, conditionFunc?: ConditionFunc): Promise<PagedResult<TModel>> => {
             const {page = 0, pageSize = 20} = options;
             const offset = page * pageSize;
 
-            const whereClause = conditions(masters);
-            const condition = whereClause instanceof SQL ? whereClause : and(...whereClause);
+            const condition = conditionFunc?.(masters);
 
             const [countResult] = await db
                 .select({count: sql<number>`count(*)`})
@@ -79,7 +98,6 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 id: validate(model.id) ? model.id : uuidv4(),
                 name: model.name,
                 content: JSON.stringify(model.content),
-                requires: model.requires,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 ...(mapToEntity?.(model) ?? {})
@@ -111,18 +129,6 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 ...exist.content,
                 ...model.content
             });
-            if (model.requires !== undefined) {
-                const isChanged =
-                    model.requires.length !== exist.requires.length ||
-                    model.requires.some((req, i) =>
-                        req.code !== exist.requires[i]?.code ||
-                        req.version !== exist.requires[i]?.version
-                    );
-
-                if (isChanged) {
-                    updateData.requires = model.requires;
-                }
-            }
 
             await db
                 .update(masters)
@@ -138,14 +144,13 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
         /**
          * 检查记录是否存在（使用 lambda 构建条件）
-         * @param conditions Lambda 函数，传入表对象，返回 SQL 条件
+         * @param conditionFunc Lambda 函数，传入表对象，返回 SQL 条件
          * @example
          * await repository.exist((t) => eq(t.name, 'test'))
          * await repository.exist((t) => and(eq(t.name, 'test'), eq(t.status, 'active')))
          */
-        exist: async (conditions: (table: TMaster) => SQL | SQL[]): Promise<boolean> => {
-            const whereClause = conditions(masters);
-            const condition = whereClause instanceof SQL ? whereClause : and(...whereClause);
+        exist: async (conditionFunc: ConditionFunc): Promise<boolean> => {
+            const condition = conditionFunc(masters);
 
             const result = await db
                 .select({count: sql<number>`count(*)`})
@@ -158,8 +163,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
         entry: {
 
-            getList: async (masterId: string, type: string, options: PageOptions = {}): Promise<PagedResult<any>> => {
-                const {page, pageSize, search} = options;
+            getList: async (masterId: string, type: string, options?: PageOptions): Promise<PagedResult<any>> => {
+                const {page, pageSize, search} = options ?? {};
 
                 const condition = [
                     eq(entries.masterId, masterId),
@@ -260,7 +265,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             },
 
             update: async (masterId: string, type: string, entryId: number, entry: any) => {
-                if (entry === undefined) return entryId;
+                if (entry === undefined) return;
 
                 const updateData: Record<string, unknown> = {
                     updatedAt: new Date().toISOString(),

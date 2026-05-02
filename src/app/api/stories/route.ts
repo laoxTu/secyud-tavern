@@ -1,11 +1,7 @@
-﻿
-import {NextResponse} from 'next/server';
-import {eq, like, or, SQL} from "drizzle-orm";
+﻿import {and, like, SQL} from "drizzle-orm";
 import {interceptor} from "@/server/interceptor";
 import {storyRepository as repository} from "@/server/business/stories";
-import {BusinessError} from "@/shared/errors";
-import {PageOptions} from "@/shared/models";
-import {StoryModel} from "@/shared/business/stories";
+import {generateCreateModelApi, generateGetModelListApi} from "@/app/api/template";
 
 /**
  * 获取预设分页列表
@@ -14,19 +10,15 @@ import {StoryModel} from "@/shared/business/stories";
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    async (request, records) => {
-        const options = records.searchParams as PageOptions;
-        const models = await repository.getList(options,
-            (e): SQL | SQL[] => {
-                const conditions: SQL[] = [];
-                if (options.search) {
-                    conditions.push(like(e.name, `%${options.search}%`));
-                }
+    generateGetModelListApi(repository, search => table => {
+        const conditions: SQL[] = [];
+        const fuzzy = search?.fuzzy;
+        if (fuzzy && fuzzy !== "") {
+            conditions.push(like(table.name, `%${fuzzy}%`) as SQL);
+        }
 
-                return or(...conditions) ?? [];
-            });
-        return NextResponse.json(models);
-    }
+        return and(...conditions) as SQL;
+    })
 )
 
 /**
@@ -37,24 +29,5 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const POST = interceptor.createRoute(
-    async (request, records) => {
-        const model = records.body as StoryModel;
-        const {isImport} = records.searchParams as { isImport?: boolean };
-        if (model.name === "") {
-            throw new BusinessError("No name provided", "errors.empty_field")
-                .withValue("field", "default.name");
-        }
-
-        if (isImport) {
-            model.id = "";
-        } else if (await repository.exist(e => (eq(e.id, model.id)))) {
-            throw new BusinessError("Code already exists", "errors.duplicate_field")
-                .withValue("field", "default.id")
-                .withValue("entity_name", "preset.story")
-                ;
-        }
-
-        const res = await repository.create(model);
-        return NextResponse.json({id: res});
-    }
+    generateCreateModelApi(repository)
 )

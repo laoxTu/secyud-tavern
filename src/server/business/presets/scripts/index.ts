@@ -8,12 +8,12 @@ const type = "script";
 export const scriptStorageProvider: ModelStorageProvider<PresetModel> = {
     id: type,
     loadModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         const entries = await repository.entry.getList(model.id, type);
         model.entries.scripts = entries.data;
     },
     saveModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         if (Array.isArray(model.entries.scripts)) {
             await repository.entry.batchCreate(model.id, type, model.entries.script);
         }

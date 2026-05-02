@@ -4,6 +4,113 @@
  */
 
 export interface paths {
+    "/llmapis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取预设分页列表 */
+        get: operations["get-llmapis"];
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-llmapis"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/llmapis/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取预设 */
+        get: operations["get-llmapis-{id}"];
+        /** 更新预设 */
+        put: operations["put-llmapis-{id}"];
+        post?: never;
+        /** 删除预设 */
+        delete: operations["delete-llmapis-{id}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/llmapis/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取预设 */
+        get: operations["get-llmapis-{id}-export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/llmapis/{id}/entries/{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取条目分页列表 */
+        get: operations["get-llmapis-{id}-entries-{entryType}"];
+        put?: never;
+        /** 创建条目 */
+        post: operations["post-llmapis-{id}-entries-{entryType}"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/llmapis/{id}/entries/{entryType}/{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-llmapis-{id}-entries-{entryType}-{entryId}"];
+        post?: never;
+        /** 删除条目 */
+        delete: operations["delete-llmapis-{id}-entries-{entryType}-{entryId}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/llmapis/{id}/entries/{entryType}/{entryId}/disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-llmapis-{id}-entries-{entryType}-{entryId}-disabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/presets": {
         parameters: {
             query?: never;
@@ -226,16 +333,24 @@ export interface components {
         BaseModel: {
             id: string;
             name: string;
-            requires: {
-                code: string;
-                version: string;
-            }[];
             entries?: {
                 [key: string]: unknown;
             };
             content: {
                 [key: string]: unknown;
             };
+        };
+        LlmapiModel: {
+            id?: string;
+            name?: string;
+            entries?: {
+                [key: string]: unknown;
+            };
+            content?: {
+                [key: string]: unknown;
+            };
+            code: string;
+            version: string;
         };
         PagedResult: {
             data: unknown[];
@@ -245,14 +360,25 @@ export interface components {
             data: unknown[];
             totalCount: number;
         };
+        "PagedResult<LlmapiModel>": {
+            data: {
+                id?: string;
+                name?: string;
+                entries?: {
+                    [key: string]: unknown;
+                };
+                content?: {
+                    [key: string]: unknown;
+                };
+                code: string;
+                version: string;
+            }[];
+            totalCount: number;
+        };
         "PagedResult<PresetModel>": {
             data: {
                 id?: string;
                 name?: string;
-                requires?: {
-                    code: string;
-                    version: string;
-                }[];
                 entries?: {
                     [key: string]: unknown;
                 };
@@ -262,23 +388,27 @@ export interface components {
                 code: string;
                 version: string;
                 tags: string[];
+                requires: {
+                    code: string;
+                    version: string;
+                }[];
             }[];
             totalCount: number;
         };
         "PagedResult<StoryModel>": {
             data: {
-                id: string;
-                name: string;
+                id?: string;
+                name?: string;
+                entries?: {
+                    [key: string]: unknown;
+                };
+                content?: {
+                    [key: string]: unknown;
+                };
                 requires: {
                     code: string;
                     version: string;
                 }[];
-                entries?: {
-                    [key: string]: unknown;
-                };
-                content: {
-                    [key: string]: unknown;
-                };
             }[];
             totalCount: number;
         };
@@ -293,10 +423,6 @@ export interface components {
         PresetModel: {
             id?: string;
             name?: string;
-            requires?: {
-                code: string;
-                version: string;
-            }[];
             entries?: {
                 [key: string]: unknown;
             };
@@ -306,6 +432,10 @@ export interface components {
             code: string;
             version: string;
             tags: string[];
+            requires: {
+                code: string;
+                version: string;
+            }[];
         };
         ReadableStream: unknown;
         RequireModel: {
@@ -313,18 +443,18 @@ export interface components {
             version: string;
         };
         StoryModel: {
-            id: string;
-            name: string;
+            id?: string;
+            name?: string;
+            entries?: {
+                [key: string]: unknown;
+            };
+            content?: {
+                [key: string]: unknown;
+            };
             requires: {
                 code: string;
                 version: string;
             }[];
-            entries?: {
-                [key: string]: unknown;
-            };
-            content: {
-                [key: string]: unknown;
-            };
         };
     };
     responses: {
@@ -420,6 +550,320 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "get-llmapis": {
+        parameters: {
+            query?: {
+                /** @description 页码，默认0 */
+                page?: number;
+                /** @description 每页条数，默认20 */
+                pageSize?: number;
+                /** @description 可选搜索项 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<LlmapiModel>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-llmapis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["LlmapiModel"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-llmapis-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LlmapiModel"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-llmapis-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-llmapis-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-llmapis-{id}-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadableStream"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-llmapis-{id}-entries-{entryType}": {
+        parameters: {
+            query?: {
+                /** @description 页码，默认0 */
+                page?: number;
+                /** @description 每页条数，默认20 */
+                pageSize?: number;
+                /** @description 可选搜索项 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-llmapis-{id}-entries-{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: number;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-llmapis-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-llmapis-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-llmapis-{id}-entries-{entryType}-{entryId}-disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "get-presets": {
         parameters: {
             query?: {
@@ -812,7 +1256,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PresetModel"];
+                    "application/json": components["schemas"]["StoryModel"];
                 };
             };
             400: components["responses"]["400"];

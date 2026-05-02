@@ -12,20 +12,24 @@ export function BusinessContent() {
     const tabManager = useMemo(() => businessNavigationManager, []);
     const tabs = tabManager.getSorted();
     const firstTab = tabManager.getFirstTab();
-    const [tab, setTab] = useState(firstTab?.id ?? "");
-    const TabContent = tabManager.records[tab]?.component;
+    const [currentTab, setCurrentTab] = useState(firstTab?.id ?? "");
+    const TabContent = tabManager.records[currentTab]?.component;
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex p-1 justify-center">
                 <NavigationMenu>
-                    <NavigationMenuList>
+                    <NavigationMenuList className={"space-x-1"}>
                         {tabs.map((tab, index) => {
                             const Component = tab.label;
                             return (
                                 <NavigationMenuItem key={index}>
                                     <NavigationMenuLink asChild>
-                                        <a className={"cursor-pointer"} onClick={() => setTab(tab.id)}>
+                                        <a className={
+                                            currentTab === tab.id
+                                                ? 'pointer-events-none bg-gray-50'
+                                                : 'cursor-pointer'
+                                        } onClick={() => setCurrentTab(tab.id)}>
                                             <Component/>
                                         </a>
                                     </NavigationMenuLink>

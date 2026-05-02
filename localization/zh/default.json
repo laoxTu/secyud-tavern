@@ -4,13 +4,17 @@
     "cancel": "取消",
     "code": "编码",
     "content": "内容",
+    "context_not_found": "上下文未找到：{target}",
     "priority": "优先级",
     "copy": "复制",
+    "copy_title": "复制{target}",
+    "copy_description": "将当前{target}复制到新的{target}",
     "story": "故事",
     "create": "创建",
     "create_description": "请创建一个新的{target}",
     "create_title": "创建{target}",
     "delete": "删除",
+    "llmapi": "模型",
     "delete_description": "您确定要删除这个{target}吗？这个操作是不可逆的。",
     "delete_title": "删除{target}",
     "description": "描述",
@@ -48,9 +52,7 @@
     "turn_to": "跳至{page}页"
   },
   "preset": {
-    "copy": "复制预设",
     "regex": "正则",
-    "copy_description": "将当前预设复制到新的预设",
     "lorebook": "世界书",
     "script": "脚本",
     "style": "样式"
@@ -71,9 +73,14 @@
     "year_end": "结束年",
     "year_start": "起始年"
   },
+  "llmapi": {
+  },
   "script": {
   },
   "style": {
+  },
+  "story": {
+    "opening_remarks": "开场白"
   },
   "regex": {
     "pattern": "表达式",

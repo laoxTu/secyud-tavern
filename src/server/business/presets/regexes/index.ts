@@ -8,12 +8,12 @@ const type = "regex";
 export const regexStorageProvider: ModelStorageProvider<PresetModel> = {
     id: type,
     loadModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         const entries = await repository.entry.getList(model.id, type);
         model.entries.regexes = entries.data;
     },
     saveModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         if (Array.isArray(model.entries.regexes)) {
             await repository.entry.batchCreate(model.id, type, model.entries.regex);
         }

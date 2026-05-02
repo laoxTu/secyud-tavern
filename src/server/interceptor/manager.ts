@@ -5,7 +5,7 @@ import {Interceptor} from "./index";
 import {registerServerPlugins} from "@/server/initialize";
 
 type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
-type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
+export type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
 
 export class InterceptorManager extends ServerRegistry<Interceptor> {
     createRoute(route: NextRouter): NextHandler {

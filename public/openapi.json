@@ -30,24 +30,6 @@
           "name": {
             "type": "string"
           },
-          "requires": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "code",
-                "version"
-              ]
-            }
-          },
           "entries": {
             "type": "object",
             "additionalProperties": {}
@@ -60,8 +42,36 @@
         "required": [
           "id",
           "name",
-          "requires",
           "content"
+        ]
+      },
+      "LlmapiModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "version"
         ]
       },
       "PagedResult": {
@@ -96,7 +106,7 @@
           "totalCount"
         ]
       },
-      "PagedResult<PresetModel>": {
+      "PagedResult<LlmapiModel>": {
         "type": "object",
         "properties": {
           "data": {
@@ -110,23 +120,49 @@
                 "name": {
                   "type": "string"
                 },
-                "requires": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "string"
-                      },
-                      "version": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "code",
-                      "version"
-                    ]
-                  }
+                "entries": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "content": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "code": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "version"
+              ]
+            }
+          },
+          "totalCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "totalCount"
+        ]
+      },
+      "PagedResult<PresetModel>": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
                 },
                 "entries": {
                   "type": "object",
@@ -147,12 +183,31 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "requires": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "version"
+                    ]
+                  }
                 }
               },
               "required": [
                 "code",
                 "version",
-                "tags"
+                "tags",
+                "requires"
               ]
             }
           },
@@ -179,6 +234,14 @@
                 "name": {
                   "type": "string"
                 },
+                "entries": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "content": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
                 "requires": {
                   "type": "array",
                   "items": {
@@ -196,21 +259,10 @@
                       "version"
                     ]
                   }
-                },
-                "entries": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "content": {
-                  "type": "object",
-                  "additionalProperties": {}
                 }
               },
               "required": [
-                "id",
-                "name",
-                "requires",
-                "content"
+                "requires"
               ]
             }
           },
@@ -248,24 +300,6 @@
           "name": {
             "type": "string"
           },
-          "requires": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "code",
-                "version"
-              ]
-            }
-          },
           "entries": {
             "type": "object",
             "additionalProperties": {}
@@ -285,12 +319,31 @@
             "items": {
               "type": "string"
             }
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "version"
+              ]
+            }
           }
         },
         "required": [
           "code",
           "version",
-          "tags"
+          "tags",
+          "requires"
         ]
       },
       "ReadableStream": {},
@@ -318,6 +371,14 @@
           "name": {
             "type": "string"
           },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {}
+          },
           "requires": {
             "type": "array",
             "items": {
@@ -335,21 +396,10 @@
                 "version"
               ]
             }
-          },
-          "entries": {
-            "type": "object",
-            "additionalProperties": {}
-          },
-          "content": {
-            "type": "object",
-            "additionalProperties": {}
           }
         },
         "required": [
-          "id",
-          "name",
-          "requires",
-          "content"
+          "requires"
         ]
       }
     },
@@ -477,6 +527,537 @@
     }
   },
   "paths": {
+    "/llmapis": {
+      "get": {
+        "operationId": "get-llmapis",
+        "summary": "获取预设分页列表",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0"
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<LlmapiModel>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-llmapis",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmapiModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}": {
+      "get": {
+        "operationId": "get-llmapis-{id}",
+        "summary": "获取预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmapiModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-llmapis-{id}",
+        "summary": "更新预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-llmapis-{id}",
+        "summary": "删除预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}/export": {
+      "get": {
+        "operationId": "get-llmapis-{id}-export",
+        "summary": "获取预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}/entries/{entryType}": {
+      "get": {
+        "operationId": "get-llmapis-{id}-entries-{entryType}",
+        "summary": "获取条目分页列表",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0"
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-llmapis-{id}-entries-{entryType}",
+        "summary": "创建条目",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}/entries/{entryType}/{entryId}": {
+      "put": {
+        "operationId": "put-llmapis-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-llmapis-{id}-entries-{entryType}-{entryId}",
+        "summary": "删除条目",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}/entries/{entryType}/{entryId}/disabled": {
+      "put": {
+        "operationId": "put-llmapis-{id}-entries-{entryType}-{entryId}-disabled",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/presets": {
       "get": {
         "operationId": "get-presets",
@@ -1138,7 +1719,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PresetModel"
+                  "$ref": "#/components/schemas/StoryModel"
                 }
               }
             }
@@ -1541,6 +2122,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Llmapis"
+    },
     {
       "name": "Presets"
     },

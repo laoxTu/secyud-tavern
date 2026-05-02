@@ -3,13 +3,15 @@ import {useState, useCallback, useRef, useEffect} from 'react';
 import type {PageOptions, PagedResult} from '@/shared/models';
 import {useErrorHandler} from "../../errors";
 
-interface UsePageOptions<T, S = string> {
+interface UsePageOptions<T> {
     defaultPageSize?: number;
-    defaultSearch?: S;
-    fetcher: (params: PageOptions<S>) => Promise<PagedResult<T>>;
+    defaultSearch?: any;
+    fetcher: (params: PageOptions) => Promise<PagedResult<T>>;
 }
 
-export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch>) {
+export {PaginationWrapper} from './component';
+
+export function usePager<T>(options: UsePageOptions<T>) {
     const {handleError} = useErrorHandler();
     const {defaultPageSize = 10, defaultSearch, fetcher} = options;
 
@@ -18,7 +20,7 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(defaultPageSize);
     const [totalCount, setTotalCount] = useState(0);
-    const [search, setSearch] = useState<TSearch | undefined>(defaultSearch);
+    const [search, setSearch] = useState<any | undefined>(defaultSearch);
     const [error, setError] = useState<Error | null>(null);
 
     // 使用 ref 防重复请求
@@ -26,7 +28,7 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
     const hasRequestedRef = useRef(false);
 
     // 核心请求逻辑（不依赖 state，避免闭包问题）
-    const executeFetch = useCallback(async (params: PageOptions<TSearch>) => {
+    const executeFetch = useCallback(async (params: PageOptions) => {
         if (loadingRef.current) return;
 
         loadingRef.current = true;
@@ -50,8 +52,8 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
     }, [fetcher, defaultPageSize, handleError]);
 
     // 触发请求
-    const refresh = useCallback(async (params?: Partial<PageOptions<TSearch>>) => {
-        const finalParams: PageOptions<TSearch> = {
+    const refresh = useCallback(async (params?: Partial<PageOptions>) => {
+        const finalParams: PageOptions = {
             page: params?.page ?? pageIndex,
             pageSize: params?.pageSize ?? pageSize,
             search: params?.search ?? search,
@@ -70,7 +72,7 @@ export function usePager<T, TSearch = string>(options: UsePageOptions<T, TSearch
     }, [refresh]);
 
     // 搜索
-    const doSearch = useCallback((searchValue: TSearch | undefined) => {
+    const doSearch = useCallback((searchValue: any | undefined) => {
         void refresh({page: 0, search: searchValue});
     }, [refresh]);
 

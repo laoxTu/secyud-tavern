@@ -1,7 +1,6 @@
-﻿import {NextResponse} from 'next/server';
-import {presetRepository} from "@/server/business/presets";
+﻿import {presetRepository as repository} from "@/server/business/presets";
 import {interceptor} from "@/server/interceptor";
-
+import {generateSetDisableEntryApi} from "@/app/api/template";
 
 /**
  * 更新条目
@@ -10,10 +9,5 @@ import {interceptor} from "@/server/interceptor";
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    async (request, records) => {
-        const {id, entryType, entryId} = await records.context.params;
-        const {disabled} = await records.searchParams as { disabled: boolean };
-        await presetRepository.entry.setDisabled(id, entryType, entryId, disabled);
-        return NextResponse.json(null);
-    }
+    generateSetDisableEntryApi(repository)
 )

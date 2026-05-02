@@ -1,7 +1,7 @@
-﻿export interface PageOptions<T = string> {
+﻿export interface PageOptions {
     page?: number;      // 页码，默认0
     pageSize?: number;  // 每页条数，默认20
-    search?: T;    // 可选搜索项
+    search?: any;    // 可选搜索项
 }
 
 // 分页结果

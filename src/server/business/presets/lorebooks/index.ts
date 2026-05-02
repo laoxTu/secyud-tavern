@@ -8,12 +8,12 @@ const type = "lorebook";
 export const lorebookStorageProvider: ModelStorageProvider<PresetModel> = {
     id: type,
     loadModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         const entries = await repository.entry.getList(model.id, type);
         model.entries.lorebooks = entries.data;
     },
     saveModel: async (model: PresetModel) => {
-        assert(model.entries !== undefined);
+        assert(model.entries);
         if (Array.isArray(model.entries.lorebooks)) {
             await repository.entry.batchCreate(model.id, type, model.entries.lorebook);
         }

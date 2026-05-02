@@ -1,3 +1,7 @@
 ﻿import {BaseModel} from "..";
+import {RequireModel} from "@/shared/business/presets";
 
-export type StoryModel = BaseModel
+export interface StoryModel extends BaseModel
+{
+    requires: RequireModel[],
+}

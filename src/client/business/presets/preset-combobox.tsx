@@ -1,8 +1,8 @@
 ﻿'use client';
 import {useCallback, useEffect, useState} from "react";
-import {RequireModel} from "@/shared/business";
-import {get} from "../index";
-import {useErrorHandler} from "../errors";
+import {RequireModel} from "@/shared/business/presets";
+import {get} from "@/client";
+import {useErrorHandler} from "@/client/errors";
 import {
     Combobox,
     ComboboxChip,
@@ -21,7 +21,7 @@ interface RequiresComboboxProps {
     id?: string,
 }
 
-export default function RequireCombobox({defaultValue, name, id}: RequiresComboboxProps) {
+export function PresetCombobox({defaultValue, name, id}: RequiresComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();
     const {handleError} = useErrorHandler();
