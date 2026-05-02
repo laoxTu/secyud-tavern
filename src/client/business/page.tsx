@@ -3,7 +3,7 @@ import {
     NavigationMenuItem,
     NavigationMenuList,
     NavigationMenu,
-    NavigationMenuIndicator
+    NavigationMenuIndicator, NavigationMenuLink
 } from "@/components/ui/navigation-menu";
 import {Separator} from "@/components/ui/separator";
 import {businessNavigationManager} from "@/client/business";
@@ -24,9 +24,11 @@ export function BusinessContent() {
                             const Component = tab.label;
                             return (
                                 <NavigationMenuItem key={index}>
-                                    <a onClick={() => setTab(tab.id)}>
-                                        <Component/>
-                                    </a>
+                                    <NavigationMenuLink asChild>
+                                        <a className={"cursor-pointer"} onClick={() => setTab(tab.id)}>
+                                            <Component/>
+                                        </a>
+                                    </NavigationMenuLink>
                                 </NavigationMenuItem>
                             );
                         })}

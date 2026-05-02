@@ -2,7 +2,7 @@
 import {dbMigrationFolder, dbUrl} from "@/server/database/manager";
 
 export default {
-    schema: "src/**/db.ts",
+    schema: "src/server/**/database.ts",
     out: dbMigrationFolder,
     dialect: "sqlite",
     dbCredentials: {

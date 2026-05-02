@@ -8,7 +8,6 @@ import {BaseModel} from "@/shared/business";
 import {v4 as uuidv4, validate} from 'uuid';
 import {BusinessError} from "@/shared/errors";
 
-const db = databaseManager.db;
 
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
@@ -19,6 +18,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined) {
 
+    const db = databaseManager.db;
     const repository = {
 
         get: async (id: string, withDetails: boolean = false, whereClause: SQL = eq(masters.id, id)): Promise<TModel | null> => {

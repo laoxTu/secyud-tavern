@@ -64,34 +64,97 @@
       "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\route.ts",
       "routePath": "/presets/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}/disabled"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id}/export contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\export\\route.ts",
+      "routePath": "/stories/{id}/export"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
+      "routePath": "/stories/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
+      "routePath": "/stories/{id}"
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
+      "routePath": "/stories/{id}"
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.10099999999999909,
-    "loadCustomFragmentsMs": 0.0006000000000199179,
-    "prepareDocumentMs": 0.10160000000001901,
-    "scanRouteFilesMs": 1.4091999999999985,
-    "deriveRoutePathMs": 0.2229000000000383,
-    "filterRouteCandidatesMs": 0.020000000000038654,
-    "sourcePrecheckMs": 0.7587999999999511,
-    "readRouteFilesMs": 0.4819999999998572,
-    "parseRouteFilesMs": 10.669500000000028,
-    "analyzeRouteFilesMs": 8.04700000000014,
+    "prepareTemplateMs": 0.09149999999999636,
+    "loadCustomFragmentsMs": 0.0005999999999630745,
+    "prepareDocumentMs": 0.09209999999995944,
+    "scanRouteFilesMs": 2.064199999999971,
+    "deriveRoutePathMs": 0.26129999999977827,
+    "filterRouteCandidatesMs": 0.023700000000076216,
+    "sourcePrecheckMs": 1.2489999999997963,
+    "readRouteFilesMs": 0.9079000000000406,
+    "parseRouteFilesMs": 10.71369999999979,
+    "analyzeRouteFilesMs": 9.173099999999522,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 18.90580000000017,
-    "registerRouteMs": 505.21389999999985,
-    "getSchemaContentMs": 350.8706000000002,
-    "createRequestParamsMs": 0.4246000000001686,
+    "processRouteFilesMs": 20.090799999999433,
+    "registerRouteMs": 596.8293999999996,
+    "getSchemaContentMs": 422.3843999999999,
+    "createRequestParamsMs": 0.6355999999998971,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 152.8481,
+    "processResponsesMs": 172.46100000000018,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 505.2539000000001,
-    "sortAndMergePathsMs": 0.36959999999999127,
-    "buildPathsMs": 0.36959999999999127,
-    "defaultComponentsAndErrorsMs": 0.16570000000001528,
-    "mergeSchemasMs": 0.31380000000001473,
-    "finalizeDocumentMs": 1.9246999999999161,
-    "totalMs": 530.0160000000001,
-    "scanRoutesMs": 525.5689000000002
+    "buildOperationsMs": 596.8791000000001,
+    "sortAndMergePathsMs": 0.4454000000000633,
+    "buildPathsMs": 0.4454000000000633,
+    "defaultComponentsAndErrorsMs": 0.17270000000007713,
+    "mergeSchemasMs": 0.3328000000001339,
+    "finalizeDocumentMs": 2.880100000000084,
+    "totalMs": 625.0661,
+    "scanRoutesMs": 619.0340999999995
   }
 }

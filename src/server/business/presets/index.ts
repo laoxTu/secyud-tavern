@@ -1,6 +1,4 @@
 ﻿// src/business/preset/business.ts
-import {text} from "drizzle-orm/sqlite-core";
-import {entryTable, masterTable} from "@/server/business/entity-base";
 import {ModelStorage} from "@/server/business/model-storage";
 import {lorebookStorageProvider} from "./lorebooks";
 import {regexStorageProvider} from "./regexes";
@@ -8,6 +6,9 @@ import {styleStorageProvider} from "./styles";
 import {scriptStorageProvider} from "./scripts";
 import {createRepository} from "@/server/business";
 import {PresetModel} from "@/shared/business/presets";
+import {presets, presetEntries} from "./database"
+
+export {presets, presetEntries};
 
 export function registerPreset() {
     presetStorage.register(lorebookStorageProvider);
@@ -17,17 +18,6 @@ export function registerPreset() {
 }
 
 export const presetStorage = new ModelStorage<PresetModel>("preset",)
-
-// 预设主表
-export const presets = masterTable("db", {
-    code: text("code").notNull().unique(),
-    version: text("version").notNull(),
-    tags: text("tags", {mode: "json"}).$type<string[]>().notNull(),
-});
-
-// 预设从表
-export const presetEntries = entryTable(
-    "preset_entries", () => presets.id, {onDelete: "cascade"});
 
 export const presetRepository =
     createRepository<PresetModel, typeof presets.$inferSelect>(

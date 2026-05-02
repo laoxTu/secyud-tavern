@@ -1,3 +1,3 @@
 ﻿import {BaseModel} from "..";
 
-export type ChatModel = BaseModel
+export type StoryModel = BaseModel
