@@ -1,1 +1,1 @@
-﻿export const entryType = "script";
+﻿export const entryType = "lorebook";

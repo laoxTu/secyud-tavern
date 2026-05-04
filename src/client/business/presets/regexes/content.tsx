@@ -125,6 +125,6 @@ function Content() {
 
 export const tabConfig: TabConfig = {
     id: entryType,
-    label: () => <EntryNavigationTemplate modelType={modelType} entryType={entryType} icon={ReplaceIcon}/>,
+    label: () => <EntryNavigationTemplate space={modelType} value={entryType} icon={ReplaceIcon}/>,
     component: Content
 }

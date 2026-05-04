@@ -15,18 +15,18 @@ export function ModelNavigationTemplate({modelType}: ModelNavigationTemplateProp
 }
 
 export interface EntryNavigationTemplateProps {
-    modelType: string;
-    entryType: string,
+    space: string;
+    value: string,
     icon: React.ComponentType,
 }
 
-export function EntryNavigationTemplate({modelType, entryType, icon}: EntryNavigationTemplateProps) {
+export function EntryNavigationTemplate({space, value, icon}: EntryNavigationTemplateProps) {
     const t = useTranslations();
     const Icon = icon;
     return (
         <>
             <Icon/>
-            {t(`${modelType}.${entryType}`)}
+            {t(`${space}.${value}`)}
         </>
     );
 }

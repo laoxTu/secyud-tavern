@@ -97,6 +97,6 @@ function Content() {
 
 export const tabConfig: TabConfig = {
     id: entryType,
-    label: () => <EntryNavigationTemplate modelType="default" entryType="property" icon={FileIcon}/>,
+    label: () => <EntryNavigationTemplate space="default" value="property" icon={FileIcon}/>,
     component: Content
 }
