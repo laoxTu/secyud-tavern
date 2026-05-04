@@ -45,6 +45,7 @@ function Content() {
                 id: "",
                 name: data.get("name") as string,
                 requires: [],
+                llmapi: null,
                 content: {},
             })}
         createContent={() =>

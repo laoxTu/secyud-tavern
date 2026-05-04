@@ -409,6 +409,10 @@ export interface components {
                     code: string;
                     version: string;
                 }[];
+                llmapi: {
+                    code: string;
+                    version: string;
+                } | null;
             }[];
             totalCount: number;
         };
@@ -455,6 +459,10 @@ export interface components {
                 code: string;
                 version: string;
             }[];
+            llmapi: {
+                code: string;
+                version: string;
+            } | null;
         };
     };
     responses: {

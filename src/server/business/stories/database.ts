@@ -1,9 +1,10 @@
-import {entryTable, jsonArray, masterTable} from "@/server/business/entity-base";
+import {entryTable, jsonArray, jsonField, masterTable} from "@/server/business/entity-base";
 import {RequireModel} from "@/shared/business/presets";
 
 // 存档主表
 export const stories = masterTable("story", {
     requires: jsonArray<RequireModel>("requires").default([]),
+    llmapi: jsonField<RequireModel | null>("llmapi").default(null),
 });
 
 // 存档从表

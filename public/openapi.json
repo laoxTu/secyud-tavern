@@ -259,10 +259,27 @@
                       "version"
                     ]
                   }
+                },
+                "llmapi": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "version"
+                  ],
+                  "nullable": true
                 }
               },
               "required": [
-                "requires"
+                "requires",
+                "llmapi"
               ]
             }
           },
@@ -396,10 +413,27 @@
                 "version"
               ]
             }
+          },
+          "llmapi": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "version"
+            ],
+            "nullable": true
           }
         },
         "required": [
-          "requires"
+          "requires",
+          "llmapi"
         ]
       }
     },

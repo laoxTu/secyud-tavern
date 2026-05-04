@@ -49,6 +49,7 @@ CREATE TABLE `story` (
 	`name` text NOT NULL,
 	`content` text NOT NULL,
 	`requires` text DEFAULT '[]',
+	`llmapi` text DEFAULT 'null',
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL
 );

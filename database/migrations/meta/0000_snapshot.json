@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1799677a-b610-4116-89eb-b164a4ce7166",
+  "id": "114a35ff-391c-436f-ae0f-2262d0d107ba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "llmapi_entry": {
@@ -336,6 +336,14 @@
           "notNull": false,
           "autoincrement": false,
           "default": "'[]'"
+        },
+        "llmapi": {
+          "name": "llmapi",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'null'"
         },
         "created_at": {
           "name": "created_at",

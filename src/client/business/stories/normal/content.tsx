@@ -13,6 +13,8 @@ import {EditFormTemplate} from "@/client/business/template/edit-form-template";
 import {StoryContext} from "@/client/business/stories/context";
 import {PresetCombobox} from "@/client/business/presets/preset-combobox";
 import {entryType} from "./context";
+import {LlmapiCombobox} from "@/client/business/llmapis/llmapi-combobox";
+import {tryParseJson} from "@/shared/utils";
 
 const prefix = `${modelType}-${entryType}`;
 
@@ -29,6 +31,7 @@ function Content() {
                     },
                     name: data.get("name") as string,
                     requires: data.getAll("require").map(u => JSON.parse(u as string)),
+                    llmapi: tryParseJson(data.get("llmapi") as string),
                 },
                 {
                     params: {"id": model.id,}
@@ -41,6 +44,13 @@ function Content() {
                     </FieldLabel>
                     <Input name="name" id={`${prefix}-name`}
                            defaultValue={model.name}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${prefix}-llmapi`}>
+                        {t("default.llmapi")}
+                    </FieldLabel>
+                    <LlmapiCombobox name={"llmapi"} id={`${prefix}-llmapi`}
+                                    defaultValue={model.llmapi}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${prefix}-requires`}>

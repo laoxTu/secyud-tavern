@@ -19,6 +19,21 @@ export const jsonArray = <T = any>(name: string) =>
         },
     })(name);
 
+export const jsonField = <T = any>(name: string) =>
+    customType<{ data: T; driverData: string }>({
+        dataType() {
+            return 'text';
+        },
+        fromDriver(value: string): T {
+            if (!value) return null as T;
+            return JSON.parse(value);
+        },
+        toDriver(value: T): string {
+            if (!value) return 'null';
+            return JSON.stringify(value);
+        },
+    })(name);
+
 export function masterTable(tableName: string, extraColumns: any = {}) {
     return sqliteTable(tableName, {
         id: text("id").primaryKey(),
