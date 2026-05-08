@@ -5,6 +5,7 @@ import {
     generateGetModelApi,
     generateUpdateModelApi
 } from "@/app/api/template";
+import {Hasher} from "@/server/hasher";
 
 /**
  * 获取预设
@@ -24,7 +25,11 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateUpdateModelApi(repository)
+    generateUpdateModelApi(repository, async params => {
+        if (params.key) {
+            params.key = Hasher.instance.encrypt(params.key)
+        }
+    })
 )
 
 /**

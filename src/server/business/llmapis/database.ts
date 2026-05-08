@@ -2,8 +2,9 @@
 import {text} from "drizzle-orm/sqlite-core";
 
 // 存档主表
-export const llmapis = masterTable("llmapi",{
+export const llmapis = masterTable("llmapi", {
     code: text("code").notNull().unique(),
+    key: text("key").notNull(),
     version: text("version").notNull(),
 });
 

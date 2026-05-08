@@ -2,7 +2,6 @@
 import {ModelStorage} from "@/server/business/model-storage";
 import {StoryModel} from "@/shared/business/stories";
 import {stories, storyEntries} from "./database"
-import {PresetModel} from "@/shared/business/presets";
 
 export {stories, storyEntries};
 export const storyStorage = new ModelStorage<StoryModel>("story",)
@@ -15,9 +14,11 @@ export const storyRepository =
         storyStorage.bindSearch.bind(storyStorage),
         (model) => ({
             requires: model.requires,
+            llmapi: model.llmapi,
         }),
-        (entity): Partial<PresetModel> => ({
+        (entity): Partial<StoryModel> => ({
             requires: entity.requires,
+            llmapi: entity.llmapi,
         })
     )
 

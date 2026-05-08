@@ -73,13 +73,16 @@ export function generateDeleteModelApi<TModel extends BaseModel>(
 }
 
 export function generateExportModelApi<TModel>(
-    repository: Repository<TModel>, fileNameAccessor: (model: TModel) => string, conditionGenerator?: (id: string) => ConditionFunc): NextHandler {
+    repository: Repository<TModel>,
+    fileNameAccessor: (model: TModel) => string,
+    conditionGenerator?: (id: string) => ConditionFunc,
+    settings?: (model: TModel) => void): NextHandler {
     return async (request, records) => {
         const {id} = await records.context.params;
         const {withDetails} = records.searchParams as { withDetails?: boolean };
         const model = await repository.get(id, withDetails, conditionGenerator?.(id));
         if (model === null) throw new Error('not found');
-
+        settings?.(model);
         // 1. 将 JSON 对象转为字符串
         const jsonStr = JSON.stringify(model);
 

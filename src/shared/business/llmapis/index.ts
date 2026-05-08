@@ -3,4 +3,5 @@
 export interface LlmapiModel extends BaseModel {
     code: string,
     version: string,
+    key?: string,
 }

@@ -18,6 +18,8 @@ interface Parameter {
  * 并使用反向过程进行解密。
  */
 export class Hasher {
+    static instance: Hasher;
+
     /**
      * 构造函数
      * @param container - 字符容器，包含所有可用的字符集（用作编码表）
@@ -200,4 +202,19 @@ export class Hasher {
 
         return result.join('');
     }
+}
+
+function parseInt(text?: string) {
+    if (text) {
+        return text.split('').map(u => Number.parseInt(u));
+    }
+    return undefined;
+}
+
+export function registerHasher() {
+    const container = 'zxcvbnm,./asdfghjkl;\'qwertyuiop[]1234567890-=!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>?'
+    Hasher.instance = new Hasher(container,
+        parseInt(process.env.SECRET_SALT) ?? [9, 1, 2, 6, 6, 8, 2],
+        parseInt(process.env.SECRET_KEYS) ?? [8, 8, 3, 4, 7, 2, 3, 7]
+    )
 }

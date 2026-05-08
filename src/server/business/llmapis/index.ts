@@ -1,8 +1,7 @@
 ﻿import {createRepository} from "@/server/business/repository-base";
 import {ModelStorage} from "@/server/business/model-storage";
-import {llmapis, llmapiEntries} from "./database"
 import {LlmapiModel} from "@/shared/business/llmapis";
-import {PresetModel} from "@/shared/business/presets";
+import {llmapis, llmapiEntries} from "./database"
 
 export {llmapis, llmapiEntries};
 export const llmapiStorage = new ModelStorage<LlmapiModel>("llmapi",)
@@ -16,10 +15,12 @@ export const llmapiRepository =
         (model) => ({
             code: model.code,
             version: model.version,
+            key: model.key,
         }),
-        (entity): Partial<PresetModel> => ({
+        (entity): Partial<LlmapiModel> => ({
             code: entity.code,
             version: entity.version,
+            key: entity.key,
         })
     )
 

@@ -15,7 +15,6 @@ import {modelType} from "./context";
 import {llmapiTabManager} from ".";
 
 
-
 function Content() {
     const t = useTranslations();
 
@@ -61,8 +60,7 @@ function Content() {
             <>
                 <Field>
                     <Label htmlFor={`${modelType}-code`}>{t("default.code") + "*"}</Label>
-                    <Input id={`${modelType}-code`} name="code"
-                           required/>
+                    <Input id={`${modelType}-code`} name="code" required/>
                 </Field>
                 <Field>
                     <Label htmlFor={`${modelType}-name`}>{t("default.name") + "*"}</Label>
