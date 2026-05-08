@@ -23,7 +23,7 @@ import {PaginationWrapper, usePager} from "@/client/components/pager";
 import {TabManager} from "@/client/components/tab";
 import {useErrorHandler} from "@/client/errors";
 import {BaseModel} from "@/shared/business";
-import {PagedResult, PageOptions} from "@/shared/models";
+import {PagedResult, PageOptions} from "../../../shared/business";
 import {ModelContextType, useModelContext} from "./context";
 import {del, get, post} from "@/client";
 

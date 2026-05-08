@@ -1,7 +1,6 @@
 ﻿import {createModelContextType, useModelContext} from "@/client/business/template/context";
-import {StoryModel} from "@/shared/business/stories";
+import {StoryModel, name as modelType} from "@/shared/business/stories";
 
-export const modelType = "story";
 export const modelApi = "stories";
 export const StoryContext = createModelContextType<StoryModel>();
 export const useStoryContext = (t: any) =>

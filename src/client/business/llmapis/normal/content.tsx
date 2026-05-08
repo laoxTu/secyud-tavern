@@ -2,6 +2,7 @@
 import React, {useCallback, useMemo, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
@@ -10,12 +11,10 @@ import {TabConfig} from "@/client/components/tab";
 import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {EditFormTemplate} from "@/client/business/template/edit-form-template";
 import {LlmapiContext} from "@/client/business/llmapis/context";
-import {modelType} from "@/client/business/llmapis/context";
-import {entryType} from "./context";
-import {LlmapiModel} from "@/shared/business/llmapis";
 import {llmapiConfigRegistry} from "@/client/business/llmapis/normal/index";
 import {LlmapiConfigRegistry} from "@/client/business/llmapis/normal/config";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {LlmapiModel, name as modelType} from "@/shared/business/llmapis";
+import {entryType} from "./context";
 
 const prefix = `${modelType}-${entryType}`;
 

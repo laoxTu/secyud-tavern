@@ -4,16 +4,16 @@ import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
 import {put} from "@/client";
 import {TabConfig} from "@/client/components/tab";
-import {modelType} from "@/client/business/presets/context";
-import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
-import {EditFormTemplate} from "@/client/business/template/edit-form-template";
-import {PresetContext} from "@/client/business/presets/context";
-import {entryType} from "./context";
 import {CustomCombobox} from "@/client/components/combobox";
-import {Textarea} from "@/components/ui/textarea";
+import {EditFormTemplate} from "@/client/business/template/edit-form-template";
+import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {PresetCombobox} from "@/client/business/presets/preset-combobox";
+import {name as modelType} from "@/shared/business/presets";
+import {PresetContext} from "../context";
+import {entryType} from "./context";
 
 const prefix = `${modelType}-${entryType}`;
 export const defaultTags = [

@@ -1,24 +1,23 @@
 ﻿import React, {useCallback, useMemo, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Label} from "@/components/ui/label";
 import {put} from "@/client";
+import {TabConfig} from "@/client/components/tab";
 import {EditFormTemplate} from "@/client/business/template/edit-form-template";
 import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {EntryListTemplate} from "@/client/business/template/entry-list-template";
-import {TabConfig} from "@/client/components/tab";
-import {PresetModel} from "@/shared/business/presets";
-import {modelApi, modelType, PresetContext} from "../context";
-import {entryType} from "./context";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Label} from "@/components/ui/label";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {lorebookMatchEditorRegistry} from "@/client/business/presets/lorebooks/index";
-import {usePresetContext} from "../context";
 import {MatchEditorRegistry} from "@/client/business/presets/lorebooks/match";
+import {PresetModel,name as modelType} from "@/shared/business/presets";
+import {modelApi, PresetContext,usePresetContext} from "../context";
+import {entryType} from "./context";
 
 function EditorContent({entry, matchEditorRegistry}: { entry: any, matchEditorRegistry: MatchEditorRegistry, }) {
     const matchEditors = matchEditorRegistry.records;

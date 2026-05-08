@@ -36,7 +36,7 @@ import {
     InputGroup, InputGroupAddon,
     InputGroupButton, InputGroupInput
 } from "@/components/ui/input-group";
-import {PagedResult} from "@/shared/models";
+import {PagedResult} from "../../../shared/business";
 import {BaseModel} from "@/shared/business";
 import {del, get, post, put} from "@/client";
 import {useErrorHandler} from "@/client/errors";

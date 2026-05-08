@@ -2,12 +2,11 @@
 import {LlmapiConfig, LlmapiConfigProps} from ".";
 import {Field, FieldLabel} from "@/components/ui/field";
 import React from "react";
-import {modelType} from "@/client/business/llmapis/context";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-
-const configId = "deepseek";
+import {name as modelType} from "@/shared/business/llmapis";
+import {name as configId} from "@/shared/business/llmapis/engines/deepseek";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 

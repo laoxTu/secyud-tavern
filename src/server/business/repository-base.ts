@@ -1,7 +1,7 @@
 ﻿// src/business/repository-base.ts
 import {databaseManager} from "../database";
 import {and, eq, like, SQL, sql} from "drizzle-orm";
-import type {PagedResult, PageOptions} from "@/shared/models";
+import type {PagedResult, PageOptions} from "../../shared/business";
 import {BaseEntity} from "./entity-base";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseModel} from "@/shared/business";

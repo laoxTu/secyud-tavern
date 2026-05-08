@@ -5,3 +5,6 @@ export interface LlmapiModel extends BaseModel {
     version: string,
     key?: string,
 }
+
+
+export const name = 'llmapi'

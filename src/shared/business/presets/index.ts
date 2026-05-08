@@ -11,3 +11,6 @@ export interface PresetModel extends BaseModel {
     tags: string[],
     requires: RequireModel[],
 }
+
+
+export const name = 'preset'

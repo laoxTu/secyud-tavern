@@ -2,6 +2,10 @@
 import {ModelStorage} from "@/server/business/model-storage";
 import {StoryModel} from "@/shared/business/stories";
 import {stories, storyEntries} from "./database"
+export function registerStory() {
+    storyStorage.register(
+    );
+}
 
 export {stories, storyEntries};
 export const storyStorage = new ModelStorage<StoryModel>("story",)

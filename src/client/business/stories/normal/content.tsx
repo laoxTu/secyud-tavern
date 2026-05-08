@@ -7,14 +7,14 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {put} from "@/client";
 import {TabConfig} from "@/client/components/tab";
-import {modelType} from "@/client/business/stories/context";
 import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {EditFormTemplate} from "@/client/business/template/edit-form-template";
 import {StoryContext} from "@/client/business/stories/context";
 import {PresetCombobox} from "@/client/business/presets/preset-combobox";
-import {entryType} from "./context";
 import {LlmapiCombobox} from "@/client/business/llmapis/llmapi-combobox";
+import {name as modelType} from "@/shared/business/stories";
 import {tryParseJson} from "@/shared/utils";
+import {entryType} from "./context";
 
 const prefix = `${modelType}-${entryType}`;
 

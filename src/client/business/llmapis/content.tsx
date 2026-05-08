@@ -5,13 +5,12 @@ import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
-import {LlmapiModel} from "@/shared/business/llmapis";
+import {post} from "@/client";
 import {TabConfig} from "@/client/components/tab";
 import {ModelListContentTemplate} from "@/client/business/template/content-template";
 import {ModelNavigationTemplate} from "@/client/business/template/navigation-template";
-import {post} from "@/client";
 import {LlmapiContext, modelApi} from "./context";
-import {modelType} from "./context";
+import {LlmapiModel,name as modelType} from "@/shared/business/llmapis";
 import {llmapiTabManager} from ".";
 
 

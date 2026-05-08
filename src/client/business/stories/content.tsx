@@ -5,13 +5,12 @@ import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemTitle} from "@/components/ui/item";
-import {StoryModel} from "@/shared/business/stories";
 import {ModelListContentTemplate} from "@/client/business/template/content-template";
 import {ModelNavigationTemplate} from "@/client/business/template/navigation-template";
 import {TabConfig} from "@/client/components/tab";
 import {post} from "@/client";
-import {modelType, modelApi} from "./context";
-import {StoryContext} from "./context";
+import {StoryModel, name as modelType} from "@/shared/business/stories";
+import {modelApi, StoryContext} from "./context";
 import {storyTabManager} from ".";
 
 

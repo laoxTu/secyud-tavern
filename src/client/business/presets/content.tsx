@@ -11,7 +11,7 @@ import {ModelListContentTemplate} from "@/client/business/template/content-templ
 import {ModelNavigationTemplate} from "@/client/business/template/navigation-template";
 import {post} from "@/client";
 import {PresetContext, modelApi} from "./context";
-import {modelType} from "./context";
+import {name as modelType} from "@/shared/business/presets";
 import {presetTabManager} from ".";
 
 

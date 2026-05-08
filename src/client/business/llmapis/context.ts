@@ -1,7 +1,6 @@
 ﻿import {createModelContextType, useModelContext} from "@/client/business/template/context";
-import {LlmapiModel} from "@/shared/business/llmapis";
+import {LlmapiModel, name as modelType} from "@/shared/business/llmapis";
 
-export const modelType = "llmapi";
 export const modelApi = "llmapis";
 export const LlmapiContext = createModelContextType<LlmapiModel>();
 export const useLlmapiContext = (t: any) =>

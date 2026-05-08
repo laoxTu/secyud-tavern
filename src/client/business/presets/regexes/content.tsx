@@ -9,8 +9,8 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {EntryListTemplate} from "@/client/business/template/entry-list-template";
 import {TabConfig} from "@/client/components/tab";
-import {PresetModel} from "@/shared/business/presets";
-import {modelApi, modelType, PresetContext} from "../context";
+import {PresetModel, name as modelType} from "@/shared/business/presets";
+import {modelApi, PresetContext} from "../context";
 import {entryType} from "./context";
 
 function Content() {

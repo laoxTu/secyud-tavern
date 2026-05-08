@@ -11,10 +11,12 @@ import {presets, presetEntries} from "./database"
 export {presets, presetEntries};
 
 export function registerPreset() {
-    presetStorage.register(lorebookStorageProvider);
-    presetStorage.register(regexStorageProvider);
-    presetStorage.register(styleStorageProvider);
-    presetStorage.register(scriptStorageProvider);
+    presetStorage.register(
+        lorebookStorageProvider,
+        regexStorageProvider,
+        styleStorageProvider,
+        scriptStorageProvider,
+    );
 }
 
 export const presetStorage = new ModelStorage<PresetModel>("preset",)
