@@ -8,12 +8,44 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {name as modelType} from "@/shared/business/llmapis";
 import {name as configId} from "@/shared/business/llmapis/engines/deepseek";
 
+interface DeepseekConfig {
+    parameters: {
+        model: string,
+        thinking: {
+            "type": string,
+        },
+        reasoning_effort: string,
+        stream: boolean,
+    }
+}
+
+function isDeepseekConfig(data: any): boolean {
+    return data && data.parameters &&
+        typeof data.parameters.model === 'string' &&
+        typeof data.parameters.reasoning_effort === 'string' &&
+        typeof data.parameters.stream === 'boolean' &&
+        data.parameters.thinking &&
+        typeof data.parameters.thinking.type === 'string';
+}
+
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 
-function Content({defaultValue}: LlmapiConfigProps) {
+const defaultConfig: DeepseekConfig = {
+    parameters: {
+        model: "deepseek-v4-flash",
+        thinking: {
+            "type": "enabled"
+        },
+        reasoning_effort: "high",
+        stream: true
+    }
+} as const;
+
+function Content({defaultValue, llmapi}: LlmapiConfigProps) {
     const t = useTranslations();
-    if (!Array.isArray(defaultValue) && !defaultValue.every((item: any) => typeof item === "string"))
-        defaultValue = [];
+    if (!isDeepseekConfig(defaultValue)) {
+        defaultValue = defaultConfig;
+    }
 
     return (
         <>
@@ -22,15 +54,13 @@ function Content({defaultValue}: LlmapiConfigProps) {
                     {t(`${modelType}.apikey`)}
                 </FieldLabel>
                 <Input id={`${modelType}-apikey`} name={"apikey"} type={"password"}
-                       defaultValue={defaultValue?.apikey}/>
+                       defaultValue={llmapi?.key}/>
             </Field>
             <Field>
                 <FieldLabel htmlFor={`${modelType}-model`}>
                     {t(`${modelType}.model`)}
                 </FieldLabel>
-                <Input id={`${modelType}-model`} name={"model"}
-                       defaultValue={defaultValue?.apikey}/>
-                <Select name="provider" defaultValue={defaultValue?.model}>
+                <Select name="provider" defaultValue={defaultValue.parameters.model}>
                     <SelectTrigger className="w-full"
                                    id={`${modelType}-model`}>
                         <SelectValue/>
@@ -64,6 +94,6 @@ export const config: LlmapiConfig =
                     reasoning_effort: "high",
                     stream: true
                 }
-            };
+            } as DeepseekConfig;
         }
     } as const;

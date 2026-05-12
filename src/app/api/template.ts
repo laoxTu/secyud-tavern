@@ -1,9 +1,8 @@
 ﻿import {NextResponse} from "next/server";
 import {ConditionFunc, Repository} from "@/server/business/repository-base";
 import {NextHandler} from "@/server/interceptor/manager";
-import {PageOptions} from "../../shared/business";
 import {BusinessError} from "@/shared/errors";
-import {BaseModel} from "@/shared/business";
+import {BaseModel, PageOptions} from "@/shared/business";
 
 export function generateGetModelListApi<TModel>(repository: Repository<TModel>, conditionGenerator?: (search: any) => ConditionFunc): NextHandler {
     return async (request, records) => {

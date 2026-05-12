@@ -1,6 +1,5 @@
 ﻿'use client';
 import {useCallback, useEffect, useState} from "react";
-import {RequireModel} from "@/shared/business/presets";
 import {get} from "@/client";
 import {useErrorHandler} from "@/client/errors";
 import {
@@ -12,7 +11,8 @@ import {
     ComboboxValue, useComboboxAnchor
 } from "@/components/ui/combobox";
 import {useTranslations} from "next-intl";
-import {PagedResult} from "../../../shared/business";
+import {RequireModel} from "@/shared/business/presets";
+import {PagedResult} from "@/shared/business";
 import {LlmapiModel} from "@/shared/business/llmapis";
 
 interface RequiresComboboxProps {

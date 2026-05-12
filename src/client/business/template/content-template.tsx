@@ -6,13 +6,28 @@ import {
     Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger
 } from "@/components/ui/dialog";
 import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-    AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
+    AlertDialog, AlertDialogAction,
+    AlertDialogCancel, AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {
+    Empty, EmptyContent,
+    EmptyDescription, EmptyHeader,
+    EmptyMedia, EmptyTitle
+} from "@/components/ui/empty";
+import {
+    InputGroup, InputGroupAddon,
+    InputGroupButton, InputGroupInput
+} from "@/components/ui/input-group";
+import {
+    ResizableHandle, ResizablePanel,
+    ResizablePanelGroup
+} from "@/components/ui/resizable";
+import {
+    Tabs, TabsContent,
+    TabsList, TabsTrigger
+} from "@/components/ui/tabs";
 import {Item, ItemGroup} from "@/components/ui/item";
 import {Field, FieldGroup} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
@@ -22,10 +37,9 @@ import {Input} from "@/components/ui/input";
 import {PaginationWrapper, usePager} from "@/client/components/pager";
 import {TabManager} from "@/client/components/tab";
 import {useErrorHandler} from "@/client/errors";
-import {BaseModel} from "@/shared/business";
-import {PagedResult, PageOptions} from "../../../shared/business";
-import {ModelContextType, useModelContext} from "./context";
 import {del, get, post} from "@/client";
+import {PagedResult, PageOptions,BaseModel} from "@/shared/business";
+import {ModelContextType, useModelContext} from "./context";
 
 export interface ModelListProps<TModel extends BaseModel> {
     modelType: string,

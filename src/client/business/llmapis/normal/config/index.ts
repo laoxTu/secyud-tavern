@@ -2,9 +2,11 @@
 import React from "react";
 import {ClientRegistry} from "@/client/plugins";
 import {Registerable} from "@/shared/register";
+import {LlmapiModel} from "@/shared/business/llmapis";
 
 export interface LlmapiConfigProps {
-    defaultValue: any
+    llmapi: LlmapiModel,
+    defaultValue: any,
 }
 
 export interface LlmapiConfig extends Registerable {

@@ -12,7 +12,7 @@ import {
     ComboboxValue, useComboboxAnchor
 } from "@/components/ui/combobox";
 import {useTranslations} from "next-intl";
-import {PagedResult} from "../../../shared/business";
+import {PagedResult} from "@/shared/business";
 import {PresetModel} from "@/shared/business/presets";
 
 interface RequiresComboboxProps {

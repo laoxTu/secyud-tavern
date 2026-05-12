@@ -74,6 +74,14 @@
     "year_start": "起始年"
   },
   "llmapi": {
+    "apikey": "api key",
+    "model": "模型",
+    "provider": "供应者",
+    "provider_deepseek": "Deepseek"
+  },
+  "deepseek": {
+    "deepseek-v4-flash": "deepseek-v4-flash",
+    "deepseek-v4-pro": "deepseek-v4-pro"
   },
   "script": {
   },

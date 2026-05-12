@@ -60,7 +60,7 @@ function ConfigContent({model, llmapiConfigRegistry}: {
         {editor && (
             () => {
                 const EditorComponent = editor.component;
-                return <EditorComponent defaultValue={model.content.config}/>;
+                return <EditorComponent llmapi={model} defaultValue={model.content["config"]}/>;
             }
         )()}
     </>

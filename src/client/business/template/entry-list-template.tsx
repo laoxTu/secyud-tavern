@@ -36,8 +36,7 @@ import {
     InputGroup, InputGroupAddon,
     InputGroupButton, InputGroupInput
 } from "@/components/ui/input-group";
-import {PagedResult} from "../../../shared/business";
-import {BaseModel} from "@/shared/business";
+import {BaseModel, PagedResult} from "@/shared/business";
 import {del, get, post, put} from "@/client";
 import {useErrorHandler} from "@/client/errors";
 import {usePager} from "@/client/components/pager";
@@ -376,7 +375,7 @@ function Editor<TModel extends BaseModel>(
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
                                     <AlertDialogAction
-                                                       onClick={handleClone}>
+                                        onClick={handleClone}>
                                         {t("default.copy")}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>

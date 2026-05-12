@@ -1,6 +1,6 @@
 ﻿// components/pager/index.ts
 import {useState, useCallback, useRef, useEffect} from 'react';
-import type {PageOptions, PagedResult} from '../../../shared/business';
+import type {PageOptions, PagedResult} from '@/shared/business';
 import {useErrorHandler} from "../../errors";
 
 interface UsePageOptions<T> {
