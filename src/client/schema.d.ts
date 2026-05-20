@@ -272,6 +272,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/stories/{id}/slot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取故事及其依赖的所有预设（含详情） */
+        get: operations["get-stories-{id}-slot"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/stories/{id}/entries/{entryType}": {
         parameters: {
             query?: never;
@@ -351,6 +368,7 @@ export interface components {
             };
             code: string;
             version: string;
+            key?: string;
         };
         PagedResult: {
             data: unknown[];
@@ -372,6 +390,7 @@ export interface components {
                 };
                 code: string;
                 version: string;
+                key?: string;
             }[];
             totalCount: number;
         };
@@ -445,6 +464,51 @@ export interface components {
         RequireModel: {
             code: string;
             version: string;
+        };
+        SlotModel: {
+            id?: string;
+            name?: string;
+            entries?: {
+                [key: string]: unknown;
+            };
+            content?: {
+                [key: string]: unknown;
+            };
+            story: {
+                id?: string;
+                name?: string;
+                entries?: {
+                    [key: string]: unknown;
+                };
+                content?: {
+                    [key: string]: unknown;
+                };
+                requires: {
+                    code: string;
+                    version: string;
+                }[];
+                llmapi: {
+                    code: string;
+                    version: string;
+                } | null;
+            };
+            presets: {
+                id?: string;
+                name?: string;
+                entries?: {
+                    [key: string]: unknown;
+                };
+                content?: {
+                    [key: string]: unknown;
+                };
+                code: string;
+                version: string;
+                tags: string[];
+                requires: {
+                    code: string;
+                    version: string;
+                }[];
+            }[];
         };
         StoryModel: {
             id?: string;
@@ -1335,6 +1399,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReadableStream"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-stories-{id}-slot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotModel"];
                 };
             };
             400: components["responses"]["400"];

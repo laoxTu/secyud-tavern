@@ -10,6 +10,7 @@ import {TabConfig} from "@/client/components/tab";
 import {PresetModel, name as modelType} from "@/shared/business/presets";
 import {modelApi, PresetContext} from "../context";
 import {entryType} from "./context";
+import {PresetStyleModel} from "@/shared/business/presets/styles/models";
 
 function Content() {
     const t = useTranslations();
@@ -20,7 +21,7 @@ function Content() {
                 content: "",
                 priority: 100,
             })}
-            updateAccessor={data => ({
+            updateAccessor={(data): PresetStyleModel => ({
                 content: data.get("content") as string,
                 priority: parseInt(data.get("priority") as string),
             })}

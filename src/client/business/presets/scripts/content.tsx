@@ -7,6 +7,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {EntryNavigationTemplate} from "@/client/business/template/navigation-template";
 import {EntryListTemplate} from "@/client/business/template/entry-list-template";
 import {TabConfig} from "@/client/components/tab";
+import {PresetScriptModel} from "@/shared/business/presets/scripts/models";
 import {PresetModel, name as modelType} from "@/shared/business/presets";
 import {modelApi, PresetContext} from "../context";
 import {entryType} from "./context";
@@ -20,7 +21,7 @@ function Content() {
                 content: "",
                 priority: 100,
             })}
-            updateAccessor={data => ({
+            updateAccessor={(data): PresetScriptModel => ({
                 content: data.get("content") as string,
                 priority: parseInt(data.get("priority") as string),
             })}
@@ -53,7 +54,7 @@ function Content() {
                                   defaultValue={entry.content}/>
                     </Field>
                 </>
-            )}></EntryListTemplate>
+            )}/>
     );
 }
 

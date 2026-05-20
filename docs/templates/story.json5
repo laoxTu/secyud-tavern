@@ -1,4 +1,4 @@
-﻿// docs/templates/chats.json5
+﻿// docs/templates/story.json5
 {
   // 存档唯一标识符，UUID
   id: "string",
@@ -7,33 +7,38 @@
   // 当前激活的预设ID列表
   presets: [
     {
-      presetId: "string",
+      code: "string",
       version: "string"
     }
   ],
   // 对话消息记录
   entries: {
-    history: [
-      {
-        // 标识符
-        id: "number",
-        // 消息角色：user/assistant/system
-        role: "string",
+    history: [{
+      id: "string",
+      // 选择的ai回复
+      aiIndex: "number",
+      // 消息时间戳
+      timestamp: "string",
+      // 初始变量状态
+      variables: "any",
+      inputs: [{
+        id: "string",
         // 消息正文
         content: "string",
-        // 思考过程
-        thinking: "string",
-        // 消息时间戳
-        timestamp: "string",
-        // 是否对AI不可见，默认false
-        invisible: "boolean",
         // 本轮产生的变量变更, json
         variableChanges: "any"
-      }
+      }],
+      outputs: [{
+        id: "string",
+        // 消息正文
+        content: "string",
+        // 本轮产生的变量变更, json
+        variableChanges: "any"
+      }]
+    },
+
     ]
   },
   content: {
-    // 根节点变量表，始终为合并后的最新完整状态 json string
-    variables: "any"
   }
 }

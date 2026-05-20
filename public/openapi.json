@@ -67,6 +67,9 @@
           },
           "version": {
             "type": "string"
+          },
+          "key": {
+            "type": "string"
           }
         },
         "required": [
@@ -132,6 +135,9 @@
                   "type": "string"
                 },
                 "version": {
+                  "type": "string"
+                },
+                "key": {
                   "type": "string"
                 }
               },
@@ -377,6 +383,144 @@
         "required": [
           "code",
           "version"
+        ]
+      },
+      "SlotModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "story": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "entries": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "requires": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "version"
+                  ]
+                }
+              },
+              "llmapi": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "version"
+                ],
+                "nullable": true
+              }
+            },
+            "required": [
+              "requires",
+              "llmapi"
+            ]
+          },
+          "presets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "entries": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "content": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "code": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "requires": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "version"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "code",
+                "version",
+                "tags",
+                "requires"
+              ]
+            }
+          }
+        },
+        "required": [
+          "story",
+          "presets"
         ]
       },
       "StoryModel": {
@@ -1859,6 +2003,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{id}/slot": {
+      "get": {
+        "operationId": "get-stories-{id}-slot",
+        "summary": "获取故事及其依赖的所有预设（含详情）",
+        "description": "",
+        "tags": [
+          "Stories"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlotModel"
                 }
               }
             }

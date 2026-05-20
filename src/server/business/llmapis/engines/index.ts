@@ -1,16 +1,11 @@
 ﻿import {Registerable, Registry} from "@/shared/register";
+import {LlmInputModel} from "@/shared/business/slots";
 
-export interface LlmMessage {
-    role: string,
-    content: string,
-    name?: string,
-}
 
-export interface LlmRequestContext {
+export interface LlmRequestContext extends LlmInputModel{
     type: string,
     config: any,
     apiKey: string,
-    messages: LlmMessage[],
 }
 
 export interface LlmEngine extends Registerable {

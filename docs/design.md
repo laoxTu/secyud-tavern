@@ -227,7 +227,6 @@ Secyud Tavern 采用变量驱动的存档模型：每轮对话的变量变更（
 - `name`: 用户自定义的存档名称
 - `db`: 激活的预设列表，每项包含 `presetId` 和 `version`
 - `entries.history`: 对话消息记录数组
-- `content.variables`: 根节点变量表，始终为最新完整状态
 
 #### 3.5 变量变更
 

@@ -89,7 +89,7 @@
   // 依赖的预设 ID 列表，UI 可提示用户建议同时开启
   requires: [
     {
-      presetId: "string",
+      code: "string",
       version: "string"
     }
   ],

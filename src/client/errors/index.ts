@@ -1,4 +1,5 @@
 ﻿'use client';
+import {useCallback} from "react";
 import {ApiError} from "../models";
 import {toast} from "sonner";
 import {useTranslations} from "next-intl";
@@ -6,7 +7,7 @@ import {useTranslations} from "next-intl";
 export function useErrorHandler() {
     const t = useTranslations();
 
-    const handleError = (err: any) => {
+    const handleError = useCallback((err: any) => {
         if (err instanceof ApiError) {
             if (err.code) {
                 const record: Record<string, any> = {};
@@ -31,7 +32,7 @@ export function useErrorHandler() {
         } else {
             throw err;
         }
-    };
+    }, [t]);
 
     return {handleError};
 }

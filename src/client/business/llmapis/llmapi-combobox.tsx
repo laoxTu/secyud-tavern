@@ -4,16 +4,15 @@ import {get} from "@/client";
 import {useErrorHandler} from "@/client/errors";
 import {
     Combobox,
-    ComboboxChip,
-    ComboboxChips,
-    ComboboxChipsInput,
+    ComboboxInput,
     ComboboxContent, ComboboxEmpty, ComboboxItem, ComboboxList,
-    ComboboxValue, useComboboxAnchor
+    useComboboxAnchor
 } from "@/components/ui/combobox";
 import {useTranslations} from "next-intl";
 import {RequireModel} from "@/shared/business/presets";
 import {PagedResult} from "@/shared/business";
 import {LlmapiModel} from "@/shared/business/llmapis";
+import {Item, ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
 
 interface RequiresComboboxProps {
     defaultValue: RequireModel | null,
@@ -26,7 +25,6 @@ export function LlmapiCombobox({defaultValue, name, id}: RequiresComboboxProps) 
     const anchor = useComboboxAnchor();
     const {handleError} = useErrorHandler();
     const [searchRequires, setSearchRequires] = useState<RequireModel[]>([]);
-    const [value, setValue] = useState<RequireModel | null>(defaultValue);
     const [needSearch, setNeedSearch] = useState(true);
     const [searchValue, setSearchValue] = useState<string | undefined>();
     const handleSearch = useCallback(async (search: string | undefined) => {
@@ -58,28 +56,26 @@ export function LlmapiCombobox({defaultValue, name, id}: RequiresComboboxProps) 
 
     return (
         <Combobox autoHighlight name={name} id={id}
-                  value={value} onValueChange={v => setValue(v)}
+                  defaultValue={defaultValue}
                   onInputValueChange={e => handleSearch(e)}
-                  items={(() => value && searchRequires.every(u => u.code != value.code)
-                      ? [...searchRequires, value] : searchRequires)()}>
-            <ComboboxChips ref={anchor} className="w-full">
-                <ComboboxValue>
-                    {(values) => (
-                        <>
-                            {values.map((value: RequireModel) => (
-                                <ComboboxChip key={value.code}>{`${value.code}`}</ComboboxChip>
-                            ))}
-                            <ComboboxChipsInput/>
-                        </>
-                    )}
-                </ComboboxValue>
-            </ComboboxChips>
+                  items={searchRequires}
+                  itemToStringLabel={item => item.code}>
+            <ComboboxInput/>
             <ComboboxContent anchor={anchor}>
                 <ComboboxEmpty>{t("default.empty_items")}</ComboboxEmpty>
                 <ComboboxList>
                     {(item: RequireModel) => (
                         <ComboboxItem key={item.code} value={item}>
-                            {`${item.code}-${item.version}`}
+                            <Item size="xs" className="p-0">
+                                <ItemContent>
+                                    <ItemTitle className="whitespace-nowrap">
+                                        {item.code}
+                                    </ItemTitle>
+                                    <ItemDescription>
+                                        {item.version}
+                                    </ItemDescription>
+                                </ItemContent>
+                            </Item>
                         </ComboboxItem>
                     )}
                 </ComboboxList>

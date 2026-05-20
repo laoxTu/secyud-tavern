@@ -1,99 +1,28 @@
-﻿<!-- public/favicon.svg -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-        <!-- 背景渐变 -->
-        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#1a1a2e"/>
-            <stop offset="100%" style="stop-color:#0f0f23"/>
-        </linearGradient>
-        <!-- 霓虹蓝渐变 -->
-        <linearGradient id="neonBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#00d2ff"/>
-            <stop offset="100%" style="stop-color:#3a7bd5"/>
-        </linearGradient>
-        <!-- 霓虹紫渐变 -->
-        <linearGradient id="neonPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#a855f7"/>
-            <stop offset="100%" style="stop-color:#6366f1"/>
-        </linearGradient>
-        <!-- 发光效果 -->
-        <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-        </filter>
-        <filter id="glowStrong">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-        </filter>
-    </defs>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 
-    <!-- 背景圆角方形 -->
-    <rect x="5" y="5" width="90" height="90" rx="20" fill="url(#bg)"/>
+    <!-- 2. 外层科技圆环 -->
+    <circle cx="50" cy="50" r="36" fill="none" stroke="#4a9eff" stroke-width="3" />
 
-    <!-- 科技感圆环（外层） -->
-    <circle cx="50" cy="50" r="34" fill="none" stroke="url(#neonBlue)" stroke-width="1.5" opacity="0.4"/>
-    <circle cx="50" cy="50" r="29" fill="none" stroke="url(#neonPurple)" stroke-width="1" opacity="0.3" stroke-dasharray="3 3"/>
+    <!-- 3. 酒杯主体（合并为一个path） -->
+    <path d="M50 33 L44 33 L40 55 L40 62 L60 62 L60 55 L56 33 Z"
+          fill="#0000" stroke="#4a9eff" stroke-width="2.5"/>
 
-    <!-- 酒杯形状（酒馆主题） -->
-    <path d="M50 36
-           L45 36
-           L42 53
-           L42 60
-           L58 60
-           L58 53
-           L55 36
-           Z"
-          fill="none"
-          stroke="url(#neonBlue)"
-          stroke-width="2"
-          filter="url(#glow)"/>
+    <!-- 4. 酒液 -->
+    <path d="M43 50 L57 50 L59 58 L41 58 Z" fill="#4a9eff" opacity="0.8"/>
 
-    <!-- 酒杯中的液体 -->
-    <path d="M44 50 L56 50 L58 55 L42 55 Z"
-          fill="url(#neonBlue)"
-          opacity="0.6"/>
+    <!-- 5. 酒杯高光 -->
+    <rect x="46" y="36" width="8" height="2" fill="#4a9eff" opacity="0.9" rx="1"/>
 
-    <!-- 酒杯顶部高光 -->
-    <line x1="46" y1="38" x2="54" y2="38" stroke="#00d2ff" stroke-width="1.2" opacity="0.8"/>
+    <!-- 7. 左上连接块 -->
+    <rect x="28" y="28" width="8" height="8" fill="#4a9eff" rx="1.5" />
 
-    <!-- 连接节点的线条（科技感神经网络） -->
-    <g opacity="0.5">
-        <line x1="32" y1="32" x2="44" y2="44" stroke="#a855f7" stroke-width="1"/>
-        <line x1="68" y1="32" x2="56" y2="44" stroke="#00d2ff" stroke-width="1"/>
-        <line x1="32" y1="68" x2="44" y2="56" stroke="#00d2ff" stroke-width="1"/>
-        <line x1="68" y1="68" x2="56" y2="56" stroke="#a855f7" stroke-width="1"/>
-    </g>
+    <!-- 8. 右上连接块 -->
+    <rect x="64" y="28" width="8" height="8" fill="#4a9eff" rx="1.5" />
 
-    <!-- 节点光点 -->
-    <circle cx="32" cy="32" r="2" fill="#00d2ff" filter="url(#glowStrong)"/>
-    <circle cx="68" cy="32" r="2" fill="#a855f7" filter="url(#glowStrong)"/>
-    <circle cx="32" cy="68" r="2" fill="#a855f7" filter="url(#glowStrong)"/>
-    <circle cx="68" cy="68" r="2" fill="#00d2ff" filter="url(#glowStrong)"/>
-    <circle cx="50" cy="50" r="3" fill="#ffffff" filter="url(#glowStrong)"/>
+    <!-- 9. 左下连接块 -->
+    <rect x="28" y="64" width="8" height="8" fill="#4a9eff" rx="1.5" />
 
-    <!-- 数据流粒子（带动画） -->
-    <circle cx="28" cy="45" r="1.2" fill="#00d2ff" opacity="0.7">
-        <animate attributeName="opacity" values="0.2;0.9;0.2" dur="2s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="72" cy="55" r="1.2" fill="#a855f7" opacity="0.7">
-        <animate attributeName="opacity" values="0.2;0.9;0.2" dur="2.5s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="38" cy="72" r="1" fill="#00d2ff" opacity="0.5">
-        <animate attributeName="opacity" values="0.1;0.7;0.1" dur="1.8s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="62" cy="28" r="1" fill="#a855f7" opacity="0.5">
-        <animate attributeName="opacity" values="0.1;0.7;0.1" dur="2.2s" repeatCount="indefinite"/>
-    </circle>
+    <!-- 10. 右下连接块 -->
+    <rect x="64" y="64" width="8" height="8" fill="#4a9eff" rx="1.5" />
 
-    <!-- 装饰性科技线条（底部） -->
-    <line x1="22" y1="82" x2="38" y2="82" stroke="#00d2ff" stroke-width="1" opacity="0.4"/>
-    <line x1="62" y1="82" x2="78" y2="82" stroke="#a855f7" stroke-width="1" opacity="0.4"/>
-    <circle cx="19" cy="82" r="1.5" fill="#00d2ff" opacity="0.6"/>
-    <circle cx="81" cy="82" r="1.5" fill="#a855f7" opacity="0.6"/>
 </svg>

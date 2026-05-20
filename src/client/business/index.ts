@@ -5,6 +5,7 @@ import {tabConfig as llmapiPage} from "./llmapis/content";
 import {registerPreset} from "./presets";
 import {registerStory} from "@/client/business/stories";
 import {registerLlmapi} from "@/client/business/llmapis";
+import {registerSlot} from "@/client/business/slots";
 
 export const businessNavigationManager = new TabManager("home tabs");
 
@@ -17,4 +18,5 @@ export function registerBusiness() {
     registerPreset();
     registerStory();
     registerLlmapi();
+    registerSlot();
 }

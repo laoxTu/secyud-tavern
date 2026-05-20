@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>loading</title>
+    <style>
+        /* 全局重置与基础风格 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a1a 0%, #0f0c29 30%, #1a1a2e 60%, #0d1b2a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 网格线背景 - 科技感基础元素 */
+        body::before {
+            content: " ";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(64, 128, 255, 0.03) 5px, transparent 5px),
+            linear-gradient(90deg, rgba(64, 128, 255, 0.03) 5px, transparent 5px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(60px, 60px);
+            }
+        }
+
+        /* 动态光晕 - 缓慢移动的色块 */
+        body::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: floatGlow 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatGlow {
+            0% {
+                top: 20%;
+                left: 30%;
+                transform: scale(1);
+            }
+            33% {
+                top: 40%;
+                left: 60%;
+                transform: scale(1.3);
+            }
+            66% {
+                top: 30%;
+                left: 50%;
+                transform: scale(0.8);
+            }
+            100% {
+                top: 20%;
+                left: 30%;
+                transform: scale(1);
+            }
+        }
+
+        /* 额外的光晕2 - 不同颜色和轨迹 */
+        .bg-glow-2 {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(61, 193, 211, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: floatGlow2 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatGlow2 {
+            0% {
+                top: 50%;
+                left: 40%;
+                transform: scale(0.8);
+            }
+            50% {
+                top: 25%;
+                left: 65%;
+                transform: scale(1.2);
+            }
+            100% {
+                top: 50%;
+                left: 40%;
+                transform: scale(0.8);
+            }
+        }
+
+        /* 粒子线条 - 简约的扫描线效果 */
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(64, 128, 255, 0.01) 2px,
+                    rgba(64, 128, 255, 0.01) 4px
+            );
+            animation: scanMove 4s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* 主容器 */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 动画核心区域 */
+        .animated-ring {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 所有圆环共享的基础样式 */
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border-style: solid;
+            border-color: transparent;
+            box-sizing: border-box;
+        }
+
+        /* 环1：最外层，粉紫调，慢速旋转 */
+        .ring-1 {
+            width: 100%;
+            height: 100%;
+            border-width: 6px;
+            border-top-color: #ff6b9d;
+            border-bottom-color: #c44569;
+            border-left-color: rgba(255, 107, 157, 0.15);
+            border-right-color: rgba(196, 69, 105, 0.2);
+            animation: spinClockwise 3.2s cubic-bezier(0.68, -0.15, 0.27, 1.15) infinite;
+            filter: drop-shadow(0 0 12px rgba(255, 107, 157, 0.6));
+        }
+
+        /* 环2：中层，青蓝调，反向旋转 */
+        .ring-2 {
+            width: 80%;
+            height: 80%;
+            border-width: 5px;
+            border-top-color: #3dc1d3;
+            border-bottom-color: #38ada9;
+            border-left-color: rgba(61, 193, 211, 0.15);
+            border-right-color: rgba(56, 173, 169, 0.2);
+            animation: spinCounterClockwise 2.7s ease-in-out infinite;
+            filter: drop-shadow(0 0 14px rgba(61, 193, 211, 0.7));
+        }
+
+        /* 环3：内层，紫罗兰，快速旋转 */
+        .ring-3 {
+            width: 60%;
+            height: 60%;
+            border-width: 4px;
+            border-top-color: #b794f4;
+            border-right-color: #9b59b6;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            animation: spinClockwise 2s linear infinite;
+            filter: drop-shadow(0 0 10px #b794f4);
+        }
+
+        /* 环4：最内层，金色调，反向快速旋转 */
+        .ring-4 {
+            width: 40%;
+            height: 40%;
+            border-width: 3px;
+            border-top-color: #f6e58d;
+            border-left-color: #f9ca24;
+            border-bottom-color: transparent;
+            border-right-color: transparent;
+            animation: spinCounterClockwise 1.5s linear infinite;
+            filter: drop-shadow(0 0 8px #f9ca24);
+        }
+
+        /* 中心光点 */
+        .core-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffffff, 0 0 35px #a29bfe, 0 0 50px #6c5ce7;
+            animation: pulseGlow 2.2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        /* 旋转动画 */
+        @keyframes spinClockwise {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinCounterClockwise {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        /* 光点呼吸效果 */
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+                box-shadow: 0 0 15px #ffffff, 0 0 25px #a29bfe, 0 0 40px #6c5ce7;
+            }
+            50% {
+                transform: scale(1.4);
+                opacity: 1;
+                box-shadow: 0 0 28px #ffffff, 0 0 45px #b794f4, 0 0 70px #8e44ad;
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+                box-shadow: 0 0 15px #ffffff, 0 0 25px #a29bfe, 0 0 40px #6c5ce7;
+            }
+        }
+
+        /* 底部加载文字 */
+        .loading-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 400;
+            text-align: center;
+            animation: textFlicker 2.8s infinite alternate;
+            text-shadow: 0 0 18px rgba(162, 155, 254, 0.7);
+            user-select: none;
+        }
+
+        @keyframes textFlicker {
+            0% {
+                opacity: 0.5;
+                text-shadow: 0 0 12px rgba(162, 155, 254, 0.5);
+            }
+            50% {
+                opacity: 0.9;
+                text-shadow: 0 0 22px rgba(180, 160, 255, 0.9);
+            }
+            100% {
+                opacity: 0.65;
+                text-shadow: 0 0 15px rgba(162, 155, 254, 0.7);
+            }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 500px) {
+            .animated-ring {
+                width: 130px;
+                height: 130px;
+            }
+
+            .loading-text {
+                font-size: 1rem;
+                letter-spacing: 0.25em;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 扫描线效果 -->
+<div class="scan-lines"></div>
+<!-- 第二个动态光晕 -->
+<div class="bg-glow-2"></div>
+
+<div class="loader-container">
+    <!-- 动画圆环组 -->
+    <div class="animated-ring">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="ring ring-4"></div>
+        <!-- 中心脉动光点 -->
+        <div class="core-dot"></div>
+    </div>
+
+    <!-- 加载提示文字 -->
+    <p class="loading-text">◉☄★☀☃☊◈☆☌◔☁☋☍◕</p>
+</div>
+</body>
+</html>

@@ -1,10 +1,11 @@
-// app/page.tsx
+// src/app/layout.tsx
+import React from "react";
 import {Metadata} from "next";
 import {NextIntlClientProvider} from "next-intl";
 import {Toaster} from "sonner";
+import {TooltipProvider} from "@/components/ui/tooltip";
 import "./globals.css"
 import "./app.css"
-import {TooltipProvider} from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",

@@ -53,7 +53,7 @@ function Content() {
                 code: data.get("code") as string,
                 name: data.get("name") as string,
                 version: "1.0.0",
-                content: {},
+                content: {}
             })}
         createContent={() =>
             <>

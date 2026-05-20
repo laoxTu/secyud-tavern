@@ -4,7 +4,7 @@ import {useTranslations} from "next-intl";
 import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
-import {ItemContent, ItemTitle} from "@/components/ui/item";
+import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
 import {ModelListContentTemplate} from "@/client/business/template/content-template";
 import {ModelNavigationTemplate} from "@/client/business/template/navigation-template";
 import {TabConfig} from "@/client/components/tab";
@@ -12,10 +12,13 @@ import {post} from "@/client";
 import {StoryModel, name as modelType} from "@/shared/business/stories";
 import {modelApi, StoryContext} from "./context";
 import {storyTabManager} from ".";
+import {Button} from "@/components/ui/button";
+import {useRouter} from "next/navigation";
 
 
 function Content() {
     const t = useTranslations();
+    const router = useRouter();
 
     return <ModelListContentTemplate<StoryModel>
         modelType={modelType} modelApi={modelApi} contextType={StoryContext}
@@ -25,6 +28,11 @@ function Content() {
                     <ItemTitle className="line-clamp-1">
                         {model.name} - <span className={"text-muted-foreground"}> {model.id} </span>
                     </ItemTitle>
+                    <ItemDescription>
+                        <Button onClick={() => router.replace(`/stories/${model.id}`)}>
+                            {t("story.enter")}
+                        </Button>
+                    </ItemDescription>
                 </ItemContent>
             </>
         }
