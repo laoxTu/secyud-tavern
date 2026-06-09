@@ -1,11 +1,12 @@
-﻿import {llmapiRepository as repository} from "@/server/business/llmapis";
-import {interceptor} from "@/server/interceptor";
+﻿
+import {llmapiRepository as repository} from "@/llmapis/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
 import {
     generateDeleteModelApi,
     generateGetModelApi,
     generateUpdateModelApi
 } from "@/app/api/template";
-import {Hasher} from "@/server/hasher";
+import {Hasher} from "@/utils/hasher";
 
 /**
  * 获取预设

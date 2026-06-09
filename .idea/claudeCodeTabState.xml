@@ -7,19 +7,8 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
-              <option name="sessionId" value="2bd83b0d-706b-45d9-ac29-f96392e4b496" />
+              <option name="sessionId" value="cb4e7ff9-5b2c-4759-b928-0173e1c9a48a" />
               <option name="cwd" value="$PROJECT_DIR$" />
-              <option name="model" value="claude-sonnet-4-6[1m]" />
-              <option name="permissionMode" value="bypassPermissions" />
-              <option name="reasoningEffort" value="high" />
-            </TabSessionState>
-          </value>
-        </entry>
-        <entry key="1">
-          <value>
-            <TabSessionState>
-              <option name="provider" value="claude" />
-              <option name="sessionId" value="81e24d6c-84eb-4869-b0f5-af38cd5112b5" />
               <option name="model" value="claude-sonnet-4-6[1m]" />
               <option name="permissionMode" value="bypassPermissions" />
               <option name="reasoningEffort" value="high" />
@@ -28,6 +17,5 @@
         </entry>
       </map>
     </option>
-    <option name="tabCount" value="2" />
   </component>
 </project>

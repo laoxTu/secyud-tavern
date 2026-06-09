@@ -38,17 +38,17 @@ src/
 
 Every business entity uses a **two-table design**:
 
-1. **Master table** — created via `masterTable(name, extraColumns)` in `src/server/business/entity-base.ts`
+1. **Master table** — created via `masterTable(name, extraColumns)` in `src/server/business/entities.ts`
    - Columns: `id` (PK), `name`, `content` (JSON string), `createdAt`, `updatedAt`
    - Extra columns use `jsonField<T>` or `jsonArray<T>` custom types
 
-2. **Entry table** — created via `entryTable(name, masterRef, options)` in `src/server/business/entity-base.ts`
+2. **Entry table** — created via `entryTable(name, masterRef, options)` in `src/server/business/entities.ts`
    - Columns: `masterId` (FK), `entryType`, `entryId`, `search`, `disabled`, `content`
    - Composite PK: (masterId, entryType, entryId)
 
 Example:
 ```ts
-// database.ts
+// db-entities.ts
 export const stories = masterTable("story", {
     requires: jsonArray<RequireModel>("requires").default([]),
     llmapi: jsonField<RequireModel | null>("llmapi").default(null),
@@ -58,7 +58,7 @@ export const storyEntries = entryTable("story_entry", () => stories.id, {onDelet
 
 ## Repository Pattern
 
-Every business domain gets a repository via `createRepository()` in `src/server/business/repository-base.ts`.
+Every business domain gets a repository via `createRepository()` in `src/server/business/repository.ts`.
 
 ```ts
 export const storyRepository = createRepository<StoryModel, typeof stories.$inferSelect>(
@@ -71,9 +71,9 @@ export const storyRepository = createRepository<StoryModel, typeof stories.$infe
 );
 ```
 
-## ModelStorage & Extensible Entry Types
+## Storage & Extensible Entry Types
 
-Each business domain can have multiple entry types via `ModelStorage<T>` + `ModelStorageProvider<T>`:
+Each business domain can have multiple entry types via `Storage<T>` + `ModelStorageProvider<T>`:
 
 ```ts
 // provider implements ModelStorageProvider<T>
@@ -130,7 +130,7 @@ Each route file must include `@openapi` JSDoc tags for automatic OpenAPI generat
 
 ## Client-Side Patterns
 
-### API Client (`src/client/index.ts`)
+### API Client (`src/client/register.ts`)
 - Use `get(url, options)`, `post(url, body, options)`, `put(url, body, options)`, `del(url, options)`
 - URL params via `{paramName}` placeholders: `get("/stories/{id}", {params: {id: "123"}})`
 - Types are generated from OpenAPI spec: `src/client/schema.d.ts`
@@ -140,9 +140,9 @@ Each route file must include `@openapi` JSDoc tags for automatic OpenAPI generat
 - `TabConfig` has: `id`, `label` (React component), `component` (React component)
 - Registration: `tabManager.register(tabConfig1, tabConfig2)`
 
-### Content Template
+### Tab Template
 - `ModelListContentTemplate<T>` — generic list+detail panel with search, CRUD, clone, export, import
-- Each business domain implements its own `Content` component using this template
+- Each business domain implements its own `Tab` component using this template
 
 ### Context Pattern
 - `createModelContextType<T>()` — creates a React context
@@ -157,7 +157,7 @@ Each route file must include `@openapi` JSDoc tags for automatic OpenAPI generat
 ## Error Handling
 
 - Server: `BusinessError(message, code)` in `src/shared/errors/` with `.withValue(key, value)` chaining
-- Error interceptor (`src/server/errors/error-interceptor.ts`) catches and formats responses
+- Error interceptor (`src/server/errors/error-interceptor-models.ts`) catches and formats responses
 - Client: `useErrorHandler()` hook catches errors and displays toasts
 
 ## Naming Conventions
@@ -173,18 +173,18 @@ Each route file must include `@openapi` JSDoc tags for automatic OpenAPI generat
 | Tab manager | `xxxTabManager` | `storyTabManager`, `presetTabManager` |
 | Registration function | `registerXxx()` | `registerStory()`, `registerPreset()` |
 | Database tables | Plural snake_case | `stories`, `story_entries` |
-| Client files | `content.tsx` for main list view | |
+| Client files | `preset-preset-preset-preset-tab.tsx` for main list view | |
 
 ## Adding a New Business Domain
 
-1. **Shared**: Create `src/shared/business/<domain>/index.ts` with model interface + name export
+1. **Shared**: Create `src/shared/business/<domain>/register.ts` with model interface + name export
 2. **Server**: Create `src/server/business/<domain>/` with:
-   - `database.ts` — master + entry tables
-   - `index.ts` — repository, storage, registration function
+   - `db-entities.ts` — master + entry tables
+   - `register.ts` — repository, storage, registration function
 3. **Client**: Create `src/client/business/<domain>/` with:
-   - `context.ts` — React context
-   - `content.tsx` — main list using `ModelListContentTemplate`
-   - `index.ts` — tab manager + registration
+   - `models.ts` — React context
+   - `preset-preset-preset-preset-tab.tsx` — main list using `ModelListContentTemplate`
+   - `register.ts` — tab manager + registration
 4. **API Routes**: Create route handlers under `src/app/api/<domain>/` using template generators
 5. **Register**: Call `registerXxx()` in both client and server `registerBusiness()` functions
 

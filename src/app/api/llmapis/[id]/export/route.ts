@@ -1,5 +1,6 @@
-﻿import {llmapiRepository as repository} from "@/server/business/llmapis";
-import {interceptor} from "@/server/interceptor";
+﻿
+import {llmapiRepository as repository} from "@/llmapis/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
 import {generateExportModelApi} from "@/app/api/template";
 import {validate} from "uuid";
 import {eq} from "drizzle-orm";

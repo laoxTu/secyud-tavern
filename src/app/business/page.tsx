@@ -1,6 +1,5 @@
 ﻿'use client'
 import React, {useMemo, useState} from "react";
-import {businessNavigationManager} from "@/client/business";
 import {
     NavigationMenu, NavigationMenuIndicator,
     NavigationMenuItem,
@@ -8,6 +7,7 @@ import {
     NavigationMenuList
 } from "@/components/ui/navigation-menu";
 import {Separator} from "@/components/ui/separator";
+import {businessNavigationManager} from "@/business/client/navigation";
 
 
 export default function BusinessPage() {

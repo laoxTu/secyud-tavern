@@ -77,6 +77,60 @@
           "version"
         ]
       },
+      "LlmInputModel": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "nullable": false
+                },
+                "content": {
+                  "type": "string",
+                  "nullable": false
+                },
+                "name": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "role",
+                "content"
+              ]
+            },
+            "nullable": false
+          }
+        },
+        "required": [
+          "messages"
+        ]
+      },
+      "LlmMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "nullable": false
+          },
+          "content": {
+            "type": "string",
+            "nullable": false
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ]
+      },
       "PagedResult": {
         "type": "object",
         "properties": {
@@ -905,6 +959,55 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/{id}/chat": {
+      "post": {
+        "operationId": "post-llmapis-{id}-chat",
+        "summary": "调用指定 LLM API 进行流式对话",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LlmInputModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },

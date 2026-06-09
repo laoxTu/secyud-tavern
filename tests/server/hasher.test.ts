@@ -1,5 +1,5 @@
 ﻿import {describe, it, expect, beforeEach} from 'vitest';
-import {Hasher} from '@/server/hasher';
+import {Hasher} from '@/utils/hasher';
 
 describe('Hasher', () => {
     const CONTAINER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

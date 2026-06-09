@@ -1,5 +1,6 @@
-﻿import {presetRepository as repository} from "@/server/business/presets";
-import {interceptor} from "@/server/interceptor";
+﻿
+import {presetRepository as repository} from "@/presets/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
 import {generateSetDisableEntryApi} from "@/app/api/template";
 
 /**

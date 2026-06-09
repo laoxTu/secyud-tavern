@@ -1,8 +1,8 @@
 ﻿
 import {and, eq, like, or, SQL} from "drizzle-orm";
-import {interceptor} from "@/server/interceptor";
-import {presetRepository as repository} from "@/server/business/presets";
-import {BusinessError} from "@/shared/errors";
+import {presetRepository as repository} from "@/presets/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
+import {BusinessError} from "@/handler/models";
 import {
     generateCreateModelApi,
     generateGetModelListApi

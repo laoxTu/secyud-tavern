@@ -1,0 +1,34 @@
+﻿import {Registerable} from "@/utils/register";
+import {BaseModel} from "@/business/models";
+import {Repository} from "@/business/server/repository";
+
+
+export interface ModelStorageProvider<T> extends Registerable {
+    // 加载，导出时使用
+    loadModel: (model: T) => Promise<void>,
+    // 仅导入，复制时会使用
+    saveModel: (model: T) => Promise<void>,
+    // 存储 entry时提取 search 字段
+    bindSearch: (entry: any) => string
+}
+
+export function createSimpleStorageProvider<T extends BaseModel>(id: string, arrayName: string, repository: Repository<T>): ModelStorageProvider<T> {
+    return {
+        id: id,
+        loadModel: async (model: T) => {
+            assert(model.entries);
+            const entries =
+                await repository.entry.getList(model.id, id);
+            model.entries[arrayName] = entries.data;
+        },
+        saveModel: async (model: T) => {
+            assert(model.entries);
+            if (Array.isArray(model.entries[arrayName])) {
+                await repository.entry.batchCreate(model.id, id, model.entries.regex);
+            }
+        },
+        bindSearch: entry => {
+            return entry.name;
+        }
+    }
+}

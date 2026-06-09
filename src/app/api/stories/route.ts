@@ -1,7 +1,7 @@
 ﻿import {and, like, SQL} from "drizzle-orm";
-import {interceptor} from "@/server/interceptor";
-import {storyRepository as repository} from "@/server/business/stories";
 import {generateCreateModelApi, generateGetModelListApi} from "@/app/api/template";
+import {interceptor} from "@/handler/server/interceptor";
+import {storyRepository as repository} from "@/stories/server/repository";
 
 /**
  * 获取预设分页列表

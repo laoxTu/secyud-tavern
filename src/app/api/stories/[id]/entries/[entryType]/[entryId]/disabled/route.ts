@@ -1,5 +1,5 @@
-﻿import {storyRepository as repository} from "@/server/business/stories";
-import {interceptor} from "@/server/interceptor";
+﻿import {storyRepository as repository} from "@/stories/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
 import {generateSetDisableEntryApi} from "@/app/api/template";
 
 

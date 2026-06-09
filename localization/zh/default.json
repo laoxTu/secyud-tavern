@@ -88,7 +88,8 @@
   "style": {
   },
   "story": {
-    "opening_remarks": "开场白"
+    "opening_remarks": "开场白",
+    "enter": "进入"
   },
   "regex": {
     "pattern": "表达式",

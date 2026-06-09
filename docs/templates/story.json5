@@ -13,10 +13,10 @@
   ],
   // 对话消息记录
   entries: {
-    history: [{
+    histories: [{
       id: "string",
       // 选择的ai回复
-      aiIndex: "number",
+      outputIndex: "number",
       // 消息时间戳
       timestamp: "string",
       // 初始变量状态
@@ -26,14 +26,14 @@
         // 消息正文
         content: "string",
         // 本轮产生的变量变更, json
-        variableChanges: "any"
+        variables: "any"
       }],
       outputs: [{
         id: "string",
         // 消息正文
         content: "string",
         // 本轮产生的变量变更, json
-        variableChanges: "any"
+        variables: "any"
       }]
     },
 

@@ -1,12 +1,12 @@
 import {eq} from "drizzle-orm";
-import {interceptor} from "@/server/interceptor";
-import {storyRepository} from "@/server/business/stories";
-import {presetRepository, presets} from "@/server/business/presets";
+import {presetRepository} from "@/presets/server/repository";
 import {NextResponse} from "next/server";
-import type {SlotModel} from "@/shared/business/slots";
-import type {PresetModel} from "@/shared/business/presets";
-import {BusinessError} from "@/shared/errors";
-
+import type {PresetModel} from "@/presets/models";
+import {BusinessError} from "@/handler/models";
+import {storyRepository} from "@/stories/server/repository";
+import {interceptor} from "@/handler/server/interceptor";
+import {presets} from "@/presets/server/db-entities";
+import {SlotModel} from "@/slots/models";
 /**
  * 获取故事及其依赖的所有预设（含详情）
  * @pathParams { id:string }

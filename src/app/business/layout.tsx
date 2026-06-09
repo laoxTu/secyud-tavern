@@ -1,7 +1,7 @@
 ﻿// src/app/business/layout.tsx
 'use client';
 import React from "react";
-import {PluginLayout} from "@/client/plugin-layout";
+import {PluginLayout} from "@/business/client/plugin-layout";
 
 
 export default function RootLayout({
