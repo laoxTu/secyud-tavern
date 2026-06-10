@@ -36,3 +36,32 @@ export function tryGetLastItem<T>(items: T[]) {
     }
     return items[items.length - 1];
 }
+
+export function mergeSortedArrays<T>(arr1: T[], arr2: T[], value: (t: T) => number): T[] {
+    let i = 0, j = 0;
+    const result: T[] = [];
+
+    // 同时遍历两个数组，比较当前元素
+    while (i < arr1.length && j < arr2.length) {
+        if (value(arr1[i]) <= value(arr2[j])) {
+            result.push(arr1[i]);
+            i++;
+        } else {
+            result.push(arr2[j]);
+            j++;
+        }
+    }
+
+    // 将剩余元素直接加入（此时另一个数组已遍历完）
+    while (i < arr1.length) {
+        result.push(arr1[i]);
+        i++;
+    }
+
+    while (j < arr2.length) {
+        result.push(arr2[j]);
+        j++;
+    }
+
+    return result;
+}

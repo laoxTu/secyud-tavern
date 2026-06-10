@@ -23,5 +23,13 @@ export interface PresetLorebookModel extends EntryModel {
     layer: number,
 }
 
+export function getLorebookOrder(item: PresetLorebookModel) {
+    return item.layer * 10000 + item.priority;
+}
+
+export function compareLorebook(lft: PresetLorebookModel, rht: PresetLorebookModel) {
+    return getLorebookOrder(lft) - getLorebookOrder(rht);
+}
+
 export const engineName = "lorebook";
 export const engineArrayName = "lorebooks";

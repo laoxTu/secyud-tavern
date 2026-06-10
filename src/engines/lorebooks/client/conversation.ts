@@ -33,7 +33,6 @@ function createLorebookContext(ctx: SlotContextBase, history: StoryHistory) {
 
     const histories = ctx.slot.story.histories!;
     const lorebooks: Record<string, PresetLorebookModel> = ctx.slot.content[engineArrayName];
-    const fixedLorebooks: PresetLorebookModel[] = ctx.slot.content[engineArrayName + "Fixed"];
     const lastInput = tryGetLastItem(history.inputs);
     const lastOutput = tryGetLastItem(history.outputs);
 
@@ -69,35 +68,35 @@ function createLorebookContext(ctx: SlotContextBase, history: StoryHistory) {
 
     // 历史信息直接转存到这里
     ctx.content.lorebooks = lorebooks;
-    ctx.content.fixedLorebooks = fixedLorebooks;
     ctx.content.lastInput = lastInput;
     ctx.content.lastOutput = lastOutput;
     ctx.content.messages = messages.reverse();
 }
 
-
 export const lorebookConversationProvider: ConversationProvider = {
     id: engineName,
     onInitialize: async (ctx) => {
         const lorebooks: Record<string, PresetLorebookModel> = {};
-        const fixedLorebooks: PresetLorebookModel[] = [];
+        const lorebooksS: PresetLorebookModel[] = [];
+        const lorebooksE: PresetLorebookModel[] = [];
         for (const preset of ctx.slot.presets) {
-            const entryLorebooks = preset.entries?.[engineArrayName];
+            const entryLorebooks = preset.entries
+                ?.[engineArrayName] as PresetLorebookModel[];
             if (!entryLorebooks) continue;
             for (const lorebook of entryLorebooks) {
                 if (lorebook.disabled) continue;
                 if (lorebook.matchType === matchName) {
-                    fixedLorebooks.push(lorebook);
-                    continue;
+                    if (lorebook.matchExpression?.lastMessage)
+                        lorebooksE.push(lorebook);
+                    else lorebooksS.push(lorebook);
+                } else {
+                    lorebooks[`${preset.code}-${lorebook.code}`] = lorebook;
                 }
-                const key = `${preset.code}-${lorebook.code}`
-                lorebooks[key] = lorebook;
             }
         }
-        fixedLorebooks.sort((a, b) => a.priority - b.priority)
-        fixedLorebooks.sort((a, b) => a.layer - b.layer)
         ctx.slot.content[engineArrayName] = lorebooks;
-        ctx.slot.content[engineArrayName + "Fixed"] = fixedLorebooks;
+        ctx.slot.content[engineArrayName + "S"] = lorebooksS;
+        ctx.slot.content[engineArrayName + "E"] = lorebooksE;
     },
     onRenderStream: async () => {
 

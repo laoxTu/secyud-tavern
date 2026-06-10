@@ -1,5 +1,5 @@
 ﻿import {Registerable} from "@/utils/register";
-import {BaseModel} from "@/business/models";
+import {BaseModel, EntryModel} from "@/business/models";
 import {Repository} from "@/business/server/repository";
 
 
@@ -16,19 +16,22 @@ export function createSimpleStorageProvider<T extends BaseModel>(id: string, arr
     return {
         id: id,
         loadModel: async (model: T) => {
-            assert(model.entries);
+            if (!model.entries)
+                throw new Error("model.entries should be query this time");
             const entries =
                 await repository.entry.getList(model.id, id);
             model.entries[arrayName] = entries.data;
         },
         saveModel: async (model: T) => {
-            assert(model.entries);
+            if (!model.entries)
+                throw new Error("model.entries should be query this time");
             if (Array.isArray(model.entries[arrayName])) {
-                await repository.entry.batchCreate(model.id, id, model.entries.regex);
+                await repository.entry.batchCreate(
+                    model.id, id, model.entries[arrayName]);
             }
         },
-        bindSearch: entry => {
-            return entry.name;
+        bindSearch: (entry: EntryModel) => {
+            return entry.name + entry.code;
         }
     }
 }

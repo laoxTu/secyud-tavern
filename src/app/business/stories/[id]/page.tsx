@@ -231,7 +231,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                     void createHistory(input);
                 }}>
                     <InputGroup>
-                        <InputGroupTextarea id='slot-user-input'/>
+                        <InputGroupTextarea id='slot-user-input'
+                                            name='slot-user-input'/>
                         <InputGroupAddon align="inline-end">
                             <InputGroupButton
                                 onClick={() => setIsSummary(!isSummary)}

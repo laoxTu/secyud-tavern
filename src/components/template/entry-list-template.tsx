@@ -271,6 +271,7 @@ function Editor<TModel extends BaseModel>(
         try {
             // @ts-expect-error dynamic api required
             await put(`/${modelApi}/{id}/entries/{entryType}/{entryId}`, {
+                code: entry.code,
                 name: data.get("name") as string,
                 ...updateAccessor(data)
             }, {
@@ -352,6 +353,9 @@ function Editor<TModel extends BaseModel>(
                         <CollapsibleTrigger asChild>
                             <label className={"w-full m-auto px-2"}>
                                 {entry.name}
+                                <span className={"px-2 text-sm text-gray-500"}>
+                                    {entry.code}
+                                </span>
                             </label>
                         </CollapsibleTrigger>
                         <div className="flex items-center space-x-2"

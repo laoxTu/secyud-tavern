@@ -13,6 +13,7 @@ import {PresetContext, usePresetContext} from "@/presets/client/models";
 import {lorebookMatcherRegistry, MatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {EntryModel} from "@/business/models";
+import {matchName} from "@/engines/lorebooks/match/always/models";
 
 function EditorContent({entry, matchEditorRegistry}: {
     entry: PresetLorebookModel,
@@ -39,6 +40,7 @@ function EditorContent({entry, matchEditorRegistry}: {
                         {t("default.priority")}
                     </FieldLabel>
                     <Input name="priority" type={"number"}
+                           min={0} max={9999}
                            id={`${engineName}-priority-${entry.id}`}
                            defaultValue={entry.priority}/>
                 </Field>
@@ -79,8 +81,6 @@ function EditorContent({entry, matchEditorRegistry}: {
                     return <EditorComponent defaultValue={entry.matchExpression}/>;
                 }
             )()}
-            <div className="grid grid-cols-2 gap-4">
-            </div>
             <Field>
                 <FieldLabel htmlFor={`${engineName}-content-${entry.id}`}>
                     {t("default.content")}
@@ -100,7 +100,7 @@ function Tab() {
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
             createAccessor={(): Omit<PresetLorebookModel, keyof EntryModel> => ({
-                matchType: "normal",
+                matchType: matchName,
                 matchExpression: [],
                 content: "",
                 priority: 100,
