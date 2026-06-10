@@ -21,8 +21,9 @@ function ConfigContent({model, llmapiConfigRegistry}: {
 }) {
     const t = useTranslations();
     const llmapiConfigs = llmapiConfigRegistry.records;
-    const [provider, setProvider] = useState<string>(model.content.provider);
-    const [editor, setEditor] = useState(llmapiConfigs[provider]);
+    const first = llmapiConfigs.first;
+    const [provider, setProvider] = useState<string | undefined>(model.provider ?? first.id);
+    const [editor, setEditor] = useState(model.provider ? llmapiConfigs[model.provider] : first);
 
 
     const handleProviderChange = useCallback((type: string) => {
@@ -76,13 +77,13 @@ function DefaultTab() {
             await put("/llmapis/{id}",
                 {
                     content: {
-                        "provider": provider,
                         "config": matchEditors[provider]?.getValue(data)
                     },
+                    provider: provider,
                     name: data.get("name") as string,
                     version: data.get("version") as string,
                     key: model.key === key || !key || key === '' ? undefined : key,
-                },
+                } as Partial<LlmapiModel>,
                 {
                     params: {"id": model.id,}
                 });

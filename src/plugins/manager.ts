@@ -34,7 +34,8 @@ class PluginManager extends Registry<PluginManifest> {
 
     async loadClientPlugins() {
         await this.initialize();
-        await this.use(async manifest => {
+        await this.use(async () => {
+            // TODO 添加加载客户端插件过程
         })
     }
 

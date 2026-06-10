@@ -26,13 +26,15 @@ export const POST = interceptor.createRoute(
         const llmapi = await llmapiRepository.get(id, true, (table) => eq(table.code, id));
         if (!llmapi) {
             throw new BusinessError('entity not found', "default.entity_not_found")
-                .withValue("code", id);
+                .withValue("id", id);
         }
 
-        const engine = llmapiEngineRegistry.records[llmapi.code];
+        const provider = llmapi.provider as string;
+        console.debug("use engine " + provider);
+        const engine = llmapiEngineRegistry.records[provider];
         if (!engine) {
             throw new BusinessError('engine not found', "default.entity_not_found")
-                .withValue("engine", llmapi.code);
+                .withValue("id", provider);
         }
 
         const apiKey = llmapi.key ? Hasher.instance.decrypt(llmapi.key) : "";
@@ -41,7 +43,7 @@ export const POST = interceptor.createRoute(
 
         const stream = await engine.run({
             messages: input.messages,
-            type: llmapi.code,
+            type: provider,
             config,
             apiKey,
         });

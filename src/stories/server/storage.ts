@@ -1,4 +1,4 @@
 ﻿import {ModelStorage} from "@/business/server/storage";
-import {StoryModel} from "@/stories/models";
+import {StoryModel, moduleName} from "../models";
 
-export const storyStorage = new ModelStorage<StoryModel>("story",)
+export const storyStorage = new ModelStorage<StoryModel>(moduleName,)

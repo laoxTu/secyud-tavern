@@ -5,6 +5,7 @@ import {moduleName} from "../models";
 // 存档主表
 export const llmapis = masterTable(moduleName, {
     code: text("code").notNull().unique(),
+    provider: text("provider"),
     key: text("key"),
     version: text("version").notNull(),
 });

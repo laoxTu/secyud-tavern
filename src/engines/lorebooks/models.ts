@@ -11,10 +11,6 @@ export interface LorebookMessage {
 }
 
 export interface PresetLorebookModel extends EntryModel {
-    // 编码，同预设下唯一
-    code: string;
-    // 名称
-    name: string;
     // 匹配类型
     matchType: string,
     // 匹配表达式

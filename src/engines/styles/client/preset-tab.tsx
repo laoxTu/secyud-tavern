@@ -10,35 +10,24 @@ import {TabConfig} from "@/components/custom/tab";
 import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext} from "@/presets/client/models";
 import {PresetStyleModel, engineName} from "../models";
+import {EntryModel} from "@/business/models";
 
 function Tab() {
     const t = useTranslations();
     return (
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-            createAccessor={(): PresetStyleModel => ({
-                id: 0,
-                disabled: false,
-                name: "",
+            createAccessor={(): Omit<PresetStyleModel, keyof EntryModel> => ({
                 content: "",
                 priority: 100,
             })}
-            updateAccessor={(data): Partial<PresetStyleModel> => ({
-                name: data.get("name") as string,
+            updateAccessor={(data): Omit<PresetStyleModel, keyof EntryModel> => ({
                 content: data.get("content") as string,
                 priority: parseInt(data.get("priority") as string),
             })}
             updateContent={(entry: PresetStyleModel) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
-                                {t("default.name")}
-                            </FieldLabel>
-                            <Input name="name"
-                                   id={`${engineName}-name-${entry.id}`}
-                                   defaultValue={entry.name}/>
-                        </Field>
                         <Field>
                             <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
                                 {t("default.priority")}

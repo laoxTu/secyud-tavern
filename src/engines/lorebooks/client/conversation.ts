@@ -13,33 +13,6 @@ function tryFillActiveLorebooks(ctx: SlotContextBase, history: StoryHistory, mes
     }
 
     const matchers = lorebookMatcherRegistry.records;
-    let activeLorebooks = ctx.content.activeLorebooks as Set<string>;
-    if (!activeLorebooks) {
-        activeLorebooks = new Set<string>();
-        const histories = ctx.slot.story.histories!;
-        for (let i = histories.length - 1; i >= 0; i--) {
-            const current = histories[i];
-
-            if (current.outputs.length > current.outputId) {
-                const output = current.outputs[current.outputId];
-                if (output.activeLorebooks) {
-                    for (const lorebook of output.activeLorebooks) {
-                        activeLorebooks.add(lorebook);
-                    }
-                }
-            }
-
-            for (const input of current.inputs) {
-                if (input.activeLorebooks) {
-                    for (const lorebook of input.activeLorebooks) {
-                        activeLorebooks.add(lorebook);
-                    }
-                }
-            }
-            if (current.isSummary) break;
-        }
-        ctx.content.activeLorebooks = activeLorebooks;
-    }
 
     const lorebooks: Record<string, PresetLorebookModel> = ctx.slot.content[engineArrayName];
     message.activeLorebooks = [];
@@ -47,12 +20,11 @@ function tryFillActiveLorebooks(ctx: SlotContextBase, history: StoryHistory, mes
     const context: MatcherMatchContext = {
         history, message, variables: variables,
     };
+
     for (const [key, lorebook] of Object.entries(lorebooks)) {
-        if (activeLorebooks.has(key)) continue;
         const matcher = matchers[lorebook.matchType];
         if (matcher && matcher.match(context, lorebook.matchExpression)) {
             message.activeLorebooks.push(key);
-            activeLorebooks.add(key);
         }
     }
 }

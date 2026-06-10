@@ -29,7 +29,7 @@ function Content() {
                         {model.name} - <span className={"text-muted-foreground"}> {model.id} </span>
                     </ItemTitle>
                     <ItemDescription>
-                        <Button onClick={() => router.replace(`/stories/${model.id}`)}>
+                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}>
                             {t("story.enter")}
                         </Button>
                     </ItemDescription>

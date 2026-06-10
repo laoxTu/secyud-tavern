@@ -11,6 +11,7 @@ class ErrorInterceptor implements InterceptorModels {
         } catch (error) {
 
             if (error instanceof BusinessError) {
+                console.error(error);
                 return NextResponse.json(
                     {
                         message: error.message,

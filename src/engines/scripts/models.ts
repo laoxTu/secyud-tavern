@@ -1,7 +1,6 @@
 ﻿import {EntryModel} from "@/business/models";
 
 export interface PresetScriptModel extends EntryModel{
-    name: string;
     content: string;
     priority: number;
 }

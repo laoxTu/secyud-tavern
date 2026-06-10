@@ -53,7 +53,6 @@ export function MatchEditor({defaultValue}: MatcherProps) {
                                         defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
                     </Field>
                 ))}
-
             </div>
         </>
     );

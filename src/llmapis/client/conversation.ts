@@ -2,6 +2,7 @@
 import {moduleName} from "../models";
 import {engineName as regexEngineName} from "@/engines/regexes/models";
 import {llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
+import {BusinessError} from "@/handler/models";
 
 
 export const llmapiConversationProvider: ConversationProvider = {
@@ -13,7 +14,10 @@ export const llmapiConversationProvider: ConversationProvider = {
     onRenderStream: async () => {
     },
     onProcessInput: async (ctx) => {
-        const provider: string = ctx.slot.llmapi.content.provider;
+        const provider: string | undefined = ctx.slot.llmapi.provider;
+        if (!provider) {
+            throw new BusinessError("No provider provided");
+        }
         ctx.messages = await llmapiInputBuilderManager.records[provider].onBuildInput(ctx);
     },
     onProcessOutput: async () => {

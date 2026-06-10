@@ -1,9 +1,12 @@
 ﻿import {businessNavigationManager} from "@/business/client/navigation";
 import {llmapiNavigationContent} from "./content";
+import {conversationManager} from "@/slots/client/conversation";
+import {llmapiConversationProvider} from "@/llmapis/client/conversation";
 
 
-export function registerLlmapiClient(){
+export function registerLlmapiClient() {
     businessNavigationManager.register(
-        llmapiNavigationContent,
-    )
+        llmapiNavigationContent);
+    conversationManager.register(
+        llmapiConversationProvider)
 }

@@ -4,7 +4,7 @@ import {engineName} from "@/engines/deepseek/models";
 import {
     engineArrayName,
     engineArrayName as lorebookEngineArrayName,
-    LorebookMessage,
+    LorebookMessage, LorebookMessageItem,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
 import {LlmapiMessage} from "@/slots/models";
@@ -14,7 +14,6 @@ import {tryGetLastItem} from "@/utils";
 export const deepseekInputBuilder: LlmapiInputBuilder = {
     id: engineName,
     onBuildInput: async (ctx: LlmapiInputContext) => {
-
         const messages = ctx.content.messages as LorebookMessage[];
         const fixedLorebooks = ctx.slot.content[lorebookEngineArrayName + "Fixed"] as PresetLorebookModel[];
         const lorebooks = ctx.slot.content[engineArrayName] as Record<string, PresetLorebookModel>;
@@ -23,7 +22,8 @@ export const deepseekInputBuilder: LlmapiInputBuilder = {
             content: ""
         };
         ctx.messages.push(firstMessage);
-        const nextLorebooks: PresetLorebookModel[] = [];
+        const visitedLorebooks = new Set<string>();
+        const prepareLorebooks: PresetLorebookModel[] = [];
         for (const message of messages) {
             const userMessage: LlmapiMessage = {
                 role: "user",
@@ -32,21 +32,15 @@ export const deepseekInputBuilder: LlmapiInputBuilder = {
             let userInput = "";
             for (const input of message.inputs) {
                 userInput += input.message;
-                if (input.lorebooks) {
-                    for (const lorebook of input.lorebooks) {
-                        if (lorebooks[lorebook]) {
-                            nextLorebooks.push(lorebooks[lorebook]);
-                        }
-                    }
-                }
+                fillLorebooks(input);
             }
 
-            for (const lorebook of nextLorebooks) {
+            for (const lorebook of prepareLorebooks) {
                 userMessage.content += lorebook.content;
             }
             userMessage.content += userInput;
             ctx.messages.push(userMessage);
-            nextLorebooks.length = 0;
+            prepareLorebooks.length = 0;
 
             if (message.output) {
                 const aiMessage: LlmapiMessage = {
@@ -54,13 +48,7 @@ export const deepseekInputBuilder: LlmapiInputBuilder = {
                     content: message.output?.message
                 }
                 ctx.messages.push(aiMessage);
-                if (message.output.lorebooks) {
-                    for (const lorebook of message.output.lorebooks) {
-                        if (lorebooks[lorebook]) {
-                            nextLorebooks.push(lorebooks[lorebook]);
-                        }
-                    }
-                }
+                fillLorebooks(message.output);
             }
         }
         const lastMessage = tryGetLastItem(ctx.messages)!;
@@ -74,6 +62,17 @@ export const deepseekInputBuilder: LlmapiInputBuilder = {
         }
 
         return ctx.messages;
+
+        function fillLorebooks(message: LorebookMessageItem) {
+            if (!message.lorebooks) return;
+
+            for (const lorebook of message.lorebooks) {
+                if (!lorebooks[lorebook] ||
+                    visitedLorebooks.has(lorebook)) continue;
+                prepareLorebooks.push(lorebooks[lorebook]);
+                visitedLorebooks.add(lorebook);
+            }
+        }
     }
 
 }

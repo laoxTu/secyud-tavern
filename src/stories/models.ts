@@ -1,4 +1,4 @@
-﻿import {BaseModel, EntryModel} from "@/business/models";
+﻿import {BaseModel} from "@/business/models";
 import {RequireModel} from "@/presets/models";
 import {tryGetLastItem} from "@/utils";
 
@@ -28,7 +28,8 @@ export interface StoryOutputMessage extends StoryHistoryMessage {
     id: number;
 }
 
-export interface StoryHistory extends EntryModel {
+export interface StoryHistory {
+    id: number;
     outputId: number;
     isSummary: boolean;
     variables: Record<string, any>;
@@ -76,7 +77,9 @@ export function applyPatch(variables: any, changes: VariableChangeModel[]) {
     }
 }
 
-export function extractVariableChanges(text: string): VariableChangeModel[] {
+export function extractVariableChanges(text?: string): VariableChangeModel[] {
+    if (!text) return [];
+
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
 
@@ -87,8 +90,7 @@ export function extractVariableChanges(text: string): VariableChangeModel[] {
             const obj = JSON.parse(jsonStr);
             if (obj as VariableChangeModel) {
                 results.push(obj as VariableChangeModel);
-            }
-            else if (Array.isArray(obj)) {
+            } else if (Array.isArray(obj)) {
                 for (const item of obj) {
                     if (item as VariableChangeModel) {
                         results.push(item as VariableChangeModel);

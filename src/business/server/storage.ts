@@ -21,6 +21,6 @@ export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> {
 
     bindSearch(type: string, entry: any) {
         const provider = this.records[type];
-        return provider.bindSearch(entry);
+        return provider?.bindSearch(entry) ?? entry?.name ?? "";
     }
 }

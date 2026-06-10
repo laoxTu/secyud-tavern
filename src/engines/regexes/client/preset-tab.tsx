@@ -12,41 +12,30 @@ import {TabConfig} from "@/components/custom/tab";
 import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext} from "@/presets/client/models";
 import {engineName, PresetRegexModel} from "../models";
+import {EntryModel} from "@/business/models";
 
 function Tab() {
     const t = useTranslations();
     return (
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-            createAccessor={(): PresetRegexModel => ({
-                id: 0,
-                disabled: false,
-                name: "",
+            createAccessor={(): Omit<PresetRegexModel, keyof EntryModel> => ({
                 pattern: "",
                 replacement: "",
                 target: "both",
                 layerMin: -1,
                 layerMax: -1,
             })}
-            updateAccessor={(data): Partial<PresetRegexModel> => ({
-                name: data.get("name") as string,
+            updateAccessor={(data): Omit<PresetRegexModel, keyof EntryModel> => ({
                 pattern: data.get("pattern") as string,
                 replacement: data.get("replacement") as string,
                 target: data.get("target") as string,
                 layerMin: parseInt(data.get("layerMin") as string),
                 layerMax: parseInt(data.get("layerMax") as string),
             })}
-            updateContent={(entry:PresetRegexModel) => (
+            updateContent={(entry: PresetRegexModel) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
-                                {t("default.name")}
-                            </FieldLabel>
-                            <Input name="name"
-                                   id={`${engineName}-name-${entry.id}`}
-                                   defaultValue={entry.name}/>
-                        </Field>
                         <Field>
                             <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
                                 {t("regex.target")}

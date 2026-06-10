@@ -2,7 +2,7 @@
 import {ChevronsDownIcon, ChevronsUpIcon, FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
 import React, {Context, useCallback, useState} from "react";
 import {toast} from "sonner";
-import {Field, FieldGroup, FieldSet} from "@/components/ui/field";
+import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
@@ -185,6 +185,7 @@ function CreateButtons<TModel extends BaseModel>(
         try {
             // @ts-expect-error dynamic api required
             await post(`/${modelApi}/{id}/entries/{entryType}`, {
+                code: data.get("code") as string,
                 name: data.get("name") as string,
                 ...createAccessor()
             }, {
@@ -217,6 +218,10 @@ function CreateButtons<TModel extends BaseModel>(
                         </DialogDescription>
                     </DialogHeader>
                     <FieldGroup>
+                        <Field>
+                            <Label htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</Label>
+                            <Input id={`${entryType}-code`} name="code" required/>
+                        </Field>
                         <Field>
                             <Label htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</Label>
                             <Input id={`${entryType}-name`} name="name" required/>
@@ -412,6 +417,24 @@ function Editor<TModel extends BaseModel>(
                             <FieldGroup>
                                 <FieldSet>
                                     <FieldGroup>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <Field>
+                                                <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
+                                                    {t("default.code")}
+                                                </FieldLabel>
+                                                <Input name="code"
+                                                       id={`${entryType}-code-${entry.id}`}
+                                                       defaultValue={entry.code} disabled/>
+                                            </Field>
+                                            <Field>
+                                                <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
+                                                    {t("default.name")}
+                                                </FieldLabel>
+                                                <Input name="name"
+                                                       id={`${entryType}-name-${entry.id}`}
+                                                       defaultValue={entry.name}/>
+                                            </Field>
+                                        </div>
                                         {updateContent(entry)}
                                     </FieldGroup>
                                 </FieldSet>

@@ -2,21 +2,17 @@
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Label} from "@/components/ui/label";
-import {put} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
-import {EditFormTemplate} from "@/components/template/edit-form-template";
 import {EntryNavigationTemplate} from "@/components/template/navigation-template";
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext, usePresetContext} from "@/presets/client/models";
 import {lorebookMatcherRegistry, MatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
+import {EntryModel} from "@/business/models";
 
 function EditorContent({entry, matchEditorRegistry}: {
     entry: PresetLorebookModel,
@@ -38,22 +34,6 @@ function EditorContent({entry, matchEditorRegistry}: {
     return (
         <>
             <div className="grid grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
-                        {t("default.code")}
-                    </FieldLabel>
-                    <Input name="code"
-                           id={`${engineName}-code-${entry.id}`}
-                           defaultValue={entry.code}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
-                        {t("default.name")}
-                    </FieldLabel>
-                    <Input name="name"
-                           id={`${engineName}-name-${entry.id}`}
-                           defaultValue={entry.name}/>
-                </Field>
                 <Field>
                     <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
                         {t("default.priority")}
@@ -116,71 +96,28 @@ function EditorContent({entry, matchEditorRegistry}: {
 function Tab() {
     const matchEditorRegistry = useMemo(() => lorebookMatcherRegistry, []);
     const matchEditors = matchEditorRegistry.records;
-    const t = useTranslations();
     return (
-        <div className={"flex w-full h-full"}>
-            <EditFormTemplate
-                className={"w-48"} modelType={moduleName} contextType={PresetContext}
-                updateHandler={async (model, data) =>
-                    await put("/presets/{id}",
-                        {
-                            content: {
-                                "lorebook": {
-                                    includeName: Boolean(data.get("includeName"))
-                                }
-                            },
-                        },
-                        {
-                            params: {"id": model.id,}
-                        })}
-                updateContent={(model) => (
-                    <>
-                        <Field orientation={"horizontal"}>
-                            <Checkbox name="includeName" id={`${moduleName}-${engineName}-includeName`}
-                                      defaultChecked={model.content.lorebook?.includeName ?? false}/>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Label htmlFor={`${moduleName}-${engineName}-includeName`}>
-                                        {t(`${engineName}.include_name`)}
-                                    </Label>
-                                </TooltipTrigger>
-                                <TooltipContent className={"max-w-xs"}>
-                                    <p>{t(`${engineName}.include_name_description`)}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </Field>
-                    </>
-                )}>
-            </EditFormTemplate>
-            <EntryListTemplate<PresetModel>
-                modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-                createAccessor={(): PresetLorebookModel => ({
-                    id: 0,
-                    name: "",
-                    code: "",
-                    matchType: "normal",
-                    matchExpression: [],
-                    content: "",
-                    priority: 100,
-                    layer: 100,
-                    disabled: false
-                })}
-                updateAccessor={(data): Partial<PresetLorebookModel> => {
-                    const matchType = data.get("matchType") as string;
-                    return ({
-                        name: data.get("name") as string,
-                        code: data.get("code") as string,
-                        matchType: matchType,
-                        matchExpression: matchEditors[matchType].getEditorValue(data),
-                        content: data.get("content") as string,
-                        priority: parseInt(data.get("priority") as string),
-                        layer: parseInt(data.get("layer") as string),
-                    });
-                }}
-                updateContent={entry => <EditorContent
-                    entry={entry} matchEditorRegistry={matchEditorRegistry}/>}/>
-        </div>
-
+        <EntryListTemplate<PresetModel>
+            modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
+            createAccessor={(): Omit<PresetLorebookModel, keyof EntryModel> => ({
+                matchType: "normal",
+                matchExpression: [],
+                content: "",
+                priority: 100,
+                layer: 100,
+            })}
+            updateAccessor={(data): Omit<PresetLorebookModel, keyof EntryModel> => {
+                const matchType = data.get("matchType") as string;
+                return ({
+                    matchType: matchType,
+                    matchExpression: matchEditors[matchType].getEditorValue(data),
+                    content: data.get("content") as string,
+                    priority: parseInt(data.get("priority") as string),
+                    layer: parseInt(data.get("layer") as string),
+                });
+            }}
+            updateContent={entry => <EditorContent
+                entry={entry} matchEditorRegistry={matchEditorRegistry}/>}/>
     );
 }
 

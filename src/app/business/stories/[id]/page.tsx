@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
+import React, {useEffect, useState, useCallback, useMemo, useRef, use} from "react";
 import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 
@@ -29,10 +29,12 @@ import {
 } from "@/slots/client/conversation-models";
 import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
 import {tryGetLastItem} from "@/utils";
+import {useRouter} from "next/navigation";
 
 
-export default function StoryPage({params}: { params: { id: string } }) {
-    const {id} = params;
+export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
+    const {id} = use(params);
+    const router = useRouter();
     const {handleError} = useErrorHandler();
     const [loading, setLoading] = useState<boolean | undefined>(undefined);
     const [page, setPage] = useState<number>(-1);
@@ -56,8 +58,9 @@ export default function StoryPage({params}: { params: { id: string } }) {
             setPage(maxPage - 1);
         } catch (err) {
             handleError(err);
+            router.replace("/business")
         }
-    }, [handleError, id, manager]);
+    }, [handleError, id, manager, router]);
 
     const renderCurrentPage = useCallback(async () => {
         if (!iframeRef.current) return;
@@ -173,7 +176,6 @@ export default function StoryPage({params}: { params: { id: string } }) {
 
             history ??= {
                 id: 0,
-                disabled: false,
                 inputs: [],
                 isSummary: isSummary,
                 outputId: 0,
@@ -265,7 +267,8 @@ export default function StoryPage({params}: { params: { id: string } }) {
                             </PaginationItem>
                             <PaginationItem>
                                 <InputGroup>
-                                    <InputGroupInput id='slot-page-index' value={page} type={'number'}/>
+                                    <InputGroupInput id='slot-page-index' type={'number'}
+                                                     defaultValue={page}/>
                                     <InputGroupAddon align={'inline-end'}>
                                         <InputGroupText content={`/${maxPage}`}/>
                                     </InputGroupAddon>
