@@ -2,22 +2,20 @@
 import {useEffect, useRef, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {pluginManager} from "@/plugins/manager";
-import {businessNavigationManager} from "@/business/client/navigation";
-import {llmapiNavigationContent} from "@/llmapis/client/content";
-import {presetNavigationContent} from "@/presets/client/content";
-import {storyNavigationContent} from "@/stories/client/content";
 import {registerDeepseekClient} from "@/engines/deepseek/client";
 import {registerStylesClient} from "@/engines/styles/client";
 import {registerScriptsClient} from "@/engines/scripts/client";
 import {registerRegexesClient} from "@/engines/regexes/client";
 import {registerLorebooksClient} from "@/engines/lorebooks/client";
+import {registerLlmapiClient} from "@/llmapis/client";
+import {registerStoryClient} from "@/stories/client";
+import {registerPresetClient} from "@/presets/client";
 
 async function loadClientPlugins() {
-    businessNavigationManager.register(
-        storyNavigationContent,
-        presetNavigationContent,
-        llmapiNavigationContent,
-    )
+    registerPresetClient();
+    registerStoryClient();
+    registerLlmapiClient();
+
     registerDeepseekClient();
 
     registerLorebooksClient();

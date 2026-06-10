@@ -1,52 +1,67 @@
-﻿
-// --- Contexts
+﻿import {Registerable} from "@/utils/register";
+import {LlmapiInputModel, SlotModel} from "@/slots/models";
+import {applyPatch, getCurrentOutput, StoryHistory} from "@/stories/models";
 
-import {Registerable} from "@/utils/register";
-import {LlmInputModel, SlotModel} from "@/slots/models";
-import {StoryHistory} from "@/stories/models";
-
-export interface SlotInitializeContext {
+export interface SlotContextBase {
     slot: SlotModel;
     content: Record<string, any>;
 }
 
-export interface LlmInputContext extends LlmInputModel {
-    slot: SlotModel;
-    userInput: string;
-    content: Record<string, any>;
+export interface SlotInitializeContext extends SlotContextBase {
+    id?: string;
 }
 
-export interface LlmOutputContext {
-    content: Record<string, any>;
+export interface LlmapiInputContext extends LlmapiInputModel, SlotContextBase {
     history: StoryHistory,
-    slot: SlotModel;
 }
 
-export interface RenderContext {
-    content: Record<string, any>;
+export interface LlmapiOutputContext extends SlotContextBase {
+    sessionId?: string;
+    history: StoryHistory,
+}
+
+export interface RenderContext extends SlotContextBase {
     document: Document;
     history: StoryHistory,
-    slot: SlotModel;
+    variables: any,
 }
 
-export interface RenderStreamContext {
-    content: Record<string, any>;
+export interface RenderStreamContext extends SlotContextBase {
     document: Document;
     history: StoryHistory,
-    slot: SlotModel;
-    stream: string;
+    stream: string,
+    variables: any,
 }
-
-// --- Provider ---
 
 export interface ConversationProvider extends Registerable {
+    // 请求完插槽数据后执行
     onInitialize(ctx: SlotInitializeContext): Promise<void>;
 
-    onProcessInput(ctx: LlmInputContext): Promise<void>;
+    // 处理输入信息 更新输入历史
+    onProcessInput(ctx: LlmapiInputContext): Promise<void>;
 
-    onProcessOutput(ctx: LlmOutputContext): Promise<void>;
+    // 处理输出信息 更新输出历史
+    onProcessOutput(ctx: LlmapiOutputContext): Promise<void>;
 
+    // 页面渲染
     onRenderPage(ctx: RenderContext): Promise<void>;
 
+    // 流式渲染，在请求输出时
     onRenderStream(ctx: RenderStreamContext): Promise<void>;
+}
+
+export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
+    const variables = structuredClone(history.variables);
+    for (const input of history.inputs) {
+        if (input.variables) {
+            applyPatch(variables, input.variables);
+        }
+    }
+    if (includeOutput && history.outputs.length > 0) {
+        const changes = getCurrentOutput(history)?.variables;
+        if (changes) {
+            applyPatch(variables, changes);
+        }
+    }
+    return variables;
 }

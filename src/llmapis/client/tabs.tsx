@@ -14,7 +14,6 @@ import {LlmapiContext} from "./models";
 import {LlmapiModel, moduleName} from "../models";
 import {LlmapiConfigRegistry, llmapiConfigRegistry} from "./config";
 
-const prefix = moduleName;
 
 function ConfigContent({model, llmapiConfigRegistry}: {
     model: LlmapiModel,
@@ -34,14 +33,14 @@ function ConfigContent({model, llmapiConfigRegistry}: {
 
     return <>
         <Field>
-            <FieldLabel htmlFor={`${prefix}-provider`}>
+            <FieldLabel htmlFor={`${moduleName}-provider`}>
                 {t(`${moduleName}.provider`)}
             </FieldLabel>
             <Select name="provider"
                     value={provider}
                     onValueChange={handleProviderChange}>
                 <SelectTrigger className="w-full"
-                               id={`${prefix}-provider`}>
+                               id={`${moduleName}-provider`}>
                     <SelectValue/>
                 </SelectTrigger>
                 <SelectContent position="popper">
@@ -91,24 +90,24 @@ function DefaultTab() {
         updateContent={(model) => <>
             <div className="grid grid-cols-2 gap-4">
                 <Field>
-                    <Label htmlFor={`${prefix}-code`}>{t("default.code") + "*"}</Label>
-                    <Input id={`${prefix}-code`} name="code"
+                    <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                    <Input id={`${moduleName}-code`} name="code"
                            defaultValue={model.code} disabled/>
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor={`${prefix}-name`}>
+                    <FieldLabel htmlFor={`${moduleName}-name`}>
                         {t("default.name")}
                     </FieldLabel>
-                    <Input name="name" id={`${prefix}-name`}
+                    <Input name="name" id={`${moduleName}-name`}
                            defaultValue={model.name}
                     />
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor={`${prefix}-version`}>
+                    <FieldLabel htmlFor={`${moduleName}-version`}>
                         {t("default.version")}
                     </FieldLabel>
                     <Input name="version"
-                           id={`${prefix}-version`}
+                           id={`${moduleName}-version`}
                            defaultValue={model.version}
                     />
                 </Field>

@@ -1,6 +1,6 @@
 ﻿'use client';
 import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
-import {get, post} from "@/client";
+import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 
 import {
@@ -17,17 +17,18 @@ import {
     InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
-import {CornerDownLeftIcon} from "lucide-react";
-import {v4 as uuidv4} from "uuid";
+import {AppWindowMacIcon, CornerDownLeftIcon} from "lucide-react";
 import {conversationManager} from "@/slots/client/conversation";
-import {LlmInputModel, SlotModel} from "@/slots/models";
+import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {
-    LlmInputContext, LlmOutputContext,
+    generateCurrentVariables,
+    LlmapiInputContext, LlmapiOutputContext,
     RenderContext,
     RenderStreamContext,
     SlotInitializeContext
 } from "@/slots/client/conversation-models";
-import {StoryHistory, StoryHistoryMessage} from "@/stories/models";
+import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
+import {tryGetLastItem} from "@/utils";
 
 
 export default function StoryPage({params}: { params: { id: string } }) {
@@ -36,6 +37,7 @@ export default function StoryPage({params}: { params: { id: string } }) {
     const [loading, setLoading] = useState<boolean | undefined>(undefined);
     const [page, setPage] = useState<number>(-1);
     const [maxPage, setMaxPage] = useState<number>(0);
+    const [isSummary, setIsSummary] = useState<boolean>(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const slotCtx = useRef<{ slot?: SlotModel }>({});
 
@@ -49,8 +51,7 @@ export default function StoryPage({params}: { params: { id: string } }) {
             }
             await manager.use((provider) => provider.onInitialize(ctx))
             slotCtx.current.slot = slot;
-            const histories = slot.story.entries!.histories as StoryHistory[];
-            const maxPage = histories?.length ?? 0;
+            const maxPage = slot.story.histories!.length;
             setMaxPage(maxPage)
             setPage(maxPage - 1);
         } catch (err) {
@@ -64,51 +65,46 @@ export default function StoryPage({params}: { params: { id: string } }) {
         if (!slot) return;
         const histories = slot.story.entries!.histories as StoryHistory[];
         if (!histories || histories.length <= page || page < 0) return;
-        const storyHistory = histories[page];
+        const history = histories[page];
         const iframeDoc = iframeRef.current.contentDocument!;
         const renderCtx: RenderContext = {
             content: {},
             document: iframeDoc,
-            history: storyHistory,
-            slot: slot
+            history: history,
+            slot: slot,
+            variables: generateCurrentVariables(history)
         };
         iframeDoc.head.innerHTML = '';
         iframeDoc.body.innerHTML = '';
         await manager.use(provider => provider.onRenderPage(renderCtx));
-    }, [manager, page])
+    }, [manager, page]);
 
-    const generateReply = useCallback(async (input: string) => {
+    // 生成回复，并持续渲染，直接调用将会新生成一个
+    const generateReply = useCallback(async () => {
         try {
             const slot = slotCtx.current.slot;
             const llmapiCode = slot?.story?.llmapi?.code;
             if (!llmapiCode) return;
+            const histories = slot.story.histories!;
+            const history = histories[histories.length - 1];
 
-            const ctx: LlmInputContext = {messages: [], slot: slot, userInput: input, content: {}};
+            const ctx: LlmapiInputContext = {messages: [], slot: slot, content: {}, history: history};
             await manager.use(provider => provider.onProcessInput(ctx));
 
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
-                {messages: ctx.messages} as LlmInputModel,
+                {messages: ctx.messages} as LlmapiInputModel,
                 {params: {id: llmapiCode}}
             );
 
-            const currentOutput: StoryHistoryMessage = {
+            const currentOutput: StoryOutputMessage = {
                 id: 0,
-                content: ""
+                content: "",
+                variables: []
             };
-            const storyHistory: StoryHistory = {
-                id: uuidv4(),
-                inputs: [{
-                    id: 0,
-                    content: input
-                }],
-                outputIndex: 0,
-                outputs: [currentOutput],
-                timestamp: new Date().toISOString(),
-                variables: {}
-            };
-            slot.story.entries!.histories ??= [];
-            slot.story.entries!.histories.push(storyHistory);
+
+            history.outputs.push(currentOutput);
+            history.outputId = history.outputs.length - 1;
 
             const maxPage = slot.story.entries!.histories.length;
             setMaxPage(maxPage);
@@ -128,27 +124,80 @@ export default function StoryPage({params}: { params: { id: string } }) {
                     const chunk = decoder.decode(value, {stream: !done});
                     fullContent += chunk;
                     currentOutput.content = fullContent;
+                    currentOutput.variables = extractVariableChanges(fullContent);
                     if (!iframeRef.current || page !== maxPage - 1) {
                         continue;
                     }
                     const streamCtx: RenderStreamContext = {
                         content: {},
                         document: iframeRef.current.contentDocument!,
-                        history: storyHistory,
+                        history: history,
                         slot: slot,
-                        stream: fullContent
+                        stream: fullContent,
+                        variables: generateCurrentVariables(history)
                     };
                     await manager.use(provider => provider.onRenderStream(streamCtx));
                 }
             }
 
-            const outputCtx: LlmOutputContext = {content: {}, history: storyHistory, slot: slot};
+            const outputCtx: LlmapiOutputContext = {content: {}, history: history, slot: slot};
             await manager.use(provider => provider.onProcessOutput(outputCtx));
+
+            await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+                {params: {id: slot.story.id, entryType: 'history', entryId: history.id}},
+            );
             await renderCurrentPage();
         } catch (err) {
             handleError(err);
         }
     }, [manager, renderCurrentPage, page, handleError]);
+
+    // 这是创建回复
+    const createHistory = useCallback(async (input: string) => {
+        try {
+            const slot = slotCtx.current.slot;
+            const llmapiCode = slot?.story?.llmapi?.code;
+            if (!llmapiCode) return;
+            const histories = slot.story.histories!;
+            const lastHistory = tryGetLastItem(histories);
+
+            let variables = {};
+            let history: StoryHistory | undefined = undefined;
+            if (lastHistory) {
+                if (lastHistory.outputs.length > 0) {
+                    variables = generateCurrentVariables(lastHistory);
+                } else {
+                    history = lastHistory;
+                }
+            }
+
+            history ??= {
+                id: 0,
+                disabled: false,
+                inputs: [],
+                isSummary: isSummary,
+                outputId: 0,
+                outputs: [],
+                variables: variables
+            };
+
+            history.inputs.push({
+                id: history.inputs.length == 0 ? 1 :
+                    Math.max(...history.inputs.map(i => i.id + 1)),
+                content: input,
+                variables: extractVariableChanges(input)
+            })
+
+            histories.push(history);
+
+            history.id = await post('/stories/{id}/entries/{entryType}', history,
+                {params: {id: slot.story.id, entryType: 'history'}}
+            );
+        } catch (err) {
+            handleError(err);
+        }
+        await generateReply();
+    }, [generateReply, handleError, isSummary]);
 
     useEffect(() => {
         if (loading || slotCtx.current.slot) return;
@@ -177,10 +226,21 @@ export default function StoryPage({params}: { params: { id: string } }) {
             <div>
                 <form action={formData => {
                     const input = formData.get('slot-user-input') as string;
-                    void generateReply(input);
+                    void createHistory(input);
                 }}>
                     <InputGroup>
                         <InputGroupTextarea id='slot-user-input'/>
+                        <InputGroupAddon align="inline-end">
+                            <InputGroupButton
+                                onClick={() => setIsSummary(!isSummary)}
+                                size="icon-xs"
+                            >
+                                <AppWindowMacIcon
+                                    data-summary={isSummary}
+                                    className="data-[summary=true]:fill-gray-400 data-[summary=true]:stroke-white"
+                                />
+                            </InputGroupButton>
+                        </InputGroupAddon>
                         <InputGroupAddon align={'inline-end'}>
                             <InputGroupButton type="submit">
                                 <CornerDownLeftIcon/>

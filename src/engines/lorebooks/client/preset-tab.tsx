@@ -15,10 +15,13 @@ import {EntryNavigationTemplate} from "@/components/template/navigation-template
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext, usePresetContext} from "@/presets/client/models";
-import {lorebookMatchEditorRegistry, MatchEditorRegistry} from "./match-editor";
-import {engineName} from "../models";
+import {lorebookMatcherRegistry, MatcherRegistry} from "./match";
+import {engineName, PresetLorebookModel} from "../models";
 
-function EditorContent({entry, matchEditorRegistry}: { entry: any, matchEditorRegistry: MatchEditorRegistry, }) {
+function EditorContent({entry, matchEditorRegistry}: {
+    entry: PresetLorebookModel,
+    matchEditorRegistry: MatcherRegistry,
+}) {
     const matchEditors = matchEditorRegistry.records;
     const [matchType, setMatchType] = useState<string>(entry.matchType);
     const [editor, setEditor] = useState(matchEditors[matchType]);
@@ -36,12 +39,36 @@ function EditorContent({entry, matchEditorRegistry}: { entry: any, matchEditorRe
         <>
             <div className="grid grid-cols-2 gap-4">
                 <Field>
+                    <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                        {t("default.code")}
+                    </FieldLabel>
+                    <Input name="code"
+                           id={`${engineName}-code-${entry.id}`}
+                           defaultValue={entry.code}/>
+                </Field>
+                <Field>
                     <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
                         {t("default.name")}
                     </FieldLabel>
                     <Input name="name"
                            id={`${engineName}-name-${entry.id}`}
                            defaultValue={entry.name}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                        {t("default.priority")}
+                    </FieldLabel>
+                    <Input name="priority" type={"number"}
+                           id={`${engineName}-priority-${entry.id}`}
+                           defaultValue={entry.priority}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${engineName}-layer-${entry.id}`}>
+                        {t("default.layer")}
+                    </FieldLabel>
+                    <Input name="layer" type={"number"}
+                           id={`${engineName}-layer-${entry.id}`}
+                           defaultValue={entry.layer}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={"lorebook-match_type"}>
@@ -68,27 +95,11 @@ function EditorContent({entry, matchEditorRegistry}: { entry: any, matchEditorRe
             </div>
             {editor && (
                 () => {
-                    const EditorComponent = editor.component;
+                    const EditorComponent = editor.editor;
                     return <EditorComponent defaultValue={entry.matchExpression}/>;
                 }
             )()}
             <div className="grid grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-priorityLayer-${entry.id}`}>
-                        {t("lorebook.priority_layer")}
-                    </FieldLabel>
-                    <Input name="priorityLayer" type={"number"}
-                           id={`${engineName}-priorityLayer-${entry.id}`}
-                           defaultValue={entry.priorityLayer}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-priorityOrder-${entry.id}`}>
-                        {t("lorebook.priority_order")}
-                    </FieldLabel>
-                    <Input name="priorityOrder" type={"number"}
-                           id={`${engineName}-priorityOrder-${entry.id}`}
-                           defaultValue={entry.priorityOrder}/>
-                </Field>
             </div>
             <Field>
                 <FieldLabel htmlFor={`${engineName}-content-${entry.id}`}>
@@ -103,7 +114,7 @@ function EditorContent({entry, matchEditorRegistry}: { entry: any, matchEditorRe
 }
 
 function Tab() {
-    const matchEditorRegistry = useMemo(() => lorebookMatchEditorRegistry, []);
+    const matchEditorRegistry = useMemo(() => lorebookMatcherRegistry, []);
     const matchEditors = matchEditorRegistry.records;
     const t = useTranslations();
     return (
@@ -143,21 +154,27 @@ function Tab() {
             </EditFormTemplate>
             <EntryListTemplate<PresetModel>
                 modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-                createAccessor={() => ({
+                createAccessor={(): PresetLorebookModel => ({
+                    id: 0,
+                    name: "",
+                    code: "",
                     matchType: "normal",
                     matchExpression: [],
                     content: "",
-                    priorityLayer: 100,
-                    priorityOrder: 100,
+                    priority: 100,
+                    layer: 100,
+                    disabled: false
                 })}
-                updateAccessor={data => {
+                updateAccessor={(data): Partial<PresetLorebookModel> => {
                     const matchType = data.get("matchType") as string;
                     return ({
+                        name: data.get("name") as string,
+                        code: data.get("code") as string,
                         matchType: matchType,
-                        matchExpression: matchEditors[matchType].getValue(data),
+                        matchExpression: matchEditors[matchType].getEditorValue(data),
                         content: data.get("content") as string,
-                        priorityLayer: parseInt(data.get("priorityLayer") as string),
-                        priorityOrder: parseInt(data.get("priorityOrder") as string),
+                        priority: parseInt(data.get("priority") as string),
+                        layer: parseInt(data.get("layer") as string),
                     });
                 }}
                 updateContent={entry => <EditorContent

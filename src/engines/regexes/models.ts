@@ -1,4 +1,7 @@
-﻿export interface PresetRegexModel {
+﻿import {EntryModel} from "@/business/models";
+
+export interface PresetRegexModel extends EntryModel{
+    name: string,
     pattern: string,
     replacement: string,
     target: string,

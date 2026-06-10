@@ -16,15 +16,19 @@ function Tab() {
     return (
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-            createAccessor={() => ({
+            createAccessor={(): PresetStyleModel => ({
+                id: 0,
+                disabled: false,
+                name: "",
                 content: "",
                 priority: 100,
             })}
-            updateAccessor={(data): PresetStyleModel => ({
+            updateAccessor={(data): Partial<PresetStyleModel> => ({
+                name: data.get("name") as string,
                 content: data.get("content") as string,
                 priority: parseInt(data.get("priority") as string),
             })}
-            updateContent={entry => (
+            updateContent={(entry: PresetStyleModel) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
                         <Field>

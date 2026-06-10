@@ -19,20 +19,24 @@ function Tab() {
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
             createAccessor={(): PresetRegexModel => ({
+                id: 0,
+                disabled: false,
+                name: "",
                 pattern: "",
                 replacement: "",
                 target: "both",
                 layerMin: -1,
                 layerMax: -1,
             })}
-            updateAccessor={(data): PresetRegexModel => ({
+            updateAccessor={(data): Partial<PresetRegexModel> => ({
+                name: data.get("name") as string,
                 pattern: data.get("pattern") as string,
                 replacement: data.get("replacement") as string,
                 target: data.get("target") as string,
                 layerMin: parseInt(data.get("layerMin") as string),
                 layerMax: parseInt(data.get("layerMax") as string),
             })}
-            updateContent={entry => (
+            updateContent={(entry:PresetRegexModel) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
                         <Field>

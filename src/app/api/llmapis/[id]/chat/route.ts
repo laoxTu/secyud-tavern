@@ -6,7 +6,7 @@ import {llmapiEngineRegistry} from "@/llmapis/server/engine";
 import {Hasher} from "@/utils/hasher";
 import {BusinessError} from "@/handler/models";
 import {eq} from "drizzle-orm";
-import {LlmInputModel} from "@/slots/models";
+import {LlmapiInputModel} from "@/slots/models";
 
 /**
  * 调用指定 LLM API 进行流式对话
@@ -21,7 +21,7 @@ import {LlmInputModel} from "@/slots/models";
 export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
-        const input = records.body as LlmInputModel;
+        const input = records.body as LlmapiInputModel;
 
         const llmapi = await llmapiRepository.get(id, true, (table) => eq(table.code, id));
         if (!llmapi) {

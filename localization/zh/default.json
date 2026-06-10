@@ -64,14 +64,15 @@
     "include_name": "包含名称",
     "include_name_description": "世界书名称将被填充到上下文中。",
     "match_type": "匹配类型",
+    "match_type_always": "常驻",
     "match_type_event": "事件",
     "match_type_normal": "一般",
-    "month_end": "结束月",
-    "month_start": "起始月",
+    "fit_count": "匹配数量",
+    "keywords_groups_length": "关键词组数量",
+    "min_date": "最小日期",
+    "max_date": "最大日期",
     "priority_layer": "层级",
-    "priority_order": "顺序",
-    "year_end": "结束年",
-    "year_start": "起始年"
+    "priority_order": "顺序"
   },
   "llmapi": {
     "apikey": "api key",

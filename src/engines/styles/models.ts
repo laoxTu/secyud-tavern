@@ -1,4 +1,7 @@
-﻿export interface PresetStyleModel {
+﻿import {EntryModel} from "@/business/models";
+
+export interface PresetStyleModel extends EntryModel {
+    name: string;
     content: string;
     priority: number;
 }

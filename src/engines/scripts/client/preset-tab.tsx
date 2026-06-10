@@ -17,14 +17,18 @@ function Tab() {
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
             createAccessor={() => ({
+                id: 0,
+                disabled: false,
+                name: "",
                 content: "",
                 priority: 100,
             })}
-            updateAccessor={(data): PresetScriptModel => ({
+            updateAccessor={(data): Partial<PresetScriptModel> => ({
+                name: data.get("name") as string,
                 content: data.get("content") as string,
                 priority: parseInt(data.get("priority") as string),
             })}
-            updateContent={entry => (
+            updateContent={(entry: PresetScriptModel) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
                         <Field>

@@ -1,7 +1,7 @@
 ﻿import {Registerable} from "@/utils/register";
-import {LlmInputModel} from "@/slots/models";
+import {LlmapiInputModel} from "@/slots/models";
 
-export interface LlmapiRequestContext extends LlmInputModel {
+export interface LlmapiRequestContext extends LlmapiInputModel {
     type: string,
     config: any,
     apiKey: string,
