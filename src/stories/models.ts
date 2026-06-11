@@ -77,17 +77,18 @@ export function applyPatch(variables: any, changes: VariableChangeModel[]) {
     }
 }
 
-export function extractVariableChanges(text?: string): VariableChangeModel[] {
-    if (!text) return [];
+export function extractVariableChanges(history: StoryHistoryMessage, text?: string) {
+    if (!text || text.trim() == '') {
+        history.variables = [];
+        history.content = '';
+        return;
+    }
 
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
-
-    for (const match of text.matchAll(regex)) {
-        // 获取捕获组
-        const jsonStr = match[1].trim();
+    text = text.trim().replace(regex, (match, element) => {
         try {
-            const obj = JSON.parse(jsonStr);
+            const obj = JSON.parse(element.trim());
             if (obj as VariableChangeModel) {
                 results.push(obj as VariableChangeModel);
             } else if (Array.isArray(obj)) {
@@ -98,12 +99,14 @@ export function extractVariableChanges(text?: string): VariableChangeModel[] {
                 }
             }
         } catch (e) {
-            console.warn(`JSON 解析失败: ${jsonStr.substring(0, 100)}...`);
+            console.warn(`JSON 解析失败: ${element.trim().substring(0, 100)}...`);
             console.warn(e);
         }
-    }
+        return ''; // 删除匹配的内容
+    });
 
-    return results;
+    history.variables = results;
+    history.content = text;
 }
 
 export const moduleName = 'story';

@@ -126,8 +126,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 if (value) {
                     const chunk = decoder.decode(value, {stream: !done});
                     fullContent += chunk;
-                    currentOutput.content = fullContent;
-                    currentOutput.variables = extractVariableChanges(fullContent);
+                    extractVariableChanges(currentOutput, fullContent);
                     if (!iframeRef.current || page !== maxPage - 1) {
                         continue;
                     }
@@ -174,23 +173,29 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 }
             }
 
-            history ??= {
-                id: 0,
-                inputs: [],
-                isSummary: isSummary,
-                outputId: 0,
-                outputs: [],
-                variables: variables
-            };
+            // 这是新消息，且上面有回复。
+            if (!history) {
+                history = {
+                    id: 0,
+                    inputs: [],
+                    isSummary: isSummary,
+                    outputId: 0,
+                    outputs: [],
+                    variables: variables
+                };
+                histories.push(history);
+            }
 
-            history.inputs.push({
+
+            const historyMessage = {
                 id: history.inputs.length == 0 ? 1 :
                     Math.max(...history.inputs.map(i => i.id + 1)),
-                content: input,
-                variables: extractVariableChanges(input)
-            })
+                content: '',
+                variables: []
+            };
 
-            histories.push(history);
+            extractVariableChanges(historyMessage, input);
+            history.inputs.push(historyMessage);
 
             history.id = await post('/stories/{id}/entries/{entryType}', history,
                 {params: {id: slot.story.id, entryType: 'history'}}

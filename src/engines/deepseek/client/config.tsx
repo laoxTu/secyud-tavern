@@ -1,5 +1,5 @@
 ﻿'use client';
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
@@ -7,64 +7,139 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {moduleName} from "@/llmapis/models";
 import {LlmapiConfig, LlmapiConfigProps} from "@/llmapis/client/config-models";
 import {DeepseekConfigModel, engineName} from "../models";
-
-function isDeepseekConfig(data: any): boolean {
-    return data && data.parameters &&
-        typeof data.parameters.model === 'string' &&
-        typeof data.parameters.reasoning_effort === 'string' &&
-        typeof data.parameters.stream === 'boolean' &&
-        data.parameters.thinking &&
-        typeof data.parameters.thinking.type === 'string';
-}
+import {mergeObjects} from "@/utils";
+import {Checkbox} from "@/components/ui/checkbox";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
+const reasoningEffort = ["high", "max"];
 
 const defaultConfig: DeepseekConfigModel = {
     parameters: {
         model: "deepseek-v4-flash",
-        thinking: {
-            "type": "enabled"
+        extra_body: {
+            thinking: {
+                type: "enabled"
+            },
         },
         reasoning_effort: "high",
-        stream: true
+        stream: true,
+        temperature: 1,
+        top_p: 1,
+        logprobs: false,
+        top_logprobs: 10
     }
 } as const;
 
 function Content({defaultValue, llmapi}: LlmapiConfigProps) {
     const t = useTranslations();
-    if (!isDeepseekConfig(defaultValue)) {
-        defaultValue = defaultConfig;
-    }
+    const config: DeepseekConfigModel = mergeObjects(defaultConfig, defaultValue);
+    const [thinking, setThinking] = React.useState<boolean>(
+        config.parameters.extra_body.thinking.type === "enabled");
 
     return (
         <>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-apikey`}>
-                    {t(`${moduleName}.apikey`)}
-                </FieldLabel>
-                <Input id={`${moduleName}-apikey`} name={"apikey"} type={"password"}
-                       defaultValue={llmapi?.key}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-model`}>
-                    {t(`${moduleName}.model`)}
-                </FieldLabel>
-                <Select name="provider" defaultValue={defaultValue.parameters.model}>
-                    <SelectTrigger className="w-full"
-                                   id={`${moduleName}-model`}>
-                        <SelectValue/>
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                        <SelectGroup>
-                            {models.map((e) =>
-                                <SelectItem key={e} value={e}>
-                                    {t(`deepseek.${e}`)}
-                                </SelectItem>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-apikey`}>
+                        {t(`${moduleName}.apikey`)}
+                    </FieldLabel>
+                    <Input id={`${moduleName}-apikey`} name={"apikey"} type={"password"}
+                           defaultValue={llmapi?.key}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-model`}>
+                        {t(`${moduleName}.model`)}
+                    </FieldLabel>
+                    <Select name={'model'} defaultValue={config.parameters.model}>
+                        <SelectTrigger className="w-full" id={`${moduleName}-model`}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                            <SelectGroup>
+                                {models.map((e) =>
+                                    <SelectItem key={e} value={e}>
+                                        {t(`deepseek.${e}`)}
+                                    </SelectItem>
+                                )}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-thinking`}>
+                        {t(`${moduleName}.thinking`)}
+                    </FieldLabel>
+                    <FieldContent>
+                        <Checkbox id={`${moduleName}-thinking`} name={"thinking"}
+                                  checked={thinking}
+                                  onCheckedChange={e => setThinking(e === true)}/>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-stream`}>
+                        {t(`${moduleName}.stream`)}
+                    </FieldLabel>
+                    <FieldContent>
+                        <Checkbox id={`${moduleName}-stream`} name={"stream"}
+                                  defaultChecked={config.parameters.stream}/>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-logprobs`}>
+                        {t(`${moduleName}.logprobs`)}
+                    </FieldLabel>
+                    <FieldContent>
+                        <Checkbox id={`${moduleName}-logprobs`} name={"logprobs"}
+                                  defaultChecked={config.parameters.logprobs}
+                                  disabled/>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-top_logprobs`}>
+                        {t(`${moduleName}.top_logprobs`)}
+                    </FieldLabel>
+                    <Input id={`${moduleName}-top_logprobs`} name={"top_logprobs"}
+                           type={"number"} max={20} min={0} step={0.1} disabled
+                           defaultValue={config?.parameters.top_logprobs}/>
+                </Field>
+                <Field className={thinking ? "" : "hidden"}>
+                    <FieldLabel htmlFor={`${moduleName}-reasoning_effort`}>
+                        {t(`${moduleName}.reasoning_effort`)}
+                    </FieldLabel>
+                    <Select name={'reasoning_effort'}
+                            defaultValue={config.parameters.reasoning_effort}>
+                        <SelectTrigger className="w-full"
+                                       id={`${moduleName}-reasoning_effort`}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                            <SelectGroup>
+                                {reasoningEffort.map((e) =>
+                                    <SelectItem key={e} value={e}>
+                                        {e}
+                                    </SelectItem>
+                                )}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+                <Field className={thinking ? "hidden" : ""}>
+                    <FieldLabel htmlFor={`${moduleName}-temperature`}>
+                        {t(`${moduleName}.temperature`)}
+                    </FieldLabel>
+                    <Input id={`${moduleName}-temperature`} name={"temperature"}
+                           type={"number"} max={2} min={0} step={0.05}
+                           defaultValue={config?.parameters.temperature}/>
+                </Field>
+                <Field className={thinking ? "hidden" : ""}>
+                    <FieldLabel htmlFor={`${moduleName}-top_p`}>
+                        {t(`${moduleName}.top_p`)}
+                    </FieldLabel>
+                    <Input id={`${moduleName}-top_p`} name={"top_p"}
+                           type={"number"} max={2} min={0} step={0.05}
+                           defaultValue={config?.parameters.top_p}/>
+                </Field>
+            </div>
         </>
     );
 }
@@ -77,11 +152,17 @@ export const config: LlmapiConfig =
             return {
                 parameters: {
                     model: data.get('model') as string,
-                    thinking: {
-                        "type": "enabled"
+                    extra_body: {
+                        thinking: {
+                            type: (Boolean(data.get('thinking') as string) ? "enabled" : "disabled"),
+                        },
                     },
-                    reasoning_effort: "high",
-                    stream: true
+                    reasoning_effort: data.get('reasoning_effort') as string,
+                    stream: Boolean(data.get('stream') as string),
+                    temperature: Number(data.get('temperature') as string),
+                    top_p: Number(data.get('top_p') as string),
+                    logprobs: Boolean(data.get('logprobs') as string),
+                    top_logprobs: Number(data.get('top_logprobs') as string)
                 }
             };
         }

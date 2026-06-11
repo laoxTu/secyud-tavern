@@ -11,19 +11,13 @@ export interface SlotModel extends BaseModel {
 }
 
 export interface LlmapiMessage {
-    role: string,
+    role: "system" | "user" | "assistant";
     content: string,
-    name?: string,
 }
 
 export interface LlmapiInputModel {
     messages: LlmapiMessage[];
 }
-
-
-
-
-
 
 
 export const moduleName = 'slot';

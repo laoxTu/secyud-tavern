@@ -39,7 +39,7 @@ export const POST = interceptor.createRoute(
 
         const apiKey = llmapi.key ? Hasher.instance.decrypt(llmapi.key) : "";
 
-        const config = llmapi.content.config?.parameters ?? {};
+        const config = llmapi.content.config ?? {};
 
         const stream = await engine.run({
             messages: input.messages,

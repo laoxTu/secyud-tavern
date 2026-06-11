@@ -77,7 +77,14 @@
   "llmapi": {
     "apikey": "api key",
     "model": "模型",
+    "thinking": "思考模式",
     "provider": "供应者",
+    "stream": "流式传输",
+    "temperature": "温度",
+    "top_p": "top p",
+    "reasoning_effort": "reasoning effort",
+    "logprobs": "logprobs",
+    "top_logprobs": "top logprobs",
     "provider_deepseek": "Deepseek"
   },
   "deepseek": {
