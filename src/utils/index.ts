@@ -65,3 +65,20 @@ export function mergeSortedArrays<T>(arr1: T[], arr2: T[], value: (t: T) => numb
 
     return result;
 }
+
+export async function* readStream(stream: ReadableStream) {
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+        while (true) {
+            const {done, value} = await reader.read();
+            if (done) break;
+
+            const chunk = typeof value === 'string' ? value : decoder.decode(value);
+            yield chunk;
+        }
+    } finally {
+        reader.releaseLock();
+    }
+}

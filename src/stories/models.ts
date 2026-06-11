@@ -31,7 +31,7 @@ export interface StoryOutputMessage extends StoryHistoryMessage {
 export interface StoryHistory {
     id: number;
     outputId: number;
-    isSummary: boolean;
+    summary: boolean;
     variables: Record<string, any>;
     inputs: StoryInputMessage[];
     outputs: StoryOutputMessage[];

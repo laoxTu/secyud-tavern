@@ -82,6 +82,7 @@ export async function api<
         headers?: HeadersInit;
         next?: any;
         cache?: RequestCache;
+        signal?: AbortSignal;
     }
 ): Promise<any> {
     const fullUrl = buildUrl("/api" + url as string, options?.params);
@@ -94,6 +95,7 @@ export async function api<
         },
         next: options?.next,
         cache: options?.cache,
+        signal: options?.signal,
     };
 
     if (options?.body) {

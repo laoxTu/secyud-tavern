@@ -37,7 +37,7 @@ export function getOpeningHistory(slot: SlotModel) {
     if (!openingHistory) {
         const openingMessage: StoryInputMessage = {id: 0, content: "", variables: []};
         openingHistory = {
-            id: 0, inputs: [openingMessage], isSummary: true, outputId: 0, outputs: [], variables: {}
+            id: 0, inputs: [openingMessage], summary: true, outputId: 0, outputs: [], variables: {}
         };
         extractVariableChanges(openingMessage);
         if (!openingMessage.activeLorebooks) {

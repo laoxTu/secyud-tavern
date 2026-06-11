@@ -18,7 +18,7 @@ function createLorebookContext(ctx: SlotContextBase, history: StoryHistory) {
     const lastOutput = tryGetLastItem(history.outputs);
 
     const messages: LorebookMessage[] = [];
-    const start = histories.findLastIndex(u => u.isSummary);
+    const start = histories.findLastIndex(u => u.summary);
     // 没有摘要时取开场白
     if (start === -1) {
         const openingHistory = getOpeningHistory(ctx.slot);

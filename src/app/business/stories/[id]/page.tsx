@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, {useEffect, useState, useCallback, useMemo, useRef, use} from "react";
+import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
 import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 
@@ -17,7 +17,7 @@ import {
     InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
-import {AppWindowMacIcon, CornerDownLeftIcon} from "lucide-react";
+import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {
@@ -27,8 +27,10 @@ import {
     SlotInitializeContext
 } from "@/slots/client/conversation-models";
 import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
-import {tryGetLastItem} from "@/utils";
-import {useRouter} from "next/navigation";
+import {readStream, tryGetLastItem} from "@/utils";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Label} from "@/components/ui/label";
+import {useTranslations} from "next-intl";
 
 
 function AccessibleComponent({children, className}: {
@@ -54,22 +56,46 @@ function AccessibleComponent({children, className}: {
     );
 }
 
+interface RenderState {
+    maxPage: number;
+    curPage: number;
+    output: boolean;
+    enabled: boolean;
+    render: boolean;
+}
+
+interface LoadingState {
+    loading: boolean;
+    success: boolean;
+    started: boolean;
+}
 
 export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
-    const {id} = use(params);
-    const router = useRouter();
+    const t = useTranslations();
     const {handleError} = useErrorHandler();
-    const [loading, setLoading] = useState<boolean | undefined>(undefined);
-    const [page, setPage] = useState<number>(-2);
-    const [maxPage, setMaxPage] = useState<number>(0);
-    const [isSummary, setIsSummary] = useState<boolean>(false);
+    const [renderState, setRenderState] = useState<RenderState>({
+        maxPage: 0, curPage: -1, output: false, enabled: false, render: false
+    });
+    const [loadingState, setLoadingState] = useState<LoadingState>({
+        loading: false, success: false, started: false
+    });
+    const replyController = useRef<AbortController>(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const slotCtx = useRef<{ slot?: SlotModel }>({});
 
     const manager = useMemo(() => conversationManager, [])
 
-    const loadSlot = useCallback(async () => {
+    const handlePageIndexChange = (page: number) => {
+        if (!loadingState.success || page < 0 || page > renderState.maxPage) return;
+        setRenderState(u => ({...u, curPage: page, render: true}));
+    };
+
+    const loadingCurrentSlot = useCallback(async () => {
         try {
+            setLoadingState(u => ({
+                ...u, loading: true
+            }))
+            const {id} = await params;
             const slot = await get("/stories/{id}/slot", {params: {id}}) as SlotModel;
             const ctx: SlotInitializeContext = {
                 slot, content: {}
@@ -78,50 +104,39 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             slotCtx.current.slot = slot;
             const histories = slot.story.histories!;
             const maxPage = histories.length;
-            setMaxPage(maxPage)
-            setPage(maxPage - 1);
+            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, enabled: true}));
+            setLoadingState(u => ({
+                ...u, loading: false, success: true
+            }))
         } catch (err) {
+            setLoadingState(u => ({
+                ...u, loading: false, success: false
+            }))
             handleError(err);
-            router.replace("/business")
         }
-    }, [handleError, id, manager, router]);
-
-    const renderCurrentPage = useCallback(async () => {
-        if (!iframeRef.current) return;
-        const slot = slotCtx.current.slot;
-        if (!slot) return;
-        const histories = slot.story.entries!.histories as StoryHistory[];
-        if (!histories || histories.length <= page || page < -1) return;
-        const history: StoryHistory = page < 0 ? getOpeningHistory(slot) : histories[page];
-        const iframeDoc = iframeRef.current.contentDocument!;
-        const renderCtx: RenderContext = {
-            content: {},
-            document: iframeDoc,
-            history: history,
-            slot: slot,
-            variables: generateCurrentVariables(history)
-        };
-        iframeDoc.head.innerHTML = '';
-        iframeDoc.body.innerHTML = '';
-        await manager.use(provider => provider.onRenderPage(renderCtx));
-    }, [manager, page]);
+    }, [handleError, manager, params]);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateReply = useCallback(async () => {
         try {
-            const slot = slotCtx.current.slot;
-            const llmapiCode = slot?.story?.llmapi?.code;
-            if (!llmapiCode) return;
+            if (replyController.current) {
+                replyController.current.abort("regenerate reply!");
+            }
+            replyController.current = new AbortController();
+            const slot = slotCtx.current.slot!;
             const histories = slot.story.histories!;
-            const history = histories[histories.length - 1];
+            const history = tryGetLastItem(histories)!;
 
-            const ctx: LlmapiInputContext = {messages: [], slot: slot, content: {}, history: history};
+            const ctx: LlmapiInputContext = {messages: [], slot, content: {}, history};
             await manager.use(provider => provider.onProcessInput(ctx));
 
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
                 {messages: ctx.messages} as LlmapiInputModel,
-                {params: {id: llmapiCode}}
+                {
+                    params: {id: slot.llmapi.id},
+                    signal: replyController.current.signal
+                }
             );
 
             const currentOutput: StoryOutputMessage = {
@@ -133,76 +148,72 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             history.outputs.push(currentOutput);
             history.outputId = history.outputs.length - 1;
 
-            const maxPage = slot.story.entries!.histories.length;
-            setMaxPage(maxPage);
-            setPage(maxPage - 1);
+            const maxPage = histories.length;
+            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: true}));
 
-            const reader = response.body?.getReader();
-            if (!reader) return;
-
-            const decoder = new TextDecoder();
-            let done = false;
-            let fullContent = '';
-
-            while (!done) {
-                const {value, done: streamDone} = await reader.read();
-                done = streamDone;
-                if (value) {
-                    const chunk = decoder.decode(value, {stream: !done});
-                    fullContent += chunk;
-                    extractVariableChanges(currentOutput, fullContent);
-                    if (!iframeRef.current || page !== maxPage - 1) {
-                        continue;
+            if (response.body) {
+                let content = '';
+                for await (const chunk of readStream(response.body)) {
+                    if (replyController.current.signal.aborted) {
+                        console.log('reply canceled');
+                        break;
                     }
-                    const streamCtx: RenderStreamContext = {
-                        content: {},
-                        document: iframeRef.current.contentDocument!,
-                        history: history,
-                        slot: slot,
-                        stream: fullContent,
-                        variables: generateCurrentVariables(history)
-                    };
-                    await manager.use(provider => provider.onRenderStream(streamCtx));
+
+                    if (chunk === '') continue;
+                    content += chunk;
+                    extractVariableChanges(currentOutput, content);
+                    // 输出时且当前页是最后一页时更新流式页面
+                    if (iframeRef.current && renderState.output &&
+                        renderState.curPage == renderState.maxPage) {
+                        const streamCtx: RenderStreamContext = {
+                            content: {},
+                            document: iframeRef.current.contentDocument!,
+                            history: history,
+                            slot: slot,
+                            stream: content,
+                            variables: generateCurrentVariables(history)
+                        };
+                        await manager.use(provider => provider.onRenderStream(streamCtx));
+                    }
                 }
             }
 
             const outputCtx: LlmapiOutputContext = {content: {}, history: history, slot: slot};
             await manager.use(provider => provider.onProcessOutput(outputCtx));
-
             await put('/stories/{id}/entries/{entryType}/{entryId}', history,
                 {params: {id: slot.story.id, entryType: 'history', entryId: history.id}},
             );
-            await renderCurrentPage();
+            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: false}));
         } catch (err) {
+            setRenderState(u => ({...u, curPage: u.maxPage, output: false}));
             handleError(err);
         }
-    }, [manager, renderCurrentPage, page, handleError]);
+    }, [handleError, manager, renderState]);
 
-    // 这是创建回复
-    const createHistory = useCallback(async (input: string) => {
+    // 发送输入内容，并尝试创建新历史
+    const createHistory = useCallback(async (input: string, summary: boolean) => {
         try {
-            const slot = slotCtx.current.slot;
-            const llmapiCode = slot?.story?.llmapi?.code;
-            if (!llmapiCode) return;
+            const slot = slotCtx.current.slot!;
             const histories = slot.story.histories!;
-            const lastHistory = tryGetLastItem(histories);
+            let history = tryGetLastItem(histories)!;
+            let variables = undefined;
 
-            let variables = {};
-            let history: StoryHistory | undefined = undefined;
-            if (lastHistory) {
-                if (lastHistory.outputs.length > 0) {
-                    variables = generateCurrentVariables(lastHistory);
-                } else {
-                    history = lastHistory;
+            // 如果上一个历史还未输出，合并到上一个历史。
+            // 如果上一个历史已经输出，创建新的历史。
+            // 如果还没有历史，使用开场白变量。
+            if (history) {
+                if (history.outputs.length > 0) {
+                    variables = generateCurrentVariables(history);
                 }
+            } else {
+                const openingHistory = getOpeningHistory(slot);
+                variables = generateCurrentVariables(openingHistory);
             }
-
-            // 这是新消息，且上面有回复。
-            if (!history) {
+            if (variables) {
                 history = {
                     id: 0,
                     inputs: [],
-                    isSummary: isSummary,
+                    summary: summary,
                     outputId: 0,
                     outputs: [],
                     variables: variables
@@ -210,43 +221,73 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 histories.push(history);
             }
 
-
-            const historyMessage = {
-                id: history.inputs.length == 0 ? 1 :
-                    Math.max(...history.inputs.map(i => i.id + 1)),
+            const inputs = history.inputs;
+            const message = {
+                id: (tryGetLastItem(inputs)?.id ?? 0) + 1,
                 content: '',
                 variables: []
             };
-
-            extractVariableChanges(historyMessage, input);
-            history.inputs.push(historyMessage);
-
-            history.id = await post('/stories/{id}/entries/{entryType}', history,
-                {params: {id: slot.story.id, entryType: 'history'}}
-            );
+            extractVariableChanges(message, input);
+            inputs.push(message);
+            if (variables) {
+                history.id = await post('/stories/{id}/entries/{entryType}', history,
+                    {params: {id: slot.story.id, entryType: 'history'}}
+                );
+            } else {
+                await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+                    {params: {id: slot.story.id, entryType: 'history', entryId: history.id}}
+                );
+            }
         } catch (err) {
             handleError(err);
         }
+        // 创建并保存历史后需要生成回复
         await generateReply();
-    }, [generateReply, handleError, isSummary]);
+    }, [generateReply, handleError]);
+
+    const renderCurrentPage = useCallback(async () => {
+        try {
+            if (!iframeRef.current || renderState.curPage < 0 ||
+                renderState.curPage > renderState.maxPage ||
+                !renderState.enabled) return;
+            const slot = slotCtx.current.slot!;
+            const histories = slot.story.histories!;
+            const history: StoryHistory = renderState.curPage === 0 ?
+                getOpeningHistory(slot) : histories[renderState.curPage - 1];
+            const iframeDoc = iframeRef.current.contentDocument!;
+            const renderCtx: RenderContext = {
+                content: {},
+                document: iframeDoc,
+                history: history,
+                slot: slot,
+                variables: generateCurrentVariables(history)
+            };
+            iframeDoc.head.innerHTML = '';
+            iframeDoc.body.innerHTML = '';
+            await manager.use(provider => provider.onRenderPage(renderCtx));
+        } catch (err) {
+            handleError(err);
+        }
+    }, [handleError, manager, renderState]);
 
     useEffect(() => {
-        if (loading || slotCtx.current.slot) return;
+        if (!loadingState.started) {
+            (async () => {
+                setLoadingState(u => ({...u, started: true}));
+                await loadingCurrentSlot();
+            })();
+        } else if (renderState.render) {
+            (async () => {
+                setRenderState(u => ({...u, render: false}));
+                await renderCurrentPage();
+            })();
+        }
+    }, [loadingCurrentSlot, loadingState.started, renderCurrentPage, renderState.render]);
 
-        (async () => {
-            setLoading(true);
-            await loadSlot();
-            setLoading(false);
-        })();
-    }, [id, handleError, loading, loadSlot]);
+    const curPage = renderState.curPage;
+    const maxPage = renderState.maxPage;
 
-    const handlePageIndexChange = (page: number) => {
-        if (page < -1 || page >= maxPage) return;
-        setPage(page);
-        void renderCurrentPage();
-    };
-
-    if (loading || loading === undefined) return (
+    if (loadingState.loading || !loadingState.started) return (
         <iframe className={"w-full h-full"} src="/loading.html"></iframe>
     );
 
@@ -254,67 +295,81 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         <>
             <iframe ref={iframeRef} width={'100%'} height={'100%'}/>
             <AccessibleComponent className={'fixed inset-0 bottom-auto p-2'}>
-                <form className={"m-auto"}
-                      action={formData => {
-                          const page = Number(formData.get('slot-page-index'));
-                          handlePageIndexChange(page);
-                      }}>
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() => handlePageIndexChange(page - 1)}
-                                    className={
-                                        page >= 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
-                                    }
-                                    aria-disabled={page < 0}
-                                />
-                            </PaginationItem>
-                            <PaginationItem>
-                                <InputGroup>
-                                    <InputGroupInput id='slot-page-index' type={'number'}
-                                                     defaultValue={page + 1}/>
-                                    <InputGroupAddon align={'inline-end'}>
-                                        <InputGroupText content={`/${maxPage}`}/>
-                                    </InputGroupAddon>
-                                </InputGroup>
-                            </PaginationItem>
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() => handlePageIndexChange(page + 1)}
-                                    className={
-                                        page < maxPage - 1 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
-                                    }
-                                    aria-disabled={page >= maxPage - 1}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                </form>
+                <fieldset disabled={!renderState.enabled}>
+                    <form className={"m-auto"}
+                          action={formData => {
+                              const page = Number(formData.get('slot-page-index'));
+                              handlePageIndexChange(page);
+                          }}>
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => handlePageIndexChange(curPage - 1)}
+                                        className={
+                                            curPage > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
+                                        }
+                                        aria-disabled={curPage <= 0}
+                                    />
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <InputGroup>
+                                        <InputGroupInput id='slot-page-index' type={'number'}
+                                                         defaultValue={curPage}/>
+                                        <InputGroupAddon align={'inline-end'}>
+                                            <InputGroupText content={`/${maxPage}`}/>
+                                        </InputGroupAddon>
+                                    </InputGroup>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => handlePageIndexChange(curPage + 1)}
+                                        className={
+                                            curPage < maxPage ? 'cursor-pointer' : 'pointer-events-none opacity-50'
+                                        }
+                                        aria-disabled={curPage >= maxPage}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </form>
+                </fieldset>
             </AccessibleComponent>
             <AccessibleComponent className={"fixed inset-0 top-auto p-2 group"}>
-                <form className={"w-full"}
-                      action={formData => {
-                          const input = formData.get('slot-user-input') as string;
-                          void createHistory(input);
-                      }}>
-                    <InputGroup>
-                        <InputGroupTextarea id='slot-user-input'
-                                            name='slot-user-input'/>
-                        <InputGroupAddon align="inline-end">
-                            <InputGroupButton onClick={() => setIsSummary(!isSummary)}>
-                                <AppWindowMacIcon data-summary={isSummary}
-                                                  className="data-[summary=true]:fill-gray-400 data-[summary=true]:stroke-white"
-                                />
-                            </InputGroupButton>
-                        </InputGroupAddon>
-                        <InputGroupAddon align={'inline-end'}>
-                            <InputGroupButton type="submit">
-                                <CornerDownLeftIcon/>
-                            </InputGroupButton>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </form>
+                <fieldset disabled={loadingState.success || renderState.output}>
+                    <form className={"w-full"}
+                          action={formData => {
+                              const input = formData.get('slot-user-input') as string;
+                              const summary = Boolean(formData.get('summary') as string);
+                              void createHistory(input, summary);
+                          }}>
+                        <InputGroup>
+                            <InputGroupTextarea id='slot-user-input'
+                                                name='slot-user-input'/>
+                            <InputGroupAddon align="inline-end">
+                                <InputGroupText>
+                                    <Checkbox name={'summary'} id={'summary-checkbox'}/>
+                                    <Label htmlFor={'summary-checkbox'}>{t("default.summary")}</Label>
+                                </InputGroupText>
+                            </InputGroupAddon>
+                            <InputGroupAddon align={'inline-end'}>
+                                {
+                                    renderState.output ?
+                                        <InputGroupButton type="button"
+                                                          onClick={() => {
+                                                              replyController.current?.abort("user canceled");
+                                                              replyController.current = null;
+                                                          }}>
+                                            <SquareStopIcon/>
+                                        </InputGroupButton> :
+                                        <InputGroupButton type="submit">
+                                            <CornerDownLeftIcon/>
+                                        </InputGroupButton>
+                                }
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </form>
+                </fieldset>
             </AccessibleComponent>
         </>
     )
