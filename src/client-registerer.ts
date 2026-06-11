@@ -12,8 +12,8 @@ import {registerStoryClient} from "@/stories/client";
 import {registerPresetClient} from "@/presets/client";
 
 async function loadClientPlugins() {
-    registerPresetClient();
     registerStoryClient();
+    registerPresetClient();
     registerLlmapiClient();
 
     registerDeepseekClient();
