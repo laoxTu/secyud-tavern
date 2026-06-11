@@ -6,14 +6,13 @@ import {useErrorHandler} from "@/handler/client/error";
 import {
     Pagination,
     PaginationContent,
-    PaginationItem,
+    PaginationItem, PaginationLink,
     PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination";
 import {
     InputGroup,
     InputGroupAddon, InputGroupButton,
-    InputGroupInput,
     InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
@@ -31,6 +30,7 @@ import {readStream, tryGetLastItem} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {useTranslations} from "next-intl";
+import {Input} from "@/components/ui/input";
 
 
 function AccessibleComponent({children, className}: {
@@ -81,12 +81,13 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     });
     const replyController = useRef<AbortController>(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const slotCtx = useRef<{ slot?: SlotModel }>({});
+    const slotCtx = useRef<{ slot?: SlotModel, output: boolean }>({output: true});
 
     const manager = useMemo(() => conversationManager, [])
 
     const handlePageIndexChange = (page: number) => {
         if (!loadingState.success || page < 0 || page > renderState.maxPage) return;
+        slotCtx.current.output = page === renderState.maxPage;
         setRenderState(u => ({...u, curPage: page, render: true}));
     };
 
@@ -147,7 +148,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
             history.outputs.push(currentOutput);
             history.outputId = history.outputs.length - 1;
-
+            slotCtx.current.output = true;
             const maxPage = histories.length;
             setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: true}));
 
@@ -161,35 +162,35 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
                     if (chunk === '') continue;
                     content += chunk;
-                    extractVariableChanges(currentOutput, content);
                     // 输出时且当前页是最后一页时更新流式页面
-                    if (iframeRef.current && renderState.output &&
-                        renderState.curPage == renderState.maxPage) {
+                    if (iframeRef.current && slotCtx.current.output) {
+                        extractVariableChanges(currentOutput, content);
                         const streamCtx: RenderStreamContext = {
                             content: {},
                             window: iframeRef.current.contentWindow!,
                             document: iframeRef.current.contentDocument!,
                             history: history,
                             slot: slot,
-                            stream: content,
+                            stream: chunk,
                             variables: generateCurrentVariables(history)
                         };
                         await manager.use(provider => provider.onRenderStream(streamCtx));
                     }
                 }
+                extractVariableChanges(currentOutput, content);
+                const outputCtx: LlmapiOutputContext = {content: {}, history: history, slot: slot};
+                await manager.use(provider => provider.onProcessOutput(outputCtx));
+                await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+                    {params: {id: slot.story.id, entryType: 'history', entryId: history.id}},
+                );
             }
 
-            const outputCtx: LlmapiOutputContext = {content: {}, history: history, slot: slot};
-            await manager.use(provider => provider.onProcessOutput(outputCtx));
-            await put('/stories/{id}/entries/{entryType}/{entryId}', history,
-                {params: {id: slot.story.id, entryType: 'history', entryId: history.id}},
-            );
             setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: false}));
         } catch (err) {
             setRenderState(u => ({...u, curPage: u.maxPage, output: false}));
             handleError(err);
         }
-    }, [handleError, manager, renderState]);
+    }, [handleError, manager]);
 
     // 发送输入内容，并尝试创建新历史
     const createHistory = useCallback(async (input: string, summary: boolean) => {
@@ -230,10 +231,13 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             };
             extractVariableChanges(message, input);
             inputs.push(message);
+            const maxPage = histories.length;
+            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: true}));
             if (variables) {
-                history.id = await post('/stories/{id}/entries/{entryType}', history,
+                const {id} = await post('/stories/{id}/entries/{entryType}', history,
                     {params: {id: slot.story.id, entryType: 'history'}}
                 );
+                history.id = id;
             } else {
                 await put('/stories/{id}/entries/{entryType}/{entryId}', history,
                     {params: {id: slot.story.id, entryType: 'history', entryId: history.id}}
@@ -300,7 +304,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                               const page = Number(formData.get('slot-page-index'));
                               handlePageIndexChange(page);
                           }}>
-                        <Pagination>
+                        <Pagination key={curPage}>
                             <PaginationContent>
                                 <PaginationItem>
                                     <PaginationPrevious
@@ -312,13 +316,17 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                                     />
                                 </PaginationItem>
                                 <PaginationItem>
-                                    <InputGroup>
-                                        <InputGroupInput id='slot-page-index' type={'number'}
-                                                         defaultValue={curPage}/>
-                                        <InputGroupAddon align={'inline-end'}>
-                                            <InputGroupText content={`/${maxPage}`}/>
-                                        </InputGroupAddon>
-                                    </InputGroup>
+                                    <Input defaultValue={curPage}
+                                           name='slot-page-index' type={'number'}/>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    /
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink
+                                        onClick={() => handlePageIndexChange(maxPage)}>
+                                        {maxPage}
+                                    </PaginationLink>
                                 </PaginationItem>
                                 <PaginationItem>
                                     <PaginationNext
