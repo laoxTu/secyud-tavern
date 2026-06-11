@@ -1,6 +1,6 @@
 ﻿import {Registerable} from "@/utils/register";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
-import {applyPatch, getCurrentOutput, StoryHistory} from "@/stories/models";
+import {StoryHistory} from "@/stories/models";
 
 export interface SlotContextBase {
     slot: SlotModel;
@@ -48,20 +48,4 @@ export interface ConversationProvider extends Registerable {
 
     // 流式渲染，在请求输出时
     onRenderStream(ctx: RenderStreamContext): Promise<void>;
-}
-
-export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
-    const variables = structuredClone(history.variables);
-    for (const input of history.inputs) {
-        if (input.variables) {
-            applyPatch(variables, input.variables);
-        }
-    }
-    if (includeOutput && history.outputs.length > 0) {
-        const changes = getCurrentOutput(history)?.variables;
-        if (changes) {
-            applyPatch(variables, changes);
-        }
-    }
-    return variables;
 }

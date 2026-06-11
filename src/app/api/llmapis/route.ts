@@ -45,7 +45,7 @@ export const POST = interceptor.createRoute(
         if (!isImport && await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
-                .withValue("entity_name", "default.preset")
+                .withValue("entity_name", "default.llmapi")
                 ;
         }
     })

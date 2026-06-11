@@ -18,10 +18,9 @@ import {
     InputGroupTextarea
 } from "@/components/ui/input-group";
 import {AppWindowMacIcon, CornerDownLeftIcon} from "lucide-react";
-import {conversationManager} from "@/slots/client/conversation";
+import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {
-    generateCurrentVariables,
     LlmapiInputContext, LlmapiOutputContext,
     RenderContext,
     RenderStreamContext,
@@ -32,12 +31,36 @@ import {tryGetLastItem} from "@/utils";
 import {useRouter} from "next/navigation";
 
 
+function AccessibleComponent({children, className}: {
+    children: React.ReactNode,
+    className?: string
+}) {
+    const [state, setState] = useState(0);
+
+    const show = () => setState(u => u + 1);
+    const hide = () => setState(u => u - 1);
+    const isVisible = state > 0;
+    return (
+        <div
+            className={` transition-all duration-100 ${className || ''} ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+            onMouseEnter={show}
+            onMouseLeave={hide}
+            onFocus={show}
+            onBlur={hide}
+            onTouchStart={show}
+            aria-expanded={isVisible}>
+            {children}
+        </div>
+    );
+}
+
+
 export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
     const {id} = use(params);
     const router = useRouter();
     const {handleError} = useErrorHandler();
     const [loading, setLoading] = useState<boolean | undefined>(undefined);
-    const [page, setPage] = useState<number>(-1);
+    const [page, setPage] = useState<number>(-2);
     const [maxPage, setMaxPage] = useState<number>(0);
     const [isSummary, setIsSummary] = useState<boolean>(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -53,7 +76,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             }
             await manager.use((provider) => provider.onInitialize(ctx))
             slotCtx.current.slot = slot;
-            const maxPage = slot.story.histories!.length;
+            const histories = slot.story.histories!;
+            const maxPage = histories.length;
             setMaxPage(maxPage)
             setPage(maxPage - 1);
         } catch (err) {
@@ -67,8 +91,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         const slot = slotCtx.current.slot;
         if (!slot) return;
         const histories = slot.story.entries!.histories as StoryHistory[];
-        if (!histories || histories.length <= page || page < 0) return;
-        const history = histories[page];
+        if (!histories || histories.length <= page || page < -1) return;
+        const history: StoryHistory = page < 0 ? getOpeningHistory(slot) : histories[page];
         const iframeDoc = iframeRef.current.contentDocument!;
         const renderCtx: RenderContext = {
             content: {},
@@ -217,7 +241,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     }, [id, handleError, loading, loadSlot]);
 
     const handlePageIndexChange = (page: number) => {
-        if (page < 0 || page >= maxPage) return;
+        if (page < -1 || page >= maxPage) return;
         setPage(page);
         void renderCurrentPage();
     };
@@ -227,54 +251,29 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     );
 
     return (
-        <div className="w-full h-full">
-            <iframe ref={iframeRef}/>
-
-            <div>
-                <form action={formData => {
-                    const input = formData.get('slot-user-input') as string;
-                    void createHistory(input);
-                }}>
-                    <InputGroup>
-                        <InputGroupTextarea id='slot-user-input'
-                                            name='slot-user-input'/>
-                        <InputGroupAddon align="inline-end">
-                            <InputGroupButton
-                                onClick={() => setIsSummary(!isSummary)}
-                                size="icon-xs"
-                            >
-                                <AppWindowMacIcon
-                                    data-summary={isSummary}
-                                    className="data-[summary=true]:fill-gray-400 data-[summary=true]:stroke-white"
-                                />
-                            </InputGroupButton>
-                        </InputGroupAddon>
-                        <InputGroupAddon align={'inline-end'}>
-                            <InputGroupButton type="submit">
-                                <CornerDownLeftIcon/>
-                            </InputGroupButton>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </form>
-                <form action={formData => {
-                    const page = Number(formData.get('slot-page-index'));
-                    handlePageIndexChange(page);
-                }}>
+        <>
+            <iframe ref={iframeRef} width={'100%'} height={'100%'}/>
+            <AccessibleComponent className={'fixed inset-0 bottom-auto p-2'}>
+                <form className={"m-auto"}
+                      action={formData => {
+                          const page = Number(formData.get('slot-page-index'));
+                          handlePageIndexChange(page);
+                      }}>
                     <Pagination>
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious
                                     onClick={() => handlePageIndexChange(page - 1)}
                                     className={
-                                        page > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
+                                        page >= 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
                                     }
-                                    aria-disabled={page <= 0}
+                                    aria-disabled={page < 0}
                                 />
                             </PaginationItem>
                             <PaginationItem>
                                 <InputGroup>
                                     <InputGroupInput id='slot-page-index' type={'number'}
-                                                     defaultValue={page}/>
+                                                     defaultValue={page + 1}/>
                                     <InputGroupAddon align={'inline-end'}>
                                         <InputGroupText content={`/${maxPage}`}/>
                                     </InputGroupAddon>
@@ -292,7 +291,31 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         </PaginationContent>
                     </Pagination>
                 </form>
-            </div>
-        </div>
+            </AccessibleComponent>
+            <AccessibleComponent className={"fixed inset-0 top-auto p-2 group"}>
+                <form className={"w-full"}
+                      action={formData => {
+                          const input = formData.get('slot-user-input') as string;
+                          void createHistory(input);
+                      }}>
+                    <InputGroup>
+                        <InputGroupTextarea id='slot-user-input'
+                                            name='slot-user-input'/>
+                        <InputGroupAddon align="inline-end">
+                            <InputGroupButton onClick={() => setIsSummary(!isSummary)}>
+                                <AppWindowMacIcon data-summary={isSummary}
+                                                  className="data-[summary=true]:fill-gray-400 data-[summary=true]:stroke-white"
+                                />
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                        <InputGroupAddon align={'inline-end'}>
+                            <InputGroupButton type="submit">
+                                <CornerDownLeftIcon/>
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
+                </form>
+            </AccessibleComponent>
+        </>
     )
 }

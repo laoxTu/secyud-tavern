@@ -4,7 +4,7 @@ import {useTranslations} from "next-intl";
 import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
-import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
+import {ItemContent, ItemTitle} from "@/components/ui/item";
 import {ModelListContentTemplate} from "@/components/template/content-template";
 import {ModelNavigationTemplate} from "@/components/template/navigation-template";
 import {TabConfig} from "@/components/custom/tab";
@@ -14,6 +14,7 @@ import {useRouter} from "next/navigation";
 import {moduleArrayName, moduleName, StoryModel} from "@/stories/models";
 import {StoryContext} from "@/stories/client/models";
 import {storyTabManager} from "@/stories/client/tabs";
+import {CornerDownLeftIcon} from "lucide-react";
 
 
 function Content() {
@@ -25,14 +26,13 @@ function Content() {
         modelContent={(model) =>
             <>
                 <ItemContent>
-                    <ItemTitle className="line-clamp-1">
-                        {model.name} - <span className={"text-muted-foreground"}> {model.id} </span>
-                    </ItemTitle>
-                    <ItemDescription>
-                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}>
-                            {t("story.enter")}
+                    <ItemTitle className="flex">
+                        <span className={"w-full overflow-hidden"}> {model.name} - {model.id} </span>
+                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
+                                variant={'outline'}>
+                            <CornerDownLeftIcon/>
                         </Button>
-                    </ItemDescription>
+                    </ItemTitle>
                 </ItemContent>
             </>
         }

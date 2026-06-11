@@ -1,8 +1,10 @@
-import {ConversationProvider, generateCurrentVariables} from "@/slots/client/conversation-models";
+'use client';
+import {ConversationProvider} from "@/slots/client/conversation-models";
 import {PresetStyleModel} from "@/engines/styles/models";
 import {EntryModel} from "@/business/models";
 import {PresetScriptModel, engineName, engineArrayName} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
+import {generateCurrentVariables} from "@/slots/client/conversation";
 
 
 export const scriptConversationProvider: ConversationProvider = {

@@ -17,3 +17,4 @@ export interface Matcher extends Registerable {
     getEditorValue: (data: FormData) => any,
     match: (ctx: MatcherMatchContext, expression: any) => boolean,
 }
+

@@ -6,6 +6,7 @@ import {
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
 import {tryGetLastItem} from "@/utils";
+import {LlmapiMessage} from "@/slots/models";
 
 export interface MessageContext {
     lorebookS: PresetLorebookModel[];
@@ -71,7 +72,7 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
                     .map(u => u.content)
                     .join("\n"),
             role: messageContext.role
-        };
+        } as LlmapiMessage;
     });
 
     function fillLorebooks(message: LorebookMessageItem) {

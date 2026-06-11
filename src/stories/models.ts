@@ -109,5 +109,6 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
     history.content = text;
 }
 
+
 export const moduleName = 'story';
 export const moduleArrayName = 'stories';
