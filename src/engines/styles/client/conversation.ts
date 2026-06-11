@@ -2,6 +2,7 @@
 import {PresetStyleModel, engineName, engineArrayName} from "../models";
 import {EntryModel} from "@/business/models";
 
+const styleId = "injected-styles";
 
 export const styleConversationProvider: ConversationProvider = {
     id: engineName,
@@ -25,11 +26,12 @@ export const styleConversationProvider: ConversationProvider = {
     onProcessOutput: async () => {
     },
     onRenderPage: async (ctx) => {
-        const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
-        for (const entry of slotEntries) {
-            const element = ctx.document.createElement('style');
-            element.innerHTML = entry.content;
-            ctx.document.head.appendChild(element);
+        if (!ctx.document.getElementById(styleId)) {
+            const styles = ctx.document.createElement("style");
+            styles.id = styleId;
+            const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
+            styles.innerHTML = slotEntries.map((u) => u.content).join("\n");
+            ctx.document.head.appendChild(styles)
         }
     }
 };

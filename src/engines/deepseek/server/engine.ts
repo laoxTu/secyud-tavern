@@ -13,18 +13,21 @@ export class DeepseekEngine implements LlmapiEngine {
             apiKey: context.apiKey,
         });
         const config: DeepseekConfigModel = context.config;
-        const parameter = {
+        const parameter : any = {
             ...config.parameters,
             messages: context.messages.map(u => ({
                 role: u.role,
                 content: u.content,
             })),
         };
+        if (!config.parameters.logprobs){
+            parameter.top_logprobs = undefined;
+        }
 
         // 流式请求
         if (parameter.stream) {
             const completion: Stream<OpenAI.Chat.Completions.ChatCompletionChunk> =
-                await openai.chat.completions.create(parameter as any) as any;
+                await openai.chat.completions.create(parameter) as any;
             return new ReadableStream({
                 async start(controller) {
                     try {

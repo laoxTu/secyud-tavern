@@ -167,6 +167,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         renderState.curPage == renderState.maxPage) {
                         const streamCtx: RenderStreamContext = {
                             content: {},
+                            window: iframeRef.current.contentWindow!,
                             document: iframeRef.current.contentDocument!,
                             history: history,
                             slot: slot,
@@ -254,16 +255,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const histories = slot.story.histories!;
             const history: StoryHistory = renderState.curPage === 0 ?
                 getOpeningHistory(slot) : histories[renderState.curPage - 1];
-            const iframeDoc = iframeRef.current.contentDocument!;
             const renderCtx: RenderContext = {
                 content: {},
-                document: iframeDoc,
+                document: iframeRef.current.contentDocument!,
+                window: iframeRef.current.contentWindow!,
                 history: history,
                 slot: slot,
                 variables: generateCurrentVariables(history)
             };
-            iframeDoc.head.innerHTML = '';
-            iframeDoc.body.innerHTML = '';
             await manager.use(provider => provider.onRenderPage(renderCtx));
         } catch (err) {
             handleError(err);
@@ -293,7 +292,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
     return (
         <>
-            <iframe ref={iframeRef} width={'100%'} height={'100%'}/>
+            <iframe key={curPage} ref={iframeRef} width={'100%'} height={'100%'}/>
             <AccessibleComponent className={'fixed inset-0 bottom-auto p-2'}>
                 <fieldset disabled={!renderState.enabled}>
                     <form className={"m-auto"}
@@ -336,9 +335,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 </fieldset>
             </AccessibleComponent>
             <AccessibleComponent className={"fixed inset-0 top-auto p-2 group"}>
-                <fieldset disabled={loadingState.success || renderState.output}>
+                <fieldset disabled={!loadingState.success}>
                     <form className={"w-full"}
                           action={formData => {
+                              if (renderState.output) return;
                               const input = formData.get('slot-user-input') as string;
                               const summary = Boolean(formData.get('summary') as string);
                               void createHistory(input, summary);
@@ -355,7 +355,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                             <InputGroupAddon align={'inline-end'}>
                                 {
                                     renderState.output ?
-                                        <InputGroupButton type="button"
+                                        <InputGroupButton type="button" disabled={false}
                                                           onClick={() => {
                                                               replyController.current?.abort("user canceled");
                                                               replyController.current = null;

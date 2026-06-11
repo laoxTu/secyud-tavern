@@ -3,11 +3,22 @@ import {engineName, engineArrayName, PresetRegexModel} from "../models";
 import {engineName as lorebookEngineName, LorebookMessage} from "../../lorebooks/models";
 import {getCurrentOutput} from "@/stories/models";
 
-function applyRegexes(text: string, regexes: PresetRegexModel[]) {
+function applyRegexes(regexes: PresetRegexModel[], text?: string) {
+    if (!text || text == '') return '';
     for (const regex of regexes) {
         text = text.replace(regex.pattern, regex.replacement);
     }
     return text;
+}
+
+function rerenderOutputField(document: Document, content: string) {
+    let outputField = document.getElementById('ai-output');
+    if (!outputField) {
+        outputField = document.createElement('div');
+        outputField.id = "ai-output";
+        document.body.appendChild(outputField);
+    }
+    outputField.innerHTML = content;
 }
 
 export const regexConversationProvider: ConversationProvider = {
@@ -33,22 +44,19 @@ export const regexConversationProvider: ConversationProvider = {
         ctx.slot.content[engineArrayName + "Output"] = regexesOutput;
     },
     onRenderStream: async (ctx) => {
-        const output = getCurrentOutput(ctx.history);
-        if (output) {
-            const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
-            const outputElement = ctx.document.getElementById('ai-output')!;
-            outputElement.innerHTML = applyRegexes(output.content, regexes);
-        }
+        const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
+        const output = applyRegexes(regexes, getCurrentOutput(ctx.history)?.content);
+        rerenderOutputField(ctx.document, output);
     },
     onProcessInput: async (ctx) => {
         const regexes = ctx.slot.content[engineArrayName + "Input"] as PresetRegexModel[];
         const messages = ctx.content.messages as LorebookMessage[];
         for (const message of messages) {
             for (const input of message.inputs) {
-                input.message = applyRegexes(input.message, regexes);
+                input.message = applyRegexes(regexes, input.message);
             }
             if (message.output) {
-                message.output.message = applyRegexes(message.output.message, regexes);
+                message.output.message = applyRegexes(regexes, message.output.message,);
             }
         }
     },
@@ -56,21 +64,21 @@ export const regexConversationProvider: ConversationProvider = {
     },
     onRenderPage: async (ctx) => {
         const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
-        const inputFields = ctx.document.createElement('div');
-        inputFields.className = "user-inputs";
+        let inputFields = ctx.document.getElementById("user-input");
+        if (!inputFields) {
+            inputFields = ctx.document.createElement('div');
+            inputFields.id = "user-input";
+            ctx.document.body.appendChild(inputFields);
+        }
+        inputFields.replaceChildren();
         for (const input of ctx.history.inputs) {
             const inputField = document.createElement("div");
             inputField.className = "user-input";
-            inputField.innerHTML = applyRegexes(input.content, regexes);
+            inputField.innerHTML = applyRegexes(regexes, input.content);
+            inputFields.appendChild(inputField);
         }
-        ctx.document.body.appendChild(inputFields);
-        const outputField = ctx.document.createElement('div');
-        outputField.className = "ai-output";
-        outputField.id = "ai-output";
-        const output = getCurrentOutput(ctx.history);
-        if (output) {
-            outputField.innerHTML = applyRegexes(output.content, regexes);
-        }
-        ctx.document.body.appendChild(outputField);
+
+        const output = applyRegexes(regexes, getCurrentOutput(ctx.history)?.content);
+        rerenderOutputField(ctx.document, output);
     }
 };

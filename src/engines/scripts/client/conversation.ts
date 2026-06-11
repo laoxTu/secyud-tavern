@@ -6,6 +6,7 @@ import {PresetScriptModel, engineName, engineArrayName} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
 import {generateCurrentVariables} from "@/slots/client/conversation";
 
+const scriptId = "injected-scripts";
 
 export const scriptConversationProvider: ConversationProvider = {
     id: engineName,
@@ -24,25 +25,20 @@ export const scriptConversationProvider: ConversationProvider = {
         ctx.slot.content[engineArrayName] = slotEntries;
     },
     onRenderStream: async (ctx) => {
-        const variables = generateCurrentVariables(ctx.history);
-        const variableField = ctx.document.getElementById('variable-state')!;
-        variableField.innerHTML = `const variables = ${JSON.stringify(variables)};`;
+        ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
     },
     onProcessInput: async () => {
     },
     onProcessOutput: async () => {
     },
     onRenderPage: async (ctx) => {
-        const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
-        for (const entry of slotEntries) {
-            const element = ctx.document.createElement('script');
-            element.innerHTML = entry.content;
-            ctx.document.body.appendChild(element);
+        if (!ctx.document.getElementById(scriptId)) {
+            const scripts = ctx.document.createElement("script");
+            scripts.id = scriptId;
+            const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
+            scripts.innerHTML = slotEntries.map((u) => u.content).join("\n");
+            ctx.document.body.appendChild(scripts)
         }
-        const variables = generateCurrentVariables(ctx.history);
-        const variableField = ctx.document.createElement('script');
-        variableField.id = 'variable-state';
-        variableField.innerHTML = `const variables = ${JSON.stringify(variables)};`;
-        ctx.document.body.appendChild(variableField);
+        ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
     }
 };

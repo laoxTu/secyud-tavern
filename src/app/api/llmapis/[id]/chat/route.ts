@@ -5,7 +5,6 @@ import {interceptor} from "@/handler/server/interceptor";
 import {llmapiEngineRegistry} from "@/llmapis/server/engine";
 import {Hasher} from "@/utils/hasher";
 import {BusinessError} from "@/handler/models";
-import {eq} from "drizzle-orm";
 import {LlmapiInputModel} from "@/slots/models";
 
 /**
@@ -23,7 +22,7 @@ export const POST = interceptor.createRoute(
         const {id} = await records.context.params;
         const input = records.body as LlmapiInputModel;
 
-        const llmapi = await llmapiRepository.get(id, true, (table) => eq(table.code, id));
+        const llmapi = await llmapiRepository.get(id, true);
         if (!llmapi) {
             throw new BusinessError('entity not found', "default.entity_not_found")
                 .withValue("id", id);

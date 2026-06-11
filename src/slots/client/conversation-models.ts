@@ -22,15 +22,13 @@ export interface LlmapiOutputContext extends SlotContextBase {
 
 export interface RenderContext extends SlotContextBase {
     document: Document;
+    window: Window;
     history: StoryHistory,
     variables: any,
 }
 
-export interface RenderStreamContext extends SlotContextBase {
-    document: Document;
-    history: StoryHistory,
+export interface RenderStreamContext extends RenderContext {
     stream: string,
-    variables: any,
 }
 
 export interface ConversationProvider extends Registerable {
