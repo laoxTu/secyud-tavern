@@ -1,338 +1,436 @@
-﻿// docs/design.md
+# Secyud Tavern — 架构设计
 
-# Secyud Tavern
+## 概述
 
-### 1. API 接入
+Secyud Tavern 是一个 AI 驱动的角色扮演与互动叙事平台。它将角色设定、世界书、正则规则、主题样式和交互脚本打包为单一预设文件，通过可插拔引擎系统和变量驱动的状态管理，提供完整的 AI 对话体验。
 
-#### 1.1 设计理念
+## 系统全景
 
-Secyud Tavern 的 API 接入层与其他 AI 对话前端类似，核心职责是管理与大语言模型服务的通信。但在安全性和预设脚本隔离方面有特殊考量。
-
-##### 核心理念：
-
-* API Key 安全优先：密钥存储于浏览器本地，预设脚本无法访问，防止恶意预设窃取密钥
-* 多服务商支持：兼容 OpenAI、Claude、本地模型等主流 API 格式
-* 预设无感知：预设作者无需关心用户使用哪个 API 服务商，引擎统一处理请求格式转换
-
-### 2. 预设系统
-
-#### 2.1 设计理念
-
-Secyud Tavern 的预设系统与传统 AI 对话平台的配置方式有本质不同。
-在 SillyTavern 等平台中，角色卡、世界书、主题样式、脚本逻辑是相互独立的模块，用户需要分别导入和管理，一个完整的角色体验需要组合多个分散的文件。
-Secyud Tavern
-将预设设计为自包含的功能包。一个预设文件可以同时包含角色设定、世界书、正则规则、样式和脚本。作者发布一个角色时，只需提供一个文件，用户导入后即可获得完整的角色体验——包括专属的界面皮肤、特殊交互逻辑、以及动态演变的世界观。
-
-核心理念：
-
-* 打包即分发：一个 JSON 文件包含所有相关内容，降低分发和安装成本
-* 多核并联：用户可以同时激活多个预设，引擎不做冲突处理，由预设作者通过约定自行规避
-* 约定优于配置：通过命名规范和作用域隔离来避免冲突，而非引入复杂的合并引擎
-* 引擎只搭台：预设系统提供加载、检索、注入的基础能力，不干预预设内部的逻辑
-
-这种设计让预设作者拥有最大的自由度，也让用户能够像搭积木一样组合不同作者的作品。
-
-##### 预设的管理与使用分离
-
-Secyud Tavern 将预设的生命周期分为两条独立的线路：**管理线**和**使用线**。
-传统的预设系统往往将编辑和运行耦合在一起，导致测试困难、状态混乱。Secyud Tavern 采用明确的职责分离。
-
-| 线路      | 触发方式      | 数据流向          | 持久化 | 目的      |
-|---------|-----------|---------------|-----|---------|
-| **管理线** | 预设编辑器操作   | 前端→服务器→SQLite | 是   | 预设的增删改查 |
-| **使用线** | 加载存档/点击重载 | 服务器→前端内存      | 否   | 构建运行时引擎 |
-
-**管理线：预设的持久化存储**
-
-管理线负责预设的创建、编辑、删除和存储。所有通过预设编辑器进行的操作最终都会持久化到 SQLite 数据库中。这条线路的特点是：
-
-* **数据一致**：服务器是预设数据的唯一真实来源
-* **独立操作**：编辑预设不影响当前正在运行的会话
-* **版本管理**：每次更新都会记录版本号，便于依赖检查
-
-**使用线：运行时引擎构建**
-
-使用线在以下时机触发：
-
-* 用户加载一个存档
-* 用户在设置界面点击"重载预设"
-* 用户在预设管理界面切换激活状态后
-
-**触发后的流程：**
-
-1. 前端读取当前激活的预设列表（来自存档的 requires 或用户手动选择）、
-2. 前端向服务器发起批量请求，获取这些预设的完整数据
-3. 服务器返回预设数据，前端在内存中构建运行时引擎
-4. 运行时引擎负责：
-    * 合并所有预设的世界书条目，按优先级排序
-    * 合并所有正则规则，按目标（input/output/both）分类
-    * 注入所有 CSS 样式块
-    * 执行所有脚本块（在沙箱环境中）
-
-**重载即测试**
-
-这种架构的最大优势是测试的即时性：
-
-1. 用户在预设编辑器中修改预设内容
-2. 保存后，预设数据写入数据库
-3. 用户点击"重载预设"按钮
-4. 前端重新拉取数据，重建运行时引擎
-5. 新预设的效果立即生效，无需重启应用、无需发布
-
-这意味着：
-
-* **零等待测试**：改完即测，测完即改
-* **无需发布**：没有"发布到商店"的概念，存了就能用
-* **隔离安全**：测试不会影响其他用户的体验
-
-**离线兼容**
-
-由于运行时引擎完全构建在前端内存中，一旦重载完成：
-
-* 聊天过程中的世界书匹配和正则替换完全不依赖网络
-* 用户即使断网也能继续当前会话（只要不触发重载）
-
-#### 2.3 预设定义
-
-预设是 Secyud Tavern 的最小功能单元。
-一个预设将角色设定、世界书、UI 样式、脚本逻辑等内容作为逻辑整体进行分发。为便于传输和分享，预设支持以单一JSON文件格式导入/导出。
-在服务端存储时，预设的核心组件（世界书条目、正则规则、样式块、脚本块）会拆分为独立的数据库表进行持久化；
-标签、类型、依赖等简单列表则序列化为 JSON 字符串存储。
-
-#### 2.4 字段说明
-
-详见 `docs/templates/preset.json5`
-
-**存储说明：**
-
-* `entries` 中的 lorebooks、regexes、styles、scripts 存储为独立的关联表（通过 entryTable）
-* `tags` 序列化为 JSON 字符串存储在主表字段中
-* `requires` 存储在独立的依赖表（presetRequires）中
-
-#### 2.5 表达式语法
-
-##### 2.5.1 变量表达式（type: variable）
-
-用于根据变量表状态进行匹配。使用 `{{getVar('path')}}` 获取变量值：
-
-```text
-{{getVar('time.hour')}} >= 18 || {{getVar('time.hour')}} < 6
-{{getVar('alice.cat-girl.favor')}} >= 70
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    浏览器 (React 19)                         │
+│                                                             │
+│  ┌──────────┐  ┌──────────┐  ┌────────────┐  ┌───────────┐ │
+│  │ Business │  │ Presets  │  │   Stories   │  │  LlmApis  │ │
+│  │  仪表板   │  │  编辑器   │  │  故事管理    │  │  API 配置  │ │
+│  └──────────┘  └──────────┘  └────────────┘  └───────────┘ │
+│        │              │              │               │       │
+│        └──────────────┴──────────────┴───────────────┘       │
+│                           │                                  │
+│                    Template 泛型组件                          │
+│              (列表/编辑/条目 CRUD 页面模板)                    │
+│                           │                                  │
+│                    ConversationManager                        │
+│              (引擎生命周期编排 — 拓扑排序)                     │
+│                           │                                  │
+│               ┌───────────┼───────────┐                      │
+│          Lorebook →  Regex  →  Script                       │
+│            (匹配)     (替换)    (JS注入)   Styles (CSS注入)   │
+│                           │                                  │
+│                     iframe 沙箱渲染                           │
+└─────────────────────────────────────────────────────────────┘
+                           │ REST API + SSE
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Next.js API Routes                         │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │          Interceptor 拦截器管道                        │   │
+│  │  ParamInterceptor → ErrorInterceptor → RouteHandler  │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                           │                                  │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │          API 模板工厂 (template.ts)                    │   │
+│  │  generateGetModelListApi / generateCreateModelApi ... │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                           │                                  │
+│               ┌───────────┼───────────┐                      │
+│          Repository  →  Storage  →  Database                 │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    SQLite (Drizzle ORM)                      │
+│                                                             │
+│   stories / presets / llmapis / storyEntries / presetEntries │
+│                    (Master-Entry 主从表结构)                   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-##### 2.5.2 内容表达式（type: content）
+## 一、预设系统
 
-用于匹配对话内容。支持：
+### 设计理念
 
-* 关键词：`'word'`
-* 或运算：`'a' | 'b'`
-* 与运算：`'a' & 'b'`
-* 非运算：`!'a'`
-* 括号分组：`('a' | 'b') & 'c'`
-
-示例：
-
-```text
-('favor' | 'high') & 'any_other'
-'cat' & !'dog'
-('hello' | 'hi') & 'there'
-```
-
-#### 2.6 正则替换
-
-正则替换用于在文本进入 AI 之前或展示给用户之前进行内容转换。
-
-##### 2.6.1 层数机制
-
-层数从最新消息开始计数：
-
-* layer: 0 表示当前正在处理的消息
-* layer: 1 表示上一条消息，以此类推
-* min: 0, max: 5 表示对最近 6 条消息（0-5）生效
-* min: 6, max: null 表示对第 7 条及更早的消息生效
-
-通过层数配置可以实现：
-
-* 最近 N 条消息完整保留原始内容
-* 更早的消息通过正则压缩为摘要
-* 不同层数应用不同的过滤规则
-
-##### 2.6.2 目标
-
-| target | 说明                   |
-|--------|----------------------|
-| input  | 作用于用户输入，在发送给 AI 之前替换 |
-| output | 作用于 AI 回复，在展示给用户之前替换 |
-| both   | 同时作用于输入和输出           |
-
-#### 2.7 预设激活
-
-用户可以同时激活多个预设。引擎在加载存档时，根据存档的 `db` 列表激活对应预设：
-
-1. 检查 `requires` 中的依赖预设是否存在，缺失则提示
-2. 按优先级顺序注入所有 css 块
-3. 按优先级顺序执行所有 script 块
-4. 将 lorebook 注册到检索系统
-5. 将 regexes 注册到文本处理管道
-
-#### 2.8 预设开发约定
-
-* ID 命名：使用 作者.预设名 格式，避免冲突
-* CSS 作用域：使用预设 ID 作为类名前缀，避免样式污染
-* 脚本隔离：每个 script 块在独立沙箱中执行，不共享全局变量
-* 单一职责：一个预设尽量专注一种功能，便于用户组合使用
-
-相较于`Silly Tavern`, 一个预设包含诸多内容, 它可以被设计为角色卡, 世界书, 脚本, 主题等多种类型或者集合. 当使用存档时,
-可以开启一个或多个预设, `Secyud Tavern` 会根据预设类型进行提醒, 但不拒绝多个同时开启, 例如开启两个类似于`Silly Tavern`
-的预设.(虽然这样通常会导致很多问题)
-
-### 3. 存档系统
-
-#### 3.1 设计理念
-
-Secyud Tavern 的存档系统身兼两职：既是会话状态的快照，也是预设组合的分享载体。
-
-##### 作为会话快照
-
-传统 AI 对话存档只保存消息记录，状态管理完全依赖 AI 的上下文记忆。这种方式在长线剧情或多分支叙事中容易出现记忆丢失和前后矛盾。
-
-Secyud Tavern 采用变量驱动的存档模型：每轮对话的变量变更（`variableChanges`）被精确记录，形成完整的状态演变轨迹。根节点的
-`variables` 始终保存最新状态，加载时无需重放历史即可直接恢复。删除消息时，通过重放变量变更可以精确重建任意时间点的状态。
-
-##### 作为预设清单
-
-存档的 `requires` 字段记录了该会话激活了哪些预设。当用户导出存档时，这份存档不仅包含对话历史和变量状态，更重要的是携带了一套预设组合方案。
-
-这意味着：
-
-* 用户可以分享自己的预设搭配：例如"赛博朋克酒馆"存档包含了角色卡、世界书、主题样式等预设的组合
-* 接收者导入存档时，引擎会解析 `requires`，提示需要哪些预设，并支持一键获取缺失的预设
-* 存档成为预设分发的"播放列表"——创作者可以发布存档作为预设包的入口，用户导入即获得完整体验
-
-##### 两者合一
-
-存档将"运行时状态"和"静态配置清单"合二为一。导出一个存档，就是分享一个完整的体验方案：用哪些预设、聊了什么、世界演变到了什么状态。接收者可以选择从存档起点继续，也可以只提取预设清单用于自己的新会话。
-
-#### 3.2 存档定义
-
-存档是对话状态的完整快照，记录了激活的预设、对话历史、以及变量演变轨迹。用户可以创建多个存档，每个存档代表一条独立的剧情线。存档同时也是预设组合的分享载体。
-
-#### 3.4 字段说明
-
-详见 `docs/templates/chat.json5`
-
-**核心字段：**
-
-- `id`: 存档唯一标识符，UUID
-- `name`: 用户自定义的存档名称
-- `db`: 激活的预设列表，每项包含 `presetId` 和 `version`
-- `entries.history`: 对话消息记录数组
-
-#### 3.5 变量变更
-
-variableChanges 为结构化对象，值为变更后的新值。值为 null 表示删除该变量。
-
-AI 在回复中通过 JSON 块输出变量变更：
-
-```text
-:::variable
-{
-  "time": {
-    "hour": 23
-  },
-  "location": null,
-  "alice": {
-    "cat-girl": {
-      "mood": "happy"
-    }
-  }
-}
-:::
-```
-
-引擎提取该 JSON，直接作为 variableChanges 存储，具体合并逻辑由调用方处理。
-
-#### 3.6 存档操作
-
-##### 3.6.1 加载存档
-
-读取存档文件，校验格式
-
-检查 requires 中的预设是否仍存在，缺失则提示
-
-直接读取根节点 variables 作为当前运行时变量表
-
-渲染 chatHistory 中所有消息
-
-##### 3.6.2 保存存档
-
-每轮对话结束后，将本轮变量变更存储到 variableChanges
-
-* 更新根节点 variables
-* 更新 updatedAt 和 meta.turnCount
-* 写入存档
-
-##### 3.6.3 删除消息
-
-用户可删除消息
-
-* 确定保留范围（目标消息之前的所有消息）
-* 从空变量表开始，依次应用每条消息的 variableChanges, 将计算结果写入根节点 variables
-* 截断 chatHistory 数组
-* 重新计算 turnCount
-
-#### 3.7 隐藏消息
-
-invisible: true 的消息具有以下特性：
-
-* 不发送给 AI：构建上下文时被过滤
-* 变量仍生效：其 variableChanges 正常参与合并
-  适用场景：
-
-* GM 指令：`/set time 22`
-* 后台世界演变：系统自动插入的环境变化
-* 调试测试：手动修改变量但不污染对话历史
-
-#### 3.8 存储方案
-
-使用 SQLite 数据库进行服务端持久化，采用主从表结构：
-
-* **预设存储**：`db` 主表（含 `version`、`tags` JSON 字段）+ `presetEntries` 从表（存储 lorebooks、regexes、styles、scripts）+
-  `presetRequires` 依赖表
-* **存档存储**：`chats` 主表 + `chatEntries` 从表（存储 history 消息记录）+ `chatRequires` 依赖表（存储激活的预设）
-
-### 4. 插件系统
-
-#### 4.1 设计理念
-
-插件系统是 Secyud Tavern 的扩展机制，允许开发者为应用添加新的页面和功能模块。
+Secyud Tavern 的预设与传统 AI 对话平台有本质区别。SillyTavern 等平台中，角色卡、世界书、主题样式、脚本逻辑是相互独立的模块，用户需要分别导入和管理。Secyud Tavern 将预设设计为**自包含的功能包** — 一个预设文件同时包含上述所有内容。
 
 **核心理念：**
 
-- **目录即注册**：插件放入 `public/plugins/` 目录即自动发现
-- **服务端/客户端分离**：一个插件可同时包含服务端脚本和客户端脚本，各自独立加载
-- **编译**：开发者自行编译客户端脚本为JS，框架不进行干预
+- **打包即分发**：一个 JSON 文件包含所有相关内容，降低分发和安装成本
+- **多核并联**：用户可以同时激活多个预设，引擎不做冲突处理，由预设作者通过命名约定自行规避
+- **约定优于配置**：通过 ID 命名规范（`作者.预设名`）和 CSS 作用域隔离来避免冲突
+- **引擎搭台**：预设系统提供加载、检索、注入的基础能力，不干预预设内部的逻辑
 
-#### 4.2 插件结构
+### 管理与使用分离
 
-plugins/example-plugin/
-├── manifest.json # 插件元信息
-├── server.ts # 服务端脚本（可选）
-└── client.js # 客户端脚本（需编译为 JS）
+预设的生命周期分为两条独立线路：
 
-#### 4.3 manifest.json
+| 线路 | 触发方式 | 数据流向 | 持久化 | 目的 |
+|---|---|---|---|---|
+| **管理线** | 预设编辑器操作 | 前端 → API → SQLite | 是 | 预设的增删改查 |
+| **使用线** | 加载存档 / 点击重载 | API → 前端内存 | 否 | 构建运行时引擎 |
 
-```json
-{
-  "id": "example-plugin",
-  "version": "1.0.0",
-  "serverScript": "server.ts",
-  "clientScript": "client.js"
+**管理线**保证数据一致性，编辑预设不影响当前运行中的会话。
+
+**使用线**在以下时机触发：
+1. 用户加载一个存档
+2. 用户在设置界面点击"重载预设"
+
+触发后，前端读取当前的预设列表 → 向服务器批量获取预设完整数据 → 在内存中构建运行时引擎 → 合并世界书、注入样式、执行脚本。整个过程在浏览器内存中完成，断网后仍可继续会话。
+
+### 数据模型
+
+```ts
+interface PresetModel {
+    id: string;                    // UUID
+    code: string;                  // 唯一标识符（如 "alice.cat-girl"）
+    version: string;               // 语义版本号
+    name: string;                  // 显示名称
+    tags: string[];                // 分类标签
+    requires: RequireModel[];      // 依赖的其他预设 [{code, version}]
+    content: { author?, description? };
+    entries: {
+        lorebooks: PresetLorebookModel[];   // 世界书条目
+        regexes: PresetRegexModel[];        // 正则替换规则
+        scripts: PresetScriptModel[];       // JavaScript 脚本
+        styles: PresetStyleModel[];         // CSS 样式块
+    };
 }
 ```
 
-#### 4.4 插件加载流程
+### 数据库存储
 
-1. 应用启动时，前端请求 API 获取插件清单
-2. 对有客户端脚本的插件，动态加载并执行
-3. 插件脚本自行注册页面、组件等功能
+```
+presets (主表)
+├── id, name, content (继承 masterTable)
+├── code (text, unique)
+├── version (text)
+├── tags (JSON text[])
+└── requires (JSON RequireModel[])
+
+presetEntries (子表)
+├── entryType = "lorebooks" | "regexes" | "scripts" | "styles"
+└── FK → presets.id (ON DELETE CASCADE)
+```
+
+## 二、引擎系统
+
+### 五大引擎
+
+| 引擎 | 功能 | 运行时角色 |
+|---|---|---|
+| **Lorebook** | 世界书 — 条件性背景知识注入 | 关键字/事件匹配 → 激活相关知识条目 |
+| **Regex** | 文本转换 — 查找替换预处理/后处理 | 输入/输出正则替换（层数范围控制） |
+| **Script** | 用户脚本 — JS 注入 | `<script>` 注入 iframe，变量通过 postMessage 传递 |
+| **Style** | 主题 — CSS 注入 | `<style>` 注入 iframe head，按优先级排序 |
+| **Deepseek** | AI 推理 — LLM API 适配器 | 服务端 API 调用 + 流式响应 |
+
+### 注册表驱动的插件架构
+
+引擎不通过硬编码集成，而是向中央注册表自我注册：
+
+```
+启动时:
+  client-registerer.ts → 调用各引擎的 registerXxxClient()
+  server-registerer.ts → 调用各引擎的 registerXxxServer()
+```
+
+**依赖链**（通过拓扑排序保证执行顺序）：
+
+```
+Lorebook (无依赖) → Regex (requires: ["lorebook"]) → Script (requires: ["regex"])
+                                                       Style (独立运行)
+```
+
+### ConversationProvider 生命周期
+
+非 LLM 引擎实现统一的生命周期钩子，由 `ConversationManager` 按拓扑排序调度：
+
+```
+1. onInitialize  → 解析预设、分组数据、初始化引擎状态
+2. onProcessInput → 世界书匹配 → 正则替换 → 构建 LLM 消息
+3. onProcessOutput → 变量提取 → 历史记录更新
+4. onRenderPage  → 完整页面渲染（注入 CSS/JS，渲染历史）
+5. onRenderStream → 流式增量渲染（AI 逐字输出时实时更新 iframe）
+```
+
+### 世界书匹配系统
+
+三种匹配策略均以插件形式注册：
+
+| 匹配器 | 触发条件 |
+|---|---|
+| **always** | 始终激活（可选"仅最后一条消息"） |
+| **normal** | 关键字 AND/OR 逻辑匹配 |
+| **event** | 关键字 + 日期范围匹配 |
+
+新增匹配策略只需注册到 `lorebookMatcherRegistry`，无需修改引擎代码。
+
+## 三、存档系统
+
+### 变量驱动状态
+
+Secyud Tavern 的存档记录完整的对话历史和变量演变轨迹。区别于依赖 AI 上下文记忆的传统方案，它采用结构化的变量表：
+
+```
+每轮对话:
+  AI 回复
+  └── <variable_changes>
+      { "time.hour": 23, "alice.mood": "happy" }
+      </variable_changes>
+  
+  存储:
+  ├── variables (根节点): 最新状态快照 — 加载时直接读取
+  └── variableChanges (每条消息): 增量变更 — 删除消息时重放重建
+```
+
+**变量操作**：
+- **加载存档**：直接读取根节点 `variables` 作为当前运行时变量表
+- **删除消息**：从空变量表重放该消息之前所有消息的 `variableChanges`，重建正确状态
+- **隐藏消息**：`invisible: true` 的消息不发送给 AI，但变量变更正常生效（GM 指令、后台演变）
+
+### 存档 = 会话快照 + 预设播放列表
+
+存档的 `requires` 字段记录了激活的预设组合。导出一个存档时，不仅分享对话历史，还携带了完整的预设搭配方案。接收者导入存档 → 引擎解析 `requires` → 提示缺失的预设 → 支持一键获取。
+
+### 数据结构
+
+```ts
+interface StoryHistory {
+    id: string;
+    outputId: number;                     // 当前选中的输出（多分支支持）
+    summary?: string;
+    variables: Record<string, any>;      // 根节点变量快照
+    inputs: StoryInputMessage[];         // 输入消息数组
+    outputs: StoryOutputMessage[];        // 输出消息数组
+}
+
+interface VariableChangeModel {
+    op: "add" | "replace" | "remove";
+    path: string;                         // 点号分隔（如 "alice.cat-girl.mood"）
+    value?: any;
+}
+```
+
+### 数据库存储
+
+```
+stories (主表)
+├── id, name, content (继承 masterTable)
+├── requires (JSON RequireModel[])
+└── llmapi (JSON RequireModel | null)
+
+storyEntries (子表)
+├── entryType = "history"
+└── FK → stories.id (ON DELETE CASCADE)
+```
+
+## 四、LLM API 抽象层
+
+### 三板斧插件模式
+
+每个 AI 服务商通过三个接口接入系统：
+
+| 接口 | 运行时 | 职责 |
+|---|---|---|
+| `LlmapiConfig` | 客户端 | 配置表单 UI（模型选择、参数设置） |
+| `LlmapiInputBuilder` | 客户端 | 将 LorebookMessage[] 转换为 LLM 消息格式 |
+| `LlmapiEngine` | 服务端 | 调用 LLM API，返回 ReadableStream（SSE） |
+
+运行时通过 `provider` 字段在注册表中查找：
+
+```
+LlmapiModel.provider = "deepseek"
+  ├── llmapiConfigRegistry["deepseek"] → 配置 UI
+  ├── llmapiInputBuilderManager["deepseek"] → 消息构建
+  └── llmapiEngineRegistry["deepseek"] → API 调用
+```
+
+### API Key 安全
+
+- **加密存储**：API Key 在写入数据库前通过 `Hasher.encrypt()` 加密（自定义字符偏移算法）
+- **服务端解密**：仅在调用 LLM API 时解密
+- **隔离**：预设脚本运行在 iframe 沙箱中，无法访问加密密钥和 API Key
+- **导出剥离**：导出 LLM API 配置时自动清除 Key 字段
+
+### 消息构建流程
+
+```
+用户输入
+  → Lorebook 引擎：tryFillActiveLorebooks → 确定激活的世界书 ID 列表
+  → InputBuilder.onBuildInput():
+      遍历消息历史
+      对每条消息注入激活的世界书内容：
+        层 < 100  → 前置注入 (lorebookS)
+        层 ≥ 100  → 后置注入 (lorebookE)
+      构建 LlmapiMessage[]:
+        [{ role: "system", content: openingRemarks },
+         { role: "user",    content: 前置 lorebook + 原文 + 后置 lorebook },
+         { role: "assistant", content: ... }, ...]
+```
+
+## 五、数据持久化
+
+### Master-Entry 主从表结构
+
+所有业务实体使用统一的两级数据模型：
+
+```
+Master 表 (主记录)
+├── id: string (UUID)
+├── name: string
+├── content: JSON text              ← 自由格式数据
+└── extraColumns...                 ← 模块特定的结构化字段
+
+Entry 表 (子记录)
+├── masterId (FK → Master)
+├── entryType (类型区分符)
+├── entryId (自增，作用域: masterId + entryType)
+├── disabled: boolean               ← 软禁用
+└── content: JSON text
+```
+
+**设计意图**：结构化字段（code, version, tags）用于查询过滤，自由格式字段（content）存 JSON 负载，避免为不同 Entry 类型建立大量关联表。
+
+### Repository 工厂
+
+`createRepository` 是一个泛型工厂，一次性生成完整的类型安全 CRUD 接口：
+
+```ts
+const repository = createRepository<TModel, TEntity>(
+    masterTable, entryTable,
+    loadModel, saveModel, bindSearch,
+    mapToEntity, mapToModel
+);
+
+// 返回: Repository<TModel> { get, getList, create, update, delete, entry: {...} }
+```
+
+三个业务模块（Stories、Presets、LlmApis）均使用此工厂创建各自的 Repository。
+
+### 数据库
+
+- **类型**：SQLite (`@libsql/client`)
+- **文件**：`database/secyud-tavern.db`
+- **迁移**：`database/migrations/` (Drizzle Kit)
+- **ORM**：Drizzle ORM（类型安全 SQL 查询）
+
+## 六、请求处理管道
+
+### 拦截器链
+
+所有 API 路由通过 `interceptor.createRoute()` 包装，进入责任链管道：
+
+```
+Request
+  → ParamInterceptor
+      ├── 反序列化 URL searchParams（JSON.parse 尝试）
+      ├── 解析 POST/PUT/PATCH body → records.body
+      └── next()
+  → ErrorInterceptor
+      └── try { next() }
+          catch (BusinessError) → { message, code, data } + HTTP 500
+          catch (Error)         → { message } + HTTP 500
+  → RouteHandler
+      └── 从 records 读取参数，执行业务逻辑
+```
+
+### 错误约定
+
+- **服务端**：抛 `BusinessError(code, data)` → 拦截器序列化为标准 JSON
+- **客户端**：`ApiError` 继承 `BusinessError` → `useErrorHandler` 钩子 → i18n 翻译 → toast 展示
+- **API 路由中禁止**直接返回 `NextResponse.json(..., {status: 400})` — 必须抛出 `BusinessError`
+
+## 七、UI 组件体系
+
+### 严格三层架构
+
+```
+template/        ← 业务逻辑层（与 API 交互，管理状态）
+  ↓ 使用
+custom/          ← 组合层（PaginationWrapper, Combobox, TabManager）
+  ↓ 使用
+ui/              ← 展示层（Button, Dialog, Field, Combobox ... 25+ 基元）
+```
+
+- **展示层**：无状态、无业务依赖、纯 CSS 驱动。基于 Radix UI + CVA + Tailwind
+- **组合层**：本地状态管理，不与 API 交互
+- **业务层**：泛型模板组件（`ModelListContentTemplate<T>`、`EditFormTemplate<T>`），通过 Context 传递当前模型
+
+### 模板泛型化
+
+同一套模板组件适配所有实体类型：
+
+```
+ModelListContentTemplate<StoryModel>    modelType="story"
+ModelListContentTemplate<PresetModel>   modelType="preset"
+ModelListContentTemplate<LlmapiModel>   modelType="llmapi"
+```
+
+### iframe 隔离渲染
+
+对话内容在 iframe 中渲染，隔离引擎注入的 CSS/JS，防止：
+- 样式污染主应用 UI
+- 脚本操作敏感数据（API Key 不在 iframe 上下文中）
+- 第三方预设的恶意代码影响应用核心
+
+## 八、插件系统
+
+### 双层扩展机制
+
+```
+外部插件 (动态发现)
+  → plugins/*/manifest.json → import() 动态加载
+                                 ↓
+内建模块 (静态注册)              Registry<T>
+  → registerXxxClient()  ──→  register(item)
+```
+
+外部插件和内建引擎使用同一套 Registry 基础设施，区别仅在于发现时机和注册方式。
+
+### Registry — 拓扑排序注册表
+
+```ts
+class Registry<T extends Registerable> {
+    register(...items: T[]): void;
+    getSorted(): T[];    // Kahn 算法拓扑排序，带循环依赖检测
+    use(action): Promise<void>;  // 按依赖顺序遍历执行
+}
+```
+
+整个项目的 10+ 个注册表全部基于此单一实现。
+
+### 插件结构
+
+```
+plugins/my-plugin/
+├── manifest.json     # { id, version, serverScript?, clientScript? }
+├── server.ts         # 服务端脚本（动态 import，在 Node.js 运行）
+└── client.js         # 客户端脚本（需编译为 JS，在浏览器运行）
+```
+
+服务端插件可注册引擎、拦截器、存储提供者；客户端插件可注册页面标签、会话提供者、配置表单。
+
+## 九、关键设计决策
+
+| 决策 | 选择 | 原因 |
+|---|---|---|
+| 数据库 | SQLite | 单文件部署，零配置，适合桌面/单用户场景 |
+| ORM | Drizzle | 类型安全，轻量，与 Next.js 兼容性好 |
+| 渲染隔离 | iframe | 防止预设 CSS/JS 污染主应用 |
+| 流式响应 | SSE (ReadableStream) | 逐字实时渲染，用户体验好 |
+| 组件复用 | 泛型模板 | 三套实体共享同一套 CRUD UI |
+| 插件发现 | 文件系统扫描 + 静态注册 | 内建模块零开销，外部插件灵活 |
+| 依赖排序 | Kahn 算法 | O(V+E) 复杂度，循环依赖自动检测 |
+| 错误处理 | BusinessError + 拦截器 | 统一格式，客户端自动 toast 展示 |
+| 状态管理 | 变量表（JSON Patch） | 无需重放历史即可恢复状态 |
+| API Key 安全 | 自定义加密 + 服务端解密 | 防御数据库文件泄露 |
