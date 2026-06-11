@@ -35,11 +35,15 @@ export function generateCurrentVariables(history: StoryHistory, includeOutput: b
 export function getOpeningHistory(slot: SlotModel) {
     let openingHistory = slot.content['openingHistory'] as StoryHistory;
     if (!openingHistory) {
-        const openingMessage: StoryInputMessage = {id: 0, content: "", variables: []};
+        const openingMessage: StoryInputMessage = {
+            id: 0,
+            content: "",
+            variables: []
+        };
         openingHistory = {
             id: 0, inputs: [openingMessage], summary: true, outputId: 0, outputs: [], variables: {}
         };
-        extractVariableChanges(openingMessage);
+        extractVariableChanges(openingMessage, slot.story.content?.openingRemarks ?? "");
         if (!openingMessage.activeLorebooks) {
             const variables = generateCurrentVariables(openingHistory, false);
             const lorebooks: Record<string, PresetLorebookModel> = slot.content[engineArrayName];

@@ -37,19 +37,18 @@ function AccessibleComponent({children, className}: {
     children: React.ReactNode,
     className?: string
 }) {
-    const [state, setState] = useState(0);
+    const [focused, setFocused] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
-    const show = () => setState(u => u + 1);
-    const hide = () => setState(u => u - 1);
-    const isVisible = state > 0;
+    const isVisible = focused || hovered;
     return (
         <div
             className={` transition-all duration-100 ${className || ''} ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            onMouseEnter={show}
-            onMouseLeave={hide}
-            onFocus={show}
-            onBlur={hide}
-            onTouchStart={show}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onTouchStart={() => setFocused(true)}
             aria-expanded={isVisible}>
             {children}
         </div>
