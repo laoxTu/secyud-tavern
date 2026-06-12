@@ -25,6 +25,7 @@
     "export": "导出",
     "id": "ID",
     "import": "导入",
+    "ctrl_enter_submit": "按 Ctrl + Enter 发送消息，Enter 换行",
     "import_description": "请导入一个{target}",
     "import_title": "导入{target}",
     "layer": "层级",
@@ -61,7 +62,6 @@
     "style": "样式"
   },
   "lorebook": {
-    "delete_description": "您确定要删除这个世界书条目吗？这个操作是不可逆的。",
     "delete_title": "删除世界书",
     "fit_count": "匹配数量",
     "include_any_word": "包含词组",
@@ -94,6 +94,10 @@
     "deepseek-v4-pro": "deepseek-v4-pro"
   },
   "script": {
+  },
+  "slot": {
+    "output": "AI输出",
+    "current_history": "当前历史"
   },
   "style": {
   },

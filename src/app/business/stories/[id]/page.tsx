@@ -1,22 +1,19 @@
 ﻿'use client';
 import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
-import {get, post, put} from "@/client";
+import {del, get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
-
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem, PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from "@/components/ui/pagination";
 import {
     InputGroup,
-    InputGroupAddon, InputGroupButton,
-    InputGroupText,
+    InputGroupAddon, InputGroupButton, InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
-import {CornerDownLeftIcon, RotateCcwIcon, SquareStopIcon} from "lucide-react";
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    CornerDownLeftIcon, DeleteIcon,
+    RotateCcwIcon,
+    SquareStopIcon, Trash2Icon
+} from "lucide-react";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {
@@ -31,29 +28,16 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
-
-
-function AccessibleComponent({children, className}: {
-    children: React.ReactNode,
-    className?: string
-}) {
-    const [focused, setFocused] = useState(false);
-    const [hovered, setHovered] = useState(false);
-
-    const isVisible = focused || hovered;
-    return (
-        <div
-            className={` transition-all duration-100 ${className || ''} ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            onTouchStart={() => setFocused(true)}
-            aria-expanded={isVisible}>
-            {children}
-        </div>
-    );
-}
+import {AccessibleComponent} from "@/components/custom/accessible";
+import {ButtonGroup} from "@/components/ui/button-group";
+import {Button} from "@/components/ui/button";
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 interface RenderState {
     // 准备渲染，意味着已经添加到渲染队列
@@ -126,7 +110,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         if (curStoryPage > 0) {
             const history = histories[curStoryPage - 1];
             maxPage = history.outputs.length;
-            if (curPage >= maxPage) curPage = maxPage - 1;
+            if (curPage >= maxPage)
+                curPage = maxPage - 1;
             if (history.outputId != curPage) {
                 // eslint-disable-next-line react-hooks/immutability
                 history.outputId = curPage;
@@ -149,7 +134,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         console.debug(`set story page: ${curPage}/${maxPage}`);
         setStoryPage({max: maxPage, cur: curPage});
 
-        if (!curOutputPage) {
+        if (curOutputPage === undefined) {
             curOutputPage = 99999;
             if (curPage > 0) {
                 curOutputPage = histories[curPage - 1].outputId
@@ -219,9 +204,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
             history.outputs.push(currentOutput);
 
-            console.debug(`current outputs: ${history.outputs}`);
+            console.debug(`current outputs: `);
+            console.debug(history.outputs);
 
             // 跳转到最新页，进行输出
+            console.debug(`current output index: ${history.outputs.length - 1}`);
             await handleStoryPageChange(histories.length, history.outputs.length - 1);
 
             if (response.body) {
@@ -270,11 +257,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
     // 发送输入内容，并尝试创建新历史
     const createHistory = useCallback(async (input: string, summary: boolean) => {
+        const slot = ctx.current.slot!;
+        const histories = slot.story.histories!;
+        let history = tryGetLastItem(histories)!;
+        let variables = undefined;
         try {
-            const slot = ctx.current.slot!;
-            const histories = slot.story.histories!;
-            let history = tryGetLastItem(histories)!;
-            let variables = undefined;
 
             // 如果上一个历史还未输出，合并到上一个历史。
             // 如果上一个历史已经输出，创建新的历史。
@@ -295,7 +282,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                     name: "0",
                     inputs: [],
                     summary: summary,
-                    outputId: 0,
+                    outputId: -1,
                     outputs: [],
                     variables: variables
                 };
@@ -311,8 +298,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             extractVariableChanges(message, input);
             inputs.push(message);
 
-            // 用户输入后立即跳转到最新页面，先渲染用户输入。
-            await handleStoryPageChange(histories.length);
+        } catch (err) {
+            handleError(err);
+        }
+
+        // 用户输入后立即跳转到最新页面，先渲染用户输入。
+        await handleStoryPageChange(histories.length);
+
+        try {
             if (variables) {
                 const {id} = await post('/stories/{id}/entries/{entryType}', history,
                     {params: {id: slot.story.id, entryType: 'history'}}
@@ -323,19 +316,20 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         } catch (err) {
             handleError(err);
         }
+
         // 创建并保存历史后需要生成回复
         await generateReply();
     }, [generateReply, handleError, handleStoryPageChange]);
 
     const renderCurrentPage = useCallback(async () => {
+        if (!iframe.current || !loadingState.success) return;
+        const curPage = ctx.current.curPage;
+        const slot = ctx.current.slot!;
+        const histories = slot.story.histories!;
+        // page 为 0 时实际是渲染开场白
+        const history: StoryHistory = curPage === 0 ?
+            getOpeningHistory(slot) : histories[curPage - 1];
         try {
-            if (!iframe.current || !loadingState.success) return;
-            const curPage = ctx.current.curPage;
-            const slot = ctx.current.slot!;
-            const histories = slot.story.histories!;
-            // page 为 0 时实际是渲染开场白
-            const history: StoryHistory = curPage === 0 ?
-                getOpeningHistory(slot) : histories[curPage - 1];
             console.debug('render history:');
             console.debug(history);
             const renderCtx: RenderContext = {
@@ -352,6 +346,46 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         }
     }, [handleError, loadingState.success, manager]);
 
+    const deleteCurrentHistory = useCallback(async () => {
+        const curPage = ctx.current.curPage;
+        const slot = ctx.current.slot!;
+        const histories = slot.story.histories!;
+        const history = histories[curPage - 1];
+        try {
+            await del("/stories/{id}/entries/{entryType}/{entryId}",
+                {params: {id: slot.story.id, entryType: 'history', entryId: history.id}})
+            histories.splice(curPage - 1, 1);
+        } catch (error) {
+            handleError(error);
+        }
+        await handleStoryPageChange(curPage);
+    }, [handleError, handleStoryPageChange]);
+
+    const deleteCurrentOutput = useCallback(async () => {
+        const curPage = ctx.current.curPage;
+        const slot = ctx.current.slot!;
+        const histories = slot.story.histories!;
+        let history = histories[curPage - 1];
+
+        if (history.outputs.length > 0) {
+            history.outputs.slice(history.outputId, 1);
+        }
+        if (history.outputs.length === 0 &&
+            curPage < histories.length) {
+            const current = history;
+            history = histories[curPage];
+            history.summary ||= current.summary;
+            history.inputs = [...current.inputs, ...history.inputs];
+            for (const input of current.inputs) {
+                // eslint-disable-next-line react-hooks/immutability
+                input.variables.length = 0;
+            }
+            await updateHistory(history);
+            await deleteCurrentHistory();
+        } else {
+            await updateHistory(history);
+        }
+    }, [deleteCurrentHistory, updateHistory]);
 
     useEffect(() => {
         console.debug(`loadingState.started: ${loadingState.started}`);
@@ -377,84 +411,122 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     return (
         <>
             <iframe ref={iframe} width={'100%'} height={'100%'}/>
-            <AccessibleComponent className={'fixed inset-0 bottom-auto flex p-2 gap-2'}>
+            <AccessibleComponent className={'fixed inset-0 bottom-auto flex bg-white border-b p-2 gap-2'}>
                 <fieldset className={"m-auto"} disabled={!loadingState.success}>
-                    <form action={formData => {
-                        const page = Number(formData.get('slot-page-index'));
-                        return handleStoryPageChange(page);
-                    }}>
-                        <Pagination key={storyPage.cur}>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => handleStoryPageChange(storyPage.cur - 1)}
-                                        className={storyPage.cur > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
-                                        aria-disabled={storyPage.cur <= 0}/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <Input defaultValue={storyPage.cur} name='slot-page-index' type={'number'}/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    /
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink onClick={() => handleStoryPageChange(storyPage.max)}>
-                                        {storyPage.max}
-                                    </PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => handleStoryPageChange(storyPage.cur + 1)}
-                                        className={storyPage.cur < storyPage.max ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
-                                        aria-disabled={storyPage.cur >= storyPage.max}/>
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </form>
-                </fieldset>
-                <fieldset className={"m-auto"} disabled={!loadingState.success}>
-                    <form>
-                        <Pagination key={outputPage.cur}>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => handleOutputPageChange(outputPage.cur - 1)}
-                                        className={outputPage.cur > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
-                                        aria-disabled={outputPage.cur <= 0}/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    {outputPage.cur + 1} / {outputPage.max}
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => handleOutputPageChange(outputPage.cur + 1)}
-                                        className={outputPage.cur < outputPage.max ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
-                                        aria-disabled={outputPage.cur >= outputPage.max}/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink
-                                        className={storyPage.max > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
-                                        onClick={() => generateReply()}>
-                                        <RotateCcwIcon/>
-                                    </PaginationLink>
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </form>
+                    <ButtonGroup>
+                        <form action={formData => {
+                            const page = Number(formData
+                                .get('slot-page-index'));
+                            return handleStoryPageChange(page);
+                        }}>
+                            <ButtonGroup>
+                                <Button onClick={() => handleStoryPageChange(storyPage.cur - 1)}
+                                        disabled={storyPage.cur <= 0} variant="outline">
+                                    <ChevronLeftIcon/>
+                                </Button>
+                                <Input defaultValue={storyPage.cur}
+                                       name='slot-page-index'
+                                       type={'number'}/>
+                                <Button onClick={() => handleStoryPageChange(storyPage.max)}
+                                        variant="outline">
+                                    {storyPage.max}
+                                </Button>
+                                <Button onClick={() => handleStoryPageChange(storyPage.cur + 1)}
+                                        disabled={storyPage.cur >= storyPage.max} variant="outline">
+                                    <ChevronRightIcon/>
+                                </Button>
+                            </ButtonGroup>
+                        </form>
+                        <ButtonGroup>
+                            <Button onClick={() => handleOutputPageChange(outputPage.cur - 1)}
+                                    disabled={outputPage.cur <= 0} variant="outline">
+                                <ChevronLeftIcon/>
+                            </Button>
+                            <Button disabled variant={'ghost'}>
+                                {outputPage.cur + 1} / {outputPage.max}
+                            </Button>
+                            <Button onClick={() => handleOutputPageChange(outputPage.cur + 1)}
+                                    disabled={outputPage.cur + 1 >= outputPage.max} variant="outline">
+                                <ChevronRightIcon/>
+                            </Button>
+                            <Button onClick={() => generateReply()}
+                                    disabled={storyPage.max === 0} variant="outline">
+                                <RotateCcwIcon/>
+                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive"
+                                            disabled={storyPage.cur === 0}>
+                                        <Trash2Icon/>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            {t('default.delete_title', {target: t('slot.current_history')})}
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {t('default.delete_description', {target: t('slot.current_history')})}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => deleteCurrentHistory()}
+                                                           variant={'destructive'}>
+                                            {t('default.delete')}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive"
+                                            disabled={storyPage.cur === 0}>
+                                        <DeleteIcon/>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            {t('default.delete_title', {target: t('slot.output')})}
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {t('default.delete_description', {target: t('slot.output')})}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => deleteCurrentOutput()}
+                                                           variant={'destructive'}>
+                                            {t('default.delete')}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </ButtonGroup>
+                    </ButtonGroup>
                 </fieldset>
             </AccessibleComponent>
-            <AccessibleComponent className={"fixed inset-0 top-auto p-2 group"}>
+            <AccessibleComponent className={"fixed inset-0 top-auto bg-white border-b  p-2 "}>
                 <fieldset disabled={!loadingState.success}>
                     <form className={"w-full"}
                           action={formData => {
                               if (renderState.output) return;
                               const input = formData.get('slot-user-input') as string;
+                              if (input.trim() === '') return;
                               const summary = Boolean(formData.get('summary') as string);
                               void createHistory(input, summary);
                           }}>
                         <InputGroup>
                             <InputGroupTextarea id='slot-user-input'
-                                                name='slot-user-input'/>
+                                                name='slot-user-input'
+                                                placeholder={t('default.ctrl_enter_submit')}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && e.ctrlKey) {
+                                                        e.preventDefault();
+                                                        e.currentTarget.form?.requestSubmit();
+                                                    }
+                                                }}/>
                             <InputGroupAddon align="inline-end">
                                 <InputGroupText>
                                     <Checkbox name={'summary'} id={'summary-checkbox'}/>
