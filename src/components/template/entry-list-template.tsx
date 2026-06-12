@@ -138,7 +138,7 @@ export function EntryListTemplate<TModel extends BaseModel>(
                                        contextType={contextType} createAccessor={createAccessor}
                                        refreshList={refreshList}/>
                     </div>
-                    <div className="flex-1 overflow-auto space-y-2 p-2">
+                    <div key={pager.pageIndex} className="flex-1 overflow-auto space-y-2 p-2">
                         {pager.data.map((data, i) =>
                             <Editor key={i} entry={data} refreshList={() => pager.refresh()}
                                     modelType={modelType} modelApi={modelApi} entryType={entryType}
@@ -351,7 +351,7 @@ function Editor<TModel extends BaseModel>(
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                     <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
-                            <label className={"w-full m-auto px-2"}>
+                            <label className={"w-full m-auto px-2 cursor-pointer"}>
                                 {entry.name}
                                 <span className={"px-2 text-sm text-gray-500"}>
                                     {entry.code}

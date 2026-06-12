@@ -62,6 +62,8 @@ function createLorebookContext(ctx: SlotContextBase, history: StoryHistory) {
 
         messages.push(message);
     }
+    console.debug("messages");
+    console.debug(messages)
 
     // 历史信息直接转存到这里
     ctx.content.lorebooks = lorebooks;

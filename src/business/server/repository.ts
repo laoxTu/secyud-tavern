@@ -79,8 +79,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 .select()
                 .from(masters)
                 .where(condition)
-                .limit(pageSize)
-                .offset(offset);
+                .offset(offset)
+                .limit(pageSize);
 
             const models =
                 entities.map(entity => ({
@@ -191,7 +191,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                     query = query.limit(pageSize);
 
                     if (page) {
-                        query = query.limit(page * pageSize);
+                        query = query.offset(page * pageSize);
                     }
                 }
                 const data = (await query).map((u: { entryId: number, disabled: boolean, content: string; }) =>

@@ -20,12 +20,6 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
     const lorebookMessages = ctx.content.messages as LorebookMessage[];
     const lorebooks = ctx.slot.content[engineArrayName] as Record<string, PresetLorebookModel>;
     const messageContexts: MessageContext[] = [];
-    messageContexts.push({
-        role: "system",
-        content: [ctx.slot.story.content.openingRemarks ?? ""],
-        lorebookE: [],
-        lorebookS: [],
-    });
     const visitedLorebooks = new Set<string>();
     const prepareLorebooks: PresetLorebookModel[] = [];
     for (const lorebookMessage of lorebookMessages) {
@@ -60,8 +54,9 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
     const lorebooksE: PresetLorebookModel[] = ctx.slot.content[engineArrayName + "E"];
     fillContext(tryGetLastItem(messageContexts)!, lorebooksE);
 
+    console.debug("messageContext: ");
+    console.debug(messageContexts);
     const llmapiMessages: LlmapiMessage[] = [];
-
     const cache : {role:string, content:string[]} = {
         role: "",
         content: [],
@@ -74,7 +69,7 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
         }
         for (const text of messageContext.content) {
             llmapiMessages.push({
-                role: "user",
+                role: messageContext.role,
                 content: text
             })
         }

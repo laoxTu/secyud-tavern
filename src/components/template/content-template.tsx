@@ -191,9 +191,10 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
                                 <ItemGroup className={"p-2 gap-3"}>
                                     {data && data.map((t, index) => (
                                         <Item key={index} asChild
-                                              variant={t.id === model?.id ? "muted" : "outline"}
+                                              className={t.id === model?.id ? "bg-gray-100":""}
+                                              variant={"outline"}
                                               role="listitem" onClick={() => selectModel(t.id)}>
-                                            <a>
+                                            <a className={'cursor-pointer'}>
                                                 {modelContent(t)}
                                             </a>
                                         </Item>
