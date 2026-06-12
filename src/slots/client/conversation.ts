@@ -49,7 +49,7 @@ export function getOpeningHistory(slot: SlotModel) {
             disabled: false,
             inputs: [openingMessage],
             summary: true,
-            outputId: 0,
+            outputId: -1,
             outputs: [],
             variables: {}
         };

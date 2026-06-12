@@ -63,13 +63,16 @@ export const regexConversationProvider: ConversationProvider = {
     onProcessOutput: async () => {
     },
     onRenderPage: async (ctx) => {
+        console.debug('start generate iframe');
         const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
         let inputFields = ctx.document.getElementById("user-input");
         if (!inputFields) {
+            console.debug('start generate user inputs');
             inputFields = ctx.document.createElement('div');
             inputFields.id = "user-input";
             ctx.document.body.appendChild(inputFields);
         }
+        console.debug('start generate user input');
         inputFields.replaceChildren();
         for (const input of ctx.history.inputs) {
             const inputField = document.createElement("div");
@@ -78,6 +81,7 @@ export const regexConversationProvider: ConversationProvider = {
             inputFields.appendChild(inputField);
         }
 
+        console.debug('start generate ai output');
         const output = applyRegexes(regexes, getCurrentOutput(ctx.history)?.content);
         rerenderOutputField(ctx.document, output);
     }

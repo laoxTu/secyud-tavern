@@ -27,6 +27,7 @@ export const styleConversationProvider: ConversationProvider = {
     },
     onRenderPage: async (ctx) => {
         if (!ctx.document.getElementById(styleId)) {
+            console.debug('start generate injected-styles');
             const styles = ctx.document.createElement("style");
             styles.id = styleId;
             const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];

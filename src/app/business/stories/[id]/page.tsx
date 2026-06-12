@@ -2,11 +2,11 @@
 import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
 import {del, get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
-import {
-    InputGroup,
-    InputGroupAddon, InputGroupButton, InputGroupText,
-    InputGroupTextarea
-} from "@/components/ui/input-group";
+import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
+import {LlmapiInputModel, SlotModel} from "@/slots/models";
+import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
+import {readStream, tryGetLastItem} from "@/utils";
+import {useTranslations} from "next-intl";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -14,19 +14,19 @@ import {
     RotateCcwIcon,
     SquareStopIcon, Trash2Icon
 } from "lucide-react";
-import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
-import {LlmapiInputModel, SlotModel} from "@/slots/models";
+import {
+    InputGroup,
+    InputGroupAddon, InputGroupButton, InputGroupText,
+    InputGroupTextarea
+} from "@/components/ui/input-group";
 import {
     LlmapiInputContext, LlmapiOutputContext,
     RenderContext,
     RenderStreamContext,
     SlotInitializeContext
 } from "@/slots/client/conversation-models";
-import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
-import {readStream, tryGetLastItem} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
-import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {AccessibleComponent} from "@/components/custom/accessible";
 import {ButtonGroup} from "@/components/ui/button-group";
@@ -38,6 +38,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import {SlotContext, SlotContextModel} from "@/slots/client/models";
 
 interface RenderState {
     // 准备渲染，意味着已经添加到渲染队列
@@ -60,11 +61,6 @@ interface LoadingState {
     started: boolean;
 }
 
-interface StoryPageContext {
-    slot?: SlotModel,
-    reply?: AbortController,
-    curPage: number,
-}
 
 export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
     const t = useTranslations();
@@ -73,21 +69,21 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         prepare: false,
         output: false,
     });
+    const [loadingState, setLoadingState] = useState<LoadingState>({
+        loading: false, success: false, started: false
+    });
     const [storyPage, setStoryPage] = useState<PageState>({
         max: 0, cur: 0,
     });
     const [outputPage, setOutputPage] = useState<PageState>({
         max: 0, cur: 0,
     });
-    const [loadingState, setLoadingState] = useState<LoadingState>({
-        loading: false, success: false, started: false
-    });
     const iframe = useRef<HTMLIFrameElement>(null);
-    const ctx = useRef<StoryPageContext>({curPage: 0});
+    const ctx = useRef<SlotContextModel>({curPage: 0});
 
     const manager = useMemo(() => conversationManager, [])
 
-    const updateHistory = useCallback(async (history: StoryHistory) => {
+    const updateHistory = async (history: StoryHistory) => {
         try {
             const id = ctx.current.slot?.story.id;
             if (!id) {
@@ -100,7 +96,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         } catch (error) {
             handleError(error);
         }
-    }, [handleError]);
+    };
 
     const handleOutputPageChange = useCallback(async (curPage: number) => {
         const histories = ctx.current.slot?.story.histories;
@@ -330,8 +326,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         const history: StoryHistory = curPage === 0 ?
             getOpeningHistory(slot) : histories[curPage - 1];
         try {
-            console.debug('render history:');
+            console.debug('render history: ');
             console.debug(history);
+            console.debug('render iframe: ');
+            console.debug(iframe.current);
             const renderCtx: RenderContext = {
                 content: {},
                 document: iframe.current.contentDocument!,
@@ -409,9 +407,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     );
 
     return (
-        <>
-            <iframe ref={iframe} width={'100%'} height={'100%'}/>
-            <AccessibleComponent className={'fixed inset-0 bottom-auto flex bg-white border-b p-2 gap-2'}>
+        <SlotContext.Provider value={ctx}>
+            {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
+            <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
+            <AccessibleComponent className={"fixed inset-0 top-auto bg-white border-b flex flex-col gap-2  p-2 "}>
                 <fieldset className={"m-auto"} disabled={!loadingState.success}>
                     <ButtonGroup>
                         <form action={formData => {
@@ -424,11 +423,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                                         disabled={storyPage.cur <= 0} variant="outline">
                                     <ChevronLeftIcon/>
                                 </Button>
-                                <Input defaultValue={storyPage.cur}
-                                       name='slot-page-index'
-                                       type={'number'}/>
+                                <Input defaultValue={storyPage.cur} name='slot-page-index'
+                                       disabled={storyPage.max === 0} type={'number'}/>
                                 <Button onClick={() => handleStoryPageChange(storyPage.max)}
-                                        variant="outline">
+                                        disabled={storyPage.cur === storyPage.max} variant="outline">
                                     {storyPage.max}
                                 </Button>
                                 <Button onClick={() => handleStoryPageChange(storyPage.cur + 1)}
@@ -506,8 +504,6 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         </ButtonGroup>
                     </ButtonGroup>
                 </fieldset>
-            </AccessibleComponent>
-            <AccessibleComponent className={"fixed inset-0 top-auto bg-white border-b  p-2 "}>
                 <fieldset disabled={!loadingState.success}>
                     <form className={"w-full"}
                           action={formData => {
@@ -552,6 +548,6 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                     </form>
                 </fieldset>
             </AccessibleComponent>
-        </>
+        </SlotContext.Provider>
     )
 }

@@ -33,6 +33,7 @@ export const scriptConversationProvider: ConversationProvider = {
     },
     onRenderPage: async (ctx) => {
         if (!ctx.document.getElementById(scriptId)) {
+            console.debug('start generate injected-scripts');
             const scripts = ctx.document.createElement("script");
             scripts.id = scriptId;
             const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
