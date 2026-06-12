@@ -1,4 +1,4 @@
-﻿import {BaseModel} from "@/business/models";
+﻿import {BaseModel, EntryModel} from "@/business/models";
 import {RequireModel} from "@/presets/models";
 import {tryGetLastItem} from "@/utils";
 
@@ -28,8 +28,7 @@ export interface StoryOutputMessage extends StoryHistoryMessage {
     id: number;
 }
 
-export interface StoryHistory {
-    id: number;
+export interface StoryHistory extends EntryModel{
     outputId: number;
     summary: boolean;
     variables: Record<string, any>;

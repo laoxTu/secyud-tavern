@@ -19,6 +19,7 @@ export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> {
         })
     }
 
+    // 搜索字段，对搜索字段拼接，可以模糊搜索
     bindSearch(type: string, entry: any) {
         const provider = this.records[type];
         return provider?.bindSearch(entry) ?? `${entry?.name}${entry.code}`;

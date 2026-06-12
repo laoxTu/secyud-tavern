@@ -16,7 +16,7 @@ import {
     InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
-import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
+import {CornerDownLeftIcon, RotateCcwIcon, SquareStopIcon} from "lucide-react";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {
@@ -56,39 +56,109 @@ function AccessibleComponent({children, className}: {
 }
 
 interface RenderState {
-    maxPage: number;
-    curPage: number;
+    // 准备渲染，意味着已经添加到渲染队列
+    prepare: boolean;
+    // 正在输出，控制发送消息功能
     output: boolean;
-    enabled: boolean;
-    render: boolean;
+}
+
+interface PageState {
+    max: number;
+    cur: number;
 }
 
 interface LoadingState {
+    // 加载中
     loading: boolean;
+    // 加载成功
     success: boolean;
+    // 已开始加载
     started: boolean;
+}
+
+interface StoryPageContext {
+    slot?: SlotModel,
+    reply?: AbortController,
+    curPage: number,
 }
 
 export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     const [renderState, setRenderState] = useState<RenderState>({
-        maxPage: 0, curPage: -1, output: false, enabled: false, render: false
+        prepare: false,
+        output: false,
+    });
+    const [storyPage, setStoryPage] = useState<PageState>({
+        max: 0, cur: 0,
+    });
+    const [outputPage, setOutputPage] = useState<PageState>({
+        max: 0, cur: 0,
     });
     const [loadingState, setLoadingState] = useState<LoadingState>({
         loading: false, success: false, started: false
     });
-    const replyController = useRef<AbortController>(null);
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-    const slotCtx = useRef<{ slot?: SlotModel, output: boolean }>({output: true});
+    const iframe = useRef<HTMLIFrameElement>(null);
+    const ctx = useRef<StoryPageContext>({curPage: 0});
 
     const manager = useMemo(() => conversationManager, [])
 
-    const handlePageIndexChange = (page: number) => {
-        if (!loadingState.success || page < 0 || page > renderState.maxPage) return;
-        slotCtx.current.output = page === renderState.maxPage;
-        setRenderState(u => ({...u, curPage: page, render: true}));
-    };
+    const updateHistory = useCallback(async (history: StoryHistory) => {
+        try {
+            const id = ctx.current.slot?.story.id;
+            if (!id) {
+                console.error('failed to update history, due to undefined id.');
+                return;
+            }
+            await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+                {params: {id: id, entryType: 'history', entryId: history.id}},
+            );
+        } catch (error) {
+            handleError(error);
+        }
+    }, [handleError]);
+
+    const handleOutputPageChange = useCallback(async (curPage: number) => {
+        const histories = ctx.current.slot?.story.histories;
+        const curStoryPage = ctx.current.curPage;
+        if (!histories || histories.length < curStoryPage) return;
+        let maxPage = 0;
+        if (curStoryPage > 0) {
+            const history = histories[curStoryPage - 1];
+            maxPage = history.outputs.length;
+            if (curPage >= maxPage) curPage = maxPage - 1;
+            if (history.outputId != curPage) {
+                // eslint-disable-next-line react-hooks/immutability
+                history.outputId = curPage;
+                await updateHistory(history);
+            }
+        } else {
+            curPage = -1;
+        }
+        console.debug(`set output page: ${curPage}/${maxPage}`);
+        setOutputPage({max: maxPage, cur: curPage});
+        setRenderState(u => ({...u, prepare: true}));
+    }, [updateHistory]);
+
+    const handleStoryPageChange = useCallback(async (curPage: number, curOutputPage?: number) => {
+        const histories = ctx.current.slot?.story.histories;
+        if (!histories || curPage < 0) return;
+        const maxPage = histories.length;
+        curPage = Math.min(curPage, maxPage);
+        ctx.current.curPage = curPage;
+        console.debug(`set story page: ${curPage}/${maxPage}`);
+        setStoryPage({max: maxPage, cur: curPage});
+
+        if (!curOutputPage) {
+            curOutputPage = 99999;
+            if (curPage > 0) {
+                curOutputPage = histories[curPage - 1].outputId
+            }
+        }
+
+        // 页面变化时，输出的数量也会变，取最大页
+        await handleOutputPageChange(curOutputPage);
+    }, [handleOutputPageChange])
 
     const loadingCurrentSlot = useCallback(async () => {
         try {
@@ -97,104 +167,111 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             }))
             const {id} = await params;
             const slot = await get("/stories/{id}/slot", {params: {id}}) as SlotModel;
-            const ctx: SlotInitializeContext = {
+            const context: SlotInitializeContext = {
                 slot, content: {}
             }
-            await manager.use((provider) => provider.onInitialize(ctx))
-            slotCtx.current.slot = slot;
-            const histories = slot.story.histories!;
-            const maxPage = histories.length;
-            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, enabled: true}));
+            await manager.use((provider) => provider.onInitialize(context))
+            ctx.current.slot = slot;
             setLoadingState(u => ({
                 ...u, loading: false, success: true
             }))
+            await handleStoryPageChange(slot.story.histories?.length ?? 0);
         } catch (err) {
             setLoadingState(u => ({
                 ...u, loading: false, success: false
             }))
             handleError(err);
         }
-    }, [handleError, manager, params]);
+    }, [handleError, handleStoryPageChange, manager, params]);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateReply = useCallback(async () => {
+        const slot = ctx.current.slot!;
+        const histories = slot.story.histories!;
+        const history = tryGetLastItem(histories);
+        if (!history) return;
         try {
-            if (replyController.current) {
-                replyController.current.abort("regenerate reply!");
+
+            setRenderState(u => ({...u, output: true}))
+            const inputContext: LlmapiInputContext = {messages: [], slot, content: {}, history};
+            await manager.use(provider => provider.onProcessInput(inputContext));
+
+            if (ctx.current.reply) {
+                ctx.current.reply.abort("regenerate reply!");
             }
-            replyController.current = new AbortController();
-            const slot = slotCtx.current.slot!;
-            const histories = slot.story.histories!;
-            const history = tryGetLastItem(histories)!;
-
-            const ctx: LlmapiInputContext = {messages: [], slot, content: {}, history};
-            await manager.use(provider => provider.onProcessInput(ctx));
-
+            const reply = new AbortController();
+            ctx.current.reply = reply;
+            console.debug(inputContext.messages);
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
-                {messages: ctx.messages} as LlmapiInputModel,
+                {messages: inputContext.messages} as LlmapiInputModel,
                 {
                     params: {id: slot.llmapi.id},
-                    signal: replyController.current.signal
+                    signal: reply.signal
                 }
             );
 
             const currentOutput: StoryOutputMessage = {
-                id: 0,
+                id: (tryGetLastItem(history.outputs)?.id ?? 0) + 1,
                 content: "",
                 variables: []
             };
 
             history.outputs.push(currentOutput);
-            history.outputId = history.outputs.length - 1;
-            slotCtx.current.output = true;
-            const maxPage = histories.length;
-            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: true}));
+
+            console.debug(`current outputs: ${history.outputs}`);
+
+            // 跳转到最新页，进行输出
+            await handleStoryPageChange(histories.length, history.outputs.length - 1);
 
             if (response.body) {
                 let content = '';
                 for await (const chunk of readStream(response.body)) {
-                    if (replyController.current.signal.aborted) {
+                    if (reply.signal.aborted) {
                         console.log('reply canceled');
                         break;
                     }
 
                     if (chunk === '') continue;
                     content += chunk;
-                    // 输出时且当前页是最后一页时更新流式页面
-                    if (iframeRef.current && slotCtx.current.output) {
+                    // 流式渲染条件
+                    // iframe存在，故事页面为最新，输出页面为最新
+                    if (iframe.current && ctx.current.curPage === histories.length &&
+                        history.outputId === history.outputs.length - 1) {
+                        // 每次重渲染重新解析变量变化。
                         extractVariableChanges(currentOutput, content);
-                        const streamCtx: RenderStreamContext = {
+                        const streamContext: RenderStreamContext = {
                             content: {},
-                            window: iframeRef.current.contentWindow!,
-                            document: iframeRef.current.contentDocument!,
+                            window: iframe.current.contentWindow!,
+                            document: iframe.current.contentDocument!,
                             history: history,
                             slot: slot,
                             stream: chunk,
                             variables: generateCurrentVariables(history)
                         };
-                        await manager.use(provider => provider.onRenderStream(streamCtx));
+                        await manager.use(provider => provider.onRenderStream(streamContext));
                     }
                 }
+                // for 循环内可能不渲染，所以重新解析一下变量
                 extractVariableChanges(currentOutput, content);
-                const outputCtx: LlmapiOutputContext = {content: {}, history: history, slot: slot};
-                await manager.use(provider => provider.onProcessOutput(outputCtx));
-                await put('/stories/{id}/entries/{entryType}/{entryId}', history,
-                    {params: {id: slot.story.id, entryType: 'history', entryId: history.id}},
-                );
+                const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
+                // 解析输出，填充一些选项或处理，这里应该会缓存世界书
+                await manager.use(provider => provider.onProcessOutput(outputContext));
             }
-
-            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: false}));
         } catch (err) {
-            setRenderState(u => ({...u, curPage: u.maxPage, output: false}));
             handleError(err);
+        } finally {
+            await updateHistory(history);
+            // 跳转到最新页，作为用户通知
+            await handleStoryPageChange(ctx.current.slot?.story.histories?.length ?? 0);
+            setRenderState(u => ({...u, output: false}))
         }
-    }, [handleError, manager]);
+    }, [handleError, handleStoryPageChange, manager, updateHistory]);
 
     // 发送输入内容，并尝试创建新历史
     const createHistory = useCallback(async (input: string, summary: boolean) => {
         try {
-            const slot = slotCtx.current.slot!;
+            const slot = ctx.current.slot!;
             const histories = slot.story.histories!;
             let history = tryGetLastItem(histories)!;
             let variables = undefined;
@@ -213,6 +290,9 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             if (variables) {
                 history = {
                     id: 0,
+                    disabled: false,
+                    code: input.length > 10 ? input.substring(0, 10) : input,
+                    name: "0",
                     inputs: [],
                     summary: summary,
                     outputId: 0,
@@ -230,38 +310,38 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             };
             extractVariableChanges(message, input);
             inputs.push(message);
-            const maxPage = histories.length;
-            setRenderState(u => ({...u, maxPage, curPage: maxPage, render: true, output: true}));
+
+            // 用户输入后立即跳转到最新页面，先渲染用户输入。
+            await handleStoryPageChange(histories.length);
             if (variables) {
                 const {id} = await post('/stories/{id}/entries/{entryType}', history,
                     {params: {id: slot.story.id, entryType: 'history'}}
                 );
                 history.id = id;
-            } else {
-                await put('/stories/{id}/entries/{entryType}/{entryId}', history,
-                    {params: {id: slot.story.id, entryType: 'history', entryId: history.id}}
-                );
+                history.name = String(id);
             }
         } catch (err) {
             handleError(err);
         }
         // 创建并保存历史后需要生成回复
         await generateReply();
-    }, [generateReply, handleError]);
+    }, [generateReply, handleError, handleStoryPageChange]);
 
     const renderCurrentPage = useCallback(async () => {
         try {
-            if (!iframeRef.current || renderState.curPage < 0 ||
-                renderState.curPage > renderState.maxPage ||
-                !renderState.enabled) return;
-            const slot = slotCtx.current.slot!;
+            if (!iframe.current || !loadingState.success) return;
+            const curPage = ctx.current.curPage;
+            const slot = ctx.current.slot!;
             const histories = slot.story.histories!;
-            const history: StoryHistory = renderState.curPage === 0 ?
-                getOpeningHistory(slot) : histories[renderState.curPage - 1];
+            // page 为 0 时实际是渲染开场白
+            const history: StoryHistory = curPage === 0 ?
+                getOpeningHistory(slot) : histories[curPage - 1];
+            console.debug('render history:');
+            console.debug(history);
             const renderCtx: RenderContext = {
                 content: {},
-                document: iframeRef.current.contentDocument!,
-                window: iframeRef.current.contentWindow!,
+                document: iframe.current.contentDocument!,
+                window: iframe.current.contentWindow!,
                 history: history,
                 slot: slot,
                 variables: generateCurrentVariables(history)
@@ -270,24 +350,25 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         } catch (err) {
             handleError(err);
         }
-    }, [handleError, manager, renderState]);
+    }, [handleError, loadingState.success, manager]);
+
 
     useEffect(() => {
+        console.debug(`loadingState.started: ${loadingState.started}`);
+        console.debug(`renderState.prepare: ${renderState.prepare}`);
         if (!loadingState.started) {
             (async () => {
                 setLoadingState(u => ({...u, started: true}));
                 await loadingCurrentSlot();
             })();
-        } else if (renderState.render) {
+        } else if (renderState.prepare) {
             (async () => {
-                setRenderState(u => ({...u, render: false}));
+                console.debug('start render page');
+                setRenderState(u => ({...u, prepare: false}));
                 await renderCurrentPage();
             })();
         }
-    }, [loadingCurrentSlot, loadingState.started, renderCurrentPage, renderState.render]);
-
-    const curPage = renderState.curPage;
-    const maxPage = renderState.maxPage;
+    }, [loadingCurrentSlot, loadingState.started, renderCurrentPage, renderState.prepare]);
 
     if (loadingState.loading || !loadingState.started) return (
         <iframe className={"w-full h-full"} src="/loading.html"></iframe>
@@ -295,46 +376,67 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
     return (
         <>
-            <iframe key={curPage} ref={iframeRef} width={'100%'} height={'100%'}/>
-            <AccessibleComponent className={'fixed inset-0 bottom-auto p-2'}>
-                <fieldset disabled={!renderState.enabled}>
-                    <form className={"m-auto"}
-                          action={formData => {
-                              const page = Number(formData.get('slot-page-index'));
-                              handlePageIndexChange(page);
-                          }}>
-                        <Pagination key={curPage}>
+            <iframe ref={iframe} width={'100%'} height={'100%'}/>
+            <AccessibleComponent className={'fixed inset-0 bottom-auto flex p-2 gap-2'}>
+                <fieldset className={"m-auto"} disabled={!loadingState.success}>
+                    <form action={formData => {
+                        const page = Number(formData.get('slot-page-index'));
+                        return handleStoryPageChange(page);
+                    }}>
+                        <Pagination key={storyPage.cur}>
                             <PaginationContent>
                                 <PaginationItem>
                                     <PaginationPrevious
-                                        onClick={() => handlePageIndexChange(curPage - 1)}
-                                        className={
-                                            curPage > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'
-                                        }
-                                        aria-disabled={curPage <= 0}
-                                    />
+                                        onClick={() => handleStoryPageChange(storyPage.cur - 1)}
+                                        className={storyPage.cur > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
+                                        aria-disabled={storyPage.cur <= 0}/>
                                 </PaginationItem>
                                 <PaginationItem>
-                                    <Input defaultValue={curPage}
-                                           name='slot-page-index' type={'number'}/>
+                                    <Input defaultValue={storyPage.cur} name='slot-page-index' type={'number'}/>
                                 </PaginationItem>
                                 <PaginationItem>
                                     /
                                 </PaginationItem>
                                 <PaginationItem>
-                                    <PaginationLink
-                                        onClick={() => handlePageIndexChange(maxPage)}>
-                                        {maxPage}
+                                    <PaginationLink onClick={() => handleStoryPageChange(storyPage.max)}>
+                                        {storyPage.max}
                                     </PaginationLink>
                                 </PaginationItem>
                                 <PaginationItem>
                                     <PaginationNext
-                                        onClick={() => handlePageIndexChange(curPage + 1)}
-                                        className={
-                                            curPage < maxPage ? 'cursor-pointer' : 'pointer-events-none opacity-50'
-                                        }
-                                        aria-disabled={curPage >= maxPage}
-                                    />
+                                        onClick={() => handleStoryPageChange(storyPage.cur + 1)}
+                                        className={storyPage.cur < storyPage.max ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
+                                        aria-disabled={storyPage.cur >= storyPage.max}/>
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </form>
+                </fieldset>
+                <fieldset className={"m-auto"} disabled={!loadingState.success}>
+                    <form>
+                        <Pagination key={outputPage.cur}>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => handleOutputPageChange(outputPage.cur - 1)}
+                                        className={outputPage.cur > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
+                                        aria-disabled={outputPage.cur <= 0}/>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    {outputPage.cur + 1} / {outputPage.max}
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => handleOutputPageChange(outputPage.cur + 1)}
+                                        className={outputPage.cur < outputPage.max ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
+                                        aria-disabled={outputPage.cur >= outputPage.max}/>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink
+                                        className={storyPage.max > 0 ? 'cursor-pointer' : 'pointer-events-none opacity-50'}
+                                        onClick={() => generateReply()}>
+                                        <RotateCcwIcon/>
+                                    </PaginationLink>
                                 </PaginationItem>
                             </PaginationContent>
                         </Pagination>
@@ -364,8 +466,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                                     renderState.output ?
                                         <InputGroupButton type="button" disabled={false}
                                                           onClick={() => {
-                                                              replyController.current?.abort("user canceled");
-                                                              replyController.current = null;
+                                                              ctx.current.reply?.abort("user canceled");
+                                                              ctx.current.reply = undefined;
                                                           }}>
                                             <SquareStopIcon/>
                                         </InputGroupButton> :

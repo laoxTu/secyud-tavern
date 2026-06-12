@@ -40,10 +40,20 @@ export function getOpeningHistory(slot: SlotModel) {
             content: "",
             variables: []
         };
+        const openingRemarks = slot.story.content?.openingRemarks ?? "";
         openingHistory = {
-            id: 0, inputs: [openingMessage], summary: true, outputId: 0, outputs: [], variables: {}
+            id: 0,
+            code: openingRemarks.length > 10 ?
+                openingRemarks.substring(0, 10) : openingRemarks,
+            name: "0",
+            disabled: false,
+            inputs: [openingMessage],
+            summary: true,
+            outputId: 0,
+            outputs: [],
+            variables: {}
         };
-        extractVariableChanges(openingMessage, slot.story.content?.openingRemarks ?? "");
+        extractVariableChanges(openingMessage, openingRemarks);
         if (!openingMessage.activeLorebooks) {
             const variables = generateCurrentVariables(openingHistory, false);
             const lorebooks: Record<string, PresetLorebookModel> = slot.content[engineArrayName];

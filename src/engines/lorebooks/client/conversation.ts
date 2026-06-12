@@ -49,7 +49,7 @@ function createLorebookContext(ctx: SlotContextBase, history: StoryHistory) {
         }
 
         const output = getCurrentOutput(current);
-        if (output) {
+        if (output && current !== history) {
             if (!output.activeLorebooks) {
                 const variables = generateCurrentVariables(current, true);
                 tryFillActiveLorebooks(lorebooks, {variables, history: current, message: output});
