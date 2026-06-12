@@ -18,7 +18,7 @@ function rerenderOutputField(document: Document, content: string) {
         outputField.id = "ai-output";
         document.body.appendChild(outputField);
     }
-    outputField.innerHTML = content;
+    outputField.innerHTML = content.replaceAll('\n', '<br/>');
 }
 
 export const regexConversationProvider: ConversationProvider = {

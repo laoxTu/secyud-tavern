@@ -5,7 +5,6 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {EntryNavigationTemplate} from "@/components/template/navigation-template";
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {TabConfig} from "@/components/custom/tab";
@@ -23,15 +22,11 @@ function Tab() {
                 pattern: "",
                 replacement: "",
                 target: "both",
-                layerMin: -1,
-                layerMax: -1,
             })}
             updateAccessor={(data): Omit<PresetRegexModel, keyof EntryModel> => ({
                 pattern: data.get("pattern") as string,
                 replacement: data.get("replacement") as string,
                 target: data.get("target") as string,
-                layerMin: parseInt(data.get("layerMin") as string),
-                layerMax: parseInt(data.get("layerMax") as string),
             })}
             updateContent={(entry: PresetRegexModel) => (
                 <>
@@ -76,41 +71,6 @@ function Tab() {
                                   id={`${engineName}-replacement-${entry.id}`}
                                   defaultValue={entry.replacement}/>
                     </Field>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-layerMin-${entry.id}`}>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        {t("regex.layer_min")}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{t("regex.unlimit_description")}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </FieldLabel>
-                            <Input name="layerMin"
-                                   type="number"
-                                   id={`${engineName}-layerMin-${entry.id}`}
-                                   defaultValue={entry.layerMin}/>
-                        </Field>
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-layerMax-${entry.id}`}>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        {t("regex.layer_max")}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{t("regex.unlimit_description")}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </FieldLabel>
-                            <Input name="layerMax"
-                                   type="number"
-                                   id={`${engineName}-layerMax-${entry.id}`}
-                                   defaultValue={entry.layerMax}/>
-                        </Field>
-                    </div>
                 </>
             )}></EntryListTemplate>
     );
