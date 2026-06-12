@@ -8,6 +8,7 @@ import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/storie
 import {readStream, tryGetLastItem} from "@/utils";
 import {useTranslations} from "next-intl";
 import {
+    ArrowBigLeftIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
     CornerDownLeftIcon,
@@ -33,6 +34,7 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {SlotContext, SlotContextModel} from "@/slots/client/models";
 import {HistoryDeleter} from "@/slots/client/history-deleter";
+import {useRouter} from "next/navigation";
 
 interface RenderState {
     // 准备渲染，意味着已经添加到渲染队列
@@ -59,6 +61,7 @@ interface LoadingState {
 export default function StoryPage({params}: { params: Promise<{ id: string }> }) {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
+    const route = useRouter();
     const [renderState, setRenderState] = useState<RenderState>({
         prepare: false,
         output: false,
@@ -407,6 +410,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                                 <RotateCcwIcon/>
                             </Button>
                             <HistoryDeleter/>
+                            <Button onClick={() => route.replace("/business")}
+                                    variant={'outline'}>
+                                <ArrowBigLeftIcon/>
+                            </Button>
                         </ButtonGroup>
                     </ButtonGroup>
                 </fieldset>
