@@ -19,7 +19,7 @@ export function useErrorHandler() {
                         } else record[key] = value;
                     }
                 }
-                console.log("record" + JSON.stringify(record) );
+                console.debug("record" + JSON.stringify(record) );
                 toast.error(t(err.code, record), {
                     richColors: true,
                 });

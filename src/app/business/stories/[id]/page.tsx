@@ -1,6 +1,6 @@
 ﻿'use client';
 import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
-import {del, get, post, put} from "@/client";
+import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
@@ -10,9 +10,9 @@ import {useTranslations} from "next-intl";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
-    CornerDownLeftIcon, DeleteIcon,
+    CornerDownLeftIcon,
     RotateCcwIcon,
-    SquareStopIcon, Trash2Icon
+    SquareStopIcon
 } from "lucide-react";
 import {
     InputGroup,
@@ -31,14 +31,8 @@ import {Input} from "@/components/ui/input";
 import {AccessibleComponent} from "@/components/custom/accessible";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
-import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
-} from "@/components/ui/alert-dialog";
 import {SlotContext, SlotContextModel} from "@/slots/client/models";
+import {HistoryDeleter} from "@/slots/client/history-deleter";
 
 interface RenderState {
     // 准备渲染，意味着已经添加到渲染队列
@@ -79,10 +73,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         max: 0, cur: 0,
     });
     const iframe = useRef<HTMLIFrameElement>(null);
-    const ctx = useRef<SlotContextModel>({curPage: 0});
+    const ctx = useRef<SlotContextModel>({
+        curPage: 0,
+    });
 
     const manager = useMemo(() => conversationManager, [])
-
     const updateHistory = async (history: StoryHistory) => {
         try {
             const id = ctx.current.slot?.story.id;
@@ -109,7 +104,6 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             if (curPage >= maxPage)
                 curPage = maxPage - 1;
             if (history.outputId != curPage) {
-                // eslint-disable-next-line react-hooks/immutability
                 history.outputId = curPage;
                 await updateHistory(history);
             }
@@ -121,7 +115,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         setRenderState(u => ({...u, prepare: true}));
     }, [updateHistory]);
 
-    const handleStoryPageChange = useCallback(async (curPage: number, curOutputPage?: number) => {
+    const handleHistoryPageChange = useCallback(async (curPage: number, curOutputPage?: number) => {
         const histories = ctx.current.slot?.story.histories;
         if (!histories || curPage < 0) return;
         const maxPage = histories.length;
@@ -156,14 +150,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             setLoadingState(u => ({
                 ...u, loading: false, success: true
             }))
-            await handleStoryPageChange(slot.story.histories?.length ?? 0);
+            await handleHistoryPageChange(slot.story.histories?.length ?? 0);
         } catch (err) {
             setLoadingState(u => ({
                 ...u, loading: false, success: false
             }))
             handleError(err);
         }
-    }, [handleError, handleStoryPageChange, manager, params]);
+    }, [handleError, handleHistoryPageChange, manager, params]);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateReply = useCallback(async () => {
@@ -205,13 +199,13 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
             // 跳转到最新页，进行输出
             console.debug(`current output index: ${history.outputs.length - 1}`);
-            await handleStoryPageChange(histories.length, history.outputs.length - 1);
+            await handleHistoryPageChange(histories.length, history.outputs.length - 1);
 
             if (response.body) {
                 let content = '';
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
-                        console.log('reply canceled');
+                        console.warn('reply canceled');
                         break;
                     }
 
@@ -246,10 +240,10 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         } finally {
             await updateHistory(history);
             // 跳转到最新页，作为用户通知
-            await handleStoryPageChange(ctx.current.slot?.story.histories?.length ?? 0);
+            await handleHistoryPageChange(ctx.current.slot?.story.histories?.length ?? 0);
             setRenderState(u => ({...u, output: false}))
         }
-    }, [handleError, handleStoryPageChange, manager, updateHistory]);
+    }, [handleError, handleHistoryPageChange, manager, updateHistory]);
 
     // 发送输入内容，并尝试创建新历史
     const createHistory = useCallback(async (input: string, summary: boolean) => {
@@ -299,7 +293,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         }
 
         // 用户输入后立即跳转到最新页面，先渲染用户输入。
-        await handleStoryPageChange(histories.length);
+        await handleHistoryPageChange(histories.length);
 
         try {
             if (variables) {
@@ -315,7 +309,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
         // 创建并保存历史后需要生成回复
         await generateReply();
-    }, [generateReply, handleError, handleStoryPageChange]);
+    }, [generateReply, handleError, handleHistoryPageChange]);
 
     const renderCurrentPage = useCallback(async () => {
         if (!iframe.current || !loadingState.success) return;
@@ -344,50 +338,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         }
     }, [handleError, loadingState.success, manager]);
 
-    const deleteCurrentHistory = useCallback(async () => {
-        const curPage = ctx.current.curPage;
-        const slot = ctx.current.slot!;
-        const histories = slot.story.histories!;
-        const history = histories[curPage - 1];
-        try {
-            await del("/stories/{id}/entries/{entryType}/{entryId}",
-                {params: {id: slot.story.id, entryType: 'history', entryId: history.id}})
-            histories.splice(curPage - 1, 1);
-        } catch (error) {
-            handleError(error);
-        }
-        await handleStoryPageChange(curPage);
-    }, [handleError, handleStoryPageChange]);
-
-    const deleteCurrentOutput = useCallback(async () => {
-        const curPage = ctx.current.curPage;
-        const slot = ctx.current.slot!;
-        const histories = slot.story.histories!;
-        let history = histories[curPage - 1];
-
-        if (history.outputs.length > 0) {
-            history.outputs.slice(history.outputId, 1);
-        }
-        if (history.outputs.length === 0 &&
-            curPage < histories.length) {
-            const current = history;
-            history = histories[curPage];
-            history.summary ||= current.summary;
-            history.inputs = [...current.inputs, ...history.inputs];
-            for (const input of current.inputs) {
-                // eslint-disable-next-line react-hooks/immutability
-                input.variables.length = 0;
-            }
-            await updateHistory(history);
-            await deleteCurrentHistory();
-        } else {
-            await updateHistory(history);
-        }
-    }, [deleteCurrentHistory, updateHistory]);
-
     useEffect(() => {
         console.debug(`loadingState.started: ${loadingState.started}`);
         console.debug(`renderState.prepare: ${renderState.prepare}`);
+        ctx.current.updateHistory = updateHistory;
+        ctx.current.changeCurPage = handleHistoryPageChange;
         if (!loadingState.started) {
             (async () => {
                 setLoadingState(u => ({...u, started: true}));
@@ -400,7 +355,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 await renderCurrentPage();
             })();
         }
-    }, [loadingCurrentSlot, loadingState.started, renderCurrentPage, renderState.prepare]);
+    }, [loadingCurrentSlot, renderCurrentPage, loadingState.started, renderState.prepare]);
 
     if (loadingState.loading || !loadingState.started) return (
         <iframe className={"w-full h-full"} src="/loading.html"></iframe>
@@ -416,20 +371,20 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         <form action={formData => {
                             const page = Number(formData
                                 .get('slot-page-index'));
-                            return handleStoryPageChange(page);
+                            return handleHistoryPageChange(page);
                         }}>
                             <ButtonGroup>
-                                <Button onClick={() => handleStoryPageChange(storyPage.cur - 1)}
+                                <Button onClick={() => handleHistoryPageChange(storyPage.cur - 1)}
                                         disabled={storyPage.cur <= 0} variant="outline">
                                     <ChevronLeftIcon/>
                                 </Button>
                                 <Input defaultValue={storyPage.cur} name='slot-page-index'
                                        disabled={storyPage.max === 0} type={'number'}/>
-                                <Button onClick={() => handleStoryPageChange(storyPage.max)}
+                                <Button onClick={() => handleHistoryPageChange(storyPage.max)}
                                         disabled={storyPage.cur === storyPage.max} variant="outline">
                                     {storyPage.max}
                                 </Button>
-                                <Button onClick={() => handleStoryPageChange(storyPage.cur + 1)}
+                                <Button onClick={() => handleHistoryPageChange(storyPage.cur + 1)}
                                         disabled={storyPage.cur >= storyPage.max} variant="outline">
                                     <ChevronRightIcon/>
                                 </Button>
@@ -451,56 +406,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                                     disabled={storyPage.max === 0} variant="outline">
                                 <RotateCcwIcon/>
                             </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive"
-                                            disabled={storyPage.cur === 0}>
-                                        <Trash2Icon/>
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            {t('default.delete_title', {target: t('slot.current_history')})}
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {t('default.delete_description', {target: t('slot.current_history')})}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => deleteCurrentHistory()}
-                                                           variant={'destructive'}>
-                                            {t('default.delete')}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive"
-                                            disabled={storyPage.cur === 0}>
-                                        <DeleteIcon/>
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            {t('default.delete_title', {target: t('slot.output')})}
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {t('default.delete_description', {target: t('slot.output')})}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => deleteCurrentOutput()}
-                                                           variant={'destructive'}>
-                                            {t('default.delete')}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            <HistoryDeleter/>
                         </ButtonGroup>
                     </ButtonGroup>
                 </fieldset>

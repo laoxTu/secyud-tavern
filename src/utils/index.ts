@@ -1,6 +1,6 @@
 ﻿export function tryParseJson(str: string, defaultValue: any = null) {
     try {
-        console.log(str);
+        console.debug(str);
         return JSON.parse(str);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_e) {
