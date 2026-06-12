@@ -73,6 +73,7 @@
     "match_type_normal": "一般",
     "max_date": "最大日期",
     "min_date": "最小日期",
+    "role": "角色",
     "priority_layer": "层级",
     "priority_order": "顺序"
   },

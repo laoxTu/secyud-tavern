@@ -15,6 +15,8 @@ import {engineName, PresetLorebookModel} from "../models";
 import {EntryModel} from "@/business/models";
 import {matchName} from "@/engines/lorebooks/match/always/models";
 
+const roles =["system", "user", "assistant"]
+
 function EditorContent({entry, matchEditorRegistry}: {
     entry: PresetLorebookModel,
     matchEditorRegistry: MatcherRegistry,
@@ -51,6 +53,26 @@ function EditorContent({entry, matchEditorRegistry}: {
                     <Input name="layer" type={"number"}
                            id={`${engineName}-layer-${entry.id}`}
                            defaultValue={entry.layer}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={"lorebook-match_type"}>
+                        {t("lorebook.role")}
+                    </FieldLabel>
+                    <Select name="role" defaultValue={entry.role}>
+                        <SelectTrigger className="w-full"
+                                       id={"lorebook-role"}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                            <SelectGroup>
+                                {roles.map((v) =>
+                                    <SelectItem key={v} value={v}>
+                                        {v}
+                                    </SelectItem>
+                                )}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={"lorebook-match_type"}>
@@ -105,6 +127,7 @@ function Tab() {
                 content: "",
                 priority: 100,
                 layer: 100,
+                role: 'system'
             })}
             updateAccessor={(data): Omit<PresetLorebookModel, keyof EntryModel> => {
                 const matchType = data.get("matchType") as string;
@@ -114,6 +137,7 @@ function Tab() {
                     content: data.get("content") as string,
                     priority: parseInt(data.get("priority") as string),
                     layer: parseInt(data.get("layer") as string),
+                    role: data.get("role") as string,
                 });
             }}
             updateContent={entry => <EditorContent

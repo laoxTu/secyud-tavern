@@ -60,20 +60,31 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
     const lorebooksE: PresetLorebookModel[] = ctx.slot.content[engineArrayName + "E"];
     fillContext(tryGetLastItem(messageContexts)!, lorebooksE);
 
-    return messageContexts.map(messageContext => {
+    const llmapiMessages: LlmapiMessage[] = [];
+
+    const cache : {role:string, content:string[]} = {
+        role: "",
+        content: [],
+    }
+    for (const messageContext of messageContexts) {
         messageContext.lorebookS.sort(getLorebookOrder);
         messageContext.lorebookE.sort(getLorebookOrder);
-        return {
-            content: messageContext.lorebookS
-                    .map(u => u.content)
-                    .join("\n") + "\n"
-                + messageContext.content.join("\n") + "\n"
-                + messageContext.lorebookE
-                    .map(u => u.content)
-                    .join("\n"),
-            role: messageContext.role
-        } as LlmapiMessage;
-    });
+        for (const lorebook of messageContext.lorebookS) {
+            tryPushMessage(lorebook.role, lorebook.content);
+        }
+        for (const text of messageContext.content) {
+            llmapiMessages.push({
+                role: "user",
+                content: text
+            })
+        }
+        for (const lorebook of messageContext.lorebookE) {
+            tryPushMessage(lorebook.role, lorebook.content);
+        }
+    }
+    tryPushMessage("", "");
+
+    return llmapiMessages;
 
     function fillLorebooks(message: LorebookMessageItem) {
         if (!message.lorebooks) return;
@@ -83,6 +94,21 @@ export async function defaultBuildInput(ctx: LlmapiInputContext) {
                 visitedLorebooks.has(lorebook)) continue;
             prepareLorebooks.push(lorebooks[lorebook]);
             visitedLorebooks.add(lorebook);
+        }
+    }
+
+    function tryPushMessage(messageRole: string, messageContent: string) {
+        if (messageRole === cache.role) {
+            cache.content.push(messageContent);
+        } else {
+            if (cache.content.length > 0) {
+                llmapiMessages.push({
+                    role: cache.role,
+                    content: cache.content.join("\n")
+                });
+            }
+            cache.role = messageRole;
+            cache.content.length = 0;
         }
     }
 

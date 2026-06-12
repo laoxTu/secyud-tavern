@@ -11,7 +11,7 @@ export interface SlotModel extends BaseModel {
 }
 
 export interface LlmapiMessage {
-    role: "system" | "user" | "assistant";
+    role: string; //"system" | "user" | "assistant"
     content: string,
 }
 
