@@ -98,7 +98,7 @@ export function generateExportModelApi<TModel>(
         // 3. 设置响应头，触发下载
         const headers = new Headers();
         headers.set('Content-Type', 'application/octet-stream');
-        headers.set('Content-Disposition', `attachment; filename="${fileNameAccessor(model)}.json"`);
+        headers.set('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileNameAccessor(model))}.json`);
 
         return new NextResponse(jsonStream, {status: 200, headers});
     }

@@ -215,7 +215,7 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
                 <ResizablePanel minSize="560px">
                     {model ?
                         <ModelContent<TModel> key={contentKey}
-                                              modelType={modelType} modelApi={modelType} contextType={contextType}
+                                              modelType={modelType} modelApi={modelApi} contextType={contextType}
                                               cloneHandler={cloneHandler} cloneContent={cloneContent}
                                               exportHandler={exportHandler} deleteHandler={deleteHandler}
                                               tabManagerAccessor={tabManagerAccessor}/> :

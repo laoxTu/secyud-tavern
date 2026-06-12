@@ -9,5 +9,5 @@ import {generateExportModelApi} from "@/app/api/template";
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateExportModelApi(repository, model => `${model.name}-${model.id}`)
+    generateExportModelApi(repository, model => `story_${model.id}`)
 )

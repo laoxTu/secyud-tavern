@@ -13,7 +13,7 @@ import {eq} from "drizzle-orm";
  */
 export const GET = interceptor.createRoute(
     generateExportModelApi(repository,
-        model => `${model.name}-${model.id}`,
+        model => `preset_${model.id}`,
         id => table => validate(id) ? eq(table.id, id) : eq(table.code, id)
     )
 )
