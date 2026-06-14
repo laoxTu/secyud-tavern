@@ -5,6 +5,9 @@ import {llmapiLorebookInputBuilder} from "@/engines/lorebooks/client/input-build
 export class LlmapiInputBuilderManager extends Registry<LlmapiInputBuilder> {
     constructor(builders: LlmapiInputBuilder[]) {
         super("inputBuilderManager");
+        for (const builder of builders) {
+            this.register(builder);
+        }
     }
 }
 

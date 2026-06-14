@@ -100,7 +100,7 @@ const defaultConfig: LorebookInputBuilderModel = {
     suffix: "",
 } as const;
 
-function Content({llmapi, defaultValue}: LlmapiBuilderProps) {
+function Content({defaultValue}: LlmapiBuilderProps) {
     const t = useTranslations();
     const config: LorebookInputBuilderModel = mergeObjects(defaultConfig, defaultValue);
 
