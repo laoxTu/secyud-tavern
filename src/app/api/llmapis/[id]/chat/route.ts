@@ -22,6 +22,9 @@ export const POST = interceptor.createRoute(
         const {id} = await records.context.params;
         const input = records.body as LlmapiInputModel;
 
+        console.debug("llmapi chat:");
+        console.debug(input);
+
         const llmapi = await llmapiRepository.get(id, true);
         if (!llmapi) {
             throw new BusinessError('entity not found', "default.entity_not_found")

@@ -58,8 +58,13 @@
   "preset": {
     "regex": "正则",
     "lorebook": "世界书",
+    "macro": "宏",
     "script": "脚本",
     "style": "样式"
+  },
+  "macro": {
+    "key": "键",
+    "value": "值"
   },
   "lorebook": {
     "delete_title": "删除世界书",

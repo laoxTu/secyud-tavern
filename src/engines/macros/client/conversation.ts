@@ -11,15 +11,23 @@ import {Eta} from 'eta/core';
 
 const eta = new Eta();
 
+export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
+    id: engineName,
+    requires: [llmapiModuleName],
+    onProcessInput: async (ctx) => {
+        const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
+        for (const message of ctx.messages) {
+            message.content = eta.renderString(message.content, macroObject);
+        }
+    },
+}
 
 export const macroConversationProvider:
-    LlmapiInputProcesser
-    & SlotInitializer
+    SlotInitializer
     & SlotContentRenderer
     & SlotStreamRenderer
     = {
     id: engineName,
-    requires: [llmapiModuleName],
     onInitialize: async (ctx) => {
         const macroObject: Record<string, any> = {};
         for (const preset of ctx.slot.presets) {
@@ -36,12 +44,7 @@ export const macroConversationProvider:
         const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
         ctx.output = eta.renderString(ctx.output, macroObject);
     },
-    onProcessInput: async (ctx) => {
-        const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
-        for (const message of ctx.messages) {
-            message.content = eta.renderString(message.content, macroObject);
-        }
-    },
+
     onRenderContent: async (ctx) => {
         const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
         for (let i = 0; i < ctx.inputs.length; i++) {

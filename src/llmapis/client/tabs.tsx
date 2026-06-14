@@ -137,6 +137,7 @@ function DefaultTab() {
                         "builder": builderEditors[builder]?.getValue(data),
                     },
                     provider: provider,
+                    builder: builder,
                     name: data.get("name") as string,
                     version: data.get("version") as string,
                     key: model.key === key || !key || key === '' ? undefined : key,

@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import {ReplaceIcon} from "lucide-react";
+import {ReplaceAllIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -53,6 +53,6 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    label: () => <EntryNavigationTemplate space={moduleName} value={engineName} icon={ReplaceIcon}/>,
+    label: () => <EntryNavigationTemplate space={moduleName} value={engineName} icon={ReplaceAllIcon}/>,
     component: Tab
 }

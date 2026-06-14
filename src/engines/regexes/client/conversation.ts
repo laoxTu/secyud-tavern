@@ -19,14 +19,30 @@ function applyRegexes(regexes: PresetRegexModel[], text?: string) {
     return text;
 }
 
+export const regexLlmapiInputProcesser:LlmapiInputProcesser = {
+    id: engineName,
+    requires: [lorebookEngineName],
+    onProcessInput: async (ctx) => {
+        const regexes = ctx.slot.content[inputRegexesName] as PresetRegexModel[];
+        for (const message of ctx.histories) {
+            for (const input of message.inputs) {
+                input.content = applyRegexes(regexes, input.content);
+            }
+            const output = getCurrentOutput(message);
+            if (output) {
+                output.content = applyRegexes(regexes, output.content,);
+            }
+        }
+    },
+}
+
+
 export const regexConversationProvider:
     SlotInitializer
-    & LlmapiInputProcesser
     & SlotStreamRenderer
     & SlotContentRenderer
     = {
     id: engineName,
-    requires: [lorebookEngineName],
     onInitialize: async (ctx) => {
         const regexesInput: PresetRegexModel[] = [];
         const regexesOutput: PresetRegexModel[] = [];
@@ -45,18 +61,6 @@ export const regexConversationProvider:
         }
         ctx.slot.content[inputRegexesName] = regexesInput;
         ctx.slot.content[outputRegexesName] = regexesOutput;
-    },
-    onProcessInput: async (ctx) => {
-        const regexes = ctx.slot.content[inputRegexesName] as PresetRegexModel[];
-        for (const message of ctx.histories) {
-            for (const input of message.inputs) {
-                input.content = applyRegexes(regexes, input.content);
-            }
-            const output = getCurrentOutput(message);
-            if (output) {
-                output.content = applyRegexes(regexes, output.content,);
-            }
-        }
     },
     onRenderStream: async (ctx) => {
         const regexes = ctx.slot.content[outputRegexesName] as PresetRegexModel[];

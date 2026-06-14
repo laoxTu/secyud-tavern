@@ -1,7 +1,7 @@
 ﻿import {presetTabManager} from "@/presets/client/tabs";
 import {conversationManager} from "@/slots/client/conversation";
 import {tabConfig} from "./preset-tab";
-import {regexConversationProvider} from "./conversation";
+import {regexConversationProvider, regexLlmapiInputProcesser} from "./conversation";
 
 
 export function registerRegexesClient() {
@@ -9,5 +9,5 @@ export function registerRegexesClient() {
     conversationManager.initializer.register(regexConversationProvider);
     conversationManager.streamRenderer.register(regexConversationProvider);
     conversationManager.contentRenderer.register(regexConversationProvider);
-    conversationManager.inputProcesser.register(regexConversationProvider);
+    conversationManager.inputProcesser.register(regexLlmapiInputProcesser);
 }

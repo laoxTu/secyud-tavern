@@ -9,7 +9,7 @@ export const llmapiConversationProvider: LlmapiInputProcesser = {
     id: moduleName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
-        const provider: string | undefined = ctx.slot.llmapi.provider;
+        const provider: string | undefined = ctx.slot.llmapi.builder;
         if (!provider) {
             throw new BusinessError("No provider provided");
         }
