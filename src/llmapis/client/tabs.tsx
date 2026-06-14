@@ -22,7 +22,7 @@ function ConfigContent({model, llmapiConfigRegistry}: {
 }) {
     const t = useTranslations();
     const llmapiConfigs = llmapiConfigRegistry.records;
-    const first = llmapiConfigs.first;
+    const first = Object.values(llmapiConfigs)[0];
     const [provider, setProvider] = useState<string | undefined>(model.provider ?? first.id);
     const [editor, setEditor] = useState(model.provider ? llmapiConfigs[model.provider] : first);
 
@@ -64,15 +64,19 @@ function ConfigContent({model, llmapiConfigRegistry}: {
         )()}
     </>
 }
-function BuilderContent({model, llmapiBuilderRegistry}: {
+
+function BuilderContent({model, llmapiBuilderManager}: {
     model: LlmapiModel,
-    llmapiBuilderRegistry: LlmapiInputBuilderManager
+    llmapiBuilderManager: LlmapiInputBuilderManager
 }) {
     const t = useTranslations();
-    const llmapiBuilders = llmapiBuilderRegistry.records;
-    const first = llmapiBuilders.first;
-    const [builder, setBuilder] = useState<string | undefined>(model.provider ?? first.id);
-    const [editor, setEditor] = useState(model.provider ? llmapiBuilders[model.provider] : first);
+    const llmapiBuilders = llmapiBuilderManager.records;
+    const first = Object.values(llmapiBuilders)[0];
+    console.debug("llmapiBuilders: ");
+    console.debug(llmapiBuilderManager);
+    console.debug(first);
+    const [builder, setBuilder] = useState<string | undefined>(model.builder ?? first.id);
+    const [editor, setEditor] = useState(model.builder ? llmapiBuilders[model.builder] : first);
 
 
     const handleBuilderChange = useCallback((type: string) => {
@@ -95,7 +99,7 @@ function BuilderContent({model, llmapiBuilderRegistry}: {
                 </SelectTrigger>
                 <SelectContent position="popper">
                     <SelectGroup>
-                        {llmapiBuilderRegistry.getSorted().map((e) =>
+                        {llmapiBuilderManager.getSorted().map((e) =>
                             <SelectItem key={e.id} value={e.id}>
                                 {t(`${moduleName}.builder_${e.id}`)}
                             </SelectItem>
@@ -167,7 +171,7 @@ function DefaultTab() {
                 </Field>
             </div>
             <ConfigContent model={model} llmapiConfigRegistry={configRegistry}/>
-            <BuilderContent model={model} llmapiBuilderRegistry={builderManager}/>
+            <BuilderContent model={model} llmapiBuilderManager={builderManager}/>
         </>}/>
 }
 

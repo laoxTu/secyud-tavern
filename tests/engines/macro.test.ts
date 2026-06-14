@@ -2,8 +2,6 @@
 import {Eta} from 'eta/core';
 
 describe('Eta', () => {
-    const CONTAINER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
     let eta = new Eta();
 
     beforeEach(() => {
