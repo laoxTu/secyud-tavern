@@ -25,10 +25,8 @@ export interface RenderContext extends SlotContextBase {
     window: Window;
     history: StoryHistory,
     variables: any,
-}
-
-export interface RenderStreamContext extends RenderContext {
-    stream: string,
+    inputs: string[]
+    output: string
 }
 
 export interface ConversationProvider extends Registerable {
@@ -45,5 +43,5 @@ export interface ConversationProvider extends Registerable {
     onRenderPage(ctx: RenderContext): Promise<void>;
 
     // 流式渲染，在请求输出时
-    onRenderStream(ctx: RenderStreamContext): Promise<void>;
+    onRenderStream(ctx: RenderContext): Promise<void>;
 }

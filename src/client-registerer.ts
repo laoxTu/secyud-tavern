@@ -10,6 +10,7 @@ import {registerLorebooksClient} from "@/engines/lorebooks/client";
 import {registerLlmapiClient} from "@/llmapis/client";
 import {registerStoryClient} from "@/stories/client";
 import {registerPresetClient} from "@/presets/client";
+import {registerMacrosClient} from "@/engines/macros/client";
 
 async function loadClientPlugins() {
     registerStoryClient();
@@ -22,6 +23,7 @@ async function loadClientPlugins() {
     registerRegexesClient();
     registerStylesClient();
     registerScriptsClient();
+    registerMacrosClient();
     await pluginManager.loadClientPlugins();
 }
 

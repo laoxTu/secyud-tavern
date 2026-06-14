@@ -9,6 +9,7 @@ import {registerStylesServer} from "@/engines/styles/server";
 import {registerScriptsServer} from "@/engines/scripts/server";
 import {registerRegexesServer} from "@/engines/regexes/server";
 import {registerLorebooksServer} from "@/engines/lorebooks/server";
+import {registerMacrosServer} from "@/engines/macros/server";
 
 let initialized = false;
 
@@ -26,6 +27,7 @@ export async function registerServerPlugins() {
     registerRegexesServer();
     registerStylesServer();
     registerScriptsServer();
+    registerMacrosServer();
 
     registerHasher();
     await pluginManager.loadServerPlugins();

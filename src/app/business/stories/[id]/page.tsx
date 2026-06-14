@@ -4,7 +4,7 @@ import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
-import {extractVariableChanges, StoryHistory, StoryOutputMessage} from "@/stories/models";
+import {extractVariableChanges, getCurrentOutput, StoryHistory, StoryOutputMessage} from "@/stories/models";
 import {readStream, tryGetLastItem} from "@/utils";
 import {useTranslations} from "next-intl";
 import {
@@ -23,7 +23,6 @@ import {
 import {
     LlmapiInputContext, LlmapiOutputContext,
     RenderContext,
-    RenderStreamContext,
     SlotInitializeContext
 } from "@/slots/client/conversation-models";
 import {Checkbox} from "@/components/ui/checkbox";
@@ -167,7 +166,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         const slot = ctx.current.slot!;
         const histories = slot.story.histories!;
         const history = tryGetLastItem(histories);
-        if (!history) return;
+        const frame = iframe.current;
+        if (!history || !frame) {
+            console.debug('failed to get history or iframe');
+            return;
+        }
         try {
 
             setRenderState(u => ({...u, output: true}))
@@ -206,6 +209,16 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
             if (response.body) {
                 let content = '';
+                const streamContext: RenderContext = {
+                    content: {},
+                    inputs: history.inputs.map(u => u.content),
+                    output: "",
+                    window: frame.contentWindow!,
+                    document: frame.contentDocument!,
+                    history: history,
+                    slot: slot,
+                    variables: generateCurrentVariables(history)
+                };
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('reply canceled');
@@ -215,21 +228,19 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                     if (chunk === '') continue;
                     content += chunk;
                     // 流式渲染条件
-                    // iframe存在，故事页面为最新，输出页面为最新
-                    if (iframe.current && ctx.current.curPage === histories.length &&
+                    // 故事页面为最新，输出页面为最新
+                    if (ctx.current.curPage === histories.length &&
                         history.outputId === history.outputs.length - 1) {
                         // 每次重渲染重新解析变量变化。
                         extractVariableChanges(currentOutput, content);
-                        const streamContext: RenderStreamContext = {
-                            content: {},
-                            window: iframe.current.contentWindow!,
-                            document: iframe.current.contentDocument!,
-                            history: history,
-                            slot: slot,
-                            stream: chunk,
-                            variables: generateCurrentVariables(history)
-                        };
+                        streamContext.output = currentOutput.content;
                         await manager.use(provider => provider.onRenderStream(streamContext));
+                        streamContext.window.postMessage({
+                            type: "content", data: {
+                                inputs: streamContext.inputs,
+                                output: streamContext.output
+                            }
+                        }, "*");
                     }
                 }
                 // for 循环内可能不渲染，所以重新解析一下变量
@@ -315,7 +326,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
     }, [generateReply, handleError, handleHistoryPageChange]);
 
     const renderCurrentPage = useCallback(async () => {
-        if (!iframe.current || !loadingState.success) return;
+        const frame = iframe.current;
+        if (!frame || !loadingState.success) return;
         const curPage = ctx.current.curPage;
         const slot = ctx.current.slot!;
         const histories = slot.story.histories!;
@@ -329,11 +341,13 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             console.debug(iframe.current);
             const renderCtx: RenderContext = {
                 content: {},
-                document: iframe.current.contentDocument!,
-                window: iframe.current.contentWindow!,
+                inputs: history.inputs.map(u => u.content),
+                output: getCurrentOutput(history)?.content ?? "",
+                variables: generateCurrentVariables(history),
+                document: frame.contentDocument!,
+                window: frame.contentWindow!,
                 history: history,
                 slot: slot,
-                variables: generateCurrentVariables(history)
             };
             await manager.use(provider => provider.onRenderPage(renderCtx));
         } catch (err) {
