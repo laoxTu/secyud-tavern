@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "78c7ff48-f96e-4c93-a088-462575baf2aa",
+  "id": "c6635673-82a5-41cb-808c-e37467f18fb1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "llmapi_entry": {
@@ -113,6 +113,13 @@
         },
         "provider": {
           "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "builder": {
+          "name": "builder",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

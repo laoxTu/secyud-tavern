@@ -65,7 +65,7 @@ import { applyPatch, extractVariableChanges } from "@/stories/models";
 // 应用变量变更
 let vars = { time: { hour: 12 } };
 vars = applyPatch(vars, [
-    { op: "replace", path: "time.hour", value: 14 },
+    { op: "replace", path: "time/hour", value: 14 },
     { op: "add", path: "location", value: "tavern" },
 ]);
 

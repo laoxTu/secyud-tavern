@@ -15,6 +15,7 @@ CREATE TABLE `llmapi` (
 	`content` text NOT NULL,
 	`code` text NOT NULL,
 	`provider` text,
+	`builder` text,
 	`key` text,
 	`version` text NOT NULL,
 	`created_at` text NOT NULL,

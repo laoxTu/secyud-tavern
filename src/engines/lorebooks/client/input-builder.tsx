@@ -112,7 +112,6 @@ function Content({defaultValue}: LlmapiBuilderProps) {
                         {t(`${moduleName}.user_input_prefix`)}
                     </FieldLabel>
                     <Input id={`${moduleName}-builder-prefix`} name={"builder-prefix"}
-                           type={"number"} max={2} min={0} step={0.05}
                            defaultValue={config.prefix}/>
                 </Field>
                 <Field>
@@ -120,7 +119,6 @@ function Content({defaultValue}: LlmapiBuilderProps) {
                         {t(`${moduleName}.user_input_suffix`)}
                     </FieldLabel>
                     <Input id={`${moduleName}-builder-suffix`} name={"builder-suffix"}
-                           type={"number"} max={2} min={0} step={0.05}
                            defaultValue={config.suffix}/>
                 </Field>
             </div>

@@ -75,9 +75,9 @@ interface RenderContext extends SlotContextBase {
 ```
 
 ### 在 onRenderPage 中操作 iframe DOM
-
+这个作为备选方案，实际上期望通过预设实现
 ```ts
-async onRenderPage(ctx: RenderContext) {
+async function onRenderContent(ctx: RenderContext) {
     const doc = ctx.document;
 
     // 创建元素
@@ -98,7 +98,7 @@ async onRenderPage(ctx: RenderContext) {
 ### 在 onRenderStream 中实时渲染
 
 ```ts
-async onRenderStream(ctx: RenderStreamContext) {
+async function onRenderStream(ctx: RenderStreamContext) {
     // 获取 AI 输出元素
     const outputEl = ctx.document.getElementById("ai-output");
     if (outputEl) {
@@ -126,7 +126,7 @@ import { applyPatch } from "@/stories/models";
 
 let vars = {};
 vars = applyPatch(vars, [
-    { op: "add", path: "time.hour", value: 23 },
+    { op: "add", path: "time/hour", value: 23 },
     { op: "replace", path: "location", value: "tavern" },
     { op: "remove", path: "temp_var" },
 ]);
