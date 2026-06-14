@@ -14,12 +14,14 @@ export const llmapiRepository =
             version: model.version,
             key: model.key,
             provider: model.provider,
+            builder: model.builder,
         }),
         (entity): Partial<LlmapiModel> => ({
             code: entity.code,
             version: entity.version,
             key: entity.key,
             provider: entity.provider,
+            builder: entity.builder,
         })
     )
 

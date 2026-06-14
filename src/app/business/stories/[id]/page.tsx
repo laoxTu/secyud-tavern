@@ -2,7 +2,12 @@
 import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
 import {get, post, put} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
-import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
+import {
+    conversationManager,
+    generateCurrentVariables,
+    generateInputBuildContext,
+    getOpeningHistory
+} from "@/slots/client/conversation";
 import {LlmapiInputModel, SlotModel} from "@/slots/models";
 import {extractVariableChanges, getCurrentOutput, StoryHistory, StoryOutputMessage} from "@/stories/models";
 import {readStream, tryGetLastItem} from "@/utils";
@@ -147,7 +152,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const context: SlotInitializeContext = {
                 slot, content: {}
             }
-            await manager.use((provider) => provider.onInitialize(context))
+            await manager.initializer.use(provider =>
+                provider.onInitialize(context))
             ctx.current.slot = slot;
             setLoadingState(u => ({
                 ...u, loading: false, success: true
@@ -174,14 +180,25 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         try {
 
             setRenderState(u => ({...u, output: true}))
-            const inputContext: LlmapiInputContext = {messages: [], slot, content: {}, history};
-            await manager.use(provider => provider.onProcessInput(inputContext));
+            const inputContext: LlmapiInputContext = {
+                slot,
+                content: {},
+                history,
+                histories: [],
+                messages: [],
+            };
+
+            generateInputBuildContext(inputContext);
+
+            await manager.inputProcesser.use(provider =>
+                provider.onProcessInput(inputContext));
 
             if (ctx.current.reply) {
                 ctx.current.reply.abort("regenerate reply!");
             }
             const reply = new AbortController();
             ctx.current.reply = reply;
+
             console.debug(inputContext.messages);
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
@@ -195,7 +212,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const currentOutput: StoryOutputMessage = {
                 id: (tryGetLastItem(history.outputs)?.id ?? 0) + 1,
                 content: "",
-                variables: []
+                variables: [],
+                properties: {}
             };
 
             history.outputs.push(currentOutput);
@@ -209,16 +227,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
 
             if (response.body) {
                 let content = '';
-                const streamContext: RenderContext = {
-                    content: {},
-                    inputs: history.inputs.map(u => u.content),
-                    output: "",
-                    window: frame.contentWindow!,
-                    document: frame.contentDocument!,
-                    history: history,
-                    slot: slot,
-                    variables: generateCurrentVariables(history)
-                };
+
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('reply canceled');
@@ -233,11 +242,20 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         history.outputId === history.outputs.length - 1) {
                         // 每次重渲染重新解析变量变化。
                         extractVariableChanges(currentOutput, content);
-                        streamContext.output = currentOutput.content;
-                        await manager.use(provider => provider.onRenderStream(streamContext));
+                        const streamContext: RenderContext = {
+                            content: {},
+                            inputs: [],
+                            output: currentOutput.content,
+                            window: frame.contentWindow!,
+                            document: frame.contentDocument!,
+                            history: history,
+                            slot: slot,
+                            variables: generateCurrentVariables(history)
+                        };
+                        await manager.streamRenderer.use(provider =>
+                            provider.onRenderStream(streamContext));
                         streamContext.window.postMessage({
-                            type: "content", data: {
-                                inputs: streamContext.inputs,
+                            type: "streamContent", data: {
                                 output: streamContext.output
                             }
                         }, "*");
@@ -247,7 +265,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 extractVariableChanges(currentOutput, content);
                 const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
                 // 解析输出，填充一些选项或处理，这里应该会缓存世界书
-                await manager.use(provider => provider.onProcessOutput(outputContext));
+                await manager.outputProcesser.use(provider =>
+                    provider.onProcessOutput(outputContext));
             }
         } catch (err) {
             handleError(err);
@@ -297,7 +316,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const message = {
                 id: (tryGetLastItem(inputs)?.id ?? 0) + 1,
                 content: '',
-                variables: []
+                variables: [],
+                properties: {},
             };
             extractVariableChanges(message, input);
             inputs.push(message);
@@ -339,7 +359,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             console.debug(history);
             console.debug('render iframe: ');
             console.debug(iframe.current);
-            const renderCtx: RenderContext = {
+            const renderContext: RenderContext = {
                 content: {},
                 inputs: history.inputs.map(u => u.content),
                 output: getCurrentOutput(history)?.content ?? "",
@@ -349,7 +369,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                 history: history,
                 slot: slot,
             };
-            await manager.use(provider => provider.onRenderPage(renderCtx));
+            await manager.contentRenderer.use(provider =>
+                provider.onRenderContent(renderContext));
+            renderContext.window.postMessage({
+                type: "renderContent", data: {
+                    inputs: renderContext.inputs,
+                    output: renderContext.output
+                }
+            }, "*");
         } catch (err) {
             handleError(err);
         }

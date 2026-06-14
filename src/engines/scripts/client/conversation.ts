@@ -1,5 +1,9 @@
 'use client';
-import {ConversationProvider} from "@/slots/client/conversation-models";
+import {
+    SlotContentRenderer,
+    SlotInitializer,
+    SlotStreamRenderer
+} from "@/slots/client/conversation-models";
 import {PresetStyleModel} from "@/engines/styles/models";
 import {EntryModel} from "@/business/models";
 import {PresetScriptModel, engineName, engineArrayName} from "../models";
@@ -8,7 +12,11 @@ import {generateCurrentVariables} from "@/slots/client/conversation";
 
 const scriptId = "injected-scripts";
 
-export const scriptConversationProvider: ConversationProvider = {
+export const scriptConversationProvider:
+    SlotInitializer
+    & SlotContentRenderer
+    & SlotStreamRenderer
+    = {
     id: engineName,
     requires: [regexEngineName],
     onInitialize: async (ctx) => {
@@ -27,11 +35,7 @@ export const scriptConversationProvider: ConversationProvider = {
     onRenderStream: async (ctx) => {
         ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
     },
-    onProcessInput: async () => {
-    },
-    onProcessOutput: async () => {
-    },
-    onRenderPage: async (ctx) => {
+    onRenderContent: async (ctx) => {
         if (!ctx.document.getElementById(scriptId)) {
             console.debug('start generate injected-scripts');
             const scripts = ctx.document.createElement("script");

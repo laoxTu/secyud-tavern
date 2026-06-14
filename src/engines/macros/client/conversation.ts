@@ -1,20 +1,28 @@
-﻿import {ConversationProvider} from "@/slots/client/conversation-models";
-import {engineName} from "../models";
-import {engineName as lorebookEngineName} from "../../lorebooks/models";
+﻿import {engineName} from "../models";
+import {moduleName as llmapiModuleName} from "@/llmapis/models";
+import {
+    LlmapiInputProcesser,
+    SlotContentRenderer,
+    SlotInitializer,
+    SlotStreamRenderer
+} from "@/slots/client/conversation-models";
 
 
-
-export const macroConversationProvider: ConversationProvider = {
+export const macroConversationProvider:
+    LlmapiInputProcesser
+    & SlotInitializer
+    & SlotContentRenderer
+    & SlotStreamRenderer
+    = {
     id: engineName,
-    requires: [lorebookEngineName],
+    requires: [llmapiModuleName],
     onInitialize: async (ctx) => {
     },
     onRenderStream: async (ctx) => {
     },
     onProcessInput: async (ctx) => {
     },
-    onProcessOutput: async () => {
-    },
-    onRenderPage: async (ctx) => {
+    onRenderContent: async (ctx) => {
+
     }
 };

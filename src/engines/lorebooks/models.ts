@@ -1,15 +1,5 @@
 ﻿import {EntryModel} from "@/business/models";
 
-export interface LorebookMessageItem {
-    message: string,
-    lorebooks?: string[]
-}
-
-export interface LorebookMessage {
-    inputs: LorebookMessageItem[],
-    output?: LorebookMessageItem,
-}
-
 export interface PresetLorebookModel extends EntryModel {
     // 匹配类型
     matchType: string,
@@ -24,6 +14,11 @@ export interface PresetLorebookModel extends EntryModel {
     role: string,
 }
 
+export interface LorebookInputBuilderModel {
+    prefix: string,
+    suffix: string,
+}
+
 export function getLorebookOrder(item: PresetLorebookModel) {
     return item.layer * 10000 + item.priority;
 }
@@ -32,6 +27,33 @@ export function compareLorebook(lft: PresetLorebookModel, rht: PresetLorebookMod
     return getLorebookOrder(lft) - getLorebookOrder(rht);
 }
 
+export function getStartLorebooks(content: Record<string, any>): PresetLorebookModel[] {
+    return content[startLorebooksName];
+}
+
+export function getEndLorebooks(content: Record<string, any>): PresetLorebookModel[] {
+    return content[endLorebooksName];
+}
+
+export function getLorebooks(content: Record<string, any>): Record<string, PresetLorebookModel> {
+    return content[engineArrayName];
+}
+
+export function setStartLorebooks(content: Record<string, any>, models: PresetLorebookModel[]) {
+    content[startLorebooksName] = models;
+}
+
+export function setEndLorebooks(content: Record<string, any>, models: PresetLorebookModel[]) {
+    content[endLorebooksName] = models;
+}
+
+export function setLorebooks(content: Record<string, any>, records: Record<string, PresetLorebookModel>) {
+    content[engineArrayName] = records;
+}
+
 
 export const engineName = "lorebook";
 export const engineArrayName = "lorebooks";
+
+const startLorebooksName = engineArrayName + "Start";
+const endLorebooksName = engineArrayName + "End";

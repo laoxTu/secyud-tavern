@@ -6,5 +6,7 @@ import {scriptConversationProvider} from "./conversation";
 
 export function registerScriptsClient() {
     presetTabManager.register(tabConfig)
-    conversationManager.register(scriptConversationProvider)
+    conversationManager.initializer.register(scriptConversationProvider)
+    conversationManager.contentRenderer.register(scriptConversationProvider)
+    conversationManager.streamRenderer.register(scriptConversationProvider)
 }

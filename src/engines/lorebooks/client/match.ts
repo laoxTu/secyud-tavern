@@ -1,4 +1,4 @@
-﻿import {engineName, PresetLorebookModel} from "../models";
+﻿import {engineArrayName, engineName, PresetLorebookModel} from "../models";
 import {ClientRegistry} from "@/plugins/client";
 import {Matcher, MatcherMatchContext} from "./match-models";
 import {alwaysMatcher} from "@/engines/lorebooks/match/always/client";
@@ -22,12 +22,13 @@ export function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookM
                                        context: MatcherMatchContext) {
     const message = context.message;
     const matchers = lorebookMatcherRegistry.records;
-    message.activeLorebooks = [];
+    const activeLorebooks: string[] = [];
 
     for (const [key, lorebook] of Object.entries(lorebooks)) {
         const matcher = matchers[lorebook.matchType];
         if (matcher && matcher.match(context, lorebook.matchExpression)) {
-            message.activeLorebooks.push(key);
+            activeLorebooks.push(key);
         }
     }
+    message.properties[engineArrayName] = activeLorebooks;
 }

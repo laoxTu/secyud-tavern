@@ -1,18 +1,23 @@
 'use client';
 import {Registry} from "@/utils/register";
-import {ConversationProvider} from "@/slots/client/conversation-models";
 import {applyPatch, extractVariableChanges, getCurrentOutput, StoryHistory, StoryInputMessage} from "@/stories/models";
 import {SlotModel} from "@/slots/models";
-import {engineArrayName, PresetLorebookModel} from "@/engines/lorebooks/models";
-import {tryFillActiveLorebooks} from "@/engines/lorebooks/client/match";
+import {
+    LlmapiHistory,
+    LlmapiInputContext,
+    LlmapiInputProcesser,
+    LlmapiOutputProcesser,
+    SlotContentRenderer,
+    SlotInitializer, SlotStreamRenderer
+} from "@/slots/client/conversation-models";
 
-export class ConversationManager extends Registry<ConversationProvider> {
-    constructor() {
-        super("conversation");
-    }
-}
-
-export const conversationManager = new ConversationManager();
+export const conversationManager = {
+    initializer: new Registry<SlotInitializer>("SlotInitializer"),
+    inputProcesser: new Registry<LlmapiInputProcesser>("LlmapiInputProcesser"),
+    outputProcesser: new Registry<LlmapiOutputProcesser>("LlmapiOutputProcesser"),
+    contentRenderer: new Registry<SlotContentRenderer>("SlotContentRenderer"),
+    streamRenderer: new Registry<SlotStreamRenderer>("SlotStreamRenderer"),
+};
 
 
 export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
@@ -31,14 +36,38 @@ export function generateCurrentVariables(history: StoryHistory, includeOutput: b
     return variables;
 }
 
+export function generateInputBuildContext(inputContext: LlmapiInputContext) {
+    const histories = inputContext.slot.story.histories!
+    const start = histories.findLastIndex(u => u.summary);
+    if (start === -1) {
+        const openingHistory = getOpeningHistory(inputContext.slot);
+        inputContext.histories.push(map(openingHistory));
+    }
+    for (let i = Math.max(start, 0); i < histories.length; i++) {
+        inputContext.histories.push(map(histories[i]));
+    }
+
+    function map(storyHistory: StoryHistory): LlmapiHistory {
+        return {
+            ...storyHistory,
+            inputs: storyHistory.inputs
+                .map(u => ({...u})),
+            outputs: storyHistory.outputs
+                .map(u => ({...u})),
+            properties: {}
+        }
+    }
+}
 
 export function getOpeningHistory(slot: SlotModel) {
-    let openingHistory = slot.content['openingHistory'] as StoryHistory;
+    const key = 'openingHistory';
+    let openingHistory = slot.content[key] as StoryHistory;
     if (!openingHistory) {
         const openingMessage: StoryInputMessage = {
             id: 0,
             content: "",
-            variables: []
+            variables: [],
+            properties: {},
         };
         const openingRemarks = slot.story.content?.openingRemarks ?? "";
         openingHistory = {
@@ -54,12 +83,7 @@ export function getOpeningHistory(slot: SlotModel) {
             variables: {}
         };
         extractVariableChanges(openingMessage, openingRemarks);
-        if (!openingMessage.activeLorebooks) {
-            const variables = generateCurrentVariables(openingHistory, false);
-            const lorebooks: Record<string, PresetLorebookModel> = slot.content[engineArrayName];
-            tryFillActiveLorebooks(lorebooks, {variables, history: openingHistory, message: openingMessage});
-        }
-        slot.content['openingHistory'] = openingHistory;
+        slot.content[key] = openingHistory;
     }
     return openingHistory;
 }

@@ -7,6 +7,6 @@ import {llmapiConversationProvider} from "@/llmapis/client/conversation";
 export function registerLlmapiClient() {
     businessNavigationManager.register(
         llmapiNavigationContent);
-    conversationManager.register(
+    conversationManager.inputProcesser.register(
         llmapiConversationProvider)
 }

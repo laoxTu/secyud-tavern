@@ -6,5 +6,8 @@ import {regexConversationProvider} from "./conversation";
 
 export function registerRegexesClient() {
     presetTabManager.register(tabConfig);
-    conversationManager.register(regexConversationProvider);
+    conversationManager.initializer.register(regexConversationProvider);
+    conversationManager.streamRenderer.register(regexConversationProvider);
+    conversationManager.contentRenderer.register(regexConversationProvider);
+    conversationManager.inputProcesser.register(regexConversationProvider);
 }

@@ -1,10 +1,13 @@
-﻿import {ConversationProvider} from "@/slots/client/conversation-models";
+﻿import {SlotContentRenderer, SlotInitializer} from "@/slots/client/conversation-models";
 import {PresetStyleModel, engineName, engineArrayName} from "../models";
 import {EntryModel} from "@/business/models";
 
 const styleId = "injected-styles";
 
-export const styleConversationProvider: ConversationProvider = {
+export const styleConversationProvider:
+    SlotInitializer
+    & SlotContentRenderer
+    = {
     id: engineName,
     onInitialize: async (ctx) => {
         const slotEntries = [];
@@ -19,13 +22,7 @@ export const styleConversationProvider: ConversationProvider = {
         slotEntries.sort((a, b) => a.priority - b.priority);
         ctx.slot.content[engineArrayName] = slotEntries;
     },
-    onRenderStream: async () => {
-    },
-    onProcessInput: async () => {
-    },
-    onProcessOutput: async () => {
-    },
-    onRenderPage: async (ctx) => {
+    onRenderContent: async (ctx) => {
         if (!ctx.document.getElementById(styleId)) {
             console.debug('start generate injected-styles');
             const styles = ctx.document.createElement("style");

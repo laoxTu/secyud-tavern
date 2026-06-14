@@ -7,12 +7,20 @@ export interface SlotContextBase {
     content: Record<string, any>;
 }
 
+
 export interface SlotInitializeContext extends SlotContextBase {
     id?: string;
 }
 
+export interface LlmapiHistory extends StoryHistory {
+    properties: Record<string, any>;
+}
+
 export interface LlmapiInputContext extends LlmapiInputModel, SlotContextBase {
     history: StoryHistory,
+    // 这个和slot里面的有细微的差别
+    // 截断summary或补充开场白
+    histories: LlmapiHistory[],
 }
 
 export interface LlmapiOutputContext extends SlotContextBase {
@@ -29,19 +37,27 @@ export interface RenderContext extends SlotContextBase {
     output: string
 }
 
-export interface ConversationProvider extends Registerable {
+export interface SlotInitializer extends Registerable {
     // 请求完插槽数据后执行
     onInitialize(ctx: SlotInitializeContext): Promise<void>;
+}
 
+export interface LlmapiInputProcesser extends Registerable {
     // 处理输入信息 更新输入历史
     onProcessInput(ctx: LlmapiInputContext): Promise<void>;
+}
 
-    // 处理输出信息 更新输出历史
+export interface LlmapiOutputProcesser extends Registerable {
+    // 处理输出信息 更新输出属性
     onProcessOutput(ctx: LlmapiOutputContext): Promise<void>;
+}
 
-    // 页面渲染
-    onRenderPage(ctx: RenderContext): Promise<void>;
+export interface SlotContentRenderer extends Registerable {
+    // 渲染
+    onRenderContent(ctx: RenderContext): Promise<void>;
+}
 
-    // 流式渲染，在请求输出时
+export interface SlotStreamRenderer extends Registerable {
+    // 渲染
     onRenderStream(ctx: RenderContext): Promise<void>;
 }

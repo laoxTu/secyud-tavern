@@ -16,8 +16,8 @@ export interface StoryModel extends BaseModel {
 
 export interface StoryHistoryMessage {
     content: string;
-    activeLorebooks?: string[];
     variables: VariableChangeModel[];
+    properties: Record<string, any>;
 }
 
 export interface StoryInputMessage extends StoryHistoryMessage {
@@ -28,7 +28,7 @@ export interface StoryOutputMessage extends StoryHistoryMessage {
     id: number;
 }
 
-export interface StoryHistory extends EntryModel{
+export interface StoryHistory extends EntryModel {
     outputId: number;
     summary: boolean;
     variables: Record<string, any>;

@@ -13,6 +13,7 @@ import {put} from "@/client";
 import {LlmapiContext} from "./models";
 import {LlmapiModel, moduleName} from "../models";
 import {LlmapiConfigRegistry, llmapiConfigRegistry} from "./config";
+import {LlmapiInputBuilderManager, llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
 
 
 function ConfigContent({model, llmapiConfigRegistry}: {
@@ -63,21 +64,73 @@ function ConfigContent({model, llmapiConfigRegistry}: {
         )()}
     </>
 }
+function BuilderContent({model, llmapiBuilderRegistry}: {
+    model: LlmapiModel,
+    llmapiBuilderRegistry: LlmapiInputBuilderManager
+}) {
+    const t = useTranslations();
+    const llmapiBuilders = llmapiBuilderRegistry.records;
+    const first = llmapiBuilders.first;
+    const [builder, setBuilder] = useState<string | undefined>(model.provider ?? first.id);
+    const [editor, setEditor] = useState(model.provider ? llmapiBuilders[model.provider] : first);
+
+
+    const handleBuilderChange = useCallback((type: string) => {
+        setBuilder(type);
+        const newEditor = llmapiBuilders[type];
+        setEditor(newEditor);
+    }, [llmapiBuilders]);
+
+    return <>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-builder`}>
+                {t(`${moduleName}.builder`)}
+            </FieldLabel>
+            <Select name="builder"
+                    value={builder}
+                    onValueChange={handleBuilderChange}>
+                <SelectTrigger className="w-full"
+                               id={`${moduleName}-builder`}>
+                    <SelectValue/>
+                </SelectTrigger>
+                <SelectContent position="popper">
+                    <SelectGroup>
+                        {llmapiBuilderRegistry.getSorted().map((e) =>
+                            <SelectItem key={e.id} value={e.id}>
+                                {t(`${moduleName}.builder_${e.id}`)}
+                            </SelectItem>
+                        )}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+        </Field>
+        {editor && (
+            () => {
+                const EditorComponent = editor.component;
+                return <EditorComponent llmapi={model} defaultValue={model.content["builder"]}/>;
+            }
+        )()}
+    </>
+}
 
 function DefaultTab() {
     const t = useTranslations();
-    const matchEditorRegistry = useMemo(() => llmapiConfigRegistry, []);
-    const matchEditors = matchEditorRegistry.records;
+    const configRegistry = useMemo(() => llmapiConfigRegistry, []);
+    const configEditors = configRegistry.records;
+    const builderManager = useMemo(() => llmapiInputBuilderManager, []);
+    const builderEditors = builderManager.records;
     return <EditFormTemplate
         modelType={moduleName}
         contextType={LlmapiContext}
         updateHandler={async (model, data) => {
             const key = data.get("apikey") as string | undefined;
             const provider = data.get("provider") as string;
+            const builder = data.get("builder") as string;
             await put("/llmapis/{id}",
                 {
                     content: {
-                        "config": matchEditors[provider]?.getValue(data)
+                        "config": configEditors[provider]?.getValue(data),
+                        "builder": builderEditors[builder]?.getValue(data),
                     },
                     provider: provider,
                     name: data.get("name") as string,
@@ -113,7 +166,8 @@ function DefaultTab() {
                     />
                 </Field>
             </div>
-            <ConfigContent model={model} llmapiConfigRegistry={matchEditorRegistry}/>
+            <ConfigContent model={model} llmapiConfigRegistry={configRegistry}/>
+            <BuilderContent model={model} llmapiBuilderRegistry={builderManager}/>
         </>}/>
 }
 

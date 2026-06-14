@@ -6,6 +6,7 @@ import {moduleName} from "../models";
 export const llmapis = masterTable(moduleName, {
     code: text("code").notNull().unique(),
     provider: text("provider"),
+    builder: text("builder"),
     key: text("key"),
     version: text("version").notNull(),
 });

@@ -1,10 +1,13 @@
 ﻿import {Registry} from "@/utils/register";
-import {LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
+import {LlmapiInputBuilder} from "./input-builder-models";
+import {llmapiLorebookInputBuilder} from "@/engines/lorebooks/client/input-builder";
 
 export class LlmapiInputBuilderManager extends Registry<LlmapiInputBuilder> {
-    constructor() {
-        super("conversation");
+    constructor(builders: LlmapiInputBuilder[]) {
+        super("inputBuilderManager");
     }
 }
 
-export const llmapiInputBuilderManager = new LlmapiInputBuilderManager();
+export const llmapiInputBuilderManager = new LlmapiInputBuilderManager([
+    llmapiLorebookInputBuilder
+]);

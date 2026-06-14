@@ -6,5 +6,6 @@ import {styleConversationProvider} from "./conversation";
 
 export function registerStylesClient() {
     presetTabManager.register(tabConfig)
-    conversationManager.register(styleConversationProvider)
+    conversationManager.initializer.register(styleConversationProvider)
+    conversationManager.contentRenderer.register(styleConversationProvider)
 }

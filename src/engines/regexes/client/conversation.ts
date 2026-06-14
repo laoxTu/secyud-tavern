@@ -1,7 +1,15 @@
-﻿import {ConversationProvider} from "@/slots/client/conversation-models";
+﻿import {
+    LlmapiInputProcesser,
+    SlotContentRenderer,
+    SlotInitializer,
+    SlotStreamRenderer
+} from "@/slots/client/conversation-models";
 import {engineName, engineArrayName, PresetRegexModel} from "../models";
-import {engineName as lorebookEngineName, LorebookMessage} from "../../lorebooks/models";
 import {getCurrentOutput} from "@/stories/models";
+import {engineName as lorebookEngineName} from "../../lorebooks/models";
+
+const inputRegexesName = engineArrayName + "Input";
+const outputRegexesName = engineArrayName + "Output";
 
 function applyRegexes(regexes: PresetRegexModel[], text?: string) {
     if (!text || text == '') return '';
@@ -11,17 +19,12 @@ function applyRegexes(regexes: PresetRegexModel[], text?: string) {
     return text;
 }
 
-function rerenderOutputField(document: Document, content: string) {
-    let outputField = document.getElementById('ai-output');
-    if (!outputField) {
-        outputField = document.createElement('div');
-        outputField.id = "ai-output";
-        document.body.appendChild(outputField);
-    }
-    outputField.innerHTML = content.replaceAll('\n', '<br/>');
-}
-
-export const regexConversationProvider: ConversationProvider = {
+export const regexConversationProvider:
+    SlotInitializer
+    & LlmapiInputProcesser
+    & SlotStreamRenderer
+    & SlotContentRenderer
+    = {
     id: engineName,
     requires: [lorebookEngineName],
     onInitialize: async (ctx) => {
@@ -40,49 +43,33 @@ export const regexConversationProvider: ConversationProvider = {
                 }
             }
         }
-        ctx.slot.content[engineArrayName + "Input"] = regexesInput;
-        ctx.slot.content[engineArrayName + "Output"] = regexesOutput;
-    },
-    onRenderStream: async (ctx) => {
-        const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
-        const output = applyRegexes(regexes, getCurrentOutput(ctx.history)?.content);
-        rerenderOutputField(ctx.document, output);
+        ctx.slot.content[inputRegexesName] = regexesInput;
+        ctx.slot.content[outputRegexesName] = regexesOutput;
     },
     onProcessInput: async (ctx) => {
-        const regexes = ctx.slot.content[engineArrayName + "Input"] as PresetRegexModel[];
-        const messages = ctx.content.messages as LorebookMessage[];
-        for (const message of messages) {
+        const regexes = ctx.slot.content[inputRegexesName] as PresetRegexModel[];
+        for (const message of ctx.histories) {
             for (const input of message.inputs) {
-                input.message = applyRegexes(regexes, input.message);
+                input.content = applyRegexes(regexes, input.content);
             }
-            if (message.output) {
-                message.output.message = applyRegexes(regexes, message.output.message,);
+            const output = getCurrentOutput(message);
+            if (output) {
+                output.content = applyRegexes(regexes, output.content,);
             }
         }
     },
-    onProcessOutput: async () => {
+    onRenderStream: async (ctx) => {
+        const regexes = ctx.slot.content[outputRegexesName] as PresetRegexModel[];
+        ctx.output = applyRegexes(regexes, ctx.output);
     },
-    onRenderPage: async (ctx) => {
-        console.debug('start generate iframe');
-        const regexes = ctx.slot.content[engineArrayName + "Output"] as PresetRegexModel[];
-        let inputFields = ctx.document.getElementById("user-input");
-        if (!inputFields) {
-            console.debug('start generate user inputs');
-            inputFields = ctx.document.createElement('div');
-            inputFields.id = "user-input";
-            ctx.document.body.appendChild(inputFields);
-        }
-        console.debug('start generate user input');
-        inputFields.replaceChildren();
-        for (const input of ctx.history.inputs) {
-            const inputField = document.createElement("div");
-            inputField.className = "user-input";
-            inputField.innerHTML = applyRegexes(regexes, input.content);
-            inputFields.appendChild(inputField);
+    onRenderContent: async (ctx) => {
+        const regexes = ctx.slot.content[outputRegexesName] as PresetRegexModel[];
+        console.debug('start apply regex for input');
+        for (let i = 0; i < ctx.inputs.length; i++) {
+            ctx.inputs[i] = applyRegexes(regexes, ctx.inputs[i]);
         }
 
-        console.debug('start generate ai output');
-        const output = applyRegexes(regexes, getCurrentOutput(ctx.history)?.content);
-        rerenderOutputField(ctx.document, output);
+        console.debug('start apply regex for output');
+        ctx.output = applyRegexes(regexes, ctx.output);
     }
 };

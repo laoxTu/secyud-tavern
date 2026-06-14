@@ -6,5 +6,6 @@ import {lorebookConversationProvider} from "./conversation";
 
 export function registerLorebooksClient() {
     presetTabManager.register(tabConfig);
-    conversationManager.register(lorebookConversationProvider);
+    conversationManager.initializer.register(lorebookConversationProvider);
+    conversationManager.inputProcesser.register(lorebookConversationProvider);
 }

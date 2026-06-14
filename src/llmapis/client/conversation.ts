@@ -1,27 +1,19 @@
-﻿import {ConversationProvider} from "@/slots/client/conversation-models";
-import {moduleName} from "../models";
-import {engineName as regexEngineName} from "@/engines/regexes/models";
+﻿import {moduleName} from "../models";
+import {engineName as lorebookEngineName} from "@/engines/lorebooks/models";
 import {llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
 import {BusinessError} from "@/handler/models";
+import {LlmapiInputProcesser} from "@/slots/client/conversation-models";
 
 
-export const llmapiConversationProvider: ConversationProvider = {
+export const llmapiConversationProvider: LlmapiInputProcesser = {
     id: moduleName,
-    requires: [regexEngineName],
-    onInitialize: async () => {
-
-    },
-    onRenderStream: async () => {
-    },
+    requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
         const provider: string | undefined = ctx.slot.llmapi.provider;
         if (!provider) {
             throw new BusinessError("No provider provided");
         }
-        ctx.messages = await llmapiInputBuilderManager.records[provider].onBuildInput(ctx);
+        ctx.messages = await llmapiInputBuilderManager.records[provider]
+            .onBuildInput(ctx, ctx.slot.llmapi.content["builder"]);
     },
-    onProcessOutput: async () => {
-    },
-    onRenderPage: async () => {
-    }
 };
