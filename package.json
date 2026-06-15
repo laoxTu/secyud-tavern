@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build & npx tsx scripts/generate-stubs.ts",
     "start": "next start",
     "lint": "eslint",
     "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
     "db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
     "test": "vitest",
-    "gen-stubs": "npx tsx scripts/generate-stubs.ts",
     "build-plugin": "npm run gen-stubs && node scripts/build-plugin.mjs"
   },
   "dependencies": {
