@@ -4,6 +4,7 @@
     "cancel": "取消",
     "code": "编码",
     "content": "内容",
+    "about": "关于",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
     "copy_description": "将当前{target}复制到新的{target}",

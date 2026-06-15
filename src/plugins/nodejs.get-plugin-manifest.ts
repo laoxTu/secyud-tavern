@@ -24,6 +24,9 @@ export default async function getPluginManifests() {
 
     const manifests: PluginManifest[] = [];
     for (const folder of folders) {
+        if (folder.startsWith("_")) {
+            continue;
+        }
         const pluginPath = path.join(process.cwd(), pluginDir, folder);
         const manifestPath = path.join(pluginPath, "manifest.json");
 

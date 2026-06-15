@@ -1,7 +1,9 @@
 import fs from "fs/promises";
-import path from "path";
 import {NextResponse} from "next/server";
 import {pluginManager} from "@/plugins/manager";
+import {fileURLToPath} from "url";
+import {interceptor} from "@/handler/server/interceptor";
+import {BusinessError} from "@/handler/models";
 
 
 /**
@@ -11,41 +13,38 @@ import {pluginManager} from "@/plugins/manager";
  @response-header Cache-Control = "no-cache, no-store, must-revalidate"
  @openapi
  */
-export async function GET(
-    _request: Request,
-    context: { params: Promise<{ pluginId: string }> }
-) {
-    const {pluginId} = await context.params;
+export const GET = interceptor.createRoute(
+    async (request, records) => {
+        const {pluginId} = await records.context.params;
 
-    await pluginManager.initialize();
-    const manifest = pluginManager.records[pluginId];
+        const manifest = pluginManager.records[pluginId];
 
-    if (!manifest) {
-        return new NextResponse("Plugin not found", {status: 404});
+        if (!manifest) {
+            throw new BusinessError("Plugin not found");
+        }
+
+        const clientScript = manifest.clientScript;
+
+        if (!clientScript) {
+            throw new BusinessError("No client script");
+        }
+
+        const scriptPath = fileURLToPath(`${manifest.directory}/${clientScript}`);
+
+        try {
+            await fs.access(scriptPath);
+        } catch {
+            throw new BusinessError("Client script not found");
+        }
+
+        const scriptContent = await fs.readFile(scriptPath, "utf-8");
+
+        return new NextResponse(scriptContent, {
+            headers: {
+                "Content-Type": "application/javascript; charset=utf-8",
+                // 开发环境禁用缓存，方便调试
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+        });
     }
-
-    const pluginPath = path.join(process.cwd(), manifest.path);
-    const clientScript = manifest.clientScript;
-
-    if (!clientScript) {
-        return new NextResponse("No client script", {status: 404});
-    }
-
-    const scriptPath = path.join(pluginPath, clientScript);
-
-    try {
-        await fs.access(scriptPath);
-    } catch {
-        return new NextResponse("Client script not found", {status: 404});
-    }
-
-    const scriptContent = await fs.readFile(scriptPath, "utf-8");
-
-    return new NextResponse(scriptContent, {
-        headers: {
-            "Content-Type": "application/javascript; charset=utf-8",
-            // 开发环境禁用缓存，方便调试
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-        },
-    });
-}
+);

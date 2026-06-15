@@ -42,10 +42,10 @@ class PluginManager extends Registry<PluginManifest> {
         })
     }
 
-    async loadClientPlugins() {
+    async loadClientPlugins(pluginApi?: Record<string, any>) {
         await this.initialize();
         await this.use(async manifest => {
-            await this.loadClientPlugin(manifest, manifest.clientScript);
+            await this.loadClientPlugin(manifest, manifest.clientScript, pluginApi);
         })
     }
 
@@ -57,7 +57,7 @@ class PluginManager extends Registry<PluginManifest> {
                 return;
             }
             console.log(`[${this.name}] ℹ️ load plugin: ${manifest.id}`);
-            const pluginModule = await import(`${manifest.directory}/${script}`);
+            const pluginModule = await import(/* webpackIgnore: true */`${manifest.directory}/${script}`);
             const plugin = pluginModule.default;
             await plugin();
             console.log(`[${this.name}] ✅ load plugin: ${manifest.id}`);
@@ -67,7 +67,7 @@ class PluginManager extends Registry<PluginManifest> {
         }
     }
 
-    protected async loadClientPlugin(manifest: PluginManifest, script: string | undefined) {
+    protected async loadClientPlugin(manifest: PluginManifest, script: string | undefined, pluginApi?: Record<string, any>) {
         try {
             if (!script) return;
             console.log(`[${this.name}] ℹ️ load client plugin: ${manifest.id}`);
@@ -75,7 +75,8 @@ class PluginManager extends Registry<PluginManifest> {
             const pluginUrl = `/api/plugins/${manifest.id}`;
             const pluginModule = await import(/* webpackIgnore: true */ pluginUrl);
             if (typeof pluginModule.default === 'function') {
-                await pluginModule.default();
+                // 将宿主 API（React, 注册表等）传给插件的 register 函数
+                await pluginModule.default(pluginApi ?? {});
             }
             console.log(`[${this.name}] ✅ load client plugin: ${manifest.id}`);
         } catch (error) {

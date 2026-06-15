@@ -1,0 +1,13 @@
+const api = window.__PLUGIN_API__;
+export const { AlertDialog } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogAction } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogCancel } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogContent } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogDescription } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogFooter } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogHeader } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogMedia } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogOverlay } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogPortal } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogTitle } = api["components"]["ui"]["alert-dialog"];
+export const { AlertDialogTrigger } = api["components"]["ui"]["alert-dialog"];

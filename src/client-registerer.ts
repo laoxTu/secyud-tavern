@@ -1,7 +1,8 @@
 ﻿'use client';
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {pluginManager} from "@/plugins/manager";
+import {pluginApi} from "@/plugins/client/api";
 import {registerDeepseekClient} from "@/engines/deepseek/client";
 import {registerStylesClient} from "@/engines/styles/client";
 import {registerScriptsClient} from "@/engines/scripts/client";
@@ -11,11 +12,22 @@ import {registerLlmapiClient} from "@/llmapis/client";
 import {registerStoryClient} from "@/stories/client";
 import {registerPresetClient} from "@/presets/client";
 import {registerMacrosClient} from "@/engines/macros/client";
+import {registerSlotClient} from "@/slots/client";
+import {registerBusinessClient} from "@/business/client/index.js";
+import {registerComponents} from "@/components";
+
+if (typeof window !== 'undefined') {
+    (window as any).__PLUGIN_REACT__ = React;
+    (window as any).__PLUGIN_API__ = pluginApi;
+}
 
 async function loadClientPlugins() {
+    registerComponents();
+    registerBusinessClient();
     registerStoryClient();
     registerPresetClient();
     registerLlmapiClient();
+    registerSlotClient();
 
     registerDeepseekClient();
 
@@ -24,7 +36,8 @@ async function loadClientPlugins() {
     registerStylesClient();
     registerScriptsClient();
     registerMacrosClient();
-    await pluginManager.loadClientPlugins();
+
+    await pluginManager.loadClientPlugins(pluginApi);
 }
 
 export const useClientPlugins = () => {

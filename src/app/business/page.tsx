@@ -29,7 +29,7 @@ export default function BusinessPage() {
                                     <NavigationMenuLink asChild>
                                         <a className={
                                             currentTab === tab.id
-                                                ? 'pointer-events-none bg-gray-50'
+                                                ? 'pointer-events-none bg-gray-100'
                                                 : 'cursor-pointer'
                                         } onClick={() => setCurrentTab(tab.id)}>
                                             <Component/>

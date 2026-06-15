@@ -1,5 +1,5 @@
 {
-    "id": "test-plugin",
+    "id": "project-info",
     "version": "1.0.0",
     "clientScript": "client.js",
     "serverScript": "server.ts"

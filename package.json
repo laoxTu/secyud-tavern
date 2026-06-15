@@ -10,7 +10,9 @@
     "lint": "eslint",
     "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
     "db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "gen-stubs": "npx tsx scripts/generate-stubs.ts",
+    "build-plugin": "npm run gen-stubs && node scripts/build-plugin.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -45,6 +47,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
+    "esbuild": "^0.28.1",
     "eslint": "^10",
     "eslint-config-next": "16.2.9",
     "jsdom": "^29.1.1",

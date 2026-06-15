@@ -1,0 +1,17 @@
+const api = window.__PLUGIN_API__;
+export const { Combobox } = api["components"]["ui"]["combobox"];
+export const { ComboboxChip } = api["components"]["ui"]["combobox"];
+export const { ComboboxChips } = api["components"]["ui"]["combobox"];
+export const { ComboboxChipsInput } = api["components"]["ui"]["combobox"];
+export const { ComboboxCollection } = api["components"]["ui"]["combobox"];
+export const { ComboboxContent } = api["components"]["ui"]["combobox"];
+export const { ComboboxEmpty } = api["components"]["ui"]["combobox"];
+export const { ComboboxGroup } = api["components"]["ui"]["combobox"];
+export const { ComboboxInput } = api["components"]["ui"]["combobox"];
+export const { ComboboxItem } = api["components"]["ui"]["combobox"];
+export const { ComboboxLabel } = api["components"]["ui"]["combobox"];
+export const { ComboboxList } = api["components"]["ui"]["combobox"];
+export const { ComboboxSeparator } = api["components"]["ui"]["combobox"];
+export const { ComboboxTrigger } = api["components"]["ui"]["combobox"];
+export const { ComboboxValue } = api["components"]["ui"]["combobox"];
+export const { useComboboxAnchor } = api["components"]["ui"]["combobox"];

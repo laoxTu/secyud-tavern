@@ -1,0 +1,11 @@
+const api = window.__PLUGIN_API__;
+export const { Field } = api["components"]["ui"]["field"];
+export const { FieldContent } = api["components"]["ui"]["field"];
+export const { FieldDescription } = api["components"]["ui"]["field"];
+export const { FieldError } = api["components"]["ui"]["field"];
+export const { FieldGroup } = api["components"]["ui"]["field"];
+export const { FieldLabel } = api["components"]["ui"]["field"];
+export const { FieldLegend } = api["components"]["ui"]["field"];
+export const { FieldSeparator } = api["components"]["ui"]["field"];
+export const { FieldSet } = api["components"]["ui"]["field"];
+export const { FieldTitle } = api["components"]["ui"]["field"];

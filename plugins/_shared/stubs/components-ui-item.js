@@ -1,0 +1,11 @@
+const api = window.__PLUGIN_API__;
+export const { Item } = api["components"]["ui"]["item"];
+export const { ItemActions } = api["components"]["ui"]["item"];
+export const { ItemContent } = api["components"]["ui"]["item"];
+export const { ItemDescription } = api["components"]["ui"]["item"];
+export const { ItemFooter } = api["components"]["ui"]["item"];
+export const { ItemGroup } = api["components"]["ui"]["item"];
+export const { ItemHeader } = api["components"]["ui"]["item"];
+export const { ItemMedia } = api["components"]["ui"]["item"];
+export const { ItemSeparator } = api["components"]["ui"]["item"];
+export const { ItemTitle } = api["components"]["ui"]["item"];

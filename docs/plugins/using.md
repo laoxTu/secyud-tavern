@@ -94,7 +94,7 @@ const sorted = registry.getSorted();
     │     → 获取所有插件清单
     │
     └─ 客户端加载: import(/api/plugin/{pluginId}/client)
-          → API 从 plugins/ 目录读取 client.js
+          → API 从 plugins/ 目录读取 client.ts
           → 返回 JS 文本 (Content-Type: application/javascript)
           → 浏览器 import() 执行模块
           → 调用 export default 函数
@@ -106,7 +106,7 @@ const sorted = registry.getSorted();
 plugins/my-plugin/
 ├── manifest.json
 ├── server.ts          # 服务端脚本（可选）
-└── client.js          # 客户端脚本（纯 JS 即可，无需打包）
+└── client.ts          # 客户端脚本（纯 JS 即可，无需打包）
 ```
 
 ### 2. 编写 manifest.json
@@ -116,7 +116,7 @@ plugins/my-plugin/
     "id": "my-plugin",
     "version": "1.0.0",
     "serverScript": "server.ts",
-    "clientScript": "client.js"
+    "clientScript": "client.ts"
 }
 ```
 
@@ -126,7 +126,7 @@ plugins/my-plugin/
 ### 3. 编写客户端脚本
 
 ```js
-// plugins/my-plugin/client.js
+// plugins/my-plugin/client.ts
 // 导出 default 函数，加载时自动调用
 export default function register() {
     console.log("[my-plugin] ✅ 客户端插件已加载！");
@@ -156,7 +156,7 @@ export default function register() {
 项目已包含一个测试插件 `plugins/test-plugin/`：
 
 ```js
-// plugins/test-plugin/client.js
+// plugins/test-plugin/client.ts
 export default function register() {
     console.log("[test-plugin] ✅ 客户端插件已加载！");
     console.log("[test-plugin] 当前 URL:", window.location.href);
