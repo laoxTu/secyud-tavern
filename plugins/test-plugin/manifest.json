@@ -1,0 +1,6 @@
+{
+    "id": "test-plugin",
+    "version": "1.0.0",
+    "clientScript": "client.js",
+    "serverScript": "server.ts"
+}

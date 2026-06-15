@@ -31,6 +31,7 @@ export default async function getPluginManifests() {
             await fs.access(manifestPath);
             const manifestText = await fs.readFile(manifestPath, 'utf-8');
             const manifest = JSON.parse(manifestText) as PluginManifest;
+            manifest.path = `/${pluginDir}/${folder}`;
             manifest.directory = pathToFileURL(pluginPath).toString();
             manifests.push(manifest);
             console.log(`[plugin loader] 📂 find plugin: ${pluginDir}/${folder}`);

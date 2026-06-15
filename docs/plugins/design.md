@@ -15,7 +15,7 @@ plugins/
 └── example-plugin/
     ├── manifest.json        # 插件元信息
     ├── server.ts            # 服务端脚本
-    └── client.js            # 客户端脚本（编译后）
+    └── client.ts            # 客户端脚本（编译后）
 ```
 
 ### 双运行时设计
@@ -86,18 +86,28 @@ Registry<T>                     (src/utils/register.ts)
 ### PluginManager 生命周期
 
 ```
-1. 初始化
-    ├── Node.js: getPluginManifests() → 扫描 plugins/*/manifest.json
-    └── Edge: fetch API (TBD)
+1. 服务端初始化 (Node.js)
+    └── getPluginManifests() → 扫描 plugins/*/manifest.json
+        → pluginManager.register(manifest)
+        → loadServerPlugins() → import(file://{directory}/{serverScript})
 
-2. 加载服务端插件
-    ├── 遍历已注册的 PluginManifest
-    ├── import(plugin.directory + serverScript)
-    └── 调用 default export (注册函数)
-
-3. 加载客户端插件
-    └── TODO
+2. 客户端初始化 (浏览器)
+    └── GET /api/plugins/client → 获取清单列表
+        → pluginManager.register(manifest)
+        → loadClientPlugins()
+            └── 对每个有 clientScript 的插件:
+                import(/api/plugin/{id}/client)
+                  → API 读取 plugins/{id}/{clientScript}
+                  → 返回 JS (Content-Type: application/javascript)
+                  → 浏览器执行模块 → 调用 export default 函数
 ```
+
+### 客户端插件 API 端点
+
+| 端点 | 方法 | 说明 |
+|---|---|---|
+| `/api/plugins/client` | GET | 返回所有已发现的 PluginManifest[] |
+| `/api/plugin/{pluginId}/client` | GET | 读取并返回插件的 clientScript 文件 |
 
 ### PluginManifest
 
@@ -105,7 +115,7 @@ Registry<T>                     (src/utils/register.ts)
 interface PluginManifest extends Registerable {
     version: string;
     serverScript?: string;   // 文件名（如 "server.ts"）
-    clientScript?: string;   // 文件名（如 "client.js"）
+    clientScript?: string;   // 文件名（如 "client.ts"）
     directory?: string;      // 自动填充：插件文件夹的 file:// URL
 }
 ```

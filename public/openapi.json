@@ -45,6 +45,32 @@
           "content"
         ]
       },
+      "EntryModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "编码，同预设下唯一"
+          },
+          "code": {
+            "type": "string",
+            "description": "名称"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称"
+          }
+        },
+        "required": [
+          "id",
+          "disabled",
+          "code",
+          "name"
+        ]
+      },
       "LlmapiModel": {
         "type": "object",
         "properties": {
@@ -66,9 +92,18 @@
             "type": "string"
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "模型供应者"
+          },
+          "provider": {
+            "type": "string",
+            "description": "api key secret"
           },
           "key": {
+            "type": "string",
+            "description": "api key secret"
+          },
+          "builder": {
             "type": "string"
           }
         },
@@ -77,60 +112,7 @@
           "version"
         ]
       },
-      "LlmInputModel": {
-        "type": "object",
-        "properties": {
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "type": "string",
-                  "nullable": false
-                },
-                "content": {
-                  "type": "string",
-                  "nullable": false
-                },
-                "name": {
-                  "type": "string",
-                  "nullable": true
-                }
-              },
-              "required": [
-                "role",
-                "content"
-              ]
-            },
-            "nullable": false
-          }
-        },
-        "required": [
-          "messages"
-        ]
-      },
-      "LlmMessage": {
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string",
-            "nullable": false
-          },
-          "content": {
-            "type": "string",
-            "nullable": false
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "role",
-          "content"
-        ]
-      },
+      "LlmInputModel": {},
       "PagedResult": {
         "type": "object",
         "properties": {
@@ -189,9 +171,18 @@
                   "type": "string"
                 },
                 "version": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "模型供应者"
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "api key secret"
                 },
                 "key": {
+                  "type": "string",
+                  "description": "api key secret"
+                },
+                "builder": {
                   "type": "string"
                 }
               },
@@ -335,6 +326,128 @@
                     "version"
                   ],
                   "nullable": true
+                },
+                "histories": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "disabled": {
+                        "type": "boolean",
+                        "description": "编码，同预设下唯一"
+                      },
+                      "code": {
+                        "type": "string",
+                        "description": "名称"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "名称"
+                      },
+                      "outputId": {
+                        "type": "number"
+                      },
+                      "summary": {
+                        "type": "boolean"
+                      },
+                      "variables": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "inputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            },
+                            "variables": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "op": {
+                                    "type": "string"
+                                  },
+                                  "path": {
+                                    "type": "string"
+                                  },
+                                  "value": {}
+                                },
+                                "required": [
+                                  "op",
+                                  "path",
+                                  "value"
+                                ]
+                              }
+                            },
+                            "properties": {
+                              "type": "object",
+                              "additionalProperties": {}
+                            },
+                            "id": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ]
+                        }
+                      },
+                      "outputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            },
+                            "variables": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "op": {
+                                    "type": "string"
+                                  },
+                                  "path": {
+                                    "type": "string"
+                                  },
+                                  "value": {}
+                                },
+                                "required": [
+                                  "op",
+                                  "path",
+                                  "value"
+                                ]
+                              }
+                            },
+                            "properties": {
+                              "type": "object",
+                              "additionalProperties": {}
+                            },
+                            "id": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "outputId",
+                      "summary",
+                      "variables",
+                      "inputs",
+                      "outputs"
+                    ]
+                  }
                 }
               },
               "required": [
@@ -367,6 +480,44 @@
             "description": "可选搜索项"
           }
         }
+      },
+      "PluginManifest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": "string",
+            "description": "后端脚本名称"
+          },
+          "serverScript": {
+            "type": "string",
+            "description": "前端脚本名称"
+          },
+          "clientScript": {
+            "type": "string",
+            "description": "前端脚本名称"
+          },
+          "path": {
+            "type": "string",
+            "description": "目录, 加载后赋值, 默认空字符串"
+          },
+          "directory": {
+            "type": "string",
+            "description": "目录, 加载后赋值, 默认空字符串"
+          }
+        },
+        "required": [
+          "version",
+          "path"
+        ]
       },
       "PresetModel": {
         "type": "object",
@@ -424,6 +575,23 @@
         ]
       },
       "ReadableStream": {},
+      "Registerable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
       "RequireModel": {
         "type": "object",
         "properties": {
@@ -506,6 +674,128 @@
                   "version"
                 ],
                 "nullable": true
+              },
+              "histories": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "disabled": {
+                      "type": "boolean",
+                      "description": "编码，同预设下唯一"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "名称"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "名称"
+                    },
+                    "outputId": {
+                      "type": "number"
+                    },
+                    "summary": {
+                      "type": "boolean"
+                    },
+                    "variables": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "inputs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "variables": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "op": {
+                                  "type": "string"
+                                },
+                                "path": {
+                                  "type": "string"
+                                },
+                                "value": {}
+                              },
+                              "required": [
+                                "op",
+                                "path",
+                                "value"
+                              ]
+                            }
+                          },
+                          "properties": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
+                          "id": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    },
+                    "outputs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "variables": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "op": {
+                                  "type": "string"
+                                },
+                                "path": {
+                                  "type": "string"
+                                },
+                                "value": {}
+                              },
+                              "required": [
+                                "op",
+                                "path",
+                                "value"
+                              ]
+                            }
+                          },
+                          "properties": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
+                          "id": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "outputId",
+                    "summary",
+                    "variables",
+                    "inputs",
+                    "outputs"
+                  ]
+                }
               }
             },
             "required": [
@@ -570,11 +860,247 @@
                 "requires"
               ]
             }
+          },
+          "llmapi": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "entries": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "code": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string",
+                "description": "模型供应者"
+              },
+              "provider": {
+                "type": "string",
+                "description": "api key secret"
+              },
+              "key": {
+                "type": "string",
+                "description": "api key secret"
+              },
+              "builder": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "version"
+            ]
           }
         },
         "required": [
           "story",
-          "presets"
+          "presets",
+          "llmapi"
+        ]
+      },
+      "StoryHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "编码，同预设下唯一"
+          },
+          "code": {
+            "type": "string",
+            "description": "名称"
+          },
+          "name": {
+            "type": "string",
+            "description": "名称"
+          },
+          "outputId": {
+            "type": "number"
+          },
+          "summary": {
+            "type": "boolean"
+          },
+          "variables": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "variables": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "op": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "value": {}
+                    },
+                    "required": [
+                      "op",
+                      "path",
+                      "value"
+                    ]
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "id": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "variables": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "op": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "value": {}
+                    },
+                    "required": [
+                      "op",
+                      "path",
+                      "value"
+                    ]
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "id": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "outputId",
+          "summary",
+          "variables",
+          "inputs",
+          "outputs"
+        ]
+      },
+      "StoryHistoryMessage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "op",
+                "path",
+                "value"
+              ]
+            }
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "content",
+          "variables",
+          "properties"
+        ]
+      },
+      "StoryInputMessage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "op",
+                "path",
+                "value"
+              ]
+            }
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
         ]
       },
       "StoryModel": {
@@ -627,11 +1153,188 @@
               "version"
             ],
             "nullable": true
+          },
+          "histories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "disabled": {
+                  "type": "boolean",
+                  "description": "编码，同预设下唯一"
+                },
+                "code": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "名称"
+                },
+                "outputId": {
+                  "type": "number"
+                },
+                "summary": {
+                  "type": "boolean"
+                },
+                "variables": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string"
+                      },
+                      "variables": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "op": {
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string"
+                            },
+                            "value": {}
+                          },
+                          "required": [
+                            "op",
+                            "path",
+                            "value"
+                          ]
+                        }
+                      },
+                      "properties": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "id": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  }
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string"
+                      },
+                      "variables": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "op": {
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string"
+                            },
+                            "value": {}
+                          },
+                          "required": [
+                            "op",
+                            "path",
+                            "value"
+                          ]
+                        }
+                      },
+                      "properties": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "id": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "outputId",
+                "summary",
+                "variables",
+                "inputs",
+                "outputs"
+              ]
+            }
           }
         },
         "required": [
           "requires",
           "llmapi"
+        ]
+      },
+      "StoryOutputMessage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "op",
+                "path",
+                "value"
+              ]
+            }
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "VariableChangeModel": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "value": {}
+        },
+        "required": [
+          "op",
+          "path",
+          "value"
         ]
       }
     },
@@ -1330,6 +2033,78 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/plugins": {
+      "get": {
+        "operationId": "get-plugins",
+        "summary": "获取预设分页列表",
+        "description": "",
+        "tags": [
+          "Plugins"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PluginManifest"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/plugins/{pluginId}": {
+      "get": {
+        "operationId": "get-plugins-{pluginId}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Plugins"
+        ],
+        "parameters": [
+          {
+            "name": "pluginId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: pluginId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2445,6 +3220,9 @@
   "tags": [
     {
       "name": "Llmapis"
+    },
+    {
+      "name": "Plugins"
     },
     {
       "name": "Presets"

@@ -82,13 +82,31 @@ const sorted = registry.getSorted();
 
 ## 创建外部插件
 
+### 完整数据流
+
+```
+插件目录 (plugins/my-plugin/)
+    │
+    ├─ 服务端启动: getPluginManifests() 扫描文件系统
+    │     → 读取 manifest.json → 注册到 pluginManager
+    │
+    ├─ 客户端初始化: GET /api/plugins/client
+    │     → 获取所有插件清单
+    │
+    └─ 客户端加载: import(/api/plugin/{pluginId}/client)
+          → API 从 plugins/ 目录读取 client.js
+          → 返回 JS 文本 (Content-Type: application/javascript)
+          → 浏览器 import() 执行模块
+          → 调用 export default 函数
+```
+
 ### 1. 创建插件目录
 
 ```
 plugins/my-plugin/
 ├── manifest.json
-├── server.ts
-└── client.js      # 需要编译为 JS
+├── server.ts          # 服务端脚本（可选）
+└── client.js          # 客户端脚本（纯 JS 即可，无需打包）
 ```
 
 ### 2. 编写 manifest.json
@@ -102,31 +120,56 @@ plugins/my-plugin/
 }
 ```
 
-### 3. 编写服务端脚本
+- `id`：唯一标识符，也是 API 路径中的 `[pluginId]`
+- `clientScript`：客户端脚本文件名。简单插件直接写 `.js`，无需打包。有依赖的复杂插件需要自行打包为单文件
+
+### 3. 编写客户端脚本
+
+```js
+// plugins/my-plugin/client.js
+// 导出 default 函数，加载时自动调用
+export default function register() {
+    console.log("[my-plugin] ✅ 客户端插件已加载！");
+
+    // 在这里注册到任意客户端注册表
+    // 例如注册一个业务导航标签：
+    // businessNavigationManager.register({ id: "my-tab", ... });
+}
+```
+
+**不需要打包**：如果插件没有外部依赖，直接写 `.js` 文件即可。API 以 `application/javascript` 返回，浏览器 `import()` 原生支持 ES module 语法。
+
+**需要打包**：如果插件依赖 npm 包，需要用 esbuild/rollup 打包为单个 `.js` 文件，放在插件目录下。
+
+### 4. 编写服务端脚本（可选）
 
 ```ts
 // plugins/my-plugin/server.ts
 export default function register() {
-    // 注册到已有的注册表
-    // 例如注册一个新的 ConversationProvider
-    console.log("My plugin server loaded");
+    console.log("[my-plugin] Server plugin loaded");
+    // 注册到服务端注册表
 }
 ```
 
-### 4. 编写客户端脚本
+### 5. 测试插件
+
+项目已包含一个测试插件 `plugins/test-plugin/`：
 
 ```js
-// plugins/my-plugin/client.js
-// 编译后的 JS 文件
+// plugins/test-plugin/client.js
 export default function register() {
-    // 注册到客户端注册表
-    console.log("My plugin client loaded");
+    console.log("[test-plugin] ✅ 客户端插件已加载！");
+    console.log("[test-plugin] 当前 URL:", window.location.href);
 }
 ```
 
-### 5. 放置并启动
+启动 `npm run dev`，打开浏览器控制台，应该能看到 `[test-plugin]` 的日志输出。
 
-将插件目录放入 `plugins/` 文件夹，启动应用后自动发现并加载。
+### 6. 调试
+
+- 服务端日志：终端查看 `[plugin loader]` 和 `[plugin manager]` 前缀
+- 客户端日志：浏览器控制台查看
+- API 测试：直接访问 `http://localhost:3000/api/plugin/test-plugin/client` 查看返回的 JS
 
 ## 创建内部模块注册
 

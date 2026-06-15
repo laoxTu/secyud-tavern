@@ -128,6 +128,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/plugins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取预设分页列表 */
+        get: operations["get-plugins"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plugins/{pluginId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-plugins-{pluginId}"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/presets": {
         parameters: {
             query?: never;
@@ -374,6 +407,15 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        EntryModel: {
+            id: number;
+            /** @description 编码，同预设下唯一 */
+            disabled: boolean;
+            /** @description 名称 */
+            code: string;
+            /** @description 名称 */
+            name: string;
+        };
         LlmapiModel: {
             id?: string;
             name?: string;
@@ -384,21 +426,15 @@ export interface components {
                 [key: string]: unknown;
             };
             code: string;
+            /** @description 模型供应者 */
             version: string;
+            /** @description api key secret */
+            provider?: string;
+            /** @description api key secret */
             key?: string;
+            builder?: string;
         };
-        LlmInputModel: {
-            messages: {
-                role: string;
-                content: string;
-                name?: string | null;
-            }[];
-        };
-        LlmMessage: {
-            role: string;
-            content: string;
-            name?: string | null;
-        };
+        LlmInputModel: unknown;
         PagedResult: {
             data: unknown[];
             totalCount: number;
@@ -418,8 +454,13 @@ export interface components {
                     [key: string]: unknown;
                 };
                 code: string;
+                /** @description 模型供应者 */
                 version: string;
+                /** @description api key secret */
+                provider?: string;
+                /** @description api key secret */
                 key?: string;
+                builder?: string;
             }[];
             totalCount: number;
         };
@@ -461,6 +502,44 @@ export interface components {
                     code: string;
                     version: string;
                 } | null;
+                histories?: {
+                    id?: number;
+                    /** @description 编码，同预设下唯一 */
+                    disabled?: boolean;
+                    /** @description 名称 */
+                    code?: string;
+                    /** @description 名称 */
+                    name?: string;
+                    outputId: number;
+                    summary: boolean;
+                    variables: {
+                        [key: string]: unknown;
+                    };
+                    inputs: {
+                        content?: string;
+                        variables?: {
+                            op: string;
+                            path: string;
+                            value: unknown;
+                        }[];
+                        properties?: {
+                            [key: string]: unknown;
+                        };
+                        id: number;
+                    }[];
+                    outputs: {
+                        content?: string;
+                        variables?: {
+                            op: string;
+                            path: string;
+                            value: unknown;
+                        }[];
+                        properties?: {
+                            [key: string]: unknown;
+                        };
+                        id: number;
+                    }[];
+                }[];
             }[];
             totalCount: number;
         };
@@ -471,6 +550,20 @@ export interface components {
             pageSize?: number;
             /** @description 可选搜索项 */
             search?: unknown;
+        };
+        PluginManifest: {
+            id?: string;
+            requires?: string[];
+            /** @description 后端脚本名称 */
+            version: string;
+            /** @description 前端脚本名称 */
+            serverScript?: string;
+            /** @description 前端脚本名称 */
+            clientScript?: string;
+            /** @description 目录, 加载后赋值, 默认空字符串 */
+            path: string;
+            /** @description 目录, 加载后赋值, 默认空字符串 */
+            directory?: string;
         };
         PresetModel: {
             id?: string;
@@ -490,6 +583,10 @@ export interface components {
             }[];
         };
         ReadableStream: unknown;
+        Registerable: {
+            id: string;
+            requires?: string[];
+        };
         RequireModel: {
             code: string;
             version: string;
@@ -520,6 +617,44 @@ export interface components {
                     code: string;
                     version: string;
                 } | null;
+                histories?: {
+                    id?: number;
+                    /** @description 编码，同预设下唯一 */
+                    disabled?: boolean;
+                    /** @description 名称 */
+                    code?: string;
+                    /** @description 名称 */
+                    name?: string;
+                    outputId: number;
+                    summary: boolean;
+                    variables: {
+                        [key: string]: unknown;
+                    };
+                    inputs: {
+                        content?: string;
+                        variables?: {
+                            op: string;
+                            path: string;
+                            value: unknown;
+                        }[];
+                        properties?: {
+                            [key: string]: unknown;
+                        };
+                        id: number;
+                    }[];
+                    outputs: {
+                        content?: string;
+                        variables?: {
+                            op: string;
+                            path: string;
+                            value: unknown;
+                        }[];
+                        properties?: {
+                            [key: string]: unknown;
+                        };
+                        id: number;
+                    }[];
+                }[];
             };
             presets: {
                 id?: string;
@@ -538,6 +673,85 @@ export interface components {
                     version: string;
                 }[];
             }[];
+            llmapi: {
+                id?: string;
+                name?: string;
+                entries?: {
+                    [key: string]: unknown;
+                };
+                content?: {
+                    [key: string]: unknown;
+                };
+                code: string;
+                /** @description 模型供应者 */
+                version: string;
+                /** @description api key secret */
+                provider?: string;
+                /** @description api key secret */
+                key?: string;
+                builder?: string;
+            };
+        };
+        StoryHistory: {
+            id?: number;
+            /** @description 编码，同预设下唯一 */
+            disabled?: boolean;
+            /** @description 名称 */
+            code?: string;
+            /** @description 名称 */
+            name?: string;
+            outputId: number;
+            summary: boolean;
+            variables: {
+                [key: string]: unknown;
+            };
+            inputs: {
+                content?: string;
+                variables?: {
+                    op: string;
+                    path: string;
+                    value: unknown;
+                }[];
+                properties?: {
+                    [key: string]: unknown;
+                };
+                id: number;
+            }[];
+            outputs: {
+                content?: string;
+                variables?: {
+                    op: string;
+                    path: string;
+                    value: unknown;
+                }[];
+                properties?: {
+                    [key: string]: unknown;
+                };
+                id: number;
+            }[];
+        };
+        StoryHistoryMessage: {
+            content: string;
+            variables: {
+                op: string;
+                path: string;
+                value: unknown;
+            }[];
+            properties: {
+                [key: string]: unknown;
+            };
+        };
+        StoryInputMessage: {
+            content?: string;
+            variables?: {
+                op: string;
+                path: string;
+                value: unknown;
+            }[];
+            properties?: {
+                [key: string]: unknown;
+            };
+            id: number;
         };
         StoryModel: {
             id?: string;
@@ -556,6 +770,61 @@ export interface components {
                 code: string;
                 version: string;
             } | null;
+            histories?: {
+                id?: number;
+                /** @description 编码，同预设下唯一 */
+                disabled?: boolean;
+                /** @description 名称 */
+                code?: string;
+                /** @description 名称 */
+                name?: string;
+                outputId: number;
+                summary: boolean;
+                variables: {
+                    [key: string]: unknown;
+                };
+                inputs: {
+                    content?: string;
+                    variables?: {
+                        op: string;
+                        path: string;
+                        value: unknown;
+                    }[];
+                    properties?: {
+                        [key: string]: unknown;
+                    };
+                    id: number;
+                }[];
+                outputs: {
+                    content?: string;
+                    variables?: {
+                        op: string;
+                        path: string;
+                        value: unknown;
+                    }[];
+                    properties?: {
+                        [key: string]: unknown;
+                    };
+                    id: number;
+                }[];
+            }[];
+        };
+        StoryOutputMessage: {
+            content?: string;
+            variables?: {
+                op: string;
+                path: string;
+                value: unknown;
+            }[];
+            properties?: {
+                [key: string]: unknown;
+            };
+            id: number;
+        };
+        VariableChangeModel: {
+            op: string;
+            path: string;
+            value: unknown;
         };
     };
     responses: {
@@ -993,6 +1262,56 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-plugins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PluginManifest"][];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-plugins-{pluginId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: pluginId
+                 * @example 123
+                 */
+                pluginId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
