@@ -89,9 +89,20 @@ Secyud Tavern 换了一种思路：
 
 ```bash
 npm install
-npm run db-migrate # 初始化数据库
-npm run dev        # 启动开发服务器 → http://localhost:3000
+npm run db-migrate   # 初始化数据库
+npm run dev          # 启动开发服务器 → http://localhost:3000
 ```
+
+### 可用命令
+
+| 命令 | 说明 |
+|---|---|
+| `npm run dev` | 启动开发服务器 |
+| `npm run build` | 生产构建 |
+| `npm run db-migrate` | 数据库迁移 |
+| `npm run gen-stubs` | 生成插件 API stub（新增模块后运行） |
+| `npm run build-plugin <name>` | 打包插件（自动 gen-stubs） |
+| `npm run test` | 运行测试 |
 
 ## 项目结构
 
@@ -100,20 +111,27 @@ src/
 ├── app/           # Next.js 页面与 REST API
 ├── business/      # 数据持久化（Repository 工厂 + Drizzle ORM + SQLite）
 ├── components/    # UI 组件（ui 基元 / custom 组合 / template 页面模板）
-├── engines/       # 驱动引擎（面向不同接入点的功能插件）
+├── engines/       # 驱动引擎
 │   ├── macros/    #   宏系统 ──┐
 │   ├── lorebooks/ #   世界书    │
-│   ├── regexes/   #   正则替换  ├─ 预设引擎（在预设编辑器中配置）
+│   ├── regexes/   #   正则替换  ├─ 预设引擎（预设编辑器中配置）
 │   ├── scripts/   #   脚本      │
 │   └── styles/    #   样式 ────┘
-│   └── deepseek/  #   Deepseek API ── 模型引擎（在模型配置中配置）
+│   └── deepseek/  #   Deepseek ── 模型引擎（模型配置中配置）
 ├── handler/       # 请求拦截器管道（参数解析 + 错误处理）
-├── llmapis/       # LLM API 抽象层（模型配置 + 引擎注册 + 输入构建）
-├── plugins/       # 插件系统 + Registry 注册表基础设施
+├── lib/           # 通用工具（cn() 类名合并）
+├── llmapis/       # LLM API 抽象层（配置 + 引擎 + 输入构建）
+├── plugins/       # 插件系统（Registry 注册表 + 客户端插件框架）
+│   └── client/
+│       └── api.ts #   控制反转容器（def() 注册 + pluginApi）
 ├── presets/       # 预设管理
 ├── slots/         # 会话运行时（ConversationProvider 生命周期）
 ├── stories/       # 故事/存档系统
 └── utils/         # 工具函数（加密、Registry 拓扑排序、流读取）
+
+plugins/           # 外部插件目录
+├── _shared/       #   构建共享（shim / stub / alias）
+└── project-info/  #   示例插件
 ```
 
 ### 引擎执行流程
@@ -155,19 +173,16 @@ AI 调用 (page.tsx → POST /api/llmapis/{id}/chat):
 
 ## 文档
 
-详细文档见 `docs/` 目录
-每个目录含 `design.md`（设计）和 `using.md`（使用指南）。
+详细文档见 `docs/` 目录，每个模块含 `design.md` 和 `using.md`。
 
 ## 后续计划
 
-- [ ] **插件系统完善**：前端插件加载机制尚需设计，欢迎建议
-- [ ] **渲染模式改进**：由预设定义渲染方式提高自由度，考虑降低上手难度
-- [ ] **提示词拼接方式**：目前已支持默认拼接（高缓存命中率），后续加入宏后尝试自由规划拼接
-- [ ] **其他模型 API**：欢迎贡献插件
-- [ ] **SillyTavern 角色卡导入**：按规则导入到预设中（结构差异较大）
-- [ ] **思维链支持**：作为独立字段还是直接放在正文中
-- [ ] **历史记录管理**：已考虑缓存机制，需要一并设计
-- [ ] **正则测试工具**：编辑器内嵌正则匹配测试
+- [ ] **其他模型 API**：欢迎贡献
+- [ ] **SillyTavern 角色卡导入**：按规则导入到预设中
+- [ ] **思维链支持**：独立字段或正文内嵌
+- [ ] **历史记录管理**：带缓存的消息编辑
+- [ ] **正则测试工具**：编辑器内嵌匹配测试
+- [ ] **宏系统增强**：注入 variables、history 到模板上下文
 
 ## 开源
 

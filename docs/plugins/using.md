@@ -1,259 +1,124 @@
 # Plugins 模块 — 使用指南
 
-## 使用 Registry
+## 创建客户端插件
 
-### 创建注册表
-
-```ts
-import { Registry, Registerable } from "@/utils/register";
-import { ClientRegistry } from "@/plugins/client";
-import { ServerRegistry } from "@/plugins/server";
-
-// 通用注册表
-const registry = new Registry<MyItem>("my-registry");
-
-// 客户端注册表
-const clientRegistry = new ClientRegistry<MyItem>("my-client-registry");
-
-// 服务端注册表
-const serverRegistry = new ServerRegistry<MyItem>("my-server-registry");
-```
-
-### 注册与注销
-
-```ts
-// 注册
-registry.register({
-    id: "item-1",
-    // ... 其他属性
-});
-
-// 批量注册
-registry.register(item1, item2, item3);
-
-// 注销
-registry.unregister("item-1");
-
-// 检查
-registry.has("item-1");  // boolean
-registry.getIds();       // string[]
-```
-
-### 依赖声明
-
-```ts
-registry.register({
-    id: "step-2",
-    requires: ["step-1"],  // step-2 在 step-1 之后执行
-});
-
-registry.register({
-    id: "step-3",
-    requires: ["step-1", "step-2"],  // 可声明多个依赖
-});
-```
-
-### 遍历执行
-
-```ts
-// 按拓扑排序遍历（顺序执行）
-await registry.use(async (item) => {
-    console.log(`Processing ${item.id}`);
-    await doSomething(item);
-});
-
-// 带提前终止条件
-let count = 0;
-await registry.use(
-    async (item) => {
-        count++;
-        console.log(item.id);
-    },
-    () => count >= 5  // 处理 5 个后停止
-);
-```
-
-### 获取排序结果
-
-```ts
-const sorted = registry.getSorted();
-// 返回 T[]，已按依赖关系排序（结果被缓存）
-```
-
-## 创建外部插件
-
-### 完整数据流
-
-```
-插件目录 (plugins/my-plugin/)
-    │
-    ├─ 服务端启动: getPluginManifests() 扫描文件系统
-    │     → 读取 manifest.json → 注册到 pluginManager
-    │
-    ├─ 客户端初始化: GET /api/plugins/client
-    │     → 获取所有插件清单
-    │
-    └─ 客户端加载: import(/api/plugin/{pluginId}/client)
-          → API 从 plugins/ 目录读取 client.ts
-          → 返回 JS 文本 (Content-Type: application/javascript)
-          → 浏览器 import() 执行模块
-          → 调用 export default 函数
-```
-
-### 1. 创建插件目录
+### 1. 目录结构
 
 ```
 plugins/my-plugin/
-├── manifest.json
-├── server.ts          # 服务端脚本（可选）
-└── client.ts          # 客户端脚本（纯 JS 即可，无需打包）
+├── manifest.json     # 插件清单
+├── client.tsx        # 客户端入口
+└── server.ts         # 服务端入口（可选）
 ```
 
-### 2. 编写 manifest.json
+### 2. manifest.json
 
 ```json
 {
     "id": "my-plugin",
     "version": "1.0.0",
-    "serverScript": "server.ts",
-    "clientScript": "client.ts"
+    "clientScript": "client.js"
 }
 ```
 
-- `id`：唯一标识符，也是 API 路径中的 `[pluginId]`
-- `clientScript`：客户端脚本文件名。简单插件直接写 `.js`，无需打包。有依赖的复杂插件需要自行打包为单文件
+- `id`：唯一标识符，也是 API 路径 `[pluginId]`
+- `clientScript`：指向构建产物 `client.js`
 
-### 3. 编写客户端脚本
+### 3. 编写插件
 
-```js
-// plugins/my-plugin/client.ts
-// 导出 default 函数，加载时自动调用
+```tsx
+// plugins/my-plugin/client.tsx
+import { businessNavigationManager } from '@/business/client/navigation';
+import React from 'react';
+
+function Content() {
+    return (
+        <div className="p-8">
+            <h1 className="text-xl font-bold">My Plugin</h1>
+            <p>Hello from plugin!</p>
+        </div>
+    );
+}
+
 export default function register() {
-    console.log("[my-plugin] ✅ 客户端插件已加载！");
-
-    // 在这里注册到任意客户端注册表
-    // 例如注册一个业务导航标签：
-    // businessNavigationManager.register({ id: "my-tab", ... });
-}
-```
-
-**不需要打包**：如果插件没有外部依赖，直接写 `.js` 文件即可。API 以 `application/javascript` 返回，浏览器 `import()` 原生支持 ES module 语法。
-
-**需要打包**：如果插件依赖 npm 包，需要用 esbuild/rollup 打包为单个 `.js` 文件，放在插件目录下。
-
-### 4. 编写服务端脚本（可选）
-
-```ts
-// plugins/my-plugin/server.ts
-export default function register() {
-    console.log("[my-plugin] Server plugin loaded");
-    // 注册到服务端注册表
-}
-```
-
-### 5. 测试插件
-
-项目已包含一个测试插件 `plugins/test-plugin/`：
-
-```js
-// plugins/test-plugin/client.ts
-export default function register() {
-    console.log("[test-plugin] ✅ 客户端插件已加载！");
-    console.log("[test-plugin] 当前 URL:", window.location.href);
-}
-```
-
-启动 `npm run dev`，打开浏览器控制台，应该能看到 `[test-plugin]` 的日志输出。
-
-### 6. 调试
-
-- 服务端日志：终端查看 `[plugin loader]` 和 `[plugin manager]` 前缀
-- 客户端日志：浏览器控制台查看
-- API 测试：直接访问 `http://localhost:3000/api/plugin/test-plugin/client` 查看返回的 JS
-
-## 创建内部模块注册
-
-内部模块（如引擎）不通过文件系统发现，而是静态注册：
-
-```ts
-// src/engines/my-engine/client/index.ts
-import { myRegistry } from "@/some-module/registry";
-
-export function registerMyEngineClient() {
-    myRegistry.register({
-        id: "my-engine",
-        requires: ["some-dependency"],
-        // ... 其他注册属性
+    businessNavigationManager.register({
+        id: "my-plugin",
+        label: () => <span>我的插件</span>,
+        component: Content,
     });
 }
 ```
 
-```ts
-// src/client-registerer.ts
-import { registerMyEngineClient } from "@/engines/my-engine/client";
+### 4. 构建
 
-async function loadClientPlugins() {
-    // ...
-    registerMyEngineClient();
-    // ...
+```bash
+npm run build-plugin my-plugin
+```
+
+### 5. 启动
+
+```bash
+npm run dev
+```
+
+导航栏出现 "我的插件" Tab，点击显示插件内容。
+
+## 可用的导入
+
+插件可以使用原生 `@/` 路径导入以下内容：
+
+| 导入路径 | 导出 | 类型 |
+|---|---|---|
+| `@/business/client/navigation` | `businessNavigationManager` | TabManager |
+| `@/slots/client/conversation` | `conversationManager`, `generateCurrentVariables`, `getOpeningHistory`, `generateInputBuildContext` | 注册表 + 工具函数 |
+| `@/components/ui/card` | `Card`, `CardHeader`, `CardTitle`, ... | UI 组件 |
+| `@/components/ui/button` | `Button`, `buttonVariants` | UI 组件 |
+| `@/components/ui/*` | 所有 UI 组件 | 全部可用 |
+| `@/engines/lorebooks/client/match` | `lorebookMatcherRegistry`, `tryFillActiveLorebooks` | 匹配器 |
+| `@/llmapis/client/input-builder` | `llmapiInputBuilderManager` | 输入构建 |
+| `@/llmapis/client/config` | `llmapiConfigRegistry` | 配置 |
+
+所有通过 `def()` 注册的模块都可导入。运行 `npm run gen-stubs` 可查看当前注册了哪些模块。
+
+## 单例规则
+
+以下模块使用宿主单例（通过 stub 引用，不打包副本）：
+- 所有注册表（businessNavigationManager、conversationManager 等）
+- React（通过 `window.__PLUGIN_REACT__`）
+
+以下模块正常打包（无状态，可复制）：
+- UI 组件（`@/components/ui/*`）
+- 工具函数（`@/lib/utils` 的 `cn`）
+
+## 添加新模块到插件 API
+
+在模块文件中加一行 `def()`：
+
+```ts
+import { def } from '@/plugins/client/api';
+
+export const myExport = ...;
+
+def('@/path/to/module', { myExport });
+```
+
+然后运行 `npm run gen-stubs` 重新生成 stub。插件即可 `import { myExport } from '@/path/to/module'`。
+
+## 调试
+
+- 构建产物在 `plugins/{name}/client.js`
+- 浏览器控制台查看 `[plugin manager]` 前缀日志
+- 直接访问 `http://localhost:3000/api/plugins/{pluginId}` 查看返回的 JS
+- `window.__PLUGIN_API__` 可在浏览器控制台查看所有可用导出
+
+## 服务端插件
+
+```ts
+// plugins/my-plugin/server.ts
+export default function register() {
+    console.log("[my-plugin] Server loaded");
+    // 注册到服务端注册表
 }
 ```
 
-## 插件加载流程
-
-```ts
-// src/client-registerer.ts — 客户端加载顺序
-async function loadClientPlugins() {
-    // 1. 先注册内置模块
-    registerPresetClient();
-    registerStoryClient();
-    registerLlmapiClient();
-    registerDeepseekClient();
-    registerLorebooksClient();
-    registerRegexesClient();
-    registerStylesClient();
-    registerScriptsClient();
-
-    // 2. 再加载外部插件
-    await pluginManager.loadClientPlugins();
-}
-```
-
-```ts
-// src/server-registerer.ts — 服务端加载顺序
-export async function registerServerPlugins() {
-    // 1. 注册拦截器
-    interceptor.register(errorInterceptor, paramInterceptor);
-
-    // 2. 注册内置引擎
-    registerDeepseekServer();
-    registerLorebooksServer();
-    registerRegexesServer();
-    registerStylesServer();
-    registerScriptsServer();
-    registerHasher();
-
-    // 3. 加载外部插件
-    await pluginManager.loadServerPlugins();
-}
-```
-
-## PluginManager API
-
-```ts
-import { pluginManager } from "@/plugins/manager";
-
-// 手动注册（不走文件系统发现）
-pluginManager.register({
-    id: "manual-plugin",
-    version: "1.0.0",
-    serverScript: "server.ts",
-    directory: "file:///path/to/plugin",
-});
-
-// 加载服务端插件（懒加载，全局只执行一次）
-await pluginManager.loadServerPlugins();
-
-// 加载客户端插件
-await pluginManager.loadClientPlugins();
-```
+服务端插件通过 `import()` 动态加载（Node.js 运行时），可注册引擎、拦截器、存储提供者。
