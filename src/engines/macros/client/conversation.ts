@@ -8,16 +8,27 @@ import {
 } from "@/slots/client/conversation-models";
 import {EntryModel} from "@/business/models";
 import {Eta} from 'eta/core';
+import {generateCurrentVariables} from "@/slots/client/conversation";
+import {SlotModel} from "@/slots/models";
+import {StoryHistory} from "@/stories/models";
 
 const eta = new Eta();
+
+function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
+    const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
+    return {
+        ...macroObject,
+        variables: generateCurrentVariables(ctx.history, false),
+    }
+}
 
 export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [llmapiModuleName],
     onProcessInput: async (ctx) => {
-        const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
         for (const message of ctx.messages) {
-            message.content = eta.renderString(message.content, macroObject);
+            message.content = eta.renderString(
+                message.content, buildMacroObject(ctx));
         }
     },
 }
@@ -41,12 +52,10 @@ export const macroConversationProvider:
         ctx.slot.content[engineArrayName] = macroObject;
     },
     onRenderStream: async (ctx) => {
-        const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
-        ctx.output = eta.renderString(ctx.output, macroObject);
+        ctx.output = eta.renderString(ctx.output, buildMacroObject(ctx));
     },
-
     onRenderContent: async (ctx) => {
-        const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
+        const macroObject = buildMacroObject(ctx);
         for (let i = 0; i < ctx.inputs.length; i++) {
             ctx.inputs[i] = eta.renderString(ctx.inputs[i], macroObject);
         }
