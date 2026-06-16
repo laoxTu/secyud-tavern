@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
     <!-- 全弧线酒杯 -->
-    <g fill="none" stroke="#1a1a1a" stroke-width="3.5" stroke-linecap="round">
+    <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
         <!-- 杯口弧线 -->
         <path d="M25 28 Q50 14 75 28"/>
         <!-- 杯体左侧弧 -->

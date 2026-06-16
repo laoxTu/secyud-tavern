@@ -11,7 +11,7 @@
     "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
     "db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
     "test": "vitest",
-    "build-plugin": "npm run gen-stubs && node scripts/build-plugin.mjs"
+    "build-plugin": "node scripts/build-plugin.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

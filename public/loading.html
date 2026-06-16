@@ -7,16 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes dash {
-            0%   { stroke-dashoffset: 180; }
-            50%  { stroke-dashoffset:  45; }
-            100% { stroke-dashoffset: 180; }
+            0% {
+                stroke-dashoffset: 180;
+            }
+            50% {
+                stroke-dashoffset: 45;
+            }
+            100% {
+                stroke-dashoffset: 180;
+            }
         }
+
         @keyframes rotate {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .spinner {
             animation: rotate 1.6s linear infinite;
         }
+
         .spinner circle {
             fill: none;
             stroke: #9ca3af;
@@ -25,10 +36,16 @@
             stroke-dasharray: 120;
             animation: dash 1.6s ease-in-out infinite;
         }
+
         @keyframes fade {
-            0%, 100% { opacity: 0.2; }
-            50%      { opacity: 0.6; }
+            0%, 100% {
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.6;
+            }
         }
+
         .dot-fade {
             animation: fade 1.4s ease-in-out infinite;
         }
@@ -36,22 +53,22 @@
 </head>
 <body class="bg-white min-h-screen flex items-center justify-center">
 
-    <div class="flex items-center gap-8">
-        <!-- 酒杯图标 -->
-        <img src="/favicon.svg" alt="" width="72" height="72" class="opacity-40" />
+<div class="flex items-center gap-8">
+    <!-- 酒杯图标 -->
+    <img src="/favicon.svg" alt="" width="72" height="72" class="opacity-40"/>
 
-        <!-- 右侧：圆环 + 三点 -->
-        <div class="flex flex-col items-center gap-5">
-            <svg class="spinner" width="28" height="28" viewBox="0 0 40 40">
-                <circle cx="20" cy="20" r="16" />
-            </svg>
-            <div class="flex gap-2">
-                <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0s"></span>
-                <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0.2s"></span>
-                <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0.4s"></span>
-            </div>
+    <!-- 右侧：圆环 + 三点 -->
+    <div class="flex flex-col items-center gap-5">
+        <svg class="spinner" width="28" height="28" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="16"/>
+        </svg>
+        <div class="flex gap-2">
+            <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0s"></span>
+            <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0.2s"></span>
+            <span class="block w-1.5 h-1.5 rounded-full bg-zinc-400 dot-fade" style="animation-delay: 0.4s"></span>
         </div>
     </div>
+</div>
 
 </body>
 </html>

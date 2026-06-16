@@ -2,7 +2,6 @@
  * 插件打包脚本
  * 用法: npm run build-plugin <plugin-name>
  *
- * 依赖: npm run gen-stubs（首次或新增模块后执行一次）
  *
  * 插件用原生 @/ 路径 + JSX，就像写内部代码：
  *   import { businessNavigationManager } from '@/business/client/navigation';
