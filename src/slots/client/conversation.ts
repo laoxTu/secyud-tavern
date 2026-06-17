@@ -68,6 +68,7 @@ export function getOpeningHistory(slot: SlotModel) {
             content: "",
             variables: [],
             properties: {},
+            reasoningContent: ""
         };
         const openingRemarks = slot.story.content?.openingRemarks ?? "";
         openingHistory = {

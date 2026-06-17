@@ -28,13 +28,18 @@ export interface LlmapiOutputContext extends SlotContextBase {
     history: StoryHistory,
 }
 
+export interface RenderData {
+    inputs: string[],
+    output: string,
+    reasoningContent: string,
+}
+
 export interface RenderContext extends SlotContextBase {
     document: Document;
     window: Window;
     history: StoryHistory,
     variables: any,
-    inputs: string[]
-    output: string
+    data: RenderData
 }
 
 export interface SlotInitializer extends Registerable {

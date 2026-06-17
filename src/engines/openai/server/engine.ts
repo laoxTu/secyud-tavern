@@ -77,7 +77,7 @@ export async function generateOpenAIReadableStreamReply(context: LlmapiRequestCo
     });
 
     function encode(value: any) {
-        return encoder.encode(`${JSON.stringify(value)},`);
+        return encoder.encode(`${JSON.stringify(value)}\n\n`);
     }
 }
 

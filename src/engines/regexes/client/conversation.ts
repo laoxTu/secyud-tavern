@@ -19,7 +19,7 @@ function applyRegexes(regexes: PresetRegexModel[], text?: string) {
     return text;
 }
 
-export const regexLlmapiInputProcesser:LlmapiInputProcesser = {
+export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
@@ -64,16 +64,19 @@ export const regexConversationProvider:
     },
     onRenderStream: async (ctx) => {
         const regexes = ctx.slot.content[outputRegexesName] as PresetRegexModel[];
-        ctx.output = applyRegexes(regexes, ctx.output);
+        const data = ctx.data;
+        data.output = applyRegexes(regexes, data.output);
     },
     onRenderContent: async (ctx) => {
         const regexes = ctx.slot.content[outputRegexesName] as PresetRegexModel[];
         console.debug('start apply regex for input');
-        for (let i = 0; i < ctx.inputs.length; i++) {
-            ctx.inputs[i] = applyRegexes(regexes, ctx.inputs[i]);
+        const data = ctx.data;
+        const inputs = data.inputs;
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i] = applyRegexes(regexes, inputs[i]);
         }
 
         console.debug('start apply regex for output');
-        ctx.output = applyRegexes(regexes, ctx.output);
+        data.output = applyRegexes(regexes, data.output);
     }
 };

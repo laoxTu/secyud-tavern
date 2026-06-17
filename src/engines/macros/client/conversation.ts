@@ -52,13 +52,16 @@ export const macroConversationProvider:
         ctx.slot.content[engineArrayName] = macroObject;
     },
     onRenderStream: async (ctx) => {
-        ctx.output = eta.renderString(ctx.output, buildMacroObject(ctx));
+        const data = ctx.data;
+        data.output = eta.renderString(data.output, buildMacroObject(ctx));
     },
     onRenderContent: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
-        for (let i = 0; i < ctx.inputs.length; i++) {
-            ctx.inputs[i] = eta.renderString(ctx.inputs[i], macroObject);
+        const data = ctx.data;
+        const inputs = data.inputs;
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i] = eta.renderString(inputs[i], macroObject);
         }
-        ctx.output = eta.renderString(ctx.output, macroObject);
+        data.output = eta.renderString(data.output, macroObject);
     }
 };

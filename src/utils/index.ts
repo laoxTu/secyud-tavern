@@ -75,10 +75,12 @@ export async function* readStream(stream: ReadableStream) {
             const {done, value} = await reader.read();
             if (done) break;
             const str = decoder.decode(value);
-            console.debug("stream output: ", str);
-            const arr = JSON.parse(`[${str.substring(0, str.length - 1)}]`);
-            for (const data of arr) {
-                yield data;
+            const arr = str
+                .split("\n\n")
+                .filter(u => u && u !== '');
+            for (const str of arr) {
+                console.debug("stream json: ", str);
+                yield JSON.parse(str);
             }
         }
     } finally {

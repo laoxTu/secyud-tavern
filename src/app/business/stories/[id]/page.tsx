@@ -248,8 +248,11 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         extractVariableChanges(currentOutput, content);
                         const streamContext: RenderContext = {
                             content: {},
-                            inputs: [],
-                            output: currentOutput.content,
+                            data: {
+                                inputs: [],
+                                output: currentOutput.content,
+                                reasoningContent: currentOutput.reasoningContent,
+                            },
                             window: frame.contentWindow!,
                             document: frame.contentDocument!,
                             history: history,
@@ -260,9 +263,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                             provider.onRenderStream(streamContext));
                         console.debug("render stream: ", chunkContent);
                         frame.contentWindow!.postMessage({
-                            type: "streamContent", data: {
-                                output: streamContext.output
-                            }
+                            type: "streamContent", data: streamContext.data
                         }, "*");
                     }
                 }
@@ -363,10 +364,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         try {
             console.debug('render history: ', history);
             console.debug('render iframe: ', iframe.current);
+            const currentOutput = getCurrentOutput(history);
             const renderContext: RenderContext = {
                 content: {},
-                inputs: history.inputs.map(u => u.content),
-                output: getCurrentOutput(history)?.content ?? "",
+                data: {
+                    inputs: history.inputs.map(u => u.content),
+                    output: currentOutput?.content ?? "",
+                    reasoningContent: currentOutput?.reasoningContent ?? "",
+                },
                 variables: generateCurrentVariables(history),
                 document: frame.contentDocument!,
                 window: frame.contentWindow!,
@@ -376,10 +381,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             await manager.contentRenderer.use(provider =>
                 provider.onRenderContent(renderContext));
             renderContext.window.postMessage({
-                type: "renderContent", data: {
-                    inputs: renderContext.inputs,
-                    output: renderContext.output
-                }
+                type: "renderContent", data: renderContext.data
             }, "*");
         } catch (err) {
             handleError(err);
