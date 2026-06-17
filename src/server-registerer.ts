@@ -10,6 +10,7 @@ import {registerScriptsServer} from "@/engines/scripts/server";
 import {registerRegexesServer} from "@/engines/regexes/server";
 import {registerLorebooksServer} from "@/engines/lorebooks/server";
 import {registerMacrosServer} from "@/engines/macros/server";
+import {registerOpenAIServer} from "@/engines/openai/server";
 
 let initialized = false;
 
@@ -22,6 +23,7 @@ export async function registerServerPlugins() {
         paramInterceptor
     );
     registerDeepseekServer();
+    registerOpenAIServer();
 
     registerLorebooksServer();
     registerRegexesServer();

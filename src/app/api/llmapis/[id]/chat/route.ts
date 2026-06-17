@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 
-import {llmapiRepository } from "@/llmapis/server/repository";
+import {llmapiRepository} from "@/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
 import {llmapiEngineRegistry} from "@/llmapis/server/engine";
 import {Hasher} from "@/utils/hasher";
@@ -21,7 +21,6 @@ export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
         const input = records.body as LlmapiInputModel;
-
         console.debug("llmapi chat:");
         console.debug(input);
 
@@ -48,6 +47,7 @@ export const POST = interceptor.createRoute(
             type: provider,
             config,
             apiKey,
+            signal: request.signal
         });
 
         return new NextResponse(stream, {

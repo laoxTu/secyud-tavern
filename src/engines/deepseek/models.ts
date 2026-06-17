@@ -11,6 +11,7 @@
         stream: boolean,
         temperature: number,// [0,2]
         top_p: number,// [0,1]
+        max_tokens: number,// [0, ...]
         logprobs: boolean,
         top_logprobs: number, // [0,20]
     }

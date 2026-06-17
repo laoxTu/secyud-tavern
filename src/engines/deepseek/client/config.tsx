@@ -26,7 +26,8 @@ const defaultConfig: DeepseekConfigModel = {
         temperature: 1,
         top_p: 1,
         logprobs: false,
-        top_logprobs: 10
+        top_logprobs: 10,
+        max_tokens: 0
     }
 } as const;
 
@@ -83,6 +84,14 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                         <Checkbox id={`${moduleName}-stream`} name={"stream"}
                                   defaultChecked={config.parameters.stream}/>
                     </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-max_tokens`}>
+                        {t(`${moduleName}.max_tokens`)}
+                    </FieldLabel>
+                    <Input id={`${moduleName}-max_tokens`} name={"max_tokens"}
+                           type={"number"} min={0} step={1}
+                           defaultValue={config?.parameters.max_tokens}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-logprobs`}>
@@ -160,6 +169,7 @@ export const config: LlmapiConfig =
                     reasoning_effort: data.get('reasoning_effort') as string,
                     stream: Boolean(data.get('stream') as string),
                     temperature: Number(data.get('temperature') as string),
+                    max_tokens: Math.trunc(Number(data.get('max_tokens') as string)),
                     top_p: Number(data.get('top_p') as string),
                     logprobs: Boolean(data.get('logprobs') as string),
                     top_logprobs: Number(data.get('top_logprobs') as string)

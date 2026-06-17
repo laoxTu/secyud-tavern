@@ -4,6 +4,7 @@ import {LlmapiInputModel} from "@/slots/models";
 export interface LlmapiRequestContext extends LlmapiInputModel {
     type: string,
     config: any,
+    signal: AbortSignal,
     apiKey: string,
 }
 

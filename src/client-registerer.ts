@@ -15,6 +15,7 @@ import {registerMacrosClient} from "@/engines/macros/client";
 import {registerSlotClient} from "@/slots/client";
 import {registerBusinessClient} from "@/business/client/index.js";
 import {registerComponents} from "@/components";
+import {registerOpenAIClient} from "@/engines/openai/client";
 
 if (typeof window !== 'undefined') {
     (window as any).__PLUGIN_REACT__ = React;
@@ -30,6 +31,7 @@ async function loadClientPlugins() {
     registerSlotClient();
 
     registerDeepseekClient();
+    registerOpenAIClient();
 
     registerLorebooksClient();
     registerRegexesClient();

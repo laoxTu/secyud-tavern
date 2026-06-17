@@ -1,16 +1,16 @@
 ﻿import {OpenAI} from "openai";
 import {LlmapiEngine, LlmapiRequestContext} from "@/llmapis/server/engine-models";
-import {DeepseekConfigModel, engineName} from "../models";
+import {OpenAIConfigModel, engineName} from "../models";
 import {Stream} from "openai/streaming";
 
 
-export class DeepseekEngine implements LlmapiEngine {
+export class OpenAIEngine implements LlmapiEngine {
     readonly id: string = engineName;
 
     async run(context: LlmapiRequestContext) {
-        const config: DeepseekConfigModel = context.config;
+        const config: OpenAIConfigModel = context.config;
         const openai = new OpenAI({
-            baseURL: 'https://api.deepseek.com',
+            baseURL: config.url,
             apiKey: context.apiKey,
         });
         const parameter: any = {
@@ -20,9 +20,7 @@ export class DeepseekEngine implements LlmapiEngine {
                 content: u.content,
             })),
         };
-        if (!config.parameters.logprobs) {
-            parameter.top_logprobs = undefined;
-        }
+
         if (!config.parameters.max_tokens) {
             parameter.max_tokens = undefined;
         }
