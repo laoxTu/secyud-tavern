@@ -16,6 +16,7 @@ export interface StoryModel extends BaseModel {
 
 export interface StoryHistoryMessage {
     content: string;
+    reasoningContent: string;
     variables: VariableChangeModel[];
     properties: Record<string, any>;
 }

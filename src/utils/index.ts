@@ -68,15 +68,18 @@ export function mergeSortedArrays<T>(arr1: T[], arr2: T[], value: (t: T) => numb
 
 export async function* readStream(stream: ReadableStream) {
     const reader = stream.getReader();
-    const decoder = new TextDecoder();
 
+    const decoder = new TextDecoder();
     try {
         while (true) {
             const {done, value} = await reader.read();
             if (done) break;
-
-            const chunk = typeof value === 'string' ? value : decoder.decode(value);
-            yield chunk;
+            const str = decoder.decode(value);
+            console.debug("stream output: ", str);
+            const arr = JSON.parse(`[${str.substring(0, str.length - 1)}]`);
+            for (const data of arr) {
+                yield data;
+            }
         }
     } finally {
         reader.releaseLock();

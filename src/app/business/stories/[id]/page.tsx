@@ -199,7 +199,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const reply = new AbortController();
             ctx.current.reply = reply;
 
-            console.debug(inputContext.messages);
+            console.debug("chat messages: ", inputContext.messages);
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
                 {messages: inputContext.messages} as LlmapiInputModel,
@@ -212,14 +212,14 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const currentOutput: StoryOutputMessage = {
                 id: (tryGetLastItem(history.outputs)?.id ?? 0) + 1,
                 content: "",
+                reasoningContent: "",
                 variables: [],
                 properties: {}
             };
 
             history.outputs.push(currentOutput);
 
-            console.debug(`current outputs: `);
-            console.debug(history.outputs);
+            console.debug(`current outputs: `, history.outputs);
 
             // 跳转到最新页，进行输出
             console.debug(`current output index: ${history.outputs.length - 1}`);
@@ -234,8 +234,12 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         break;
                     }
 
-                    if (chunk === '') continue;
-                    content += chunk;
+                    if (chunk?.reasoning_content) {
+                        currentOutput.reasoningContent += chunk.reasoning_content;
+                    }
+                    const chunkContent: string | undefined | null = chunk.content;
+                    if (!chunkContent || chunkContent === '') continue;
+                    content += chunkContent;
                     // 流式渲染条件
                     // 故事页面为最新，输出页面为最新
                     if (ctx.current.curPage === histories.length &&
@@ -254,7 +258,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
                         };
                         await manager.streamRenderer.use(provider =>
                             provider.onRenderStream(streamContext));
-                        streamContext.window.postMessage({
+                        console.debug("render stream: ", chunkContent);
+                        frame.contentWindow!.postMessage({
                             type: "streamContent", data: {
                                 output: streamContext.output
                             }
@@ -316,6 +321,7 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
             const message = {
                 id: (tryGetLastItem(inputs)?.id ?? 0) + 1,
                 content: '',
+                reasoningContent: '',
                 variables: [],
                 properties: {},
             };
@@ -355,10 +361,8 @@ export default function StoryPage({params}: { params: Promise<{ id: string }> })
         const history: StoryHistory = curPage === 0 ?
             getOpeningHistory(slot) : histories[curPage - 1];
         try {
-            console.debug('render history: ');
-            console.debug(history);
-            console.debug('render iframe: ');
-            console.debug(iframe.current);
+            console.debug('render history: ', history);
+            console.debug('render iframe: ', iframe.current);
             const renderContext: RenderContext = {
                 content: {},
                 inputs: history.inputs.map(u => u.content),
