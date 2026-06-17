@@ -8,6 +8,7 @@ import {LlmapiConfig, LlmapiConfigProps} from "@/llmapis/client/config-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
+import {Textarea} from "@/components/ui/textarea";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -67,7 +68,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     </FieldLabel>
                     <Input id={`${moduleName}-temperature`} name={"temperature"}
                            type={"number"} max={2} min={0} step={0.05}
-                           defaultValue={config?.parameters.temperature}/>
+                           defaultValue={config.parameters.temperature}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-top_p`}>
@@ -75,7 +76,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     </FieldLabel>
                     <Input id={`${moduleName}-top_p`} name={"top_p"}
                            type={"number"} max={2} min={0} step={0.05}
-                           defaultValue={config?.parameters.top_p}/>
+                           defaultValue={config.parameters.top_p}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-presence_penalty`}>
@@ -83,7 +84,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     </FieldLabel>
                     <Input id={`${moduleName}-presence_penalty`} name={"presence_penalty"}
                            type={"number"} max={2} min={-2} step={0.05}
-                           defaultValue={config?.parameters.presence_penalty}/>
+                           defaultValue={config.parameters.presence_penalty}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-frequency_penalty`}>
@@ -91,7 +92,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     </FieldLabel>
                     <Input id={`${moduleName}-frequency_penalty`} name={"frequency_penalty"}
                            type={"number"} max={2} min={-2} step={0.05}
-                           defaultValue={config?.parameters.frequency_penalty}/>
+                           defaultValue={config.parameters.frequency_penalty}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-max_tokens`}>
@@ -99,9 +100,16 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     </FieldLabel>
                     <Input id={`${moduleName}-max_tokens`} name={"max_tokens"}
                            type={"number"}  min={0} step={1}
-                           defaultValue={config?.parameters.max_tokens}/>
+                           defaultValue={config.parameters.max_tokens}/>
                 </Field>
             </div>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-extras`}>
+                    {t(`${moduleName}.extras`)}
+                </FieldLabel>
+                <Textarea id={`${moduleName}-extras`} name={"extras"}
+                       defaultValue={JSON.stringify(config.extras)}/>
+            </Field>
         </>
     );
 }
