@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {FileIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -12,20 +12,18 @@ import {EditFormTemplate} from "@/components/template/edit-form-template";
 import {put} from "@/client";
 import {LlmapiContext} from "./models";
 import {LlmapiModel, moduleName} from "../models";
-import {LlmapiConfigRegistry, llmapiConfigRegistry} from "./config";
-import {LlmapiInputBuilderManager, llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
+import {llmapiConfigRegistry} from "./config";
+import {llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
 
 
-function ConfigContent({model, llmapiConfigRegistry}: {
+function ConfigContent({model, }: {
     model: LlmapiModel,
-    llmapiConfigRegistry: LlmapiConfigRegistry
 }) {
     const t = useTranslations();
     const llmapiConfigs = llmapiConfigRegistry.records;
     const first = Object.values(llmapiConfigs)[0];
     const [provider, setProvider] = useState<string | undefined>(model.provider ?? first.id);
     const [editor, setEditor] = useState(model.provider ? llmapiConfigs[model.provider] : first);
-
 
     const handleProviderChange = useCallback((type: string) => {
         setProvider(type);
@@ -65,16 +63,12 @@ function ConfigContent({model, llmapiConfigRegistry}: {
     </>
 }
 
-function BuilderContent({model, llmapiBuilderManager}: {
+function BuilderContent({model,}: {
     model: LlmapiModel,
-    llmapiBuilderManager: LlmapiInputBuilderManager
 }) {
     const t = useTranslations();
-    const llmapiBuilders = llmapiBuilderManager.records;
+    const llmapiBuilders = llmapiInputBuilderManager.records;
     const first = Object.values(llmapiBuilders)[0];
-    console.debug("llmapiBuilders: ");
-    console.debug(llmapiBuilderManager);
-    console.debug(first);
     const [builder, setBuilder] = useState<string | undefined>(model.builder ?? first.id);
     const [editor, setEditor] = useState(model.builder ? llmapiBuilders[model.builder] : first);
 
@@ -99,7 +93,7 @@ function BuilderContent({model, llmapiBuilderManager}: {
                 </SelectTrigger>
                 <SelectContent position="popper">
                     <SelectGroup>
-                        {llmapiBuilderManager.getSorted().map((e) =>
+                        {llmapiInputBuilderManager.getSorted().map((e) =>
                             <SelectItem key={e.id} value={e.id}>
                                 {t(`${moduleName}.builder_${e.id}`)}
                             </SelectItem>
@@ -119,10 +113,8 @@ function BuilderContent({model, llmapiBuilderManager}: {
 
 function DefaultTab() {
     const t = useTranslations();
-    const configRegistry = useMemo(() => llmapiConfigRegistry, []);
-    const configEditors = configRegistry.records;
-    const builderManager = useMemo(() => llmapiInputBuilderManager, []);
-    const builderEditors = builderManager.records;
+    const configEditors = llmapiConfigRegistry.records;
+    const builderEditors = llmapiInputBuilderManager.records;
     return <EditFormTemplate
         modelType={moduleName}
         contextType={LlmapiContext}
@@ -171,8 +163,8 @@ function DefaultTab() {
                     />
                 </Field>
             </div>
-            <ConfigContent model={model} llmapiConfigRegistry={configRegistry}/>
-            <BuilderContent model={model} llmapiBuilderManager={builderManager}/>
+            <ConfigContent model={model}/>
+            <BuilderContent model={model}/>
         </>}/>
 }
 

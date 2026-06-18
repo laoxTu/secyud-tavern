@@ -1,5 +1,5 @@
 ﻿'use client'
-import React, {useMemo, useState} from "react";
+import React, {useState} from "react";
 import {
     NavigationMenu, NavigationMenuIndicator,
     NavigationMenuItem,
@@ -11,11 +11,10 @@ import {businessNavigationManager} from "@/business/client/navigation";
 
 
 export default function BusinessPage() {
-    const tabManager = useMemo(() => businessNavigationManager, []);
-    const tabs = tabManager.getSorted();
-    const firstTab = tabManager.getFirstTab();
+    const tabs = businessNavigationManager.getSorted();
+    const firstTab = businessNavigationManager.getFirstTab();
     const [currentTab, setCurrentTab] = useState(firstTab?.id ?? "");
-    const TabContent = tabManager.records[currentTab]?.component;
+    const TabContent = businessNavigationManager.records[currentTab]?.component;
 
     return (
         <div className="flex flex-col h-full">

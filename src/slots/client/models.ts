@@ -1,15 +1,44 @@
 ﻿'use client';
-import {SlotModel} from "../models";
 import {createContext, RefObject, useContext} from "react";
+import {SlotModel} from "@/slots/models";
 import {StoryHistory} from "@/stories/models";
-
+import {put} from "@/client";
+import {BusinessError} from "@/handler/models";
 
 export interface SlotContextModel {
-    slot?: SlotModel,
-    reply?: AbortController,
-    curPage: number,
-    updateHistory?: (history: StoryHistory) => Promise<void>,
-    changeCurPage?: (curPage: number) => Promise<void>,
+    slot?: SlotModel;
+    iframe: RefObject<HTMLIFrameElement | null>;
+    content: Record<string, any>;
+    callbacks: Record<string, (params?: any) => Promise<void>>,
+}
+
+export async function invokeCallback(ctx: RefObject<SlotContextModel>, name: string, params?: any) {
+    const callback = ctx.current.callbacks[name];
+    if (callback) {
+        await callback(params);
+    } else {
+        console.error(`Cannot invoke callback, the callback ${name} is not registered this time.`);
+    }
+}
+
+export async function updateStoryHistory(storyId: string, history: StoryHistory) {
+    await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+        {params: {id: storyId, entryType: 'history', entryId: history.id}},
+    );
+}
+
+export function registerCallback(ctx: RefObject<SlotContextModel>, name: string, callback: (params: any) => Promise<void>) {
+    ctx.current.callbacks[name] = callback;
+}
+
+export function getSlotAndHistories(ctx: RefObject<SlotContextModel>) {
+    const slot = ctx.current.slot;
+    const histories = slot?.story.histories;
+    if (!histories) {
+        throw new BusinessError("Slot is not load this time.");
+    }
+
+    return {slot, histories};
 }
 
 export const SlotContext = createContext<RefObject<SlotContextModel> | undefined>(undefined)

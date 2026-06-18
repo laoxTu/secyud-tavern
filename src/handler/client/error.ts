@@ -1,14 +1,15 @@
 ﻿'use client';
 import {useCallback} from "react";
-import {ApiError} from "@/handler/client/models";
 import {toast} from "sonner";
 import {useTranslations} from "next-intl";
+import {BusinessError} from "@/handler/models";
 
 export function useErrorHandler() {
     const t = useTranslations();
 
     const handleError = useCallback((err: any) => {
-        if (err instanceof ApiError) {
+        if (err instanceof BusinessError) {
+            console.error(err);
             if (err.code) {
                 const record: Record<string, any> = {};
                 if (err.data) {
@@ -19,13 +20,12 @@ export function useErrorHandler() {
                         } else record[key] = value;
                     }
                 }
-                console.debug("record" + JSON.stringify(record) );
+                console.debug("record" + JSON.stringify(record));
                 toast.error(t(err.code, record), {
                     richColors: true,
                 });
                 return;
             }
-
             // 默认错误消息
             toast.error(err.message, {
                 richColors: true,

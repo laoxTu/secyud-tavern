@@ -10,6 +10,11 @@ export interface PagedResult<T> {
     totalCount: number;
 }
 
+export interface PageState {
+    max: number;
+    cur: number;
+}
+
 export interface BaseModel {
     id: string,
     name: string,

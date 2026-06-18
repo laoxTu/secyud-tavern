@@ -1,4 +1,4 @@
-﻿import React, {useCallback, useMemo, useState} from "react";
+﻿import React, {useCallback, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -10,18 +10,17 @@ import {EntryNavigationTemplate} from "@/components/template/navigation-template
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext, usePresetContext} from "@/presets/client/models";
-import {lorebookMatcherRegistry, MatcherRegistry} from "./match";
+import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {EntryModel} from "@/business/models";
 import {matchName} from "@/engines/lorebooks/match/always/models";
 
 const roles =["system", "user", "assistant"]
 
-function EditorContent({entry, matchEditorRegistry}: {
+function EditorContent({entry}: {
     entry: PresetLorebookModel,
-    matchEditorRegistry: MatcherRegistry,
 }) {
-    const matchEditors = matchEditorRegistry.records;
+    const matchEditors = lorebookMatcherRegistry.records;
     const [matchType, setMatchType] = useState<string>(entry.matchType);
     const [editor, setEditor] = useState(matchEditors[matchType]);
     const t = useTranslations();
@@ -87,7 +86,7 @@ function EditorContent({entry, matchEditorRegistry}: {
                         </SelectTrigger>
                         <SelectContent position="popper">
                             <SelectGroup>
-                                {matchEditorRegistry.getSorted().map((e) =>
+                                {lorebookMatcherRegistry.getSorted().map((e) =>
                                     <SelectItem key={e.id} value={e.id}>
                                         {t(`lorebook.match_type_${e.id}`)}
                                     </SelectItem>
@@ -116,8 +115,7 @@ function EditorContent({entry, matchEditorRegistry}: {
 }
 
 function Tab() {
-    const matchEditorRegistry = useMemo(() => lorebookMatcherRegistry, []);
-    const matchEditors = matchEditorRegistry.records;
+    const matchEditors = lorebookMatcherRegistry.records;
     return (
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
@@ -141,7 +139,7 @@ function Tab() {
                 });
             }}
             updateContent={entry => <EditorContent
-                entry={entry} matchEditorRegistry={matchEditorRegistry}/>}/>
+                entry={entry}/>}/>
     );
 }
 

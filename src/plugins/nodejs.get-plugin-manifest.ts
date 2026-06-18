@@ -17,16 +17,13 @@ export default async function getPluginManifests() {
     // 读取 plugins 目录下的所有文件夹
     const entries = await fs.readdir(pluginDir, {withFileTypes: true});
     const folders = entries
-        .filter(entry => entry.isDirectory())
+        .filter(entry => entry.isDirectory() && !entry.name.startsWith("_"))
         .map(entry => entry.name);
 
     console.log(`[plugin loader] 📂 find ${folders.length} plugins folder:`, folders);
 
     const manifests: PluginManifest[] = [];
     for (const folder of folders) {
-        if (folder.startsWith("_")) {
-            continue;
-        }
         const pluginPath = path.join(process.cwd(), pluginDir, folder);
         const manifestPath = path.join(pluginPath, "manifest.json");
 
