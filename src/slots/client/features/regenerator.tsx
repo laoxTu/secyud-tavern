@@ -4,15 +4,14 @@ import {SlotFeature} from "@/slots/client/feeature-models";
 import React from "react";
 import {generateLlmapiReply} from "@/slots/client/history-chatbox";
 import {useSlotContext} from "@/slots/client/models";
-import {getStoryHistoryPage} from "@/slots/client/history-pager";
+import { useHistoryPageState} from "@/slots/client/history-pager";
 
 export function Regenerator() {
-
     const ctx = useSlotContext();
-    const {max} = getStoryHistoryPage(ctx);
+    const {page} = useHistoryPageState();
     return (
         <Button onClick={() => generateLlmapiReply(ctx)}
-                disabled={max === 0} variant="outline">
+                disabled={page.max === 0} variant="outline">
             <RotateCcwIcon/>
         </Button>);
 }

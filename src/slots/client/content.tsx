@@ -11,8 +11,8 @@ import {
 } from "@/slots/client/conversation-models";
 import {AccessibleComponent} from "@/components/custom/accessible";
 import {ButtonGroup} from "@/components/ui/button-group";
-import {SlotContext, SlotContextModel} from "@/slots/client/models";
-import {HistoryPagerButtonGroup} from "@/slots/client/history-pager";
+import {SlotContext, SlotDataModel} from "@/slots/client/models";
+import {HistoryPagerButtonGroup, useHistoryPageState} from "@/slots/client/history-pager";
 import {OutputPagerButtonGroup} from "@/slots/client/output-pager";
 import {HistoryChatbox} from "@/slots/client/history-chatbox";
 import {slotFeatureManager} from "@/slots/client/feature";
@@ -32,9 +32,10 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         loading: false, success: false, started: false
     });
     const iframe = useRef<HTMLIFrameElement>(null);
-    const ctx = useRef<SlotContextModel>({
+    const ctx = useRef<SlotDataModel>({
         callbacks: {}, content: {}, iframe
     });
+    const {setPage} = useHistoryPageState();
 
     const loadingCurrentSlot = useCallback(async () => {
         try {
@@ -49,6 +50,9 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
             await conversationManager.initializer.use(provider =>
                 provider.onInitialize(context))
             ctx.current.slot = slot;
+            const page = slot.story.histories?.length ?? 0;
+            const state = {max: page, cur: page};
+            setPage(state);
             setLoadingState(u => ({
                 ...u, success: true
             }));
@@ -73,7 +77,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
                 await loadingCurrentSlot();
             })();
         }
-    }, [loadingCurrentSlot]);
+    }, [loadingState.started]);
 
     if (loadingState.loading || !loadingState.started) return (
         <iframe className={"w-full h-full"} src="/loading.html"></iframe>
@@ -84,16 +88,14 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
             {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
             <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
             <AccessibleComponent className={"fixed inset-0 top-auto border-b flex flex-col gap-2  p-2 "}>
-                <fieldset className={"m-auto"} disabled={!loadingState.success}>
-                    <ButtonGroup>
-                        <HistoryPagerButtonGroup/>
-                        <OutputPagerButtonGroup/>
-                        <ButtonGroup>
-                            {slotFeatureManager.getSorted().map((u, i) => {
-                                const Component = u.component
-                                return (<Component key={i}/>);
-                            })}
-                        </ButtonGroup>
+                <fieldset className={"m-auto flex gap-2"} disabled={!loadingState.success}>
+                    <HistoryPagerButtonGroup/>
+                    <OutputPagerButtonGroup/>
+                    <ButtonGroup className={"bg-white rounded-md"}>
+                        {slotFeatureManager.getSorted().map((u, i) => {
+                            const Component = u.component
+                            return (<Component key={i}/>);
+                        })}
                     </ButtonGroup>
                 </fieldset>
                 <fieldset className={"w-full"} disabled={!loadingState.success}>

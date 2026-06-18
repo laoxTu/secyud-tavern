@@ -2,7 +2,7 @@
     getSlotAndHistories,
     invokeCallback,
     registerCallback,
-    SlotContextModel,
+    SlotDataModel,
     updateStoryHistory,
     useSlotContext
 } from "@/slots/client/models";
@@ -15,42 +15,41 @@ import {conversationManager, generateCurrentVariables, getOpeningHistory} from "
 import {RenderContext} from "@/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
-import {getStoryHistoryPage} from "@/slots/client/history-pager";
+import {useHistoryPageState} from "@/slots/client/history-pager";
 
-export async function handleOutputPageChange(ctx: RefObject<SlotContextModel>, curPage: number) {
+export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
     await invokeCallback(ctx, "handleOutputPageChange", curPage);
 }
 
 export function OutputPagerButtonGroup() {
     const {handleError} = useErrorHandler();
     const ctx = useSlotContext();
-    const state: PageState = {
-        max: 0, cur: 0,
+    const outstate: PageState = {
+        max: 0, cur: -1,
     };
     try {
-        const {cur} = getStoryHistoryPage(ctx);
+        const {page} = useHistoryPageState();
         const {histories} = getSlotAndHistories(ctx);
-        if (histories.length !== 0) {
-            const current = histories[cur];
-            state.max = current.outputs.length;
-            state.cur = current.outputId;
+        if (histories.length > 0 && page.cur > 0) {
+            const current = histories[page.cur - 1];
+            outstate.max = current.outputs.length;
+            outstate.cur = current.outputId;
         }
     } catch (error) {
-        console.debug(error);
+        console.debug("[OutputPagerButtonGroup] err", error);
     }
-    const [page, setPage] = useState<PageState>(state);
+    const [page, setPage] = useState<PageState>(outstate);
 
     const [prepare, setPrepare] = useState<boolean>(true);
 
     const handleOutputPageChange = useCallback(async (curPage: number) => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
-            const historyPage = getStoryHistoryPage(ctx);
-            const curStoryPage = historyPage.cur;
-            if (!histories || histories.length < curStoryPage) return;
+            const {page} = useHistoryPageState.getState();
+            if (!histories || histories.length < page.cur) return;
             let maxPage = 0;
-            if (curStoryPage > 0) {
-                const history = histories[curStoryPage - 1];
+            if (page.cur > 0) {
+                const history = histories[page.cur - 1];
                 maxPage = history.outputs.length;
                 if (curPage >= maxPage)
                     curPage = maxPage - 1;
@@ -74,10 +73,10 @@ export function OutputPagerButtonGroup() {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             if (!iframe || !slot) return;
-            const historyPage = getStoryHistoryPage(ctx);
+            const {page} = useHistoryPageState.getState();
             // page 为 0 时实际是渲染开场白
-            const history: StoryHistory = historyPage.cur === 0 ?
-                getOpeningHistory(slot) : histories[historyPage.cur - 1];
+            const history: StoryHistory = page.cur === 0 ?
+                getOpeningHistory(slot) : histories[page.cur - 1];
 
             console.debug('[OutputPager] render history: ', history);
             console.debug('[OutputPager] render iframe: ', iframe);
@@ -116,14 +115,14 @@ export function OutputPagerButtonGroup() {
                 await renderCurrentPage();
             })();
         }
-    }, []);
+    }, [prepare]);
 
-    return (<ButtonGroup>
+    return (<ButtonGroup className={"bg-white rounded-md"}>
         <Button onClick={() => handleOutputPageChange(page.cur - 1)}
                 disabled={page.cur <= 0} variant="outline">
             <ChevronLeftIcon/>
         </Button>
-        <Button disabled variant={'ghost'}>
+        <Button variant={'outline'} disabled>
             {page.cur + 1} / {page.max}
         </Button>
         <Button onClick={() => handleOutputPageChange(page.cur + 1)}

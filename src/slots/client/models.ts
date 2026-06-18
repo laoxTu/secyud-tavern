@@ -5,14 +5,14 @@ import {StoryHistory} from "@/stories/models";
 import {put} from "@/client";
 import {BusinessError} from "@/handler/models";
 
-export interface SlotContextModel {
+export interface SlotDataModel {
     slot?: SlotModel;
     iframe: RefObject<HTMLIFrameElement | null>;
     content: Record<string, any>;
     callbacks: Record<string, (params?: any) => Promise<void>>,
 }
 
-export async function invokeCallback(ctx: RefObject<SlotContextModel>, name: string, params?: any) {
+export async function invokeCallback(ctx: RefObject<SlotDataModel>, name: string, params?: any) {
     const callback = ctx.current.callbacks[name];
     if (callback) {
         await callback(params);
@@ -27,11 +27,11 @@ export async function updateStoryHistory(storyId: string, history: StoryHistory)
     );
 }
 
-export function registerCallback(ctx: RefObject<SlotContextModel>, name: string, callback: (params: any) => Promise<void>) {
+export function registerCallback(ctx: RefObject<SlotDataModel>, name: string, callback: (params: any) => Promise<void>) {
     ctx.current.callbacks[name] = callback;
 }
 
-export function getSlotAndHistories(ctx: RefObject<SlotContextModel>) {
+export function getSlotAndHistories(ctx: RefObject<SlotDataModel>) {
     const slot = ctx.current.slot;
     const histories = slot?.story.histories;
     if (!histories) {
@@ -41,7 +41,7 @@ export function getSlotAndHistories(ctx: RefObject<SlotContextModel>) {
     return {slot, histories};
 }
 
-export const SlotContext = createContext<RefObject<SlotContextModel> | undefined>(undefined)
+export const SlotContext = createContext<RefObject<SlotDataModel> | undefined>(undefined)
 
 export function useSlotContext() {
     const context = useContext(SlotContext);

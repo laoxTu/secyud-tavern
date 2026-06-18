@@ -18,7 +18,7 @@ export function AccessibleComponent({children, className}
             onMouseLeave={() => setHovered(false)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            onTouchStart={() => setFocused(true)}
+            onTouchStart={() => setHovered((u) => !u)}
             aria-expanded={isVisible}>
             {children}
         </div>

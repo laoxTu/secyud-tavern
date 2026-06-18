@@ -13,48 +13,42 @@ import {
 } from "@/components/ui/alert-dialog";
 import {Button} from "@/components/ui/button";
 import {DeleteIcon, Trash2Icon} from "lucide-react";
-import {getStoryHistoryPage, handleHistoryPageChange} from "@/slots/client/history-pager";
+import {useHistoryPageState, handleHistoryPageChange} from "@/slots/client/history-pager";
 import {SlotFeature} from "@/slots/client/feeature-models";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
     const ctx = useSlotContext();
-    const {cur} = getStoryHistoryPage(ctx);
+    const {page} = useHistoryPageState();
 
     const deleteCurrentHistory = useCallback(async () => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
-            const {cur} = getStoryHistoryPage(ctx);
-            const history = histories[cur - 1];
+            const {page} = useHistoryPageState.getState();
+            const history = histories[page.cur - 1];
             await del("/stories/{id}/entries/{entryType}/{entryId}",
                 {params: {id: slot.story.id, entryType: 'history', entryId: history.id}})
-            histories.splice(cur - 1, 1);
-            await handleHistoryPageChange(ctx, {curPage: cur,});
+            histories.splice(page.cur - 1, 1);
+            await handleHistoryPageChange(ctx, {curPage: page.cur,});
         } catch (error) {
             handleError(error);
         }
     }, [handleError]);
 
     const deleteCurrentOutput = useCallback(async () => {
-        const slot = ctx.current.slot;
-        const histories = slot?.story.histories;
-        if (!histories) {
-            console.error("Delete current history failed. Slot is not load this time.");
-            return;
-        }
         try {
-            const storyPage = getStoryHistoryPage(ctx);
-            const curPage = storyPage.cur;
-            let history = histories[curPage - 1];
+            const {slot, histories} = getSlotAndHistories(ctx);
+            const {page} = useHistoryPageState.getState();
+            let history = histories[page.cur - 1];
             console.debug(history);
             if (history.outputs.length > 0) {
                 history.outputs.splice(history.outputId, 1);
             }
             if (history.outputs.length === 0 &&
-                curPage < histories.length) {
+                page.cur < histories.length) {
                 const current = history;
-                history = histories[curPage];
+                history = histories[page.cur];
                 history.summary ||= current.summary;
                 history.inputs = [...current.inputs, ...history.inputs];
                 for (const input of current.inputs) {
@@ -64,7 +58,7 @@ export function HistoryDeleter() {
                 await deleteCurrentHistory();
             } else {
                 await updateStoryHistory(slot.story.id, history);
-                await handleHistoryPageChange(ctx, {curPage});
+                await handleHistoryPageChange(ctx, {curPage: page.cur});
             }
         } catch (error) {
             handleError(error);
@@ -75,7 +69,7 @@ export function HistoryDeleter() {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button variant="destructive"
-                        disabled={cur === 0}>
+                        disabled={page.cur === 0}>
                     <Trash2Icon/>
                 </Button>
             </AlertDialogTrigger>
@@ -100,7 +94,7 @@ export function HistoryDeleter() {
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button variant="destructive"
-                        disabled={cur === 0}>
+                        disabled={page.cur === 0}>
                     <DeleteIcon/>
                 </Button>
             </AlertDialogTrigger>

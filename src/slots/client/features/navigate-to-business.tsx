@@ -6,7 +6,6 @@ import {SlotFeature} from "@/slots/client/feeature-models";
 
 
 export function NavigateToBusiness() {
-
     const route = useRouter();
 
     return (<Button onClick={() => route.replace("/business")}

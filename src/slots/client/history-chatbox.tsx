@@ -17,7 +17,7 @@ import {Label} from "@/components/ui/label";
 import {
     getSlotAndHistories,
     invokeCallback, registerCallback,
-    SlotContextModel,
+    SlotDataModel,
     updateStoryHistory,
     useSlotContext
 } from "@/slots/client/models";
@@ -33,13 +33,13 @@ import {
 import {useTranslations} from "next-intl";
 import {readStream, tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
-import {getStoryHistoryPage, handleHistoryPageChange} from "@/slots/client/history-pager";
+import {handleHistoryPageChange, useHistoryPageState} from "@/slots/client/history-pager";
 
-export function getReplyAbortController(ctx: RefObject<SlotContextModel>) {
+export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
     return ctx.current.content["ReplyAbortController"] as AbortController
 }
 
-export function setReplyAbortController(ctx: RefObject<SlotContextModel>) {
+export function setReplyAbortController(ctx: RefObject<SlotDataModel>) {
     let controller = getReplyAbortController(ctx);
     if (controller) {
         controller.abort("reset");
@@ -49,7 +49,7 @@ export function setReplyAbortController(ctx: RefObject<SlotContextModel>) {
     return controller;
 }
 
-export async function generateLlmapiReply(ctx: RefObject<SlotContextModel>) {
+export async function generateLlmapiReply(ctx: RefObject<SlotDataModel>) {
     await invokeCallback(ctx, "generateLlmapiReply");
 }
 
@@ -128,8 +128,8 @@ export function HistoryChatbox() {
                     content += chunkContent;
                     // 流式渲染条件
                     // 故事页面为最新，输出页面为最新
-                    const storyPage = getStoryHistoryPage(ctx);
-                    if (storyPage.cur === histories.length &&
+                    const {page} = useHistoryPageState.getState();
+                    if (page.cur === histories.length &&
                         history.outputId === history.outputs.length - 1) {
                         // 每次重渲染重新解析变量变化。
                         extractVariableChanges(currentOutput, content);
@@ -245,15 +245,14 @@ export function HistoryChatbox() {
     }, [])
 
     return (
-        <form className={"w-full"}
-              action={formData => {
-                  if (output) return;
-                  const input = formData.get('slot-user-input') as string;
-                  if (input.trim() === '') return;
-                  const summary = Boolean(formData.get('summary') as string);
-                  void createStoryHistory({input, summary});
-              }}>
-            <InputGroup>
+        <form action={formData => {
+            if (output) return;
+            const input = formData.get('slot-user-input') as string;
+            if (input.trim() === '') return;
+            const summary = Boolean(formData.get('summary') as string);
+            void createStoryHistory({input, summary});
+        }}>
+            <InputGroup className={"bg-white"}>
                 <InputGroupTextarea id='slot-user-input'
                                     name='slot-user-input'
                                     placeholder={t('default.ctrl_enter_submit')}
