@@ -99,7 +99,7 @@ import { def } from '@/plugins/client/api';
 
 export const myExport = ...;
 
-def('@/path/to/module', { myExport });
+def('@/path/to/module');
 ```
 
 然后运行 `npm run gen-stubs` 重新生成 stub。插件即可 `import { myExport } from '@/path/to/module'`。

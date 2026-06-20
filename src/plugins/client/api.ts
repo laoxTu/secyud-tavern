@@ -9,27 +9,18 @@ import React from "react";
  * 构建脚本 (scripts/generate-stubs.ts) 导入 client-registerer
  * 触发所有 def() 调用，再读取 stubPoints 自动生成 stub。
  */
-export const pluginApi: any = { React };
+export const pluginApi: Record<string, any> = {React};
 
-/** def() 调用过的路径（仅端点，不含中间段），构建脚本读此生成 stub */
-export const stubPoints: string[] = [];
+if (typeof window !== 'undefined') {
+    (window as any).__PLUGIN_API__ = pluginApi;
+}
 
 /**
  * 注册模块导出到插件 API（控制反转）
- * @param path 模块的 @/ 导入路径，如 '@/business/client/navigation'
- * @param module 该模块导出的键值对
+ * @param path  模块的导入路径，如 '@/business/client/navigation' 或 'react/jsx-runtime'
+ * @param mod   可选：模块对象（import * as mod），自动提取导出 key；
+ *              也可传 string[] 手动指定 key 列表
  */
-export function def(path: string, module: any) {
-    const splits = path.split('/').filter(x => x !== '');
-    let obj = pluginApi;
-    for (const split of splits) {
-        if (!obj[split]) {
-            obj[split] = {};
-        }
-        obj = obj[split];
-    }
-    for (const key of Object.keys(module)) {
-        obj[key] = module[key];
-    }
-    stubPoints.push(path);
+export function def(path: string, mod: any) {
+    pluginApi[path] = mod;
 }

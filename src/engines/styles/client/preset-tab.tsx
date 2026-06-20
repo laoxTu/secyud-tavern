@@ -3,7 +3,6 @@ import React, {useRef} from "react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
 import {EntryNavigationTemplate} from "@/components/template/navigation-template";
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {TabConfig} from "@/components/custom/tab";

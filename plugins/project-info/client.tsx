@@ -2,10 +2,16 @@
  * Project Info 插件
  * 构建: npm run build-plugin project-info
  */
-import {businessNavigationManager} from '@/business/client/navigation';
+import * as navigation from '@/business/client/navigation';
 import React from 'react';
-import {ModelNavigationTemplate} from "@/components/template/navigation-template";
-import {useTranslations} from "next-intl";
+import * as runtime from 'react/jsx-runtime';
+import * as dev_runtime from 'react/jsx-dev-runtime';
+import * as template from "@/components/template/navigation-template";
+import * as intl from "next-intl";
+
+const {businessNavigationManager} = navigation;
+const {ModelNavigationTemplate} = template;
+const {useTranslations} = intl;
 
 const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 

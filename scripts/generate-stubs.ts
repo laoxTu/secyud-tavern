@@ -1,73 +1,84 @@
 /**
- * 自动生成 _shared/stubs 和 esbuild alias
+ * 从 plugins.json 生成 src/plugin.ts 和 plugins/_shared/plugin-api.json
  *
  * 用法: npm run gen-stubs
  *
- * 流程:
- *   1. 导入 client-registerer → 触发所有模块的 def() 调用
- *   2. 读取 stubPoints → 为每个 def() 路径生成一个 stub
- *   3. 输出 build-alias.json
+ * 对每个路径用动态 import + try-catch 尝试加载：
+ *   成功 → 提取 Object.keys() 作为命名导出
+ *   失败 → 标记为 any（无命名导出，插件只能用默认导入）
  */
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
-const stubsDir = path.join(root, 'plugins/_shared/stubs');
-const aliasFile = path.join(root, 'plugins/_shared/build-alias.json');
 
-async function main() {
-    console.log('[gen-stubs] 导入模块注册...');
-    await import('../src/client-registerer');
-    await new Promise(r => setTimeout(r, 200));
+const pluginsJson = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'plugins.json'), 'utf-8')
+) as string[];
 
-    const { pluginApi, stubPoints } = await import('../src/plugins/client/api');
+const isValidExport = (k: string) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k);
 
-    // 打印结构概览
-    console.log('[gen-stubs] stub 端点:', stubPoints);
-
-    fs.rmSync(stubsDir, { recursive: true, force: true });
-    fs.mkdirSync(stubsDir, { recursive: true });
-    const alias: Record<string, string> = {};
-
-    for (const modulePath of stubPoints) {
-        // 在 pluginApi 树中定位到对应节点
-        const segments = modulePath.split('/').filter(x => x !== '');
-        let node = pluginApi;
-        for (const seg of segments) {
-            node = node?.[seg];
-        }
-        if (!node || typeof node !== 'object') {
-            console.warn(`  ⚠ ${modulePath} 节点不存在，跳过`);
-            continue;
-        }
-
-        const keys = Object.keys(node);
-        if (keys.length === 0) continue;
-
-        const stubName = segments.join('-') + '.js';
-        const accessPath = segments.map(s => `["${s}"]`).join('');
-        const exportLines = keys.map(k => `export const { ${k} } = api${accessPath};`).join('\n');
-
-        fs.writeFileSync(
-            path.join(stubsDir, stubName),
-            `const api = window.__PLUGIN_API__;\n${exportLines}\n`
-        );
-
-        alias[modulePath] = path.join(stubsDir, stubName).replace(/\\/g, '/');
-        console.log(`  stub: ${modulePath} → ${stubName} (${keys.join(', ')})`);
-    }
-
-    // React alias（始终需要）
-    alias['react'] = path.join(root, 'plugins/_shared/react-shim.js').replace(/\\/g, '/');
-    alias['react/jsx-runtime'] = path.join(root, 'plugins/_shared/react-jsx-runtime.js').replace(/\\/g, '/');
-
-    fs.writeFileSync(aliasFile, JSON.stringify(alias, null, 2));
-    console.log(`[gen-stubs] ✅ 完成 (${Object.keys(alias).length} 个映射)`);
+interface ModuleInfo {
+    path: string;
+    keys: string[];
+    success: boolean;
 }
 
-main().catch(err => {
-    console.error('[gen-stubs] ❌', err);
-    process.exit(1);
+const modules: ModuleInfo[] = [];
+
+for (const modulePath of pluginsJson) {
+    try {
+        // @/ → 相对路径，供 Node.js 解析
+        let importPath = modulePath;
+        if (modulePath.startsWith('@/')) {
+            importPath = '../src/' + modulePath.slice(2);
+        }
+        const mod: any = await import(importPath);
+        const keys = Object.keys(mod).filter(isValidExport);
+        modules.push({path: modulePath, keys, success: true});
+        console.log(`  ✅ ${modulePath} → ${keys.length} keys`);
+    } catch (e: any) {
+        modules.push({path: modulePath, keys: [], success: false});
+        console.log(`  ⚠ ${modulePath} → any (${e.message?.split('\n')[0]})`);
+    }
+}
+
+// —— 生成 src/plugin.ts ——
+const lines: string[] = [];
+lines.push(`import {def} from "@/plugins/client/api";`);
+lines.push('');
+
+const importNames: string[] = [];
+
+// 全部导入（包括解析失败的浏览器专用库，Next.js 运行时 window 存在）
+modules.forEach((m, i) => {
+    const name = `module${i}`;
+    importNames.push(name);
+    lines.push(`import * as ${name} from '${m.path}';`);
 });
+
+lines.push('');
+lines.push('export const buildPluginApi = () => {');
+
+modules.forEach((m, i) => {
+    lines.push(`    def('${m.path}', module${i});`);
+});
+
+lines.push('};');
+lines.push('');
+
+const pluginTsPath = path.join(root, 'src/plugin.ts');
+fs.writeFileSync(pluginTsPath, lines.join('\n'));
+console.log(`[gen-stubs] ✅ 生成 ${pluginTsPath} (${modules.length} 个模块)`);
+
+// —— 生成 plugins/_shared/plugin-api.json ——
+const apiData: Record<string, string[]> = {};
+for (const m of modules) {
+    apiData[m.path] = m.keys;
+}
+const apiJsonPath = path.join(root, 'plugins/_shared/plugin-api.json');
+fs.mkdirSync(path.dirname(apiJsonPath), {recursive: true});
+fs.writeFileSync(apiJsonPath, JSON.stringify(apiData, null, 2));
+console.log(`[gen-stubs] ✅ 生成 ${apiJsonPath}`);
