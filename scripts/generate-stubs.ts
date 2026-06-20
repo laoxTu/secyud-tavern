@@ -33,7 +33,7 @@ async function main() {
 
     for (const modulePath of stubPoints) {
         // 在 pluginApi 树中定位到对应节点
-        const segments = modulePath.substring(2).split('/').filter(x => x !== '');
+        const segments = modulePath.split('/').filter(x => x !== '');
         let node = pluginApi;
         for (const seg of segments) {
             node = node?.[seg];

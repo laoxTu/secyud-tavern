@@ -33,7 +33,7 @@ export default function BusinessPage() {
         <div className="flex flex-col h-full">
             <div className="flex pt-1 px-2 justify-between">
                 <NavigationMenu>
-                    <NavigationMenuList className={"space-x-1"}>
+                    <NavigationMenuList className={"space-x-2"}>
                         {tabs.map((tab, index) => {
                             const Component = tab.label;
                             return (

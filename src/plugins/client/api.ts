@@ -20,7 +20,7 @@ export const stubPoints: string[] = [];
  * @param module 该模块导出的键值对
  */
 export function def(path: string, module: any) {
-    const splits = path.substring(2).split('/').filter(x => x !== '');
+    const splits = path.split('/').filter(x => x !== '');
     let obj = pluginApi;
     for (const split of splits) {
         if (!obj[split]) {
