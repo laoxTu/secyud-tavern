@@ -121,6 +121,8 @@
     "current_history": "当前历史",
     "delete_output_tip": "删除当前回复",
     "regenerate_reply_tip": "重新生成",
+    "variable": "变量",
+    "variable_invalid_json": "变量格式错误",
     "back_home_tip": "回到主页",
     "edit_history_tip": "编辑当前历史",
     "edit_history": "编辑历史",
