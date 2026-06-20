@@ -1,7 +1,7 @@
 import type {NextConfig} from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const withNextIntlConfig = createNextIntlPlugin('./localization/request.ts');
+const withNextIntlConfig = createNextIntlPlugin('./src/localization/request.ts');
 
 
 const nextConfig: NextConfig = {

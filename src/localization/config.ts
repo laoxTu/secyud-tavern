@@ -1,7 +1,6 @@
 ﻿
 export const locales: string[] = ["zh", "en"];
 export const defaultLocale = 'zh';
-export const localizationPaths = ['localization'];
 
 export const timeZones: Record<string, string> = {
     "CN": "Asia/Shanghai",

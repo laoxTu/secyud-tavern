@@ -5,10 +5,12 @@
 import {businessNavigationManager} from '@/business/client/navigation';
 import React from 'react';
 import {ModelNavigationTemplate} from "@/components/template/navigation-template";
+import {useTranslations} from "next-intl";
 
-const tags = ["预设即捆绑", "多核并联", "变量驱动", "楼层渲染", "插件扩展"];
+const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
 function Content() {
+    const t = useTranslations();
     return (
         <div className="flex flex-col h-full items-center justify-center min-h-[60vh] gap-8 p-8">
             {/* 图标 */}
@@ -24,7 +26,7 @@ function Content() {
             <div className="text-center space-y-2">
                 <h1 className="text-2xl font-bold tracking-tight">Secyud Tavern</h1>
                 <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                    高度可定制化的 AI 角色扮演与互动叙事平台。预设即捆绑、变量驱动、楼层渲染。
+                    {t('about.description')}
                 </p>
             </div>
 
@@ -35,7 +37,7 @@ function Content() {
                         key={tag}
                         className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium text-muted-foreground hover:border-foreground/30 transition-colors"
                     >
-                        {tag}
+                        {t(`about.${tag}`)}
                     </span>
                 ))}
             </div>

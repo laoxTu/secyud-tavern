@@ -3,7 +3,7 @@ import path from "path";
 import {pathToFileURL} from 'url';
 import {PluginManifest} from "./models";
 
-const pluginDir = "plugins";
+ const pluginDir = "plugins";
 
 export default async function getPluginManifests() {
     // 检查插件目录是否存在

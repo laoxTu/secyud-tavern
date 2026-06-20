@@ -2,7 +2,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {pluginManager} from "@/plugins/manager";
-import {pluginApi} from "@/plugins/client/api";
+import {def, pluginApi} from "@/plugins/client/api";
 import {registerDeepseekClient} from "@/engines/deepseek/client";
 import {registerStylesClient} from "@/engines/styles/client";
 import {registerScriptsClient} from "@/engines/scripts/client";
@@ -16,11 +16,14 @@ import {registerSlotClient} from "@/slots/client";
 import {registerBusinessClient} from "@/business/client/index.js";
 import {registerComponents} from "@/components";
 import {registerOpenAIClient} from "@/engines/openai/client";
+import * as next_intl from 'next-intl';
 
 if (typeof window !== 'undefined') {
     (window as any).__PLUGIN_REACT__ = React;
     (window as any).__PLUGIN_API__ = pluginApi;
 }
+
+def('next-intl', next_intl)
 
 async function loadClientPlugins() {
     registerComponents();
