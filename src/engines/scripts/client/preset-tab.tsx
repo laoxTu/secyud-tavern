@@ -1,9 +1,8 @@
-﻿import React from "react";
+﻿import React, {useRef} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
 import {EntryNavigationTemplate} from "@/components/template/navigation-template";
 import {EntryListTemplate} from "@/components/template/entry-list-template";
 import {TabConfig} from "@/components/custom/tab";
@@ -11,9 +10,19 @@ import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
 import {PresetContext} from "@/presets/client/models";
 import {PresetScriptModel, engineName} from "../models";
 import {EntryModel} from "@/business/models";
+import Editor, {OnMount} from "@monaco-editor/react";
+import {editorClassName} from "@/components/consts";
+import {editor} from "monaco-editor";
+import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
 function Tab() {
     const t = useTranslations();
+    const editorRef = useRef<IStandaloneCodeEditor>(null);
+    const handleEditorDidMount: OnMount = (editor) => {
+        // here is the editor instance
+        // you can store it in `useRef` for further usage
+        editorRef.current = editor;
+    }
     return (
         <EntryListTemplate<PresetModel>
             modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
@@ -22,7 +31,7 @@ function Tab() {
                 priority: 100,
             })}
             updateAccessor={(data): Omit<PresetScriptModel, keyof EntryModel> => ({
-                content: data.get("content") as string,
+                content: editorRef.current?.getValue() ?? "",
                 priority: parseInt(data.get("priority") as string),
             })}
             updateContent={(entry: PresetScriptModel) => (
@@ -38,12 +47,13 @@ function Tab() {
                         </Field>
                     </div>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-content-${entry.id}`}>
+                        <FieldLabel onClick={() => editorRef.current?.focus()}>
                             {t("default.content")}
                         </FieldLabel>
-                        <Textarea name="content"
-                                  id={`${engineName}-content-${entry.id}`}
-                                  defaultValue={entry.content}/>
+                        <Editor className={editorClassName}
+                                defaultLanguage={'javascript'} height={'20rem'}
+                                defaultValue={entry.content}
+                                onMount={handleEditorDidMount}/>
                     </Field>
                 </>
             )}/>
