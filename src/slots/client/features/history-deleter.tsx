@@ -12,9 +12,10 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {Button} from "@/components/ui/button";
-import {DeleteIcon, Trash2Icon} from "lucide-react";
+import {DeleteIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState, handleHistoryPageChange} from "@/slots/client/history-pager";
 import {SlotFeature} from "@/slots/client/feeature-models";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
@@ -68,35 +69,17 @@ export function HistoryDeleter() {
     return (<>
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive"
-                        disabled={page.cur === 0}>
-                    <Trash2Icon/>
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        {t('default.delete_title', {target: t('slot.current_history')})}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        {t('default.delete_description', {target: t('slot.current_history')})}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => deleteCurrentHistory()}
-                                       variant={'destructive'}>
-                        {t('default.delete')}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant="destructive"
-                        disabled={page.cur === 0}>
-                    <DeleteIcon/>
-                </Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="destructive"
+                                disabled={page.cur === 0}>
+                            <DeleteIcon/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('slot.delete_output_tip')}</p>
+                    </TooltipContent>
+                </Tooltip>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -110,6 +93,39 @@ export function HistoryDeleter() {
                 <AlertDialogFooter>
                     <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={() => deleteCurrentOutput()}
+                                       variant={'destructive'}>
+                        {t('default.delete')}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="destructive"
+                                disabled={page.cur === 0}>
+                            <TrashIcon/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('slot.delete_history_tip')}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        {t('default.delete_title', {target: t('slot.current_history')})}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {t('default.delete_description', {target: t('slot.current_history')})}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => deleteCurrentHistory()}
                                        variant={'destructive'}>
                         {t('default.delete')}
                     </AlertDialogAction>
