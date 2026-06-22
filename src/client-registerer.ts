@@ -36,7 +36,7 @@ async function loadClientPlugins() {
 
     // 动态 import：plugin.ts 包含 monaco-editor 等浏览器专用库，
     // 必须在客户端加载，SSR 会因 window 不存在而崩溃
-    const {buildPluginApi} = await import('./plugin');
+    const {buildPluginApi} = await import('./plugins/client/api-list');
     buildPluginApi();
 
     await pluginManager.loadClientPlugins(pluginApi);

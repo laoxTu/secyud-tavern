@@ -69,7 +69,7 @@ modules.forEach((m, i) => {
 lines.push('};');
 lines.push('');
 
-const pluginTsPath = path.join(root, 'src/plugin.ts');
+const pluginTsPath = path.join(root, 'src/plugins/client/api-list.ts');
 fs.writeFileSync(pluginTsPath, lines.join('\n'));
 console.log(`[gen-stubs] ✅ 生成 ${pluginTsPath} (${modules.length} 个模块)`);
 

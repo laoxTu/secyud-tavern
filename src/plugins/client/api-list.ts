@@ -1,4 +1,3 @@
-'use client'
 import {def} from "@/plugins/client/api";
 
 import * as module0 from '@/business/client/navigation';
