@@ -1,5 +1,7 @@
 ﻿// instrumentation.ts
 
-export async function register() {
+import {registerServerPlugins} from "@/server-registerer";
 
+export async function register() {
+    await registerServerPlugins();
 }

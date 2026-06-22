@@ -35,6 +35,22 @@
   "@/stories/client/tabs": [
     "storyTabManager"
   ],
+  "@/components/custom/accessible": [
+    "AccessibleComponent"
+  ],
+  "@/components/custom/image-uploader": [
+    "ImageUploader"
+  ],
+  "@/components/custom/combobox": [
+    "CustomCombobox"
+  ],
+  "@/components/custom/pager": [
+    "PaginationWrapper",
+    "usePager"
+  ],
+  "@/components/custom/tab": [
+    "TabManager"
+  ],
   "@/components/template/navigation-template": [
     "EntryNavigationTemplate",
     "ModelNavigationTemplate"
