@@ -20,7 +20,7 @@ import {LlmapiInputModel} from "@/slots/models";
 export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
-        const input = records.body as LlmapiInputModel;
+        const input = await request.json() as LlmapiInputModel;
         console.debug("llmapi chat:");
         console.debug(input);
 

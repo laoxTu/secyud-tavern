@@ -25,7 +25,8 @@ export function createSimpleStorageProvider<T extends BaseModel>(id: string, arr
         saveModel: async (model: T) => {
             if (!model.entries)
                 throw new Error("model.entries should be query this time");
-            if (Array.isArray(model.entries[arrayName])) {
+            if (Array.isArray(model.entries[arrayName]) &&
+                model.entries[arrayName].length > 0) {
                 await repository.entry.batchCreate(
                     model.id, id, model.entries[arrayName]);
             }

@@ -1,5 +1,4 @@
-﻿
-import {and, eq, like, or, SQL} from "drizzle-orm";
+﻿import {and, eq, like, or, SQL} from "drizzle-orm";
 import {presetRepository as repository} from "@/presets/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
 import {BusinessError} from "@/handler/models";
@@ -31,18 +30,17 @@ export const GET = interceptor.createRoute(
 
 /**
  * 创建预设
- * @params {isImport?: boolean}
  * @body PresetModel
  * @response {id: string}
  * @openapi
  */
 export const POST = interceptor.createRoute(
-    generateCreateModelApi(repository, async (model, {isImport}) => {
+    generateCreateModelApi(repository, async (model, {}) => {
         if (model.code === "") {
             throw new BusinessError("No code provided", "error.empty_field")
                 .withValue("field", "default.code");
         }
-        if (!isImport && await repository.exist(e => (eq(e.code, model.code)))) {
+        if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
                 .withValue("entity_name", "default.preset")

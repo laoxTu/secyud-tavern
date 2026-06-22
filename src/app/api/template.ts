@@ -29,7 +29,7 @@ export function generateCreateModelApi<TModel extends BaseModel>(
         isImport?: boolean
     }) => Promise<void>): NextHandler {
     return async (request, records) => {
-        const model = records.body as TModel;
+        const model = await request.json() as TModel;
 
         checkAction?.(model, records.searchParams);
 
@@ -55,7 +55,7 @@ export function generateUpdateModelApi<TModel extends BaseModel>(
     }) => Promise<void>): NextHandler {
     return async (request, records) => {
         const {id} = await records.context.params;
-        const model = records.body as Partial<TModel>;
+        const model = await request.json() as Partial<TModel>;
         checkAction?.(model, records.searchParams);
         await repository.update(id, model);
         return NextResponse.json(null);
@@ -78,8 +78,7 @@ export function generateExportModelApi<TModel>(
     settings?: (model: TModel) => void): NextHandler {
     return async (request, records) => {
         const {id} = await records.context.params;
-        const {withDetails} = records.searchParams as { withDetails?: boolean };
-        const model = await repository.get(id, withDetails, conditionGenerator?.(id));
+        const model = await repository.get(id, true, conditionGenerator?.(id));
         if (model === null) throw new Error('not found');
         settings?.(model);
         // 1. 将 JSON 对象转为字符串
@@ -117,7 +116,7 @@ export function generateGetEntryListApi<TModel>(repository: Repository<TModel>):
 export function generateCreateEntryApi<TModel>(repository: Repository<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType} = await records.context.params as { id: string, entryType: string };
-        const model = records.body;
+        const model = await request.json();
         const entryId = await repository.entry.create(id, entryType, model);
         return NextResponse.json({id: entryId});
     }
@@ -126,7 +125,7 @@ export function generateCreateEntryApi<TModel>(repository: Repository<TModel>): 
 export function generateUpdateEntryApi<TModel>(repository: Repository<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;
-        const model = records.body;
+        const model = await request.json();
         await repository.entry.update(id, entryType, entryId, model);
         return NextResponse.json(null);
     }

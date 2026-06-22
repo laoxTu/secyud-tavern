@@ -38,8 +38,9 @@ import {PaginationWrapper, usePager} from "@/components/custom/pager";
 import {TabManager} from "@/components/custom/tab";
 import {useErrorHandler} from "@/handler/client/error";
 import {del, get, post} from "@/client";
-import {PagedResult, PageOptions,BaseModel} from "@/business/models";
+import {PagedResult, PageOptions, BaseModel} from "@/business/models";
 import {ModelContextType, useModelContext} from "./models";
+import {toast} from "sonner";
 
 export interface ModelListProps<TModel extends BaseModel> {
     modelType: string,
@@ -56,7 +57,8 @@ export interface ModelListProps<TModel extends BaseModel> {
     deleteHandler?: (model: TModel) => Promise<void>,
     createHandler: (data: FormData) => Promise<void>,
     createContent: () => React.ReactNode,
-    importHandler?: (json: any) => Promise<void>,
+    importHandler?: (file: File) => Promise<void>,
+    importAccept?: string,
     tabManagerAccessor: () => TabManager
 }
 
@@ -77,6 +79,7 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
         createContent,
         createHandler,
         importHandler,
+        importAccept,
         tabManagerAccessor
     }: ModelListProps<TModel>) {
 
@@ -97,6 +100,7 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
         await refresh();
     }, [refresh])
 
+
     const changeModel = useCallback(async (id: string) => {
         try {
             const model = getHandler ?
@@ -104,7 +108,8 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
                 // @ts-expect-error dynamic api required
                 await get(`/${modelApi}/{id}`, {params: {id}}) as TModel;
             setModel(model);
-            setContentKey(u => u + 1)
+            setContentKey(u => u + 1);
+            await refreshModelList();
         } catch (err) {
             handleError(err as Error);
         }
@@ -127,6 +132,8 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
             ...searchAccessor?.(data) ?? {}
         });
     }, [doSearch, searchAccessor])
+
+    importAccept ??= '.json';
 
     return (
         <contextType.Provider
@@ -154,7 +161,7 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
                                 <EmptyContent className="flex-row justify-center gap-2">
                                     <CreateButtons modelType={modelType} modelApi={modelType} contextType={contextType}
                                                    createHandler={createHandler} createContent={createContent}
-                                                   importHandler={importHandler}/>
+                                                   importHandler={importHandler} importAccept={importAccept}/>
                                 </EmptyContent>
                             </Empty>
                         </div> :
@@ -185,13 +192,13 @@ export function ModelListContentTemplate<TModel extends BaseModel>(
                                 </form>
                                 <CreateButtons modelType={modelType} modelApi={modelType} contextType={contextType}
                                                createHandler={createHandler} createContent={createContent}
-                                               importHandler={importHandler}/>
+                                               importHandler={importHandler} importAccept={importAccept}/>
                             </div>
                             <div className="flex-1 h-full overflow-auto">
                                 <ItemGroup className={"p-2 gap-3"}>
                                     {data && data.map((t, index) => (
                                         <Item key={index} asChild
-                                              className={t.id === model?.id ? "bg-gray-100":""}
+                                              className={t.id === model?.id ? "bg-gray-100" : ""}
                                               variant={"outline"}
                                               role="listitem" onClick={() => selectModel(t.id)}>
                                             <a className={'cursor-pointer'}>
@@ -377,13 +384,14 @@ function ModelContent<TModel extends BaseModel>(
 }
 
 function CreateButtons<TModel extends BaseModel>(
-    {modelType, modelApi, contextType, createContent, createHandler, importHandler}: {
+    {modelType, modelApi, contextType, createContent, createHandler, importHandler, importAccept = '.json'}: {
         modelType: string,
         modelApi: string,
         contextType: Context<ModelContextType<TModel> | undefined>,
         createContent: () => React.ReactNode,
         createHandler: (data: FormData) => Promise<void>,
-        importHandler?: (json: any) => Promise<void>,
+        importHandler?: (file: File) => Promise<void>,
+        importAccept: string,
     }) {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
@@ -396,6 +404,9 @@ function CreateButtons<TModel extends BaseModel>(
             await createHandler(data);
             await refreshModelList();
             setCreateOpen(false);
+            toast.success(t("default.created_successfully"), {
+                richColors: true
+            });
         } catch (error) {
             handleError(error);
         }
@@ -404,16 +415,19 @@ function CreateButtons<TModel extends BaseModel>(
     const handleImport = async (formData: FormData) => {
         try {
             const file = formData.get("filename") as File;
-            const text = await file.text();
-            const json = JSON.parse(text);
             if (importHandler)
-                await importHandler(json);
+                await importHandler(file);
             else {
+                const text = await file.text();
+                const json = JSON.parse(text);
                 // @ts-expect-error dynamic api required
                 await post(`/${modelApi}`, json, {params: {isImport: true}})
             }
             await refreshModelList();
             setImportOpen(false);
+            toast.success(t("default.imported_successfully"), {
+                richColors: true
+            });
         } catch (error) {
             handleError(error);
         }
@@ -466,7 +480,7 @@ function CreateButtons<TModel extends BaseModel>(
                             <Field>
                                 <Label htmlFor={`${modelType}-filename`}>{t("default.name")}</Label>
                                 <Input id={`${modelType}-filename`} name="filename" type="file"
-                                       accept=".json" required/>
+                                       accept={importAccept} required/>
                             </Field>
                         </FieldGroup>
                         <DialogFooter>

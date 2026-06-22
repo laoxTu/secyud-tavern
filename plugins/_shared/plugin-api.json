@@ -68,6 +68,9 @@
     "AlertDialogTitle",
     "AlertDialogTrigger"
   ],
+  "@/components/ui/aspect-ratio": [
+    "AspectRatio"
+  ],
   "@/components/ui/button": [
     "Button",
     "buttonVariants"

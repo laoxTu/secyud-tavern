@@ -38,17 +38,6 @@ class ParamInterceptor implements InterceptorModels {
         // 解析 query 参数（统一命名）
         records.searchParams = deserializeSearchParams(request.nextUrl.searchParams);
 
-        // 仅解析有 body 的请求
-        const methodsWithBody = ['POST', 'PUT', 'PATCH'];
-        if (methodsWithBody.includes(request.method)) {
-            try {
-                records.body = await request.json();
-            } catch {
-                // body 可能为空或非 JSON
-                records.body = null;
-            }
-        }
-
         return await next();
     }
 }

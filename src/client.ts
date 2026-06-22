@@ -83,23 +83,27 @@ export async function api<
         next?: any;
         cache?: RequestCache;
         signal?: AbortSignal;
+
     }
 ): Promise<any> {
     const fullUrl = buildUrl("/api" + url as string, options?.params);
 
+    const headers = new Headers(options?.headers || {});
     const fetchOptions: RequestInit = {
         method: method.toUpperCase(),
-        headers: {
-            ...(options?.body && {'Content-Type': 'application/json'}),
-            ...options?.headers,
-        },
+        headers: headers,
         next: options?.next,
         cache: options?.cache,
         signal: options?.signal,
     };
 
     if (options?.body) {
-        fetchOptions.body = JSON.stringify(options.body);
+        if (!headers.has("Content-Type")) {
+            headers.set("Content-Type", "application/json");
+            fetchOptions.body = JSON.stringify(options.body);
+        } else {
+            fetchOptions.body = options.body;
+        }
     }
 
     return baseRequest(fullUrl, fetchOptions);

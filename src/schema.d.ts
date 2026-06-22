@@ -4,6 +4,41 @@
  */
 
 export interface paths {
+    "/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-images"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/images/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取预设 */
+        get: operations["get-images-{id}"];
+        put?: never;
+        post?: never;
+        /** 删除预设 */
+        delete: operations["delete-images-{id}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/llmapis": {
         parameters: {
             query?: never;
@@ -193,6 +228,23 @@ export interface paths {
         post?: never;
         /** 删除预设 */
         delete: operations["delete-presets-{id}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/presets/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-presets-import"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -517,6 +569,7 @@ export interface components {
                     };
                     inputs: {
                         content?: string;
+                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -529,6 +582,7 @@ export interface components {
                     }[];
                     outputs: {
                         content?: string;
+                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -632,6 +686,7 @@ export interface components {
                     };
                     inputs: {
                         content?: string;
+                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -644,6 +699,7 @@ export interface components {
                     }[];
                     outputs: {
                         content?: string;
+                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -707,6 +763,7 @@ export interface components {
             };
             inputs: {
                 content?: string;
+                reasoningContent?: string;
                 variables?: {
                     op: string;
                     path: string;
@@ -719,6 +776,7 @@ export interface components {
             }[];
             outputs: {
                 content?: string;
+                reasoningContent?: string;
                 variables?: {
                     op: string;
                     path: string;
@@ -732,6 +790,7 @@ export interface components {
         };
         StoryHistoryMessage: {
             content: string;
+            reasoningContent: string;
             variables: {
                 op: string;
                 path: string;
@@ -743,6 +802,7 @@ export interface components {
         };
         StoryInputMessage: {
             content?: string;
+            reasoningContent?: string;
             variables?: {
                 op: string;
                 path: string;
@@ -785,6 +845,7 @@ export interface components {
                 };
                 inputs: {
                     content?: string;
+                    reasoningContent?: string;
                     variables?: {
                         op: string;
                         path: string;
@@ -797,6 +858,7 @@ export interface components {
                 }[];
                 outputs: {
                     content?: string;
+                    reasoningContent?: string;
                     variables?: {
                         op: string;
                         path: string;
@@ -811,6 +873,7 @@ export interface components {
         };
         StoryOutputMessage: {
             content?: string;
+            reasoningContent?: string;
             variables?: {
                 op: string;
                 path: string;
@@ -920,6 +983,77 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "post-images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-images-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadableStream"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-images-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "get-llmapis": {
         parameters: {
             query?: {
@@ -1439,6 +1573,30 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-presets-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };

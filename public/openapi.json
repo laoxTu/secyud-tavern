@@ -365,6 +365,9 @@
                             "content": {
                               "type": "string"
                             },
+                            "reasoningContent": {
+                              "type": "string"
+                            },
                             "variables": {
                               "type": "array",
                               "items": {
@@ -404,6 +407,9 @@
                           "type": "object",
                           "properties": {
                             "content": {
+                              "type": "string"
+                            },
+                            "reasoningContent": {
                               "type": "string"
                             },
                             "variables": {
@@ -713,6 +719,9 @@
                           "content": {
                             "type": "string"
                           },
+                          "reasoningContent": {
+                            "type": "string"
+                          },
                           "variables": {
                             "type": "array",
                             "items": {
@@ -752,6 +761,9 @@
                         "type": "object",
                         "properties": {
                           "content": {
+                            "type": "string"
+                          },
+                          "reasoningContent": {
                             "type": "string"
                           },
                           "variables": {
@@ -945,6 +957,9 @@
                 "content": {
                   "type": "string"
                 },
+                "reasoningContent": {
+                  "type": "string"
+                },
                 "variables": {
                   "type": "array",
                   "items": {
@@ -984,6 +999,9 @@
               "type": "object",
               "properties": {
                 "content": {
+                  "type": "string"
+                },
+                "reasoningContent": {
                   "type": "string"
                 },
                 "variables": {
@@ -1034,6 +1052,9 @@
           "content": {
             "type": "string"
           },
+          "reasoningContent": {
+            "type": "string"
+          },
           "variables": {
             "type": "array",
             "items": {
@@ -1061,6 +1082,7 @@
         },
         "required": [
           "content",
+          "reasoningContent",
           "variables",
           "properties"
         ]
@@ -1069,6 +1091,9 @@
         "type": "object",
         "properties": {
           "content": {
+            "type": "string"
+          },
+          "reasoningContent": {
             "type": "string"
           },
           "variables": {
@@ -1192,6 +1217,9 @@
                       "content": {
                         "type": "string"
                       },
+                      "reasoningContent": {
+                        "type": "string"
+                      },
                       "variables": {
                         "type": "array",
                         "items": {
@@ -1231,6 +1259,9 @@
                     "type": "object",
                     "properties": {
                       "content": {
+                        "type": "string"
+                      },
+                      "reasoningContent": {
                         "type": "string"
                       },
                       "variables": {
@@ -1286,6 +1317,9 @@
         "type": "object",
         "properties": {
           "content": {
+            "type": "string"
+          },
+          "reasoningContent": {
             "type": "string"
           },
           "variables": {
@@ -1462,6 +1496,111 @@
     }
   },
   "paths": {
+    "/images": {
+      "post": {
+        "operationId": "post-images",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/images/{id}": {
+      "get": {
+        "operationId": "get-images-{id}",
+        "summary": "获取预设",
+        "description": "",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-images-{id}",
+        "summary": "删除预设",
+        "description": "",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 123,
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/llmapis": {
       "get": {
         "operationId": "get-llmapis",
@@ -2314,6 +2453,43 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/presets/import": {
+      "post": {
+        "operationId": "post-presets-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Presets"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -3218,6 +3394,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Images"
+    },
     {
       "name": "Llmapis"
     },

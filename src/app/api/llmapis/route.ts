@@ -1,5 +1,4 @@
-﻿
-import {and, eq, like, or, SQL} from "drizzle-orm";
+﻿import {and, eq, like, or, SQL} from "drizzle-orm";
 import {llmapiRepository as repository} from "@/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
 import {BusinessError} from "@/handler/models";
@@ -42,11 +41,17 @@ export const POST = interceptor.createRoute(
             throw new BusinessError("No code provided", "error.empty_field")
                 .withValue("field", "default.code");
         }
-        if (!isImport && await repository.exist(e => (eq(e.code, model.code)))) {
-            throw new BusinessError("Code already exists", "error.duplicate_field")
-                .withValue("field", "default.code")
-                .withValue("entity_name", "default.llmapi")
-                ;
+
+        const exist = await repository.get(model.code, false, e => (eq(e.code, model.code)));
+        if (exist) {
+            if (isImport) {
+                await repository.delete(model.id);
+            } else {
+                throw new BusinessError("Code already exists", "error.duplicate_field")
+                    .withValue("field", "default.code")
+                    .withValue("entity_name", "default.llmapi")
+                    ;
+            }
         }
     })
 )

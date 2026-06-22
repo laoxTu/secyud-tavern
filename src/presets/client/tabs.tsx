@@ -1,9 +1,9 @@
 ﻿'use client';
 import {moduleName} from "../models";
-import React from "react";
+import React, {useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
-import {put} from "@/client";
+import {post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
@@ -14,6 +14,8 @@ import {EntryNavigationTemplate} from "@/components/template/navigation-template
 import {PresetCombobox} from "./combobox";
 import {moduleName as modelType} from "../models";
 import {PresetContext} from "./models";
+import {ImageUploader} from "@/components/custom/image-uploader";
+import {BusinessError} from "@/handler/models";
 
 const prefix = modelType;
 
@@ -23,14 +25,34 @@ export const defaultTags = [
 
 export function DefaultTab() {
     const t = useTranslations();
+    const [coverFile, setCoverFile] = useState<File | null>(null);
+    const changed = useRef(false);
     return <EditFormTemplate
         modelType={modelType}
         contextType={PresetContext}
-        updateHandler={async (model, data) =>
+        updateHandler={async (model, data) => {
+            let coverId: string | null = null;
+            if (!changed.current) {
+                coverId = model.content.coverId
+            } else if (coverFile) {
+                if (coverFile.type !== "image/png") {
+                    throw new BusinessError("Only png file supported.")
+                }
+
+                const {id} = await post('/images', coverFile, {
+                    headers: {
+                        'Content-Type': coverFile.type
+                    }
+                });
+                coverId = id;
+            }
+            console.debug("[cover id]", coverId);
+
             await put("/presets/{id}",
                 {
                     content: {
-                        "description": data.get("description") as string
+                        "description": data.get("description") as string,
+                        coverId
                     },
                     version: data.get("version") as string,
                     name: data.get("name") as string,
@@ -39,8 +61,21 @@ export function DefaultTab() {
                 },
                 {
                     params: {"id": model.id,}
-                })}
+                });
+        }}
         updateContent={(model) => <>
+            <Field>
+                <FieldLabel htmlFor={`${prefix}-cover`}>
+                    {t("default.cover")}
+                </FieldLabel>
+                <ImageUploader name="cover`" id={`${prefix}-cover`} className={'max-w-52'}
+                               defaultValue={model.content.coverId ? `/api/images/${model.content.coverId}` : undefined}
+                               onChange={file => {
+                                   console.log("file", file);
+                                   setCoverFile(file);
+                                   changed.current = true;
+                               }}/>
+            </Field>
             <div className="grid grid-cols-2 gap-4">
                 <Field>
                     <FieldLabel htmlFor={`${prefix}-code`}>

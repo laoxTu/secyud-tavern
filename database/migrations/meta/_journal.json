@@ -8,6 +8,13 @@
       "when": 1781433879357,
       "tag": "0000_lush_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782109795705,
+      "tag": "0001_giant_the_phantom",
+      "breakpoints": true
     }
   ]
 }
