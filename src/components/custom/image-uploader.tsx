@@ -12,6 +12,7 @@ interface ImageUploaderProps {
     aspectRatio?: number;
     // 最大文件大小（字节），默认 5MB
     maxSize?: number;
+    accept?: string;
     className?: string;
     defaultValue?: string;
 }
@@ -19,6 +20,7 @@ interface ImageUploaderProps {
 export function ImageUploader({
                                   id,
                                   name,
+                                  accept,
                                   defaultValue,
                                   onChange,
                                   aspectRatio = 1,
@@ -88,7 +90,7 @@ export function ImageUploader({
                    name={name}
                    ref={fileInputRef}
                    type="file"
-                   accept="image/*"
+                   accept={accept ?? "image/*"}
                    onChange={handleFileChange}
                    className="hidden"
             />
