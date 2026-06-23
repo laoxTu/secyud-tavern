@@ -22,6 +22,7 @@ export function usePager<T>(options: UsePageOptions<T>) {
     const [totalCount, setTotalCount] = useState(0);
     const [search, setSearch] = useState<any | undefined>(defaultSearch);
     const [error, setError] = useState<Error | null>(null);
+    const [renderKey, setRenderKey] = useState(0);
 
     // 使用 ref 防重复请求
     const loadingRef = useRef(false);
@@ -42,6 +43,7 @@ export function usePager<T>(options: UsePageOptions<T>) {
             setPageIndex(params.page ?? 0);
             setPageSize(params.pageSize ?? defaultPageSize);
             setTotalCount(result.totalCount);
+            setRenderKey(i => i + 1);
         } catch (err) {
             setError(err as Error);
             handleError(err);
@@ -91,6 +93,7 @@ export function usePager<T>(options: UsePageOptions<T>) {
         pageSize,
         totalCount,
         search,
+        renderKey,
         refresh,
         changePageIndex,
         changePageSize,

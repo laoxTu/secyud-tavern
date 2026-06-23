@@ -127,7 +127,7 @@ export function generateUpdateEntryApi<TModel>(repository: Repository<TModel>): 
         const {id, entryType, entryId} = await records.context.params;
         const model = await request.json();
         await repository.entry.update(id, entryType, entryId, model);
-        return NextResponse.json(null);
+        return NextResponse.json(model);
     }
 }
 

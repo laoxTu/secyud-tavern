@@ -138,9 +138,11 @@ export function EntryListTemplate<TModel extends BaseModel>(
                                        contextType={contextType} createAccessor={createAccessor}
                                        refreshList={refreshList}/>
                     </div>
-                    <div key={pager.pageIndex} className="flex-1 overflow-auto space-y-2 p-2">
+                    <div key={pager.renderKey} className="flex-1 overflow-auto space-y-2 p-2">
                         {pager.data.map((data, i) =>
-                            <Editor key={i} entry={data} refreshList={() => pager.refresh()}
+                            <Editor key={pager.renderKey * (pager.pageIndex + 1) * pager.pageSize + i}
+                                    entry={data}
+                                    refreshList={refreshList}
                                     modelType={modelType} modelApi={modelApi} entryType={entryType}
                                     contextType={contextType}
                                     updateAccessor={updateAccessor} updateContent={updateContent}/>
@@ -263,28 +265,30 @@ function Editor<TModel extends BaseModel>(
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     const [isOpen, setIsOpen] = React.useState(true);
+    const [editModel, setEditModel] = React.useState(entry);
     const {model} = useModelContext<TModel>(contextType, modelType, t);
     if (!model) {
         throw new Error('model is not available at this time');
     }
     const handleUpdate = async (data: FormData) => {
         try {
-            // @ts-expect-error dynamic api required
-            await put(`/${modelApi}/{id}/entries/{entryType}/{entryId}`, {
-                code: entry.code,
+            const updateValue = {
+                code: data.get("code") as string,
                 name: data.get("name") as string,
                 ...updateAccessor(data)
-            }, {
+            };
+            // @ts-expect-error dynamic api required
+            await put(`/${modelApi}/{id}/entries/{entryType}/{entryId}`, updateValue, {
                 params: {
                     "id": model.id,
-                    "entryId": entry.id,
+                    "entryId": editModel.id,
                     "entryType": entryType
                 }
             });
             toast.success(t("default.saved_successfully"), {
                 richColors: true
             });
-            await refreshList();
+            setEditModel((u: any) => ({...u, ...updateValue}));
         } catch (error) {
             handleError(error);
         }
@@ -312,7 +316,7 @@ function Editor<TModel extends BaseModel>(
             await del(`/${modelApi}/{id}/entries/{entryType}/{entryId}`, {
                 params: {
                     "id": model.id,
-                    "entryId": entry.id,
+                    "entryId": editModel.id,
                     "entryType": entryType
                 }
             });
@@ -330,7 +334,7 @@ function Editor<TModel extends BaseModel>(
             await put(`/${modelApi}/{id}/entries/{entryType}/{entryId}/disabled`, {}, {
                 params: {
                     "id": model.id,
-                    "entryId": entry.id,
+                    "entryId": editModel.id,
                     "entryType": entryType,
                     "disabled": !enabled
                 }
@@ -338,12 +342,11 @@ function Editor<TModel extends BaseModel>(
             toast.success(t(enabled ? "default.enable_item" : "default.disable_item"), {
                 richColors: true
             });
-            await refreshList();
+            setEditModel((u: any) => ({...u, disabled: !enabled}));
         } catch (error) {
             handleError(error);
         }
-    }, [entry.id, entryType, handleError, model.id, modelApi, refreshList, t]);
-
+    }, [editModel.id, entryType, handleError, model.id, modelApi, refreshList, t]);
 
     return (
         <Card className={"w-full"}>
@@ -352,19 +355,19 @@ function Editor<TModel extends BaseModel>(
                     <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
                             <label className={"w-full m-auto px-2 cursor-pointer"}>
-                                {entry.name}
+                                {editModel.name}
                                 <span className={"px-2 text-sm text-gray-500"}>
-                                    {entry.code}
+                                    {editModel.code}
                                 </span>
                             </label>
                         </CollapsibleTrigger>
                         <div className="flex items-center space-x-2"
                              onClick={(e) => e.stopPropagation()}>
-                            <Switch id={`${entryType}-disabled-${entry.id}`}
-                                    defaultChecked={!entry.disabled}
+                            <Switch id={`${entryType}-disabled-${editModel.id}`}
+                                    defaultChecked={!editModel.disabled}
                                     onCheckedChange={handleSetDisable}/>
                             <Label className={"min-w-12"}
-                                   htmlFor={`${entryType}-disabled-${entry.id}`}>
+                                   htmlFor={`${entryType}-disabled-${editModel.id}`}>
                                 {t("default.enabled")}
                             </Label>
                         </div>
@@ -375,10 +378,10 @@ function Editor<TModel extends BaseModel>(
                             <AlertDialogContent>
                                 <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                        {t("default.copy_title", {target: t(`default.${modelType}`)})}
+                                        {t("default.copy_title", {target: t(`${modelType}.${entryType}`)})}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        {t("default.copy_description", {target: t(`default.${modelType}`)})}
+                                        {t("default.copy_description", {target: t(`${modelType}.${entryType}`)})}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -423,23 +426,23 @@ function Editor<TModel extends BaseModel>(
                                     <FieldGroup>
                                         <div className="grid grid-cols-2 gap-4">
                                             <Field>
-                                                <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
+                                                <FieldLabel htmlFor={`${entryType}-code-${editModel.id}`}>
                                                     {t("default.code")}
                                                 </FieldLabel>
                                                 <Input name="code"
-                                                       id={`${entryType}-code-${entry.id}`}
-                                                       defaultValue={entry.code} disabled/>
+                                                       id={`${entryType}-code-${editModel.id}`}
+                                                       defaultValue={editModel.code}/>
                                             </Field>
                                             <Field>
-                                                <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
+                                                <FieldLabel htmlFor={`${entryType}-name-${editModel.id}`}>
                                                     {t("default.name")}
                                                 </FieldLabel>
                                                 <Input name="name"
-                                                       id={`${entryType}-name-${entry.id}`}
-                                                       defaultValue={entry.name}/>
+                                                       id={`${entryType}-name-${editModel.id}`}
+                                                       defaultValue={editModel.name}/>
                                             </Field>
                                         </div>
-                                        {updateContent(entry)}
+                                        {updateContent(editModel)}
                                     </FieldGroup>
                                 </FieldSet>
                                 <Field orientation="horizontal">

@@ -1,8 +1,10 @@
 ﻿import {Registerable} from "@/utils/register";
 import {StoryHistory, StoryHistoryMessage} from "@/stories/models";
+import {PresetLorebookModel} from "@/engines/lorebooks/models";
 
 export interface MatcherProps {
-    defaultValue: any
+    defaultValue: any,
+    entry: PresetLorebookModel
 }
 
 export interface MatcherMatchContext {

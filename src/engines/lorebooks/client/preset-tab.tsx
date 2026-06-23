@@ -15,7 +15,7 @@ import {engineName, PresetLorebookModel} from "../models";
 import {EntryModel} from "@/business/models";
 import {matchName} from "@/engines/lorebooks/match/always/models";
 
-const roles =["system", "user", "assistant"]
+const roles = ["system", "user", "assistant"]
 
 function EditorContent({entry}: {
     entry: PresetLorebookModel,
@@ -99,7 +99,7 @@ function EditorContent({entry}: {
             {editor && (
                 () => {
                     const EditorComponent = editor.editor;
-                    return <EditorComponent defaultValue={entry.matchExpression}/>;
+                    return <EditorComponent defaultValue={entry.matchExpression} entry={entry}/>;
                 }
             )()}
             <Field>
@@ -138,8 +138,7 @@ function Tab() {
                     role: data.get("role") as string,
                 });
             }}
-            updateContent={entry => <EditorContent
-                entry={entry}/>}/>
+            updateContent={entry => <EditorContent entry={entry}/>}/>
     );
 }
 

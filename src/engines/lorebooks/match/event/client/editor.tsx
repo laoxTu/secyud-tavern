@@ -7,11 +7,12 @@ import {MatchEditor as NormalMatchEditor} from "@/engines/lorebooks/match/normal
 import {EventMatchModel} from "@/engines/lorebooks/match/event/models";
 import {engineName} from "@/engines/lorebooks/models";
 import {DateEditor} from "@/engines/lorebooks/match/event/client/date-editor";
+import {mergeObjects} from "@/utils";
 
 
-export function MatchEditor({defaultValue}: MatcherProps) {
+export function MatchEditor({defaultValue, entry}: MatcherProps) {
     const t = useTranslations();
-    const model: EventMatchModel = {
+    const model: EventMatchModel = mergeObjects({
         keywords: [],
         keywordsLength: 1,
         fitCount: 1,
@@ -24,31 +25,30 @@ export function MatchEditor({defaultValue}: MatcherProps) {
             year: 0,
             month: 1,
             day: 1
-        },
-        ...(defaultValue ?? {})
-    }
+        }
+    }, defaultValue);
 
     return (
         <>
             <div className="grid grid-cols-2 gap-4">
                 <Field>
-                    <FieldLabel htmlFor={`${engineName}-min-date`}>
+                    <FieldLabel htmlFor={`${engineName}-min-date-${entry.id}`}>
                         {t("lorebook.min_date")}
                     </FieldLabel>
-                    <DateEditor id={`${engineName}-min-date`}
+                    <DateEditor id={`${engineName}-min-date-${entry.id}`}
                                 defaultValue={model.minDate}
                                 name={`min-date`}/>
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor={`${engineName}-max-date`}>
+                    <FieldLabel htmlFor={`${engineName}-max-date-${entry.id}`}>
                         {t("lorebook.max_date")}
                     </FieldLabel>
-                    <DateEditor id={`${engineName}-max-date`}
+                    <DateEditor id={`${engineName}-max-date-${entry.id}`}
                                 defaultValue={model.maxDate}
                                 name={`max-date`}/>
                 </Field>
             </div>
-            <NormalMatchEditor defaultValue={defaultValue}/>
+            <NormalMatchEditor defaultValue={defaultValue} entry={entry}/>
         </>
     );
 }

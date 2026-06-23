@@ -6,24 +6,25 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {engineName} from "@/engines/lorebooks/models";
 import {AlwaysMatchModel} from "@/engines/lorebooks/match/always/models";
 import {Checkbox} from "@/components/ui/checkbox";
+import {mergeObjects} from "@/utils";
 
 
-export function MatchEditor({defaultValue}: MatcherProps) {
+export function MatchEditor({defaultValue, entry}: MatcherProps) {
     const t = useTranslations();
-    const model: AlwaysMatchModel = {
-        lastMessage: false,
-        ...(defaultValue ?? {})
-    }
+    const model: AlwaysMatchModel = mergeObjects({lastMessage: false}, defaultValue);
+
+    console.debug(entry.name, model.lastMessage);
 
     return (
         <>
             <div className="grid grid-cols-2 gap-4">
                 <Field orientation="horizontal">
-                    <Checkbox id={`${engineName}-lastMessage`}
+                    <Checkbox key={model.lastMessage ? 1 : 0}
+                              id={`${engineName}-lastMessage-${entry.id}`}
                               defaultChecked={model.lastMessage}
                               name={"lastMessage"}
                     />
-                    <FieldLabel htmlFor={`${engineName}-lastMessage`}>
+                    <FieldLabel htmlFor={`${engineName}-lastMessage-${entry.id}`}>
                         {t("lorebook.last_message")}
                     </FieldLabel>
                 </Field>
