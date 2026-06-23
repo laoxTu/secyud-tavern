@@ -10,6 +10,8 @@
     "copy": "复制",
     "language": "语言",
     "zh": "简体中文",
+    "chars": "字符",
+    "total_chars": "总字符",
     "en": "English",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_title": "复制{target}",
@@ -127,6 +129,8 @@
     "variable": "变量",
     "variable_invalid_json": "变量格式错误",
     "back_home_tip": "回到主页",
+    "input_viewer_tip": "查看上下文",
+    "input_viewer": "上下文",
     "edit_history_tip": "编辑当前历史",
     "edit_history": "编辑历史",
     "delete_history_tip": "删除当前历史"

@@ -37,7 +37,7 @@ export async function defaultBuildInput(
         for (; j < lorebooks.length; j++) {
             const lorebook = lorebooks[j];
             if (lorebook.layer >= 100) break;
-            tryPushMessage(lorebook.role, lorebook.content);
+            tryPushMessage(lorebook.role, lorebook.content, lorebook);
         }
 
         if (history.inputs.length > 0) {
@@ -50,7 +50,7 @@ export async function defaultBuildInput(
 
         for (; j < lorebooks.length; j++) {
             const lorebook = lorebooks[j];
-            tryPushMessage(lorebook.role, lorebook.content);
+            tryPushMessage(lorebook.role, lorebook.content, lorebook);
         }
 
         const output = getCurrentOutput(history);
@@ -61,8 +61,7 @@ export async function defaultBuildInput(
 
     tryPushMessage("", "");
 
-    console.debug("llmapiMessages: ");
-    console.debug(llmapiMessages);
+    console.debug("llmapiMessages: ", llmapiMessages);
     return llmapiMessages;
 
     function fillLorebooks(lorebooks: PresetLorebookModel[], added: PresetLorebookModel[]) {
@@ -80,18 +79,24 @@ export async function defaultBuildInput(
             visitedLorebooks.add(lorebook.code);
         }
 
-        if (messageRole === cache.role) {
-            cache.content.push(messageContent);
-        } else {
+        if (messageRole !== cache.role) {
             if (cache.content.length > 0) {
+                console.debug("generate message:", {
+                    role: cache.role,
+                    content: [...cache.content],
+                });
                 llmapiMessages.push({
                     role: cache.role,
-                    content: cache.content.join("\n")
+                    content: cache.content.join("\r\n")
                 });
             }
             cache.role = messageRole;
             cache.content.length = 0;
         }
+        console.debug("push message:", {
+            messageRole, messageContent
+        });
+        cache.content.push(messageContent);
     }
 }
 

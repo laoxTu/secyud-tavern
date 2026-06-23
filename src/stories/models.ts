@@ -16,7 +16,6 @@ export interface StoryModel extends BaseModel {
 
 export interface StoryHistoryMessage {
     content: string;
-    reasoningContent: string;
     variables: VariableChangeModel[];
     properties: Record<string, any>;
 }
@@ -27,6 +26,7 @@ export interface StoryInputMessage extends StoryHistoryMessage {
 
 export interface StoryOutputMessage extends StoryHistoryMessage {
     id: number;
+    reasoningContent: string;
 }
 
 export interface StoryHistory extends EntryModel {

@@ -106,7 +106,7 @@ export function HistoryEditor() {
                 </TooltipContent>
             </Tooltip>
         </DialogTrigger>
-        <DialogContent className="inline">
+        <DialogContent>
             {history && (
                 <form action={handleHistoryUpdate}>
                     <DialogHeader>

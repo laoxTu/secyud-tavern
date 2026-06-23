@@ -26,9 +26,15 @@ export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [llmapiModuleName],
     onProcessInput: async (ctx) => {
+        const macroObject = buildMacroObject(ctx);
         for (const message of ctx.messages) {
-            message.content = eta.renderString(
-                message.content, buildMacroObject(ctx));
+            const content = eta.renderString(
+                message.content, macroObject);
+            console.debug("apply macro: ", {
+                origin: message.content,
+                target: content
+            });
+            message.content = content;
         }
     },
 }

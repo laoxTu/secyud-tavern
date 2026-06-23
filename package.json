@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 12804",
     "build": "next build & npx tsx scripts/generate-stubs.ts",
     "start": "next start",
     "lint": "eslint",
