@@ -1,6 +1,7 @@
 {
   "default": {
     "author": "作者",
+    "input_author": "输入作者",
     "cancel": "取消",
     "code": "编码",
     "content": "内容",
