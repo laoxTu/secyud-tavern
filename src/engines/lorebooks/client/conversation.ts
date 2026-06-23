@@ -76,8 +76,7 @@ export const lorebookConversationProvider:
         }
 
         function setActiveLorebooks(history: LlmapiHistory, message: StoryHistoryMessage, includeOutput: boolean) {
-            console.debug(message);
-            console.debug(message.properties);
+            console.debug("setActiveLorebooks: message", message);
             if (!message.properties[engineArrayName]) {
                 tryFillActiveLorebooks(lorebooks, {
                     history, message,

@@ -22,16 +22,16 @@ export const eventMatcher: Matcher =
         match: (ctx: MatcherMatchContext, expression?: EventMatchModel) => {
             if (!expression) return false;
             const relatedDates = ctx.variables.relatedDates as EventDate[];
-            if (relatedDates) {
-                const maxDate = getDateNumber(expression.maxDate);
-                const minDate = getDateNumber(expression.minDate);
-                if (!relatedDates.some(u => {
-                    const date = getDateNumber(u);
-                    return minDate <= date
-                        && maxDate >= date
-                }))
-                    return false;
-            }
+            if (!relatedDates) return false;
+
+            const maxDate = getDateNumber(expression.maxDate);
+            const minDate = getDateNumber(expression.minDate);
+            if (!relatedDates.some(u => {
+                const date = getDateNumber(u);
+                return minDate <= date
+                    && maxDate >= date
+            }))
+                return false;
             return normalMatch(ctx.message, expression);
         }
     } as const;

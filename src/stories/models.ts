@@ -8,6 +8,16 @@ export interface VariableChangeModel {
     value: any;
 }
 
+export function isVariableChangeModel(obj: any) {
+    return (
+        obj &&
+        typeof obj === 'object' &&
+        typeof obj.op === 'string' &&
+        obj.value &&
+        typeof obj.path === 'string'
+    );
+}
+
 export interface StoryModel extends BaseModel {
     requires: RequireModel[],
     llmapi: RequireModel | null,
@@ -45,6 +55,7 @@ export function getCurrentOutput(history: StoryHistory) {
 
 export function applyPatch(variables: any, changes: VariableChangeModel[]) {
 
+    console.debug("applyPatch", changes);
     for (const change of changes) {
         const keys = change.path.split('/').filter(k => k !== '');
         if (keys.length === 0) {
@@ -77,6 +88,7 @@ export function applyPatch(variables: any, changes: VariableChangeModel[]) {
     }
 }
 
+
 export function extractVariableChanges(history: StoryHistoryMessage, text?: string) {
     if (!text || text.trim() == '') {
         history.variables = [];
@@ -87,23 +99,26 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
     text = text.trim().replace(regex, (match, element) => {
-        try {
-            const obj = JSON.parse(element.trim());
-            if (obj as VariableChangeModel) {
-                results.push(obj as VariableChangeModel);
-            } else if (Array.isArray(obj)) {
-                for (const item of obj) {
-                    if (item as VariableChangeModel) {
-                        results.push(item as VariableChangeModel);
+            try {
+                const obj = JSON.parse(element.trim());
+                if (Array.isArray(obj)) {
+                    for (const item of obj) {
+                        if (isVariableChangeModel(item)) {
+                            results.push(item);
+                        }
                     }
+                } else if (isVariableChangeModel(obj)) {
+                    results.push(obj);
                 }
+            } catch
+                (e) {
+                console.warn(`JSON 解析失败: ${element.trim().substring(0, 100)}...`);
+                console.warn(e);
             }
-        } catch (e) {
-            console.warn(`JSON 解析失败: ${element.trim().substring(0, 100)}...`);
-            console.warn(e);
+            return ''; // 删除匹配的内容
         }
-        return ''; // 删除匹配的内容
-    });
+    )
+    ;
 
     history.variables = results;
     history.content = text;
