@@ -54,12 +54,12 @@ function EditorContent({entry}: {
                            defaultValue={entry.layer}/>
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor={"lorebook-match_type"}>
+                    <FieldLabel htmlFor={`lorebook-role-${entry.id}`}>
                         {t("lorebook.role")}
                     </FieldLabel>
                     <Select name="role" defaultValue={entry.role}>
                         <SelectTrigger className="w-full"
-                                       id={"lorebook-role"}>
+                                       id={`lorebook-role-${entry.id}`}>
                             <SelectValue/>
                         </SelectTrigger>
                         <SelectContent position="popper">
@@ -74,14 +74,14 @@ function EditorContent({entry}: {
                     </Select>
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor={"lorebook-match_type"}>
+                    <FieldLabel htmlFor={`lorebook-match_type-${entry.id}`}>
                         {t("lorebook.match_type")}
                     </FieldLabel>
                     <Select name="matchType"
                             value={matchType}
                             onValueChange={handleMatchTypeChange}>
                         <SelectTrigger className="w-full"
-                                       id={"lorebook-match_type"}>
+                                       id={`lorebook-match_type-${entry.id}`}>
                             <SelectValue/>
                         </SelectTrigger>
                         <SelectContent position="popper">

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 12804",
-    "build": "next build & npx tsx scripts/generate-stubs.ts",
+    "build": "next build",
+    "gen-stubs": "npx tsx scripts/generate-stubs.ts",
     "start": "next start",
     "lint": "eslint",
     "gen-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
