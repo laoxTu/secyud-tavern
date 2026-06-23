@@ -2,7 +2,7 @@
 import {del} from "@/client";
 import {getSlotAndHistories, updateStoryHistory, useSlotContext} from "@/slots/client/models";
 import {useTranslations} from "next-intl";
-import React, {useCallback} from "react";
+import React, {useCallback, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -22,6 +22,8 @@ export function HistoryDeleter() {
     const t = useTranslations();
     const ctx = useSlotContext();
     const {page} = useHistoryPageState();
+    const [openRemove, setOpenRemove] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
 
     const deleteCurrentHistory = useCallback(async () => {
         try {
@@ -34,6 +36,8 @@ export function HistoryDeleter() {
             await handleHistoryPageChange(ctx, {curPage: page.cur,});
         } catch (error) {
             handleError(error);
+        } finally {
+            setOpenDelete(false);
         }
     }, [handleError]);
 
@@ -63,15 +67,18 @@ export function HistoryDeleter() {
             }
         } catch (error) {
             handleError(error);
+        } finally {
+            setOpenRemove(false);
         }
     }, [deleteCurrentHistory]);
 
     return (<>
-        <AlertDialog>
+        <AlertDialog open={openRemove} onOpenChange={setOpenRemove}>
             <AlertDialogTrigger asChild>
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="destructive"
+                                onClick={() => setOpenRemove(true)}
                                 disabled={page.cur === 0}>
                             <DeleteIcon/>
                         </Button>
@@ -100,11 +107,12 @@ export function HistoryDeleter() {
             </AlertDialogContent>
         </AlertDialog>
 
-        <AlertDialog>
+        <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
             <AlertDialogTrigger asChild>
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="destructive"
+                                onClick={() => setOpenDelete(true)}
                                 disabled={page.cur === 0}>
                             <TrashIcon/>
                         </Button>

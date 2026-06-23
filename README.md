@@ -65,11 +65,11 @@ Secyud Tavern 换了一种思路：
 
 ```text
 <variable_changes>
-{
+[{
   "op": "add",
   "path": "time/hour",
   "value": 23
-}
+}]
 </variable_changes>
 ```
 

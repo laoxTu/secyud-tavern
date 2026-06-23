@@ -23,7 +23,11 @@ Secyud Tavern 的 Story 既是**会话快照**又是**预设播放列表**：
 每轮对话：
   AI 回复
   └── <variable_changes>
-      { "alice.mood": "happy", "time.hour": 23 }
+      [{
+        "op": "add",
+        "path": "time/hour",
+        "value": 23
+      }]
       </variable_changes>
   
   存储：

@@ -73,10 +73,11 @@ vars = applyPatch(vars, [
 const aiResponse = `
 Here is the updated state:
 <variable_changes>
-{
-  "time.hour": 15,
-  "alice.mood": "happy"
-}
+[{
+  "op": "add",
+  "path": "time/hour",
+  "value": 23
+}]
 </variable_changes>
 `;
 const { content, variableChanges } = extractVariableChanges(history, aiResponse);

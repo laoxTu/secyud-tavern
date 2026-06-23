@@ -138,11 +138,11 @@ AI 回复中的变量变更通过标签包裹：
 
 ```text
 <variable_changes>
-{
-  "time": { "hour": 23 },
-  "location": "tavern",
-  "alice.cat-girl.mood": "happy"
-}
+[{
+  "op": "add",
+  "path": "time/hour",
+  "value": 23
+}]
 </variable_changes>
 ```
 
