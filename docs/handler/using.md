@@ -1,173 +1,89 @@
-# Handler 模块 — 使用指南
+# Handler 层使用指南
 
-## 抛出业务错误
+## 在 API 路由中抛出错误
 
-### 在 API 路由中使用
-
-```ts
+```typescript
 import { BusinessError } from "@/handler/models";
 
 // 基本用法
 throw new BusinessError("entity not found", "default.entity_not_found");
 
-// 附带额外数据
-throw new BusinessError("name is required", "validation.required")
+// 附带数据（客户端可通过 i18n 插值显示）
+throw new BusinessError("name required", "validation.required")
     .withValue("field", "name")
     .withValue("minLength", 3);
 ```
 
-### 错误码规范
+## 正确 vs 错误的错误处理
 
-- `default.entity_not_found` — 实体未找到
-- `default.entity_already_exists` — 实体已存在
-- `validation.required` — 必填字段
-- 自定义错误码通过 i18n 键映射到本地化文本
-
-### 不要直接返回错误响应
-
-```ts
-// ❌ 错误
+```typescript
+// ❌ 禁止 — 绕过 ErrorInterceptor，错误格式不一致
 export const GET = interceptor.createRoute(async (req, records) => {
-    if (!entity) {
-        return NextResponse.json(
-            { message: "Not found" },
-            { status: 404 }
-        );
-    }
+    if (!entity)
+        return NextResponse.json({ message: "Not found" }, { status: 404 });
 });
 
-// ✅ 正确
+// ✅ 正确 — 由 ErrorInterceptor 统一格式化
 export const GET = interceptor.createRoute(async (req, records) => {
-    if (!entity) {
+    if (!entity)
         throw new BusinessError("entity not found", "default.entity_not_found");
-    }
 });
 ```
 
-## 在路由中访问参数
+## 在处理器中访问参数
 
-### searchParams（查询参数）
-
-```ts
+```typescript
 export const GET = interceptor.createRoute(async (req, records) => {
+    // URL 查询参数（已 JSON.parse 尝试）
     const { page, pageSize, search } = records.searchParams;
-    // 参数已自动 JSON.parse 尝试
-    // page: 0, pageSize: 20, search: "keyword"
-});
-```
 
-### Body（请求体）
-
-```ts
-export const POST = interceptor.createRoute(async (req, records) => {
-    const { name, content } = records.body;
-    // JSON body 已自动解析
-});
-```
-
-### 路径参数
-
-```ts
-export const PUT = interceptor.createRoute(async (req, records) => {
+    // 路径参数（Next.js 自动提供）
     const { id } = records.context.params;
-    // 来自 URL 路径: /api/stories/{id}
-});
-```
 
-## 路由包装
-
-### 标准路由
-
-```ts
-// src/app/api/stories/route.ts
-import { interceptor } from "@/handler/server/interceptor";
-
-export const GET = interceptor.createRoute(handler);
-export const POST = interceptor.createRoute(handler2);
-```
-
-### 带参数的动态路由
-
-```ts
-// src/app/api/stories/[id]/route.ts
-export const GET = interceptor.createRoute(async (req, records) => {
-    const id = records.context.params.id;
-    // ...
+    // 请求体直接在 handler 中读取
+    const body = await req.json();
 });
 ```
 
 ## 客户端错误处理
-
-### 使用 useErrorHandler
 
 ```tsx
 'use client';
 import { useErrorHandler } from "@/handler/client/error";
 
 function MyComponent() {
-    const { handleError } = useErrorHandler();
+    const { handleError, handleSuccess } = useErrorHandler();
 
-    async function loadData() {
+    async function save() {
         try {
-            const data = await get("/stories", { params: { page: 0 } });
-            // 处理数据
+            await fetch('/api/stories', { method: 'POST', body: data });
+            handleSuccess("保存成功");
         } catch (err) {
             handleError(err);
-            // ApiError → toast 展示错误信息
-            // 其他 Error → 重新抛出
+            // 若 err 是 ApiError(code="default.name_required")，
+            // 会自动用 next-intl 翻译 code 并显示 toast
         }
     }
 
-    return <Button onClick={loadData}>加载</Button>;
+    return <Button onClick={save}>保存</Button>;
 }
 ```
 
-### ApiError 判断
+## 注册自定义拦截器
 
-```ts
-import { ApiError } from "@/handler/client/models";
+```typescript
+import { interceptor } from "@/handler/server/interceptor";
 
-try {
-    await someApiCall();
-} catch (err) {
-    if (err instanceof ApiError) {
-        console.log(err.code);     // i18n 键
-        console.log(err.data);     // 错误数据
-        console.log(err.message);  // 错误消息
-    }
-}
-```
-
-## 添加自定义拦截器
-
-### 实现 InterceptorModels 接口
-
-```ts
-import { InterceptorModels } from "@/handler/server/interceptor-models";
-
-const myInterceptor: InterceptorModels = {
-    id: "my-interceptor",
-    requires: ["error-interceptor"],  // 在 error-interceptor 之后运行
-
-    async handle(request, records, next) {
-        // 前置逻辑
-        console.log("before:", request.url);
-
-        const response = await next(request, records);
-
-        // 后置逻辑
-        console.log("after:", response.status);
-
+interceptor.register({
+    id: "my-logger",
+    requires: ["error-interceptor"],  // 在错误处理后运行
+    handle: async (request, records, next) => {
+        console.log(`[${request.method}] ${request.url}`);
+        const response = await next();
+        console.log(`  → ${response.status}`);
         return response;
     },
-};
+});
 ```
 
-### 注册到拦截器管道
-
-```ts
-// 在 server-registerer.ts 中注册
-interceptor.register(myInterceptor);
-```
-
-注意：拦截器按拓扑排序执行。`requires` 为空或在 `error-interceptor` 之后的拦截器会在管道中按正确顺序排列。
+拦截器按 `requires` 依赖关系用 Kahn 算法拓扑排序执行。循环依赖会抛出明确错误。

@@ -1,156 +1,130 @@
-# Business 模块 — 使用指南
+# Business 层使用指南
+
+## 数据库迁移
+
+```bash
+pnpm db-migrate
+# 生成 Drizzle 迁移文件 + 执行（drizzle-kit generate + migrate）
+```
 
 ## 创建新的业务实体
 
 ### 1. 定义数据模型
 
-```ts
-// src/my-entity/models.ts
-import { BaseModel, EntryModel } from "@/business/models";
+```typescript
+// src/myentity/models.ts
+import { BaseModel } from "@/business/models";
 
 export interface MyModel extends BaseModel {
     code: string;
     version: string;
-    // 其他自定义字段
 }
 ```
 
 ### 2. 定义数据库表
 
-```ts
-// src/my-entity/server/db-entities.ts
-import { masterTable, entryTable, jsonArray, jsonField } from "@/business/server/entities";
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+```typescript
+// src/myentity/server/db-entities.ts
+import { masterTable, entryTable } from "@/business/server/entities";
+import { text } from "drizzle-orm/sqlite-core";
 
-// 主表
 export const myTable = masterTable("my_table", {
     code: text().notNull().unique(),
     version: text().notNull(),
 });
 
-// 子表
-export const myEntries = entryTable(
-    "my_entries",
-    myTable,
-    { onDelete: "cascade" }
-);
+export const myEntries = entryTable("my_entries", myTable, { onDelete: "cascade" });
 ```
 
-### 3. 创建 Storage
+### 3. 创建 Repository
 
-```ts
-// src/my-entity/server/storage.ts
-import { ModelStorage } from "@/business/server/storage";
-
-export const myStorage = new ModelStorage<MyModel>("my-model");
-```
-
-### 4. 创建 Repository
-
-```ts
-// src/my-entity/server/repository.ts
+```typescript
+// src/myentity/server/repository.ts
 import { createRepository } from "@/business/server/repository";
+import { myTable, myEntries } from "./db-entities";
 
 export const myRepository = createRepository<MyModel, typeof myTable.$inferSelect>(
     myTable,
     myEntries,
-    myStorage.loadModel.bind(myStorage),
-    myStorage.saveModel.bind(myStorage),
-    myStorage.bindSearch.bind(myStorage),
-    // Model → Entity 映射
-    (model) => ({ code: model.code, version: model.version }),
-    // Entity → Model 映射
-    (entity) => ({ code: entity.code, version: entity.version })
+    async (model) => { /* loadModel: 从 entries 加载到 model.entries */ },
+    async (model) => { /* saveModel: 保存 model.entries 到 entries 表 */ },
+    (type, entry) => `${entry.name} ${entry.code}`,  // bindSearch
 );
 ```
 
-### 5. 创建 API 路由
+### 4. 创建 Storage（如有子实体引擎）
 
-参考 `docs/app/using.md` 中的"添加新的 API 路由"章节。
-
-## Repository API
-
-```ts
-interface Repository<TModel> {
-    // 主记录 CRUD
-    get(id: string, withDetails?: boolean, conditionFunc?: ConditionFunc): Promise<TModel | undefined>;
-    getList(options: PageOptions, conditionFunc?: ConditionFunc): Promise<PagedResult<TModel>>;
-    create(model: Partial<TModel>): Promise<TModel>;
-    update(id: string, model: Partial<TModel>): Promise<void>;  // 部分更新
-    delete(id: string): Promise<void>;
-    exist(conditionFunc: ConditionFunc): Promise<boolean>;
-
-    // 子条目 CRUD
-    entry: {
-        getList(masterId: string, type: string, options?: PageOptions): Promise<PagedResult<EntryModel>>;
-        create(masterId: string, type: string, entry: Partial<EntryModel>): Promise<EntryModel>;
-        batchCreate(masterId: string, type: string, entryList: Partial<EntryModel>[]): Promise<void>;
-        update(masterId: string, type: string, entryId: number, entry: Partial<EntryModel>): Promise<void>;
-        delete(masterId: string, type: string, entryId: number): Promise<void>;
-        setDisabled(masterId: string, type: string, entryId: number, disabled: boolean): Promise<void>;
-    };
-}
+```typescript
+// src/myentity/server/storage.ts
+import { ModelStorage } from "@/business/server/storage";
+export const myStorage = new ModelStorage<MyModel>("my-module");
 ```
 
-## 条件过滤
+## Repository 使用
 
-`ConditionFunc` 用于构建自定义查询条件：
+```typescript
+// 分页查询
+const { data, totalCount } = await repository.getList({ page: 0, pageSize: 20 });
 
-```ts
+// 模糊搜索
+const result = await repository.getList(
+    { page: 0, pageSize: 10, search: "keyword" },
+    (fields, { like }) => like(fields.name, "%keyword%")
+);
+
+// 获取单条（含详情）
+const model = await repository.get(id, true);
+
+// 创建
+const created = await repository.create({ name: "New Item", code: "item-1" });
+
+// 部分更新
+await repository.update(id, { name: "Updated Name" });
+
+// 子实体操作
+const entries = await repository.entry.getList(masterId, "lorebooks", { page: 0, pageSize: 20 });
+await repository.entry.create(masterId, "lorebooks", { code: "lb1", name: "Entry 1" });
+await repository.entry.setDisabled(masterId, "lorebooks", entryId, true);
+```
+
+## 条件查询
+
+```typescript
 import { eq, like, and } from "drizzle-orm";
 
 // 精确匹配
 const byCode = (t) => eq(t.code, "my-code");
 
 // 模糊搜索
-const searchByName = (t) => like(t.name, "%keyword%");
+const byName = (t) => like(t.name, "%keyword%");
 
-// 组合条件
-const complexCondition = (t) => and(
-    eq(t.status, "active"),
-    like(t.name, "%keyword%")
-);
+// 组合
+const combined = (t) => and(eq(t.status, "active"), like(t.name, "%test%"));
+```
+
+## 客户端状态
+
+```typescript
+// 创建 Zustand store
+import { createUseItemState } from "@/business/client/models";
+const useSelected = createUseItemState<MyModel>("my-selection");
 
 // 使用
-const result = await repository.getList(
-    { page: 0, pageSize: 10 },
-    searchByName
-);
+function Component() {
+    const { model, setModel } = useSelected();
+    // ...
+}
 ```
 
-## 数据库迁移
+## 注册导航标签
 
-```bash
-# 生成迁移文件
-npm run db-migrate
-```
-
-这将执行 Drizzle Kit 生成 SQL 迁移文件并运行。
-
-## 客户端插件注册
-
-```ts
-// src/my-module/client/index.ts
+```typescript
+// 在 register*Client() 中
 import { businessNavigationManager } from "@/business/client/navigation";
 
-export function registerMyModuleClient() {
-    businessNavigationManager.register({
-        id: "my-module",
-        label: () => <MyLabel />,
-        component: MyTabComponent,
-    });
-}
+businessNavigationManager.register({
+    id: "my-module",
+    label: () => <MyLabel />,
+    component: MyTabComponent,
+});
 ```
-
-## 使用 PluginLayout
-
-`PluginLayout` 确保客户端插件加载完成后再渲染子组件：
-
-```tsx
-// 在布局中使用
-export default function Layout({ children }) {
-    return <PluginLayout>{children}</PluginLayout>;
-}
-```
-
-PluginLayout 内部调用 `useClientPlugins()`，在插件加载完成前显示加载动画。

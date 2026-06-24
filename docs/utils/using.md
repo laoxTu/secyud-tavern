@@ -1,170 +1,145 @@
-# Utils 模块 — 使用指南
+# Utils 层使用指南
 
-## Registry<T>
+## Registry 使用
 
-### 创建和使用
+### 创建和注册
 
-```ts
-import { Registry, Registerable } from "@/utils/register";
+```typescript
+import { Registry } from "@/utils/register";
 
-interface MyItem extends Registerable {
-    name: string;
-    execute(): Promise<void>;
+interface MyPlugin extends Registerable {
+    run(): void;
 }
 
-const registry = new Registry<MyItem>("my-registry");
+const registry = new Registry<MyPlugin>("my-plugins");
 
-// 注册
-registry.register({
-    id: "step-a",
-    name: "Step A",
-    async execute() { console.log("A"); }
-});
+registry.register(
+    { id: "base", run: () => console.log("base") },
+    { id: "ext", requires: ["base"], run: () => console.log("ext") },
+);
+```
 
-registry.register({
-    id: "step-b",
-    name: "Step B",
-    requires: ["step-a"],  // 在 step-a 之后
-    async execute() { console.log("B"); }
-});
+### 按依赖顺序执行
 
-// 按依赖顺序执行
+```typescript
 await registry.use(async (item) => {
-    await item.execute();
+    await item.run();
 });
-// 输出: A → B
+// base → ext
+
+// 带提前退出
+await registry.use(async (item) => process(item), () => shouldStop());
+```
+
+### 获取排序列表
+
+```typescript
+const sorted = registry.getSorted();
+// 保证 base 在 ext 之前
 ```
 
 ### 循环依赖检测
 
-```ts
+```typescript
 registry.register(
     { id: "a", requires: ["b"] },
     { id: "b", requires: ["a"] },
 );
-// registry.getSorted() 会抛出:
-// Error: [Sort Error] Circular dependency detected involving: a, b
+registry.getSorted(); // Error: Circular dependency detected involving: a, b
 ```
 
-## Hasher — 加密/解密
+## Hasher 使用
 
-### 初始化
+### 加解密
 
-```ts
-import { registerHasher, Hasher } from "@/utils/hasher";
+```typescript
+import { Hasher } from "@/utils/hasher";
 
-// 注册（通常在 server-registerer.ts 中调用）
-registerHasher();
+const encrypted = Hasher.instance.encrypt("sk-my-api-key");
+// 存入数据库
 
-// 之后可通过单例访问
-const hasher = Hasher.instance;
-```
-
-### 加密
-
-```ts
-const encrypted = Hasher.instance.encrypt("my-api-key-123");
-// 返回加密后的字符串（长度是原文的 3-5 倍）
-```
-
-### 解密
-
-```ts
 const decrypted = Hasher.instance.decrypt(encrypted);
-// 返回原始字符串: "my-api-key-123"
+// 使用前解密: "sk-my-api-key"
 ```
 
 ### 配置
 
-加密参数通过环境变量配置：
-
 ```bash
+# .env
 SECRET_SALT=9,1,2,6,6,8,2
 SECRET_KEYS=8,8,3,4,7,2,3,7
 ```
 
-默认为内置盐值和密钥。
+有内置默认值，生产环境应使用自定义值。
 
-## 工具函数
+## PNG 工具
 
-### tryParseJson
+```typescript
+import { splitPNGAndDataUniversal } from "@/utils/png";
 
-```ts
-import { tryParseJson } from "@/utils";
+const buffer = await file.arrayBuffer();
+const { image, data } = splitPNGAndDataUniversal(new Uint8Array(buffer));
 
-// 安全 JSON 解析
-tryParseJson('{"name":"Alice"}');           // → { name: "Alice" }
-tryParseJson('invalid json');               // → null
-tryParseJson('invalid', { fallback: true }); // → { fallback: true }
+if (image) {
+    // image 是纯 PNG 字节
+    await saveImage(image);
+}
+if (data) {
+    // data 是 PNG 尾部附加的任意数据
+    const json = JSON.parse(new TextDecoder().decode(data));
+}
 ```
 
-### mergeObjects
+## 流读取
 
-```ts
-import { mergeObjects } from "@/utils";
-
-const target = { name: "Alice", profile: { age: 20 } };
-const source = { profile: { mood: "happy" }, location: "tavern" };
-
-mergeObjects(target, source);
-// → {
-//     name: "Alice",
-//     profile: { age: 20, mood: "happy" },  // 深度合并
-//     location: "tavern",                    // 新增
-//   }
-
-// 注意：数组不合并，直接覆盖
-mergeObjects(
-    { tags: ["a", "b"] },
-    { tags: ["c"] }
-);
-// → { tags: ["c"] }
-```
-
-### tryGetLastItem
-
-```ts
-import { tryGetLastItem } from "@/utils";
-
-tryGetLastItem([1, 2, 3]);  // → 3
-tryGetLastItem([]);          // → null
-```
-
-### mergeSortedArrays
-
-```ts
-import { mergeSortedArrays } from "@/utils";
-
-const arr1 = [{ v: 1 }, { v: 3 }, { v: 5 }];
-const arr2 = [{ v: 2 }, { v: 4 }];
-
-mergeSortedArrays(arr1, arr2, item => item.v);
-// → [{ v: 1 }, { v: 2 }, { v: 3 }, { v: 4 }, { v: 5 }]
-```
-
-### readStream
-
-```ts
+```typescript
 import { readStream } from "@/utils";
 
-// 读取 SSE 流
-const response = await fetch("/api/chat", { method: "POST", body: data });
-const stream = response.body!;
+const response = await fetch("/api/llmapis/id/chat", { method: "POST", body: data });
 
-for await (const chunk of readStream(stream)) {
-    console.log("Received:", chunk);
-    // 逐块处理流式数据
+for await (const chunk of readStream(response.body)) {
+    // chunk 是已解析的 JSON 对象
+    // 用于 SSE (Server-Sent Events) 流式响应消费
 }
+```
+
+## 通用工具函数
+
+```typescript
+import { tryParseJson, mergeObjects, tryGetLastItem, mergeSortedArrays } from "@/utils";
+
+// 安全 JSON 解析
+tryParseJson('{"a":1}');        // { a: 1 }
+tryParseJson('bad json', {});   // {}
+
+// 深度合并（数组不合并，直接覆盖）
+mergeObjects(
+    { a: { b: 1 }, c: 2 },
+    { a: { d: 3 }, e: 4 }
+);
+// → { a: { b: 1, d: 3 }, c: 2, e: 4 }
+
+// 安全获取最后一个元素
+tryGetLastItem([1, 2, 3]);  // 3
+tryGetLastItem([]);          // null
+
+// 合并有序数组
+mergeSortedArrays(
+    [{ v: 1 }, { v: 3 }],
+    [{ v: 2 }, { v: 4 }],
+    item => item.v
+);
+// → [{ v: 1 }, { v: 2 }, { v: 3 }, { v: 4 }]
 ```
 
 ## cn() — 类名合并
 
-```ts
+```typescript
 import { cn } from "@/lib/utils";
 
 cn("flex items-center", "gap-2");
 // → "flex items-center gap-2"
 
-cn("px-4", { "text-red-500": isError, "text-green-500": isSuccess });
-// → "px-4 text-red-500" (条件成立时)
+cn("text-sm", { "text-red-500": isError, "text-green-500": !isError });
+// 条件为 true 时追加对应类名
 ```

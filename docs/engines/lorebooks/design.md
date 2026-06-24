@@ -1,48 +1,47 @@
-# Lorebooks 引擎 — 设计文档
+# Lorebooks 引擎设计
 
 ## 概述
 
-Lorebooks 是**条件性背景知识注入引擎**。它根据当前消息内容（关键字、事件日期）匹配世界书条目，将匹配到的知识注入到 LLM 上下文提示词中。
+Lorebooks 是**条件性背景知识注入引擎**。根据当前消息内容匹配世界书条目，将匹配的知识注入到 LLM 上下文。是最复杂的引擎，包含可插拔的匹配策略子系统。
 
 ## 设计理念
 
 ### 匹配与注入分离
 
-世界书条目的"何时触发"和"注入后如何显示"是两个独立的概念：
-- **匹配（Matcher）**：决定条目是否激活 — 由匹配器策略完成
-- **注入（InputBuilder）**：决定激活的条目如何拼入提示词 — 由 Llmapi InputBuilder 完成
+- **匹配（Matcher）**：决定条目何时激活 — 由 `lorebookMatcherRegistry` 中的匹配器处理
+- **注入（InputBuilder）**：决定激活的条目如何拼入提示词 — 由 llmapi 的 `defaultBuildInput` 处理
+
+### 三层分类
+
+世界书初始化时分为三组：
+
+| 组 | 条件 | 用途 |
+|---|---|---|
+| `lorebooksStart` | matchType=always, lastMessage=false | 每轮对话前置注入 |
+| `lorebooksEnd` | matchType=always, lastMessage=true | 仅最后一条消息后置注入 |
+| `lorebooks` | 其他匹配类型 | 按消息内容动态匹配 |
 
 ### 插件化匹配策略
 
-三种匹配器均以插件形式注册到 `lorebookMatcherRegistry`，新增匹配策略无需修改引擎代码：
+`lorebookMatcherRegistry` 注册三种匹配器：
 
 ```
 MatcherRegistry
-├── always  → 始终激活（可选"仅最后一条消息"）
+├── always  → 始终激活
 ├── normal  → 关键字 AND/OR 逻辑匹配
 └── event   → 关键字 + 日期范围匹配
 ```
 
-### 三层分类
+## 数据模型 (`models.ts`)
 
-世界书在初始化时被分为三组：
-
-| 组 | 存放内容 | 用途 |
-|---|---|---|
-| `lorebooks` | 常规条目 | 按消息内容匹配，匹配后插入上下文 |
-| `lorebooksStart` | `matchType=always` 且 `lastMessage=false` | 每轮对话都前置注入 |
-| `lorebooksEnd` | `matchType=always` 且 `lastMessage=true` | 只在最后一条消息后置注入 |
-
-## 数据模型
-
-```ts
+```typescript
 interface PresetLorebookModel extends EntryModel {
-    matchType: string;        // 匹配器标识（"always" | "normal" | "event"）
-    matchExpression: any;     // 匹配器特定的表达式
+    matchType: string;        // "always" | "normal" | "event"
+    matchExpression: any;     // 匹配器特定表达式
     content: string;          // 世界书正文
-    priority: number;         // 排序优先级
-    layer: number;            // 层级（< 100 前置注入，≥ 100 后置注入）
-    role: string;             // 角色过滤
+    priority: number;         // 同层内排序（数值越大越靠前）
+    layer: number;            // <100 前置注入，≥100 后置注入
+    role: string;             // system/user/assistant
 }
 ```
 
@@ -50,52 +49,57 @@ interface PresetLorebookModel extends EntryModel {
 
 ## 执行流程
 
-```
-1. onInitialize
-   遍历所有预设的 lorebooks 条目
-   → 按 matchType 分组
-   → 非 disabled 条目：
-       matchType = "always"  → startLorebooks / endLorebooks
-       其他                  → lorebooks (Record<id, PresetLorebookModel>)
+### 1. onInitialize (SlotInitializer)
 
-2. onProcessInput (LlmapiInputProcesser)
-   遍历对话历史
-   → 对每个未处理的消息调用 tryFillActiveLorebooks()
-     → 遍历所有 lorebooks
-     → 查找对应的 Matcher
-     → matcher.match(ctx, expression) → boolean
-     → 匹配成功 → 加入 activeLorebooks[]
-   → 将激活的世界书按 order 排序存入 history.properties.lorebooks
+遍历所有预设的 lorebook 条目 → 过滤 disabled → 按 matchType 分类：
+- always + lastMessage=false → `lorebooksStart[]`
+- always + lastMessage=true → `lorebooksEnd[]`
+- normal/event → `lorebooks` Record
 
-3. onProcessOutput (LlmapiOutputProcesser)
-   对 AI 最新输出消息调用 tryFillActiveLorebooks()
-   → 为下轮对话预匹配世界书
+### 2. onProcessInput (LlmapiInputProcesser)
 
-4. InputBuilder (在 llmapis 的 input-builder-default.ts)
-   构建 LLM 消息时：
-   → 遍历历史，取出每条消息的 activeLorebooks
-   → layer < 100 的世界书内容前置拼接
-   → layer ≥ 100 的世界书内容后置拼接
-```
+遍历对话历史 → 对每条消息的 inputs 和 output 调用 `tryFillActiveLorebooks()`：
+1. 遍历所有 lorebook 条目
+2. 根据 matchType 查找匹配器
+3. `matcher.match(ctx, expression)` → boolean
+4. 匹配成功 → 加入 `history.properties["lorebooks"]`
+5. 按 `compareLorebook` 排序
+6. 前置注入 `lorebooksStart`、后置注入 `lorebooksEnd`
 
-## 缓存机制
+### 3. onProcessOutput (LlmapiOutputProcesser)
 
-已匹配过的消息不会重复匹配（通过 `message.properties.lorebooks` 检查）。这保证了：
-- 同一条消息在多次构建提示词时不会重复匹配
-- 翻页切换时匹配结果保持稳定
+对 AI 最新输出调用 `tryFillActiveLorebooks()`，为下轮对话预匹配。
 
-## Matcher 接口
+### 4. InputBuilder (defaultBuildInput)
 
-```ts
+构建 LLM 消息时：
+- 遍历 history，取出每个消息的 activeLorebooks
+- layer < 100 → 前置拼接
+- layer ≥ 100 → 后置拼接
+- 同 role 连续消息合并、重复 lorebook 去重
+
+## 匹配器接口 (`client/match-models.ts`)
+
+```typescript
 interface Matcher extends Registerable {
-    editor: React.ComponentType<MatcherProps>;        // 编辑器 UI
-    getEditorValue: (data: FormData) => any;           // 提取表单数据
-    match: (ctx: MatcherMatchContext, expression: any) => boolean;  // 匹配逻辑
-}
-
-interface MatcherMatchContext {
-    history: StoryHistory;
-    message: StoryHistoryMessage;
-    variables: any;              // 当前变量表
+    editor: React.ComponentType<MatcherProps>;
+    getEditorValue: (data: FormData) => any;
+    match: (ctx: MatcherMatchContext, expression: any) => boolean;
 }
 ```
+
+### always 匹配器
+
+始终返回 true。配置项：`lastMessage` 布尔值。
+
+### normal 匹配器
+
+关键字匹配：`keywords: string[][]`（同组 OR，不同组 AND）+ `fitCount`（需满足的最小关键字组数）。
+
+### event 匹配器
+
+在 normal 基础上增加日期范围：`minDate`、`maxDate`。检查上下文变量中的 `relatedDates` 是否在范围内。
+
+## 存储
+
+服务端通过 `presetStorage.register(createSimpleStorageProvider("lorebook", "lorebooks", presetRepository))` 注册。

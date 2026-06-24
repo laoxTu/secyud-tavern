@@ -1,113 +1,39 @@
-# Slots 模块 — 设计文档
+# Slots 模块设计
 
 ## 概述
 
-`src/slots/` 是 Secyud Tavern 的**会话运行时层**。Slot 是 Story + Presets + LlmApi 的运行时组合体，管理完整的对话生命周期：初始化、输入处理、输出处理、页面渲染和流式渲染。
+`src/slots/` 是会话运行时层。Slot 是 Story + Presets + LlmApi 的运行时组合体，管理完整对话生命周期。**Slot 不是持久化实体** — 没有自己的数据库表，由 `/api/stories/{id}/slot` 按需组装。
 
 ## 设计理念
 
 ### Slot = 静态配置 + 运行时状态
 
-```
+```typescript
 SlotModel {
-    story: StoryModel,          // 叙事定义（开场白、预设清单）
-    presets: PresetModel[],     // 解析后的预设集合
+    story: StoryModel,          // 叙事定义
+    presets: PresetModel[],     // BFS 解析后的预设集合
     llmapi: LlmapiModel,       // LLM API 配置
-    // + 运行时状态：
-    content: {
-        history[],              // 对话历史
-        variables,              // 当前变量表
-        lorebooks, regexes, ... // 引擎数据
+    content: {                  // 运行时状态（浏览器内存中）
+        histories: StoryHistory[],
+        variables: Record<string, any>,
+        lorebooks, regexes, styles, scripts, macros, ...
     }
 }
 ```
 
-Slot 不是持久化实体 — 它没有自己的数据库表和 Repository。Slot 由 `/api/stories/{id}/slot` 端点按需组装，运行时状态完全在浏览器内存中维护。
-
-### 会话生命周期
-
-所有引擎的 `ConversationProvider` 通过统一的 5 阶段生命周期在 Slot 上下文中协同工作：
-
-```
-1. onInitialize  → 加载 slot 数据，解析预设，初始化引擎数据结构
-2. onProcessInput → 用户输入 → 世界书匹配 → 正则替换 → 构建 LLM 消息
-3. onProcessOutput → AI 输出 → 变量提取 → 历史更新
-4. onRenderPage  → 完整重新渲染（页面加载、翻页时）
-5. onRenderStream → 增量流式渲染（AI 逐字输出时）
-```
-
 ### 无服务端
 
-`src/slots/` 目录**没有** `server/` 子目录。Slot 的数据通过聚合 Stories/Presets/LlmApi 的现有 API 端点生成，不需要独立持久化。
+`src/slots/` 没有 `server/` 子目录。Slot 数据通过聚合现有端点在服务端生成，运行时状态完全在浏览器内存。
 
-## 架构图
+### 数据模型 (`models.ts`)
 
-```
-┌──────────────────────────────────────────────────────┐
-│                  Slot 加载流程                         │
-│                                                      │
-│  GET /api/stories/{id}/slot                          │
-│      │                                               │
-│      ├── storyRepository.get(id, withDetails)        │
-│      ├── BFS 解析 requires → preset[]                │
-│      ├── llmapiRepository.get(story.llmapi.code)     │
-│      │                                               │
-│      └── { id, name, content, story, llmapi, presets }│
-└──────────────────────────────────────────────────────┘
-                         │
-                         ▼
-┌──────────────────────────────────────────────────────┐
-│               Conversation 生命周期                    │
-│                                                      │
-│  故事页面加载 Slot                                     │
-│      │                                               │
-│      ├── onInitialize(ctx)                           │
-│      │   ├── lorebookProvider: 解析世界书，分组        │
-│      │   ├── regexProvider: 按目标分组正则             │
-│      │   ├── styleProvider: 收集并排序样式             │
-│      │   └── scriptProvider: 收集并排序脚本            │
-│      │                                               │
-│      ├── getOpeningHistory(slot)                     │
-│      │   └── 创建初始 StoryHistory                    │
-│      │                                               │
-│      └── renderCurrentPage()                         │
-│          └── onRenderPage(ctx) → iframe 渲染          │
-│                                                      │
-│  用户发送消息 → createHistory(input, summary)           │
-│      │                                               │
-│      ├── onProcessInput(ctx)                         │
-│      │   ├── lorebookProvider: tryFillActiveLorebooks │
-│      │   ├── regexProvider: 应用输入正则替换           │
-│      │   └── llmapiProvider: 构建 LLM 消息            │
-│      │                                               │
-│      ├── POST /api/llmapis/{id}/chat                 │
-│      │   └── SSE 流 → readStream()                   │
-│      │                                               │
-│      ├── onRenderStream(ctx)                         │
-│      │   ├── regexProvider: 应用输出正则替换           │
-│      │   └── 实时更新 iframe DOM                      │
-│      │                                               │
-│      └── onProcessOutput(ctx)                        │
-│          ├── extractVariableChanges()                │
-│          └── 保存历史                                 │
-└──────────────────────────────────────────────────────┘
-```
-
-## 核心模型
-
-### SlotModel
-
-```ts
+```typescript
 interface SlotModel extends BaseModel {
     story: StoryModel;
     presets: PresetModel[];
     llmapi: LlmapiModel;
 }
-```
 
-### LlmapiMessage（LLM 输入/输出消息格式）
-
-```ts
 interface LlmapiMessage {
     role: "system" | "user" | "assistant";
     content: string;
@@ -118,79 +44,94 @@ interface LlmapiInputModel {
 }
 ```
 
-## ConversationProvider 接口
+## 对话管道 (`client/conversation.ts`)
 
-```ts
-interface ConversationProvider extends Registerable {
+`conversationManager` 是包含五个 `Registry` 实例的集合对象，实现五阶段对话生命周期：
+
+| 阶段 | Registry | 触发时机 | 注册的引擎 |
+|---|---|---|---|
+| 初始化 | `initializer` | Slot 加载完成 | lorebooks, macros, regexes, scripts, styles |
+| 输入处理 | `inputProcesser` | 发送消息前 | lorebooks, llmapi, macros, regexes |
+| 输出处理 | `outputProcesser` | AI 回复完成后 | lorebooks |
+| 内容渲染 | `contentRenderer` | 翻页/初始加载 | macros, regexes, scripts, styles |
+| 流式渲染 | `streamRenderer` | AI 逐字输出时 | macros, regexes, scripts |
+
+### 管道阶段接口 (`client/conversation-models.ts`)
+
+每个阶段有独立的接口，均继承 `Registerable`：
+
+```typescript
+interface SlotInitializer {
     onInitialize?(ctx: SlotInitializeContext): Promise<void>;
+}
+
+interface LlmapiInputProcesser {
     onProcessInput?(ctx: LlmapiInputContext): Promise<void>;
+}
+
+interface LlmapiOutputProcesser {
     onProcessOutput?(ctx: LlmapiOutputContext): Promise<void>;
-    onRenderPage?(ctx: RenderContext): Promise<void>;
-    onRenderStream?(ctx: RenderStreamContext): Promise<void>;
+}
+
+interface SlotContentRenderer {
+    onRenderContent?(ctx: RenderContext): Promise<void>;
+}
+
+interface SlotStreamRenderer {
+    onRenderStream?(ctx: RenderContext): Promise<void>;
 }
 ```
 
-所有方法都是可选的 — 引擎只实现自己关心的阶段。
+### 管道执行顺序
 
-### 各阶段上下文
+按 `requires` 声明决定依赖顺序：
+1. **lorebooks** — 匹配世界书（initializer, inputProcesser, outputProcesser）
+2. **llmapi** — 构建 LLM 消息（inputProcesser, requires: ["lorebook"]）
+3. **macros** — Eta 模板渲染（initializer, contentRenderer, streamRenderer, inputProcesser; requires: ["llmapi"]）
+4. **regexes** — 正则替换（initializer, contentRenderer, streamRenderer, inputProcesser; requires: ["lorebook"]）
+5. **scripts** — JS 注入（initializer, contentRenderer, streamRenderer; requires: ["regex"]）
+6. **styles** — CSS 注入（initializer, contentRenderer）
 
-| 上下文类型 | 携带的数据 |
-|---|---|
-| `SlotInitializeContext` | slot, content, id |
-| `LlmapiInputContext` | slot, content, history, messages |
-| `LlmapiOutputContext` | slot, content, history, sessionId |
-| `RenderContext` | slot, content, document, window, history, variables |
-| `RenderStreamContext` | 同 RenderContext + stream |
+## 核心函数
 
-### 各引擎的实现
+### generateCurrentVariables(history, includeOutput?)
 
-| 引擎 | onInit | onProcessInput | onProcessOutput | onRenderPage | onRenderStream |
-|---|---|---|---|---|---|
-| Lorebook | ✅ 解析分组 | ✅ 匹配激活 | - | - | - |
-| Regex | ✅ 分组 | ✅ 输入替换 | - | ✅ 替换输出 | ✅ 流替换 |
-| Script | ✅ 收集 | - | - | ✅ 注入 JS | ✅ 发送变量 |
-| Style | ✅ 收集 | - | - | ✅ 注入 CSS | - |
-| Llmapi | - | ✅ 构建消息 | - | - | - |
+从对话历史中累积 variableChanges，返回当前变量表。
+
+### generateInputBuildContext(inputContext)
+
+构建 LLM 调用前的完整上下文：
+1. 找到最近一次 summary 标记的历史（作为截断点）
+2. 如没有，从 `getOpeningHistory()` 生成开场历史
+3. 将历史映射为 `LlmapiHistory[]`（含 `properties` 字典）
+
+### getOpeningHistory(slot)
+
+懒惰创建开场 `StoryHistory`：从 story 的 openingRemarks 提取文本和变量变更，缓存到 `slot.content`。
+
+## iframe 渲染
+
+对话内容渲染在 `<iframe>` 中，引擎通过 `document.head`/`document.body` 直接操作 iframe DOM：
+- **Styles**：注入 `<style id="injected-styles">`
+- **Scripts**：注入 `<script id="injected-scripts">`
+- **数据通信**：`postMessage({type, data})` 发送 `renderContent`、`streamContent`、`variables` 消息
 
 ## 变量系统
 
-### 变量存储
+每个 `StoryHistory` 携带：
+- `variables: Record<string, any>` — 根节点最新变量状态
+- `variableChanges: VariableChangeModel[]` — 消息级变更记录
+- `inputs: StoryInputMessage[]` — 输入消息（含 variableChanges）
+- `outputs: StoryOutputMessage[]` — 输出消息（含 variableChanges）
 
-每个 `StoryHistory` 携带 `variables: Record<string, any>`（根节点的最新状态）和 `variableChanges: VariableChangeModel[]`（消息级别的变更记录）。
+变量变更从 AI 回复中的 `<variable_changes>` XML 标签提取。
 
-### 变量变更模型
+## Slot 功能 (`client/features/`)
 
-```ts
-interface VariableChangeModel {
-    op: "add" | "replace" | "remove";
-    path: string;   // 点号分隔的路径（如 "time.hour"）
-    value?: any;
-}
-```
-
-### generateCurrentVariables
-
-```ts
-function generateCurrentVariables(history: StoryHistory[], includeOutput?: boolean) {
-    // 从空对象开始，依次应用每条消息的 variableChanges
-    // 返回当前最新的变量表
-}
-```
-
-### 删除消息时的变量重建
-
-删除某条消息时，从空变量表开始，重放该消息之前所有消息的 `variableChanges`，然后将结果写入根节点 `variables`。
-
-## getOpeningHistory
-
-```ts
-function getOpeningHistory(slot: SlotModel): StoryHistory {
-    // 1. 检查 slot.content 中是否已有开场历史
-    // 2. 如果没有，创建新的 StoryHistory：
-    //    - 单条空输入消息
-    //    - 调用 extractVariableChanges 解析 <variable_changes> 标签
-    //    - 尝试填充 activeLorebooks
-    //    - 缓存到 slot.content
-    // 3. 返回开场历史
-}
-```
+| 功能 | 说明 |
+|---|---|
+| `history-deleter` | 删除当前历史/输出 |
+| `history-editor` | Monaco JSON 编辑器修改历史 |
+| `input-viewer` | 预览发送给 LLM 的实际消息 |
+| `regenerator` | 重新生成 AI 回复 |
+| `navigate-to-business` | 返回 Business 页面 |

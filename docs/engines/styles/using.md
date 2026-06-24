@@ -1,10 +1,10 @@
-# Styles 引擎 — 使用指南
+# Styles 引擎使用指南
 
 ## 编写预设样式
 
-在预设编辑器的 Style 标签中直接输入 CSS 代码。样式会被注入到对话 iframe 的 `<head>` 中。
+在预设编辑器的 Style 标签中使用 Monaco 编辑器直接编写 CSS。样式会被注入到对话 iframe 的 `<head>` 中。
 
-### 基础示例
+## 基础示例
 
 ```css
 /* 对话界面暗色主题 */
@@ -16,7 +16,7 @@ body {
     padding: 20px;
 }
 
-#chat-container {
+#chat-root {
     max-width: 800px;
     margin: 0 auto;
 }
@@ -37,40 +37,39 @@ body {
     text-align: left;
 }
 
-#status-bar {
+#status {
     position: fixed;
     top: 0;
     right: 0;
     padding: 8px 12px;
-    font-size: 12px;
     background: rgba(0,0,0,0.5);
     color: #888;
+    font-size: 12px;
 }
 ```
 
-### 使用预设 ID 做作用域
+## priority 排序
 
-避免多个预设的样式冲突：
+CSS 按 `priority` 排序后拼接，值大的靠后（可覆盖值小的）。需要确保样式不被其他预设覆盖时，设置较大的 priority。
+
+## 作用域隔离
+
+避免多预设样式冲突 — 使用预设 code 作为类名前缀：
 
 ```css
-/* 使用预设的 code 作为类名前缀 */
-.alice-catgirl .msg {
+.my-preset-code .msg {
     background: pink;
 }
 
-.alice-catgirl .msg.assistant {
+.my-preset-code .msg.assistant {
     font-style: italic;
 }
 ```
 
-## priority（优先级）
-
-CSS 按 priority 排序后拼接，值大的靠后（覆盖值小的）。如果需要确保你的样式不被其他预设覆盖，设置一个较大的 priority 值。
-
 ## 注意事项
 
-- CSS 注入到 iframe 的 `<head>` 中，与主应用完全隔离
-- 首次渲染时注入，后续翻页和流式输出不会重复注入
-- 多个预设的 CSS 会被拼接在一起，同一选择器的样式按 priority 顺序覆盖
-- 不要使用 `!important`，会破坏覆盖规则
-- 搭配 Scripts 引擎可实现动态样式切换（如日间/夜间模式）
+- CSS 注入到 iframe `<head>`，与主应用完全隔离
+- 首次渲染时注入，后续翻页不会重复注入
+- 多个预设的 CSS 被拼接在一起注入，按 priority 顺序
+- 搭配 Scripts 引擎可实现动态样式切换（日间/夜间模式）
+- 不要依赖 `!important`，会破坏多预设的层叠覆盖逻辑

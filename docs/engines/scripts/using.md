@@ -1,58 +1,50 @@
-# Scripts 引擎 — 使用指南
+# Scripts 引擎使用指南
 
 ## 编写预设脚本
 
-在预设编辑器的 Script 标签中添加 JavaScript 代码。脚本会被注入到对话 iframe 中执行。
+在预设编辑器的 Script 标签中使用 Monaco 编辑器编写 JavaScript。
 
-### 监听消息
+脚本被注入到 iframe `<body>` 的 `<script id="injected-scripts">` 标签中。
 
-```js
-// 预设脚本示例
+## 监听消息
+
+```javascript
 window.addEventListener("message", (event) => {
     const { type, data } = event.data;
 
     switch (type) {
         case "renderContent":
-            // 完整渲染：收到 inputs（历史消息数组）和 output（当前输出）
-            renderPage(data.inputs, data.output);
+            // 完整渲染：data.inputs (历史消息数组) + data.output (当前输出)
+            renderAll(data.inputs, data.output);
             break;
 
         case "streamContent":
-            // 流式渲染：收到的 output 会逐字增长
-            updateOutput(data.output);
+            // 流式渲染：output 逐字增长
+            updateStream(data.output);
             break;
 
         case "variables":
             // 变量更新
-            updateStatusBar(data);
+            updateHUD(data);
             break;
     }
 });
 ```
 
-### 完整示例：简单聊天界面
+## 完整示例：简单聊天界面
 
-```js
-// 初始化 DOM 结构（仅首次执行）
+```javascript
+// 初始化 DOM（幂等检查）
 function ensureDOM() {
-    if (!document.getElementById("chat-container")) {
-        const container = document.createElement("div");
-        container.id = "chat-container";
-
-        const messages = document.createElement("div");
-        messages.id = "messages";
-        container.appendChild(messages);
-
-        const statusBar = document.createElement("div");
-        statusBar.id = "status-bar";
-        container.appendChild(statusBar);
-
-        const currentOutput = document.createElement("div");
-        currentOutput.id = "current-output";
-        container.appendChild(currentOutput);
-
-        document.body.appendChild(container);
-    }
+    if (document.getElementById("chat-root")) return;
+    const root = document.createElement("div");
+    root.id = "chat-root";
+    root.innerHTML = `
+        <div id="messages"></div>
+        <div id="streaming"></div>
+        <div id="status"></div>
+    `;
+    document.body.appendChild(root);
 }
 ensureDOM();
 
@@ -60,57 +52,49 @@ window.addEventListener("message", (event) => {
     const { type, data } = event.data;
 
     if (type === "renderContent") {
-        // 获取已有元素，更新内容
-        const messagesEl = document.getElementById("messages");
-        messagesEl.innerHTML = "";
-        data.inputs.forEach((input) => {
+        const el = document.getElementById("messages");
+        el.innerHTML = "";
+        data.inputs.forEach(text => {
             const div = document.createElement("div");
             div.className = "msg user";
-            div.textContent = input;
-            messagesEl.appendChild(div);
+            div.textContent = text;
+            el.appendChild(div);
         });
         if (data.output) {
             const div = document.createElement("div");
             div.className = "msg assistant";
             div.textContent = data.output;
-            messagesEl.appendChild(div);
+            el.appendChild(div);
         }
+        document.getElementById("streaming").textContent = "";
     }
 
     if (type === "streamContent") {
-        // 只更新输出部分
-        const outputEl = document.getElementById("current-output");
-        if (outputEl) {
-            outputEl.textContent = data.output;
-        }
+        document.getElementById("streaming").textContent = data.output;
     }
 
     if (type === "variables") {
-        // 更新状态栏
-        const statusEl = document.getElementById("status-bar");
-        if (statusEl) {
-            statusEl.textContent = JSON.stringify(data, null, 2);
-        }
+        document.getElementById("status").textContent = JSON.stringify(data, null, 2);
     }
 });
 ```
 
-## 消息类型参考
+## 消息类型
 
-| type | 触发 | data |
+| type | 触发时机 | data |
 |---|---|---|
 | `renderContent` | 翻页、初始加载 | `{ inputs: string[], output: string }` |
-| `streamContent` | AI 逐字输出时 | `{ output: string }` |
-| `variables` | 每次渲染 | 当前变量表 |
+| `streamContent` | AI 逐字输出 | `{ output: string }` |
+| `variables` | 每次渲染 | 当前变量表 `Record<string, any>` |
 
-## priority（优先级）
+## priority 排序
 
-多个预设的脚本按 `priority` 排序后拼接。数值小的先注入。如果需要脚本在某个脚本之后运行，设置更高的 priority。
+多个预设脚本按 `priority` 排序后拼接。数值小的先注入到 `<script>` 中。
 
 ## 注意事项
 
-- 脚本在 iframe 沙箱中运行，无法访问主应用的 DOM 或 API Key
-- **禁止 `document.body.innerHTML = ...`**：这会销毁注入的 `<script>` 标签自身，导致脚本丢失。应该用 `createElement` + `appendChild` 添加元素，用 `getElementById` 获取已有元素更新内容
-- `renderContent` 在翻页和初始加载时触发，应做幂等处理（检查元素是否存在再创建）
-- `streamContent` 每收到一个文本块就触发一次，注意去抖/节流
-- 不要在脚本中执行耗时操作，会阻塞 iframe 的 UI 线程
+- 脚本在 iframe 沙箱中运行，**无法访问主应用 DOM、API Key、数据库**
+- **禁止 `document.body.innerHTML = ...`** — 会销毁注入的 `<script>` 标签自身。使用 `createElement` + `appendChild` 添加元素
+- `renderContent` 触发频繁（翻页切换），做幂等检查（`getElementById` 检查元素是否存在）
+- `streamContent` 每收到一个文本块就触发，注意性能
+- 不要在脚本中执行耗时同步操作（会阻塞 iframe UI 线程）

@@ -1,156 +1,143 @@
-# Business 模块 — 设计文档
+# Business 层设计
 
 ## 概述
 
-`src/business/` 是整个应用的**数据持久化基础设施层**。它定义了：
-- 通用数据模型（`BaseModel`、`EntryModel`）
-- Drizzle ORM 数据库表工厂（`masterTable`、`entryTable`）
-- 泛型 CRUD Repository（`createRepository`）
-- 模型存储提供者注册表（`ModelStorage`）
-- 客户端导航管理器
+`src/business/` 是数据持久化基础设施层，定义通用数据模型、Drizzle ORM 表工厂、泛型 CRUD Repository、可插拔存储系统和客户端状态管理。
 
-## 设计理念
+## 数据模型 (`models.ts`)
 
-### Master-Entry 数据模型
+```typescript
+interface BaseModel {
+    id: string;                              // UUID
+    name: string;
+    entries?: Record<string, EntryModel[]>;  // 子实体集合
+    content: Record<string, any>;            // 任意扩展数据
+}
 
-所有业务实体（Stories、Presets、LlmApis、引擎配置）遵循统一的 **Master-Detail** 两级数据结构：
+interface EntryModel {
+    id: number;       // 自动递增
+    disabled: boolean;
+    code: string;     // 可读标识符
+    name: string;
+}
 
-```
-Master 表（主记录）
-├── id: string (UUID)
-├── name: string
-├── content: JSON text (自由格式数据)
-├── createdAt / updatedAt
-└── entries: Record<string, Entry[]>
-
-Entry 表（子记录）
-├── masterId: string (FK → Master)
-├── entryType: string (类型区分)
-├── entryId: integer (主键的一部分)
-├── disabled: boolean
-└── content: JSON text
-```
-
-**设计意图**：
-- **Master 表**存储可查询的结构化字段（name, code, version）
-- **Entry 表**存储自由格式的 JSON 数据（世界书条目、正则规则、样式块、脚本块、对话历史）
-- `entryType` 作为表内分区键，区分不同类型的子记录（如 lorebooks、regexes、styles、scripts）
-
-### 为什么用 JSON 列而不是规范化表
-
-- 不同引擎/模块的 Entry 数据格式差异很大（世界书 vs 正则 vs 样式）
-- JSON 列的灵活性允许每个 Entry 类型定义自己的数据结构
-- 通过 `ModelStorage` 抽象存储细节，上层模块不需要关心数据库列结构
-
-## 架构图
-
-```
-┌─────────────────────────────────────────────┐
-│          Business Models                     │
-│  BaseModel, EntryModel, PageOptions         │
-├─────────────────────────────────────────────┤
-│        Database (database.ts)               │
-│  DatabaseManager → @libsql/client + drizzle │
-│  dbUrl: "file:database/secyud-tavern.db"   │
-├─────────────────────────────────────────────┤
-│       Entity Factory (entities.ts)          │
-│  masterTable() → Drizzle 主表定义            │
-│  entryTable()  → Drizzle 子表定义            │
-│  jsonArray(), jsonField() → JSON 列类型      │
-├─────────────────────────────────────────────┤
-│     Repository Factory (repository.ts)      │
-│  createRepository<T, TEntity>() → CRUD API  │
-│  Repository<T> { get, create, update, ... } │
-├─────────────────────────────────────────────┤
-│    Storage Registry (storage.ts)            │
-│  ModelStorage<T> extends ServerRegistry     │
-│  createSimpleStorageProvider()              │
-├─────────────────────────────────────────────┤
-│      Client Navigation                      │
-│  businessNavigationManager: TabManager      │
-│  PluginLayout: React Component              │
-└─────────────────────────────────────────────┘
-```
-
-## 核心抽象
-
-### 1. Repository 模式
-
-`createRepository` 是一个泛型工厂函数，接收数据库表定义和映射回调，返回一个完整的类型安全 CRUD 接口：
-
-```ts
-const repository = createRepository<TModel, TEntity>({
-    masters,          // Drizzle 主表
-    entries,          // Drizzle 子表
-    loadModel,        // 加载 model.entries
-    saveModel,        // 持久化 model.entries
-    bindSearch,       // 构建搜索字符串
-    mapToEntity,      // Model → DB Entity
-    mapToModel,       // DB Entity → Model
-});
-```
-
-**为什么用工厂模式**：
-- 每种实体（Story、Preset、Llmapi）的表结构相同（差异仅在额外列）
-- 标准 CRUD 操作完全一致
-- 工厂函数消除重复代码，每个模块只需提供映射函数
-
-### 2. Storage Provider 策略模式
-
-`ModelStorage<T>` 是一个注册表，持有多个 `ModelStorageProvider`。每个 Provider 负责一种 EntryType 的加载/保存：
-
-```ts
-// deepseek 引擎注册自己的存储提供者
-presetStorage.register(createSimpleStorageProvider(
-    "deepseek",           // entryType
-    "deepseeks",          // model.entries[key]
-    presetRepository      // 使用的仓库
-));
-```
-
-**关键设计**：各引擎的存储逻辑通过注册机制解耦。上层业务模块不需要知道有哪些引擎；引擎自己注册存储能力。
-
-### 3. 分页
-
-所有列表查询使用统一的分页模型：
-
-```ts
 interface PageOptions {
-    page: number;       // 从 0 开始
-    pageSize: number;   // 默认 20
-    search?: string;    // 可选模糊搜索
+    page: number;
+    pageSize: number;
+    search?: string;
 }
 
 interface PagedResult<T> {
     data: T[];
     totalCount: number;
 }
+
+interface PageState {
+    max: number;
+    cur: number;
+}
 ```
 
-## 数据库连接
+## 数据库层
 
-- **数据库**：SQLite（通过 `@libsql/client`）
-- **文件位置**：`database/secyud-tavern.db`
-- **迁移文件夹**：`database/migrations/`
-- **ORM**：Drizzle ORM（类型安全 SQL 查询）
-- **单例**：`databaseManager` 全局唯一实例
+### 双表模式 (`server/entities.ts`)
 
-### 自定义列类型
+使用 Drizzle ORM + SQLite (`@libsql/client`)，数据库文件 `database/secyud-tavern.db`。
 
-```ts
-// JSON 数组列 — 自动序列化/反序列化
-jsonArray<T>(columnName): T[] column
+**`masterTable(tableName, extraColumns)`** — 创建主表：
+- `id` (text PK), `name` (text not null), `content` (text)
+- `createdAt`, `updatedAt` (text, ISO 字符串)
+- 额外列由领域定义
 
-// JSON 对象列 — 可空
-jsonField<T>(columnName): T | null column
+**`entryTable(tableName, masterRef, options)`** — 创建子表：
+- `masterId` (text FK), `entryType` (text), `entryId` (integer)
+- 复合主键: `(masterId, entryType, entryId)`
+- `search` (text), `disabled` (integer), `content` (text)
+
+自定义 Drizzle 列类型：
+- `jsonArray<T>(name)` — 自动 JSON 序列化/反序列化的数组列
+- `jsonField<T>(name)` — 自动 JSON 序列化/反序列化的对象列
+
+### Repository 工厂 (`server/repository.ts`)
+
+`createRepository<TModel, TMaster>(masters, entries, loadModel, saveModel, bindSearch, mapToEntity?, mapToModel?)` 返回完整 `Repository<TModel>`：
+
+**主记录操作**：
+- `get(id, withDetails?, conditionFunc?)` — 获取单条，解析 content JSON，可选加载 entries
+- `getList(options, conditionFunc?)` — COUNT + LIMIT/OFFSET 分页
+- `create(model)` — 生成 UUID，插入主表，有 entries 则调用 saveModel
+- `update(id, model)` — 部分更新，`mergeObjects` 合并 content
+- `delete(id)` — 删除主表记录
+- `exist(conditionFunc)` — 存在性检查
+
+**子实体操作** (`repository.entry.*`)：
+- `getList(masterId, type, options?)` — 分页查询
+- `batchCreate(masterId, type, entries)` — 批量创建
+- `create(masterId, type, entry)` — 创建单条（自动递增 entryId）
+- `setDisabled(masterId, type, entryId, disabled)` — 切换状态
+- `update(masterId, type, entryId, entry)` — 部分更新
+- `delete(masterId, type, entryId)` — 删除
+
+子实体 content 以 JSON 文本存储，`search` 字段用于 LIKE 模糊搜索。
+
+### 存储系统 (`server/storage.ts`)
+
+`ModelStorage<T>` 继承 `ServerRegistry<ModelStorageProvider<T>>`，是存储提供者的注册表：
+
+- `loadModel(model)` — 遍历所有注册提供者（按依赖排序），从 entries 表加载数据到 `model.entries`
+- `saveModel(model)` — 遍历所有提供者，保存 `model.entries` 到 entries 表
+- `bindSearch(type, entry)` — 委托给匹配的提供者生成搜索字符串
+
+### 简单存储提供者 (`server/storage-models.ts`)
+
+`createSimpleStorageProvider<T>(id, arrayName, repository)` 工厂函数生成标准实现：
+
+```typescript
+interface ModelStorageProvider<T> extends Registerable {
+    loadModel: (model: T) => Promise<void>;
+    saveModel: (model: T) => Promise<void>;
+    bindSearch: (entry: any) => string;
+}
 ```
 
-这些自定义类型让上层代码可以用 TypeScript 原生类型工作，无需手动 JSON.parse/stringify。
+标准 `bindSearch` 返回 `` `${entry.name} ${entry.code}` ``。所有 preset 引擎（lorebooks, macros, regexes, scripts, styles）都使用此工厂。
 
-## 与引擎系统的关系
+### 图片仓库 (`server/image-repository.ts`)
 
-引擎模块（lorebooks、regexes、scripts、styles、deepseek）完全依赖 Business 层的数据基础设施：
+- 文件存储在 `database/images/`，UUID 命名
+- SHA-256 去重：重复图片返回已有 ID
+- `create(buffer, type)` → `{id, sha256}`
+- `get(id)` → `{buffer, id, sha256, type}`
+- `delete(id)` → 删除文件和 DB 记录
 
-- 引擎的 server 端使用 `createSimpleStorageProvider` 注册存储
-- 引擎的 client 端使用 `TabManager`（extends `ClientRegistry`）注册 UI 标签
-- `businessNavigationManager` 是引擎模块的主入口注册点
+## 客户端层
+
+### 状态管理 (`client/models.ts`)
+
+基于 Zustand 5 + `persist` 中间件：
+- `createUseItemState<T>(name?)` — 单条选中状态 store（可选持久化）
+- `createUsePagedItemsState(fetcher, name, pageSize, search)` — 分页列表 store（在 `components/custom/pager` 中定义）
+- `ModelState<T>` — 聚合 moduleName、useItemState、usePagedItemsState
+- `EntryState<T>` — 聚合 moduleName、entryType、usePagedItemsState
+
+### 导航 (`client/navigation.ts`)
+
+`businessNavigationManager = new TabManager("business")` — 顶层 UI 标签注册表。
+
+### UI 模板 (`client/template/`)
+
+预建通用组件：
+
+| 组件 | 用途 |
+|---|---|
+| `ModelList<T>` | 左右面板：可搜索列表 + 可调整大小的详情面板 |
+| `ModelCreate<T>` | 创建和导入对话框 |
+| `ModelUpdate<T>` | 编辑表单 |
+| `ModelContent<T>` | 标签页式详情面板（含导出/克隆/删除） |
+| `EntryList<T>` | 子实体列表（搜索 + 分页 + 创建） |
+| `EntryUpdate<T>` | 卡片式行内编辑（含启用/禁用/克隆/删除） |
+| `PaginationWrapper<T>` | 分页控件（省略号逻辑） |
+
+### 插件布局 (`client/plugin-layout.tsx`)
+
+`<PluginLayout>` — 调用 `useClientPlugins()` 初始化客户端插件，完成前显示加载 iframe。
