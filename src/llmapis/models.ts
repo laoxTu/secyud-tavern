@@ -13,4 +13,4 @@ export interface LlmapiModel extends BaseModel {
 
 
 export const moduleName = 'llmapi';
-export const moduleArrayName = 'llmapis';
+export const modulePlural = 'llmapis';

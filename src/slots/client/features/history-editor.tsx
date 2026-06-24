@@ -15,7 +15,7 @@ import {Button} from "@/components/ui/button";
 import {EditIcon} from "lucide-react";
 import {SlotFeature} from "@/slots/client/feeature-models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useCallback, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {StoryHistory} from "@/stories/models";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Textarea} from "@/components/ui/textarea";
@@ -40,7 +40,7 @@ export function HistoryEditor() {
         editorRef.current = editor;
     }
 
-    const handleDialogOpen = useCallback((open: boolean) => {
+    const handleDialogOpen = (open: boolean) => {
         try {
             if (open) {
                 const {histories} = getSlotAndHistories(ctx);
@@ -51,9 +51,9 @@ export function HistoryEditor() {
         } catch (error) {
             handleError(error);
         }
-    }, []);
+    };
 
-    const handleHistoryUpdate = useCallback(async (data: FormData) => {
+    const handleHistoryUpdate = async (data: FormData) => {
         try {
             console.debug('[HistoryEditor] open edit dialog')
 
@@ -89,7 +89,7 @@ export function HistoryEditor() {
         }
 
         handleDialogOpen(false);
-    }, []);
+    };
 
     return (<Dialog open={open} onOpenChange={handleDialogOpen}>
         <DialogTrigger asChild>

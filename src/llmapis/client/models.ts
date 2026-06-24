@@ -1,8 +1,14 @@
 ﻿'use client';
-import {createModelContextType, useModelContext} from "@/components/template/models";
-import {LlmapiModel, moduleName} from "../models";
+import {createUseItemState, ModelState} from "@/business/client/models";
+import {createUsePagedItemsState} from "@/components/custom/pager";
+import {get} from "@/client";
+import {LlmapiModel, moduleName, modulePlural} from "../models";
 
-export const LlmapiContext = createModelContextType<LlmapiModel>();
-export const useLlmapiContext = (t: any) =>
-    useModelContext<LlmapiModel>(LlmapiContext, moduleName, t);
-
+export const useItemState = createUseItemState<LlmapiModel>()
+export const usePagedItemsState = createUsePagedItemsState<LlmapiModel>(
+    async options => {
+    return  await get('/llmapis', {params: options})
+});
+export const modelState: ModelState<LlmapiModel> = {
+    moduleName, modulePlural, useItemState, usePagedItemsState
+};

@@ -10,18 +10,93 @@ import {
     PaginationPrevious,
 } from '@/components/ui/pagination';
 import {useTranslations} from "next-intl";
+import {PagedResult, PageOptions} from "@/business/models";
+import {UseStoreState} from "@/business/client/models";
+import {createJSONStorage, persist} from "zustand/middleware";
+import {create} from "zustand";
 
-export interface PaginationWrapperProps {
-    /** 当前页码（从1开始） */
-    defaultPageIndex: number;
-    /** 总页数 */
-    pageCount: number;
-    /** 页码改变时的回调函数 */
-    onPageIndexChanged: (page: number) => void;
+export interface PagedItemsState<T> {
+    items?: T[],
+    curPage: number,
+    maxPage: number,
+    loading: boolean,
+    pageSize: number,
+    search: any,
+    params: any,
+    fetch: (params?: Partial<PageOptions> | any) => Promise<void>,
+}
+
+export function createUsePagedItemsState<T>(
+    fetcher: (params: any) => Promise<PagedResult<T>>, name?: string,
+    pageSize: number = 10, search: any = undefined) {
+    const func =
+        (set: (partial: Partial<PagedItemsState<T>>) => void, get: () => PagedItemsState<T>)
+            : PagedItemsState<T> => ({
+            curPage: 0,
+            maxPage: 0,
+            loading: false,
+            pageSize: pageSize,
+            search: search,
+            params: {},
+            async fetch(params) {
+                try {
+                    if (params) {
+                        const currentState = get();
+                        const mergedParams = {
+                            curPage: params.page ?? currentState.curPage,
+                            pageSize: params.pageSize ?? currentState.pageSize,
+                            search: params.search ?? currentState.search,
+                            params: {...currentState.params, ...(params.params ?? {})}
+                        };
+                        set({
+                            ...mergedParams,
+                            loading: true,
+                        });
+                    }
+
+                    const {search, pageSize, curPage, params: curParams} = get();
+                    const res = await fetcher({
+                        search: search,
+                        pageSize: pageSize,
+                        page: curPage,
+                        ...curParams,
+                    })
+                    set({
+                        items: res.data,
+                        maxPage: Math.ceil(res.totalCount / pageSize),
+                    });
+                } catch (error) {
+                    throw error;
+                } finally {
+                    set({
+                        loading: false,
+                    })
+                }
+            }
+        });
+
+    return create<PagedItemsState<T>>()(
+        name ? persist(func,
+            {
+                name: name,
+                storage: createJSONStorage(() => localStorage),
+                partialize: (state) => ({
+                    curPage: state.curPage,
+                    pageSize: state.pageSize,
+                    search: state.search,
+                }),
+            }
+        ) : func
+    );
+}
+
+
+export interface PaginationWrapperProps<T> {
+    usePagedItemsState: UseStoreState<PagedItemsState<T>>
     /** 最多显示多少个页码按钮（奇数） */
-    visiblePageCount?: number;
+    pageVisibleCount?: number;
     /** 是否显示跳转输入框 */
-    showPageInput?: boolean;
+    pageInputVisible?: boolean;
     /** 自定义类名 */
     className?: string;
 }
@@ -33,12 +108,12 @@ export interface PaginationWrapperProps {
 function generatePaginationRange(
     currentPage: number,
     totalPages: number,
-    maxVisiblePages: number = 5
+    pageVisibleCount: number = 5
 ): number [] {
     // 确保参数是有效数字
     const current = Math.max(0, Math.min(currentPage, totalPages - 1));
     const total = Math.max(0, totalPages);
-    const max = Math.max(3, Math.min(maxVisiblePages, total));
+    const max = Math.max(3, Math.min(pageVisibleCount, total));
 
     // 显示所有页
     if (total <= max) {
@@ -87,40 +162,35 @@ function generatePaginationRange(
  * 封装好的分页组件
  * 包含页码显示、上一页/下一页、省略号、跳转输入框等功能
  */
-export function PaginationWrapper({
-                                      defaultPageIndex,
-                                      pageCount,
-                                      onPageIndexChanged,
-                                      visiblePageCount = 7,
-                                      className = undefined,
-                                  }: PaginationWrapperProps) {
+export function PaginationWrapper<T>(
+    {
+        usePagedItemsState,
+        pageVisibleCount,
+        className = undefined,
+    }: PaginationWrapperProps<T>) {
     const t = useTranslations();
-    // 不需要分页的情况
-    if (pageCount <= 1) {
-        return null;
-    }
-
-    const pages = generatePaginationRange(defaultPageIndex, pageCount, visiblePageCount);
-    const isFirstPage = defaultPageIndex === 0;
-    const isLastPage = defaultPageIndex === pageCount - 1;
+    const {curPage, maxPage, fetch} = usePagedItemsState();
 
     const handlePageIndexChange = (page: number) => {
-        if (page >= 0 && page < pageCount && page !== defaultPageIndex) {
-            onPageIndexChanged(page);
+        if (page >= 0 && page < maxPage && page !== curPage) {
+            fetch({page});
         }
     };
+
+    const pages = generatePaginationRange(curPage, maxPage, pageVisibleCount);
+    const isFirstPage = curPage === 0;
+    const isLastPage = curPage === maxPage - 1;
+    const pagerClass =
+        (disabled: boolean) =>
+            disabled ? 'pointer-events-none opacity-50' : 'cursor-pointer';
 
     return (
         <Pagination className={className}>
             <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious
-                        onClick={() => handlePageIndexChange(defaultPageIndex - 1)}
-                        className={
-                            isFirstPage
-                                ? 'pointer-events-none opacity-50'
-                                : 'cursor-pointer'
-                        }
+                        onClick={() => handlePageIndexChange(curPage - 1)}
+                        className={pagerClass(isFirstPage)}
                         text={t("page.previous")}
                         aria-disabled={isFirstPage}
                     />
@@ -133,7 +203,7 @@ export function PaginationWrapper({
                         ) : (
                             <PaginationLink
                                 onClick={() => handlePageIndexChange(page)}
-                                isActive={defaultPageIndex === page}
+                                isActive={curPage === page}
                                 className="cursor-pointer"
                             >
                                 {page + 1}
@@ -144,12 +214,8 @@ export function PaginationWrapper({
 
                 <PaginationItem>
                     <PaginationNext
-                        onClick={() => handlePageIndexChange(defaultPageIndex + 1)}
-                        className={
-                            isLastPage
-                                ? 'pointer-events-none opacity-50'
-                                : 'cursor-pointer'
-                        }
+                        onClick={() => handlePageIndexChange(curPage + 1)}
+                        className={pagerClass(isLastPage)}
                         aria-disabled={isLastPage}
                         text={t("page.next")}
                     />

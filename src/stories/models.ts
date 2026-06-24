@@ -125,4 +125,4 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
 
 
 export const moduleName = 'story';
-export const moduleArrayName = 'stories';
+export const modulePlural = 'stories';

@@ -2,7 +2,7 @@ import {SlotFeature} from "@/slots/client/feeature-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
 import {getSlotAndHistories, useSlotContext} from "@/slots/client/models";
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {
     Dialog, DialogClose,
     DialogContent, DialogFooter, DialogHeader, DialogTitle,
@@ -31,7 +31,7 @@ export function InputViewer() {
     const [inputContext, setInputContext] = useState<LlmapiInputContext | undefined>();
 
 
-    const handleDialogOpen = useCallback(async (open: boolean) => {
+    const handleDialogOpen = async (open: boolean) => {
 
         if (open) {
             try {
@@ -84,7 +84,7 @@ export function InputViewer() {
             }
         }
         setOpen(open);
-    }, []);
+    };
 
     return (<Dialog open={open} onOpenChange={handleDialogOpen}>
         <DialogTrigger asChild>

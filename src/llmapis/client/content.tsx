@@ -5,21 +5,19 @@ import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
-import {post} from "@/client";
+import {del, get, open, post} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
-import {ModelListContentTemplate} from "@/components/template/content-template";
-import {ModelNavigationTemplate} from "@/components/template/navigation-template";
-import {LlmapiContext} from "./models";
-import {LlmapiModel, moduleName, moduleArrayName} from "../models";
+import {LlmapiModel, moduleName} from "../models";
 import {llmapiTabManager} from "./tabs";
-
+import {ModelTabHeader} from "@/business/client/template/tab-header";
+import {TemplateModelList} from "@/business/client/template";
+import {modelState} from "./models";
 
 function Content() {
     const t = useTranslations();
-
-    return <ModelListContentTemplate<LlmapiModel>
-        modelType={moduleName} modelApi={moduleArrayName} contextType={LlmapiContext}
-        modelContent={(model) =>
+    return <TemplateModelList<LlmapiModel>
+        modelState={modelState}
+        itemContent={(model) =>
             <>
                 <ItemContent>
                     <ItemTitle className="line-clamp-1">
@@ -30,33 +28,16 @@ function Content() {
                 </ItemContent>
             </>
         }
-        cloneHandler={async (model, data) =>
-            await post("/llmapis", {
-                ...model, id: "",
-                code: data.get("code") as string,
-                name: data.get("name") as string,
-            })}
-        cloneContent={() =>
-            <>
-                <Field>
-                    <Label htmlFor={`${moduleName}-clone-code`}>{t("default.code") + "*"}</Label>
-                    <Input id={`${moduleName}-clone-code`} name="code" required/>
-                </Field>
-                <Field>
-                    <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
-                    <Input id={`${moduleName}-clone-name`} name="name" required/>
-                </Field>
-            </>}
-        createHandler={async (data) =>
-            await post("/llmapis", {
-                id: "",
-                code: data.get("code") as string,
-                name: data.get("name") as string,
-                version: "1.0.0",
-                content: {}
-            })}
-        createContent={() =>
-            <>
+        createProps={{
+            importAccept: ".json",
+            importHandler: async (file) => {
+                return await post("/llmapis/import", file, {
+                    headers: {
+                        'Content-Type': "application/octet-stream"
+                    }
+                })
+            },
+            createContent: () => (<>
                 <Field>
                     <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
                     <Input id={`${moduleName}-code`} name="code" required/>
@@ -65,14 +46,63 @@ function Content() {
                     <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
                     <Input id={`${moduleName}-name`} name="name" required/>
                 </Field>
-            </>}
-        tabManagerAccessor={() => llmapiTabManager}>
-    </ModelListContentTemplate>;
+            </>),
+            createHandler: async (data) => {
+                return await post("/llmapis", {
+                    id: "",
+                    code: data.get("code") as string,
+                    name: data.get("name") as string,
+                    version: "1.0.0",
+                    content: {}
+                });
+            }
+        }}
+        contentProps={{
+            cloneHandler: async (model, data) => {
+                const entity = await get("/llmapis/{id}", {
+                    params: {
+                        id: model.id,
+                        withDetails: true
+                    }
+                });
+                return await post("/llmapis", {
+                    ...entity, id: "",
+                    code: data.get("code") as string,
+                    name: data.get("name") as string,
+                })
+            },
+            cloneContent: () => (<>
+                <Field>
+                    <Label htmlFor={`${moduleName}-clone-code`}>{t("default.code") + "*"}</Label>
+                    <Input id={`${moduleName}-clone-code`} name="code" required/>
+                </Field>
+                <Field>
+                    <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
+                    <Input id={`${moduleName}-clone-name`} name="name" required/>
+                </Field>
+            </>),
+            exportHandler: async (model) => {
+                await open('/llmapis/{id}/export', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            deleteHandler: async (model) => {
+                await del('/llmapis/{id}', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            tabManager: llmapiTabManager
+        }}>
+    </TemplateModelList>;
 }
 
 
 export const llmapiNavigationContent: TabConfig = {
     id: moduleName,
-    label: () => <ModelNavigationTemplate modelType={moduleName}/>,
+    label: () => <ModelTabHeader modelType={moduleName}/>,
     component: Content
 } as const;

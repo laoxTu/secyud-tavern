@@ -75,8 +75,8 @@ src/components/
 | 组件 | 作用 | 关键 Props |
 |---|---|---|
 | `ModelListContentTemplate<T>` | 拆分视图主/详细列表页 | `modelApi`, `contextType`, `tabManagerAccessor`, `createHandler`, `cloneHandler` |
-| `EditFormTemplate<T>` | 模型编辑表单 | `contextType`, `updateHandler`, `updateContent` |
-| `EntryListTemplate<T>` | 子条目 CRUD 管理 | `modelApi`, `entryType`, `updateContent` |
+| `ModelEditForm<T>` | 模型编辑表单 | `contextType`, `updateHandler`, `updateContent` |
+| `EntryList<T>` | 子条目 CRUD 管理 | `modelApi`, `entryType`, `updateContent` |
 | `ModelNavigationTemplate` | 导航标签（翻译后的标题） | `modelType` |
 | `EntryNavigationTemplate` | 导航图标标签 | `value` |
 

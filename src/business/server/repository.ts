@@ -1,5 +1,4 @@
-﻿
-import {and, eq, like, SQL, sql} from "drizzle-orm";
+﻿import {and, eq, like, SQL, sql} from "drizzle-orm";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseEntity} from "./entities";
 import {v4 as uuidv4, validate} from 'uuid';
@@ -13,8 +12,8 @@ export type ConditionFunc = (table: any) => SQL;
 export interface Repository<TModel> {
     get: (id: string, withDetails?: boolean, conditionFunc?: ConditionFunc) => Promise<TModel | null>,
     getList: (options: PageOptions, conditionFunc?: ConditionFunc) => Promise<PagedResult<TModel>>,
-    create: (model: TModel) => Promise<string>,
-    update: (id: string, model: Partial<TModel>) => Promise<void>,
+    create: (model: TModel) => Promise<TModel>,
+    update: (id: string, model: Partial<TModel>) => Promise<TModel>,
     delete: (id: string) => Promise<void>,
     exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
     entry: {
@@ -37,7 +36,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 
     const db = databaseManager.db;
-    const repository = {
+    const repository: Repository<TModel> = {
 
         get: async (id: string, withDetails: boolean = false, conditionFunc?: ConditionFunc): Promise<TModel | null> => {
 
@@ -103,14 +102,17 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 ...(mapToEntity?.(model) ?? {})
             }
 
-            await db
+            const result = await db
                 .insert(masters)
-                .values(entity);
+                .values(entity)
+                .returning();
 
             if (model.entries) {
+                model.id = entity.id;
                 await saveModel(model);
             }
-            return entity.id;
+
+            return result[0] as TModel;
         },
 
         update: async (id: string, model: Partial<TModel>) => {
@@ -130,10 +132,13 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 ...model.content
             });
 
-            await db
+            const result = await db
                 .update(masters)
                 .set(updateData)
-                .where(eq(masters.id, id));
+                .where(eq(masters.id, id))
+                .returning();
+
+            return result[0] as TModel;
         },
 
         delete: async (id: string) => {

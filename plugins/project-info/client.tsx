@@ -4,11 +4,11 @@
  */
 import * as navigation from '@/business/client/navigation';
 import React from 'react';
-import * as template from "@/components/template/navigation-template";
+import * as template from "@/business/client/template/tab-header";
 import * as intl from "next-intl";
 
 const {businessNavigationManager} = navigation;
-const {ModelNavigationTemplate} = template;
+const {ModelTabHeader} = template;
 const {useTranslations} = intl;
 
 const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"];
@@ -68,7 +68,7 @@ export default function register() {
 
     businessNavigationManager.register({
         id: "info",
-        label: () => <ModelNavigationTemplate modelType={'about'}/>,
+        label: () => <ModelTabHeader modelType={'about'}/>,
         component: Content,
     });
 }

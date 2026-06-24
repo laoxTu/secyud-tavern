@@ -1,33 +1,24 @@
-﻿import {and, like, SQL} from "drizzle-orm";
-import {generateCreateModelApi, generateGetModelListApi} from "@/app/api/template";
-import {interceptor} from "@/handler/server/interceptor";
-import {storyRepository as repository} from "@/stories/server/repository";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "./models";
+import {apiCreateModel, apiGetModelList} from "@/app/api/template";
 
 /**
  * 获取预设分页列表
  * @params PageOptions
- * @response PagedResult<StoryModel>
+ * @response PagedResult<any>
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateGetModelListApi(repository, search => table => {
-        const conditions: SQL[] = [];
-        const fuzzy = search?.fuzzy;
-        if (fuzzy && fuzzy !== "") {
-            conditions.push(like(table.name, `%${fuzzy}%`) as SQL);
-        }
-
-        return and(...conditions) as SQL;
-    })
+    apiGetModelList(apiConfig)
 )
 
 /**
  * 创建预设
  * @params {isImport?: boolean}
- * @body StoryModel
+ * @body any
  * @response {id: string}
  * @openapi
  */
 export const POST = interceptor.createRoute(
-    generateCreateModelApi(repository)
+    apiCreateModel(apiConfig)
 )

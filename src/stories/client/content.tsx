@@ -1,75 +1,105 @@
 ﻿'use client';
 import React from "react";
 import {useTranslations} from "next-intl";
+import {del, get, open, post} from "@/client";
 import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemTitle} from "@/components/ui/item";
-import {ModelListContentTemplate} from "@/components/template/content-template";
-import {ModelNavigationTemplate} from "@/components/template/navigation-template";
-import {TabConfig} from "@/components/custom/tab";
-import {post} from "@/client";
 import {Button} from "@/components/ui/button";
+import {TabConfig} from "@/components/custom/tab";
 import {useRouter} from "next/navigation";
-import {moduleArrayName, moduleName, StoryModel} from "@/stories/models";
-import {StoryContext} from "@/stories/client/models";
-import {storyTabManager} from "@/stories/client/tabs";
 import {CornerDownLeftIcon} from "lucide-react";
+import {TemplateModelList} from "@/business/client/template";
+import {moduleName, StoryModel} from "../models";
+import {storyTabManager} from "./tabs";
+import {modelState} from "./models";
+import {ModelTabHeader} from "@/business/client/template/tab-header";
 
 
 function Content() {
     const t = useTranslations();
     const router = useRouter();
 
-    return <ModelListContentTemplate<StoryModel>
-        modelType={moduleName} modelApi={moduleArrayName} contextType={StoryContext}
-        modelContent={(model) =>
-            <>
-                <ItemContent>
-                    <ItemTitle className="flex">
-                        <span className={"w-full overflow-hidden"}> {model.name} - {model.id} </span>
-                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
-                                variant={'outline'}>
-                            <CornerDownLeftIcon/>
-                        </Button>
-                    </ItemTitle>
-                </ItemContent>
-            </>
-        }
-        cloneHandler={async (model, data) =>
-            await post(`/${moduleArrayName}`, {
-                ...model, name: data.get("name") as string,
-            })}
-        cloneContent={() =>
-            <>
-                <Field>
-                    <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
-                    <Input id={`${moduleName}-clone-name`} name="name" required/>
-                </Field>
-            </>}
-        createHandler={async (data) =>
-            await post(`/${moduleArrayName}`, {
-                id: "",
-                name: data.get("name") as string,
-                requires: [],
-                llmapi: null,
-                content: {},
-            })}
-        createContent={() =>
-            <>
+    return <TemplateModelList<StoryModel>
+        modelState={modelState}
+        itemContent={(model) => (<>
+            <ItemContent>
+                <ItemTitle className="flex">
+                    <span className={"w-full overflow-hidden"}> {model.name} - {model.id} </span>
+                    <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
+                            variant={'outline'}>
+                        <CornerDownLeftIcon/>
+                    </Button>
+                </ItemTitle>
+            </ItemContent>
+        </>)}
+        createProps={{
+            importAccept: ".json",
+            importHandler: async (file) => {
+                return await post("/stories/import", file, {
+                    headers: {
+                        'Content-Type': "application/octet-stream"
+                    }
+                })
+            },
+            createContent: () => (<>
                 <Field>
                     <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
                     <Input id={`${moduleName}-name`} name="name"
                            required/>
                 </Field>
-            </>}
-        tabManagerAccessor={() => storyTabManager}>
-    </ModelListContentTemplate>;
+            </>),
+            createHandler: async (data) => {
+                return await post("/stories", {
+                    id: "",
+                    name: data.get("name") as string,
+                    requires: [],
+                    llmapi: null,
+                    content: {},
+                });
+            },
+        }}
+        contentProps={{
+            cloneHandler: async (model, data) => {
+                const entity = await get("/stories/{id}", {
+                    params: {
+                        id: model.id,
+                        withDetails: true
+                    }
+                });
+                return await post("/stories", {
+                    ...entity, id: "",
+                    name: data.get("name") as string,
+                })
+            },
+            cloneContent: () => (<>
+                <Field>
+                    <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
+                    <Input id={`${moduleName}-clone-name`} name="name" required/>
+                </Field>
+            </>),
+            exportHandler: async (model) => {
+                await open('/stories/{id}/export', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            deleteHandler: async (model) => {
+                await del('/stories/{id}', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            tabManager: storyTabManager
+        }}>
+    </TemplateModelList>;
 }
-
 
 export const storyNavigationContent: TabConfig = {
     id: moduleName,
-    label: () => <ModelNavigationTemplate modelType={moduleName}/>,
+    label: () => <ModelTabHeader modelType={moduleName}/>,
     component: Content
 } as const;

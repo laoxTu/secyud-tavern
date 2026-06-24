@@ -1,6 +1,6 @@
-﻿import {storyRepository as repository} from "@/stories/server/repository";
-import {interceptor} from "@/handler/server/interceptor";
-import {generateSetDisableEntryApi} from "@/app/api/template";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../../../../../models";
+import {apiDisableEntry} from "@/app/api/template";
 
 
 /**
@@ -10,5 +10,5 @@ import {generateSetDisableEntryApi} from "@/app/api/template";
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateSetDisableEntryApi(repository)
+    apiDisableEntry(apiConfig)
 )

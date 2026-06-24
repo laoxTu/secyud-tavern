@@ -7,21 +7,20 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {TabConfig} from "@/components/custom/tab";
-import {ModelListContentTemplate} from "@/components/template/content-template";
-import {ModelNavigationTemplate} from "@/components/template/navigation-template";
-import {post} from "@/client";
-import {PresetContext,} from "./models";
-import {moduleName, moduleArrayName, PresetModel} from "../models";
+import {get, post, open, del} from "@/client";
+import {moduleName, PresetModel} from "../models";
 import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
+import {TemplateModelList} from "@/business/client/template";
+import {ModelTabHeader} from "@/business/client/template/tab-header";
+import {modelState} from "@/presets/client/models";
 
 
 function Content() {
     const t = useTranslations();
-
-    return <ModelListContentTemplate<PresetModel>
-        modelType={moduleName} modelApi={moduleArrayName} contextType={PresetContext}
-        modelContent={(model) =>
+    return <TemplateModelList<PresetModel>
+        modelState={modelState}
+        itemContent={(model) =>
             <>
                 <ItemMedia variant={'image'}>
                     <Image
@@ -44,40 +43,28 @@ function Content() {
                 </ItemContent>
             </>
         }
-        importHandler={
-            async (file) => {
-                await post("/presets/import", file, {
+        createProps={{
+            importAccept: ".json,.png",
+            importHandler: async (file) => {
+                return await post("/presets/import", file, {
                     headers: {
                         'Content-Type': "image/png"
                     }
-                });
-            }
-        }
-        importAccept={".json,.png"}
-        cloneHandler={
-            async (model, data) =>
-                await post("/presets", {
-                    ...model, id: "",
-                    code: data.get("code") as string,
-                    name: data.get("name") as string,
                 })
-        }
-        cloneContent={
-            () =>
-                <>
-                    <Field>
-                        <Label htmlFor={`${moduleName}-clone-code`}>{t("default.code") + "*"}</Label>
-                        <Input id={`${moduleName}-clone-code`} name="code" required/>
-                    </Field>
-                    <Field>
-                        <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
-                        <Input id={`${moduleName}-clone-name`} name="name" required/>
-                    </Field>
-                </>
-        }
-        createHandler={
-            async (data) => {
-                await post("/presets", {
+            },
+            createContent: () => (<>
+                <Field>
+                    <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                    <Input id={`${moduleName}-code`} name="code"
+                           required/>
+                </Field>
+                <Field>
+                    <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
+                    <Input id={`${moduleName}-name`} name="name" required/>
+                </Field>
+            </>),
+            createHandler: async (data) => {
+                return await post("/presets", {
                     id: "",
                     version: "1.0.0",
                     code: data.get("code") as string,
@@ -90,28 +77,54 @@ function Content() {
                     },
                 });
             }
-        }
-        createContent={
-            () =>
-                <>
-                    <Field>
-                        <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
-                        <Input id={`${moduleName}-code`} name="code"
-                               required/>
-                    </Field>
-                    <Field>
-                        <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
-                        <Input id={`${moduleName}-name`} name="name" required/>
-                    </Field>
-                </>
-        }
-        tabManagerAccessor={() => presetTabManager}>
-    </ModelListContentTemplate>;
+        }}
+        contentProps={{
+            cloneHandler:
+                async (model, data) => {
+                    const entity = await get("/presets/{id}", {
+                        params: {
+                            id: model.id,
+                            withDetails: true
+                        }
+                    });
+                    return await post("/presets", {
+                        ...entity, id: "",
+                        code: data.get("code") as string,
+                        name: data.get("name") as string,
+                    })
+                },
+            cloneContent: () => (<>
+                <Field>
+                    <Label htmlFor={`${moduleName}-clone-code`}>{t("default.code") + "*"}</Label>
+                    <Input id={`${moduleName}-clone-code`} name="code" required/>
+                </Field>
+                <Field>
+                    <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
+                    <Input id={`${moduleName}-clone-name`} name="name" required/>
+                </Field>
+            </>),
+            exportHandler: async (model) => {
+                await open('/presets/{id}/export', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            deleteHandler: async (model) => {
+                await del('/presets/{id}', {
+                    params: {
+                        id: model.id,
+                    }
+                });
+            },
+            tabManager: presetTabManager
+        }}>
+    </TemplateModelList>;
 }
 
 
 export const presetNavigationContent: TabConfig = {
     id: moduleName,
-    label: () => <ModelNavigationTemplate modelType={moduleName}/>,
+    label: () => <ModelTabHeader modelType={moduleName}/>,
     component: Content
 } as const;

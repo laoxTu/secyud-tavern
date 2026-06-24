@@ -1,4 +1,4 @@
-﻿import React, {useState, useCallback, RefObject, useEffect} from "react";
+﻿import React, {useState, RefObject, useEffect} from "react";
 import {
     CornerDownLeftIcon,
     SquareStopIcon
@@ -60,7 +60,7 @@ export function HistoryChatbox() {
     const t = useTranslations();
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
-    const generateLlmapiReply = useCallback(async () => {
+    const generateLlmapiReply = async () => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
@@ -169,10 +169,10 @@ export function HistoryChatbox() {
             await handleHistoryPageChange(ctx, {curPage: ctx.current.slot?.story.histories?.length ?? 0});
             setOutput(false);
         }
-    }, [handleError]);
+    };
 
     // 发送输入内容，并尝试创建新历史
-    const createStoryHistory = useCallback(async ({input, summary}: { input: string, summary: boolean }) => {
+    const createStoryHistory = async ({input, summary}: { input: string, summary: boolean }) => {
         const slot = ctx.current.slot!;
         const histories = slot.story.histories!;
         let history = tryGetLastItem(histories)!;
@@ -237,7 +237,7 @@ export function HistoryChatbox() {
 
         // 创建并保存历史后需要生成回复
         await generateLlmapiReply();
-    }, [generateLlmapiReply, handleError, handleHistoryPageChange]);
+    };
 
     useEffect(() => {
         registerCallback(ctx, "generateLlmapiReply", generateLlmapiReply);

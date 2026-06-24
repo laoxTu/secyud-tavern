@@ -15,4 +15,4 @@ export interface PresetModel extends BaseModel {
 
 
 export const moduleName = 'preset';
-export const moduleArrayName = 'presets';
+export const modulePlural = 'presets';

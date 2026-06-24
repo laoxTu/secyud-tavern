@@ -1,19 +1,27 @@
-﻿import React, {useCallback, useState} from "react";
+﻿import React, {useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
-import {EntryNavigationTemplate} from "@/components/template/navigation-template";
-import {EntryListTemplate} from "@/components/template/entry-list-template";
-import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
-import {PresetContext, usePresetContext} from "@/presets/client/models";
+import {moduleName} from "@/presets/models";
+import {matchName} from "../match/always/models";
+import {TemplateEntryList} from "@/business/client/template";
+import {del, post, put} from "@/client";
+import {useItemState} from "@/presets/client/models";
+import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
-import {EntryModel} from "@/business/models";
-import {matchName} from "@/engines/lorebooks/match/always/models";
+import {entryState} from "@/engines/lorebooks/client/models";
 
 const roles = ["system", "user", "assistant"]
 
@@ -21,18 +29,11 @@ function EditorContent({entry}: {
     entry: PresetLorebookModel,
 }) {
     const matchEditors = lorebookMatcherRegistry.records;
-    const [matchType, setMatchType] = useState<string>(entry.matchType);
-    const [editor, setEditor] = useState(matchEditors[matchType]);
+    const [editor, setEditor] = useState(matchEditors[entry.matchType]);
     const t = useTranslations();
-    const {model} = usePresetContext(t);
-    if (!model) {
-        throw new Error("model is not available at this time");
-    }
-    const handleMatchTypeChange = useCallback((type: string) => {
-        setMatchType(type);
-        const newEditor = matchEditors[type];
-        setEditor(newEditor);
-    }, [matchEditors]);
+    const handleChange = (type: string) => {
+        setEditor(matchEditors[type]);
+    };
     return (
         <>
             <div className="grid grid-cols-2 gap-4">
@@ -78,8 +79,8 @@ function EditorContent({entry}: {
                         {t("lorebook.match_type")}
                     </FieldLabel>
                     <Select name="matchType"
-                            value={matchType}
-                            onValueChange={handleMatchTypeChange}>
+                            defaultValue={entry.matchType}
+                            onValueChange={handleChange}>
                         <SelectTrigger className="w-full"
                                        id={`lorebook-match_type-${entry.id}`}>
                             <SelectValue/>
@@ -116,34 +117,95 @@ function EditorContent({entry}: {
 
 function Tab() {
     const matchEditors = lorebookMatcherRegistry.records;
+    const {model} = useItemState();
     return (
-        <EntryListTemplate<PresetModel>
-            modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-            createAccessor={(): Omit<PresetLorebookModel, keyof EntryModel> => ({
-                matchType: matchName,
-                matchExpression: [],
-                content: "",
-                priority: 100,
-                layer: 100,
-                role: 'system'
-            })}
-            updateAccessor={(data): Omit<PresetLorebookModel, keyof EntryModel> => {
-                const matchType = data.get("matchType") as string;
-                return ({
-                    matchType: matchType,
-                    matchExpression: matchEditors[matchType].getEditorValue(data),
-                    content: data.get("content") as string,
-                    priority: parseInt(data.get("priority") as string),
-                    layer: parseInt(data.get("layer") as string),
-                    role: data.get("role") as string,
-                });
+        <TemplateEntryList<PresetLorebookModel>
+            entryState={entryState}
+            modelId={model!.id}
+            createProps={{
+                createHandler: async (data) => {
+                    await post('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code'),
+                        name: data.get('name'),
+                        matchType: matchName,
+                        matchExpression: [],
+                        content: "",
+                        priority: 100,
+                        layer: 100,
+                        role: 'user'
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                        }
+                    })
+                }
             }}
-            updateContent={entry => <EditorContent entry={entry}/>}/>
+            updateProps={{
+                disableHandler: async (entry, disabled) => {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                        disabled,
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    })
+                    return {...entry, disabled};
+                },
+                deleteHandler: async entry => {
+                    await del('/presets/{id}/entries/{entryType}/{entryId}', {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    })
+                },
+                cloneHandler: async (entry, data) => {
+                    await post('/presets/{id}/entries/{entryType}', {
+                        ...entry,
+                        code: data.get('code'),
+                        name: data.get('name'),
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                        }
+                    })
+                },
+                updateHandler: async (entry, data) => {
+
+                    const matchType = data.get("matchType") as string;
+                    const result = {
+                        ...entry,
+                        matchType: matchType,
+                        matchExpression: matchEditors[matchType].getEditorValue(data),
+                        content: data.get("content") as string,
+                        priority: parseInt(data.get("priority") as string),
+                        layer: parseInt(data.get("layer") as string),
+                        role: data.get("role") as string,
+                    }
+                    console.debug(model?.id);
+                    console.debug(engineName);
+                    console.debug(entry.id);
+                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    });
+                    return result;
+                },
+                updateContent: (entry) => (<EditorContent entry={entry}/>)
+            }}/>
     );
 }
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    label: () => <EntryNavigationTemplate space={moduleName} value={engineName} icon={FileCode2Icon}/>,
+    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={FileCode2Icon}/>,
     component: Tab
 }

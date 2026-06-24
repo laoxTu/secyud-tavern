@@ -1,6 +1,6 @@
-﻿import {storyRepository as repository} from "@/stories/server/repository";
-import {interceptor} from "@/handler/server/interceptor";
-import {generateExportModelApi} from "@/app/api/template";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../../models";
+import {apiExportModel} from "@/app/api/template";
 
 /**
  * 获取预设
@@ -9,5 +9,5 @@ import {generateExportModelApi} from "@/app/api/template";
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateExportModelApi(repository, model => `story-${model.id}`)
+    apiExportModel(apiConfig)
 )

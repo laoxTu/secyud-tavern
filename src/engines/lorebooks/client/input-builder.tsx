@@ -5,7 +5,7 @@
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
 import {LlmapiMessage} from "@/slots/models";
-import {LlmapiBuilderProps, LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
+import { LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/slots/client/conversation-models";
 import {getCurrentOutput} from "@/stories/models";
 import {useTranslations} from "next-intl";
@@ -14,6 +14,7 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/llmapis/models";
 import {Input} from "@/components/ui/input";
 import React from "react";
+import {useItemState} from "@/llmapis/client/models";
 
 export async function defaultBuildInput(
     ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
@@ -105,9 +106,11 @@ const defaultConfig: LorebookInputBuilderModel = {
     suffix: "",
 } as const;
 
-function Content({defaultValue}: LlmapiBuilderProps) {
+function Content() {
     const t = useTranslations();
-    const config: LorebookInputBuilderModel = mergeObjects(defaultConfig, defaultValue);
+    const {model} = useItemState();
+    const config: LorebookInputBuilderModel = mergeObjects(
+        defaultConfig, model?.content["builder"]);
 
     return (
         <>

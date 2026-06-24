@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import {FileIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -7,38 +7,35 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {TabManager} from "@/components/custom/tab";
-import {EntryNavigationTemplate} from "@/components/template/navigation-template";
-import {EditFormTemplate} from "@/components/template/edit-form-template";
 import {put} from "@/client";
-import {LlmapiContext} from "./models";
+import {llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
+import {ModelUpdate} from "@/business/client/template/model-update";
 import {LlmapiModel, moduleName} from "../models";
 import {llmapiConfigRegistry} from "./config";
-import {llmapiInputBuilderManager} from "@/llmapis/client/input-builder";
+import {modelState, useItemState} from './models';
+import {EntryTabHeader} from "@/business/client/template/tab-header";
 
 
-function ConfigContent({model, }: {
-    model: LlmapiModel,
-}) {
+function ConfigContent() {
     const t = useTranslations();
-    const llmapiConfigs = llmapiConfigRegistry.records;
-    const first = Object.values(llmapiConfigs)[0];
-    const [provider, setProvider] = useState<string | undefined>(model.provider ?? first.id);
-    const [editor, setEditor] = useState(model.provider ? llmapiConfigs[model.provider] : first);
+    const records = llmapiConfigRegistry.records;
+    const {model} = useItemState();
+    const defaultProvider = model?.provider ?? Object.values(records)[0].id;
+    const [editor, setEditor] = useState(records[defaultProvider]);
+    const EditorComponent = editor.component;
 
-    const handleProviderChange = useCallback((type: string) => {
-        setProvider(type);
-        const newEditor = llmapiConfigs[type];
-        setEditor(newEditor);
-    }, [llmapiConfigs]);
+    const handleChange = (type: string) => {
+        setEditor(records[type]);
+    };
 
-    return <>
+    return (<>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
                 {t(`${moduleName}.provider`)}
             </FieldLabel>
             <Select name="provider"
-                    value={provider}
-                    onValueChange={handleProviderChange}>
+                    defaultValue={defaultProvider}
+                    onValueChange={handleChange}>
                 <SelectTrigger className="w-full"
                                id={`${moduleName}-provider`}>
                     <SelectValue/>
@@ -54,30 +51,21 @@ function ConfigContent({model, }: {
                 </SelectContent>
             </Select>
         </Field>
-        {editor && (
-            () => {
-                const EditorComponent = editor.component;
-                return <EditorComponent llmapi={model} defaultValue={model.content["config"]}/>;
-            }
-        )()}
-    </>
+        <EditorComponent/>
+    </>)
 }
 
-function BuilderContent({model,}: {
-    model: LlmapiModel,
-}) {
+function BuilderContent() {
     const t = useTranslations();
-    const llmapiBuilders = llmapiInputBuilderManager.records;
-    const first = Object.values(llmapiBuilders)[0];
-    const [builder, setBuilder] = useState<string | undefined>(model.builder ?? first.id);
-    const [editor, setEditor] = useState(model.builder ? llmapiBuilders[model.builder] : first);
+    const records = llmapiInputBuilderManager.records;
+    const {model} = useItemState();
+    const defaultBuilder = model?.builder ?? Object.values(records)[0].id;
+    const [editor, setEditor] = useState(records[defaultBuilder]);
+    const EditorComponent = editor.component;
 
-
-    const handleBuilderChange = useCallback((type: string) => {
-        setBuilder(type);
-        const newEditor = llmapiBuilders[type];
-        setEditor(newEditor);
-    }, [llmapiBuilders]);
+    const handleChange = (type: string) => {
+        setEditor(records[type]);
+    };
 
     return <>
         <Field>
@@ -85,8 +73,8 @@ function BuilderContent({model,}: {
                 {t(`${moduleName}.builder`)}
             </FieldLabel>
             <Select name="builder"
-                    value={builder}
-                    onValueChange={handleBuilderChange}>
+                    defaultValue={defaultBuilder}
+                    onValueChange={handleChange}>
                 <SelectTrigger className="w-full"
                                id={`${moduleName}-builder`}>
                     <SelectValue/>
@@ -102,12 +90,7 @@ function BuilderContent({model,}: {
                 </SelectContent>
             </Select>
         </Field>
-        {editor && (
-            () => {
-                const EditorComponent = editor.component;
-                return <EditorComponent llmapi={model} defaultValue={model.content["builder"]}/>;
-            }
-        )()}
+        <EditorComponent/>
     </>
 }
 
@@ -115,61 +98,62 @@ function DefaultTab() {
     const t = useTranslations();
     const configEditors = llmapiConfigRegistry.records;
     const builderEditors = llmapiInputBuilderManager.records;
-    return <EditFormTemplate
-        modelType={moduleName}
-        contextType={LlmapiContext}
-        updateHandler={async (model, data) => {
-            const key = data.get("apikey") as string | undefined;
-            const provider = data.get("provider") as string;
-            const builder = data.get("builder") as string;
-            await put("/llmapis/{id}",
-                {
-                    content: {
-                        "config": configEditors[provider]?.getValue(data),
-                        "builder": builderEditors[builder]?.getValue(data),
-                    },
-                    provider: provider,
-                    builder: builder,
-                    name: data.get("name") as string,
-                    version: data.get("version") as string,
-                    key: model.key === key || !key || key === '' ? undefined : key,
-                } as Partial<LlmapiModel>,
-                {
-                    params: {"id": model.id,}
-                });
-        }}
-        updateContent={(model) => <>
-            <div className="grid grid-cols-2 gap-4">
-                <Field>
-                    <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
-                    <Input id={`${moduleName}-code`} name="code"
-                           defaultValue={model.code} disabled/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-name`}>
-                        {t("default.name")}
-                    </FieldLabel>
-                    <Input name="name" id={`${moduleName}-name`}
-                           defaultValue={model.name}
-                    />
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-version`}>
-                        {t("default.version")}
-                    </FieldLabel>
-                    <Input name="version"
-                           id={`${moduleName}-version`}
-                           defaultValue={model.version}
-                    />
-                </Field>
-            </div>
-            <ConfigContent model={model}/>
-            <BuilderContent model={model}/>
-        </>}/>
+    return <ModelUpdate<LlmapiModel>
+        modelState={modelState}
+        props={{
+            updateHandler: async (model, data) => {
+                const key = data.get("apikey") as string | undefined;
+                const provider = data.get("provider") as string;
+                const builder = data.get("builder") as string;
+                return await put("/llmapis/{id}",
+                    {
+                        content: {
+                            "config": configEditors[provider]?.getValue(data),
+                            "builder": builderEditors[builder]?.getValue(data),
+                        },
+                        provider: provider,
+                        builder: builder,
+                        name: data.get("name") as string,
+                        version: data.get("version") as string,
+                        key: model.key === key || !key || key === '' ? undefined : key,
+                    } as Partial<LlmapiModel>,
+                    {
+                        params: {"id": model.id,}
+                    });
+            },
+            updateContent: (model) => (<>
+                <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                        <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                        <Input id={`${moduleName}-code`} name="code"
+                               defaultValue={model.code} disabled/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${moduleName}-name`}>
+                            {t("default.name")}
+                        </FieldLabel>
+                        <Input name="name" id={`${moduleName}-name`}
+                               defaultValue={model.name}
+                        />
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${moduleName}-version`}>
+                            {t("default.version")}
+                        </FieldLabel>
+                        <Input name="version"
+                               id={`${moduleName}-version`}
+                               defaultValue={model.version}
+                        />
+                    </Field>
+                </div>
+                <ConfigContent/>
+                <BuilderContent/>
+            </>)
+        }}/>
 }
 
 export const llmapiTabManager = new TabManager(moduleName, {
     id: 'default',
-    label: () => <EntryNavigationTemplate space="default" value="property" icon={FileIcon}/>,
+    label: () => <EntryTabHeader space="default" value="property" icon={FileIcon}/>,
     component: DefaultTab
 });

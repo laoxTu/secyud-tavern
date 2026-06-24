@@ -2,6 +2,15 @@
   "@/business/client/navigation": [
     "businessNavigationManager"
   ],
+  "@/business/client/template/tab-header": [
+    "EntryTabHeader",
+    "ModelTabHeader"
+  ],
+  "@/business/client/template": [
+    "TemplateEntryList",
+    "TemplateModelList",
+    "TemplateModelUpdate"
+  ],
   "@/engines/lorebooks/client/match": [
     "MatcherRegistry",
     "lorebookMatcherRegistry",
@@ -46,23 +55,10 @@
   ],
   "@/components/custom/pager": [
     "PaginationWrapper",
-    "usePager"
+    "createUsePagedItemsState"
   ],
   "@/components/custom/tab": [
     "TabManager"
-  ],
-  "@/components/template/navigation-template": [
-    "EntryNavigationTemplate",
-    "ModelNavigationTemplate"
-  ],
-  "@/components/template/content-template": [
-    "ModelListContentTemplate"
-  ],
-  "@/components/template/edit-form-template": [
-    "EditFormTemplate"
-  ],
-  "@/components/template/entry-list-template": [
-    "EntryListTemplate"
   ],
   "@/components/ui/accordion": [
     "Accordion",

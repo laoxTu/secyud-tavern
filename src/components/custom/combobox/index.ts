@@ -1,1 +1,2 @@
-﻿export {CustomCombobox} from './component';
+﻿'use client';
+export {CustomCombobox} from './component';

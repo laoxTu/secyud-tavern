@@ -1,22 +1,20 @@
-﻿
-import {llmapiRepository as repository} from "@/llmapis/server/repository";
-import {interceptor} from "@/handler/server/interceptor";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../models";
 import {
-    generateDeleteModelApi,
-    generateGetModelApi,
-    generateUpdateModelApi
+    apiDeleteModel,
+    apiGetModel,
+    apiUpdateModel
 } from "@/app/api/template";
-import {Hasher} from "@/utils/hasher";
 
 /**
  * 获取预设
  * @pathParams { id:string }
  * @params { withDetails:boolean }
- * @response LlmapiModel
+ * @response any
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateGetModelApi(repository)
+    apiGetModel(apiConfig)
 )
 
 /**
@@ -26,11 +24,7 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateUpdateModelApi(repository, async params => {
-        if (params.key) {
-            params.key = Hasher.instance.encrypt(params.key)
-        }
-    })
+    apiUpdateModel(apiConfig)
 )
 
 /**
@@ -39,5 +33,5 @@ export const PUT = interceptor.createRoute(
  * @openapi
  */
 export const DELETE = interceptor.createRoute(
-    generateDeleteModelApi(repository)
+    apiDeleteModel(apiConfig)
 )

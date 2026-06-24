@@ -1,5 +1,7 @@
 [
   "@/business/client/navigation",
+  "@/business/client/template/tab-header",
+  "@/business/client/template",
   "@/engines/lorebooks/client/match",
   "@/llmapis/client/input-builder",
   "@/llmapis/client/config",
@@ -13,10 +15,6 @@
   "@/components/custom/combobox",
   "@/components/custom/pager",
   "@/components/custom/tab",
-  "@/components/template/navigation-template",
-  "@/components/template/content-template",
-  "@/components/template/edit-form-template",
-  "@/components/template/entry-list-template",
   "@/components/ui/accordion",
   "@/components/ui/alert-dialog",
   "@/components/ui/aspect-ratio",

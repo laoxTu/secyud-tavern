@@ -1,83 +1,142 @@
-﻿import React from "react";
-import {ReplaceIcon} from "lucide-react";
+﻿import {ReplaceIcon} from "lucide-react";
+import React from "react";
 import {useTranslations} from "next-intl";
+import {del, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
+import {TabConfig} from "@/components/custom/tab";
+import {TemplateEntryList} from "@/business/client/template";
+import {EntryTabHeader} from "@/business/client/template/tab-header";
+import {useItemState} from "@/presets/client/models";
+import {moduleName} from "@/presets/models";
+import {entryState} from "./models";
+import {PresetRegexModel, engineName} from "../models";
 import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {EntryNavigationTemplate} from "@/components/template/navigation-template";
-import {EntryListTemplate} from "@/components/template/entry-list-template";
-import {TabConfig} from "@/components/custom/tab";
-import {PresetModel, moduleName, moduleArrayName} from "@/presets/models";
-import {PresetContext} from "@/presets/client/models";
-import {engineName, PresetRegexModel} from "../models";
-import {EntryModel} from "@/business/models";
 
 function Tab() {
     const t = useTranslations();
+    const {model} = useItemState();
     return (
-        <EntryListTemplate<PresetModel>
-            modelType={moduleName} modelApi={moduleArrayName} entryType={engineName} contextType={PresetContext}
-            createAccessor={(): Omit<PresetRegexModel, keyof EntryModel> => ({
-                pattern: "",
-                replacement: "",
-                target: "both",
-            })}
-            updateAccessor={(data): Omit<PresetRegexModel, keyof EntryModel> => ({
-                pattern: data.get("pattern") as string,
-                replacement: data.get("replacement") as string,
-                target: data.get("target") as string,
-            })}
-            updateContent={(entry: PresetRegexModel) => (
-                <>
-                    <div className="grid grid-cols-2 gap-4">
+        <TemplateEntryList<PresetRegexModel>
+            entryState={entryState}
+            modelId={model!.id}
+            createProps={{
+                createHandler: async (data) => {
+                    await post('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code'),
+                        name: data.get('name'),
+                        pattern: "",
+                        replacement: "",
+                        target: "both",
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                        }
+                    })
+                }
+            }}
+            updateProps={{
+                disableHandler: async (entry, disabled) => {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                        disabled,
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    })
+                    return {...entry, disabled};
+                },
+                deleteHandler: async entry => {
+                    await del('/presets/{id}/entries/{entryType}/{entryId}', {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    })
+                },
+                cloneHandler: async (entry, data) => {
+                    await post('/presets/{id}/entries/{entryType}', {
+                        ...entry,
+                        code: data.get('code'),
+                        name: data.get('name'),
+                    }, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                        }
+                    })
+                },
+                updateHandler: async (entry, data) => {
+                    const result = {
+                        ...entry,
+                        pattern: data.get("pattern") as string,
+                        replacement: data.get("replacement") as string,
+                        target: data.get("target") as string,
+                    }
+                    await put('/stories/{id}/entries/{entryType}/{entryId}', result, {
+                        params: {
+                            id: model?.id,
+                            entryType: engineName,
+                            entryId: entry.id
+                        }
+                    });
+                    return result;
+                },
+                updateContent: (entry) => (
+                    <>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Field>
+                                <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
+                                    {t("regex.target")}
+                                </FieldLabel>
+                                <Select name="target" defaultValue={entry.target}>
+                                    <SelectTrigger className="w-full" id={`${engineName}-target-${entry.id}`}>
+                                        <SelectValue/>
+                                    </SelectTrigger>
+                                    <SelectContent position="popper">
+                                        <SelectGroup>
+                                            <SelectItem value={"both"}>
+                                                {t(`regex.target_both`)}
+                                            </SelectItem>
+                                            <SelectItem value={"input"}>
+                                                {t(`regex.target_input`)}
+                                            </SelectItem>
+                                            <SelectItem value={"output"}>
+                                                {t(`regex.target_output`)}
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                        </div>
                         <Field>
-                            <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
-                                {t("regex.target")}
+                            <FieldLabel htmlFor={`${engineName}-pattern-${entry.id}`}>
+                                {t("regex.pattern")}
                             </FieldLabel>
-                            <Select name="target" defaultValue={entry.target}>
-                                <SelectTrigger className="w-full" id={`${engineName}-target-${entry.id}`}>
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectGroup>
-                                        <SelectItem value={"both"}>
-                                            {t(`regex.target_both`)}
-                                        </SelectItem>
-                                        <SelectItem value={"input"}>
-                                            {t(`regex.target_input`)}
-                                        </SelectItem>
-                                        <SelectItem value={"output"}>
-                                            {t(`regex.target_output`)}
-                                        </SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                            <Input name="pattern"
+                                   id={`${engineName}-pattern-${entry.id}`}
+                                   defaultValue={entry.pattern}/>
                         </Field>
-                    </div>
-                    <Field>
-                        <FieldLabel htmlFor={`${engineName}-pattern-${entry.id}`}>
-                            {t("regex.pattern")}
-                        </FieldLabel>
-                        <Input name="pattern"
-                               id={`${engineName}-pattern-${entry.id}`}
-                               defaultValue={entry.pattern}/>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${engineName}-replacement-${entry.id}`}>
-                            {t("regex.replacement")}
-                        </FieldLabel>
-                        <Textarea name="replacement"
-                                  id={`${engineName}-replacement-${entry.id}`}
-                                  defaultValue={entry.replacement}/>
-                    </Field>
-                </>
-            )}></EntryListTemplate>
+                        <Field>
+                            <FieldLabel htmlFor={`${engineName}-replacement-${entry.id}`}>
+                                {t("regex.replacement")}
+                            </FieldLabel>
+                            <Textarea name="replacement"
+                                      id={`${engineName}-replacement-${entry.id}`}
+                                      defaultValue={entry.replacement}/>
+                        </Field>
+                    </>)
+            }}/>
     );
 }
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    label: () => <EntryNavigationTemplate space={moduleName} value={engineName} icon={ReplaceIcon}/>,
+    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ReplaceIcon}/>,
     component: Tab
 }

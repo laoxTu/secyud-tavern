@@ -35,5 +35,11 @@ export function useErrorHandler() {
         }
     }, [t]);
 
-    return {handleError};
+    const handleSuccess = (message: string) => {
+        toast.success(message, {
+            richColors: true,
+        });
+    }
+
+    return {handleError, handleSuccess};
 }

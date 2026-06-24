@@ -76,6 +76,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/llmapis/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-llmapis-import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/llmapis/{id}/chat": {
         parameters: {
             query?: never;
@@ -357,6 +374,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/stories/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-stories-import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/stories/{id}/export": {
         parameters: {
             query?: never;
@@ -495,108 +529,6 @@ export interface components {
             data: unknown[];
             totalCount: number;
         };
-        "PagedResult<LlmapiModel>": {
-            data: {
-                id?: string;
-                name?: string;
-                entries?: {
-                    [key: string]: unknown;
-                };
-                content?: {
-                    [key: string]: unknown;
-                };
-                code: string;
-                /** @description 模型供应者 */
-                version: string;
-                /** @description api key secret */
-                provider?: string;
-                /** @description api key secret */
-                key?: string;
-                builder?: string;
-            }[];
-            totalCount: number;
-        };
-        "PagedResult<PresetModel>": {
-            data: {
-                id?: string;
-                name?: string;
-                entries?: {
-                    [key: string]: unknown;
-                };
-                content?: {
-                    [key: string]: unknown;
-                };
-                code: string;
-                version: string;
-                tags: string[];
-                requires: {
-                    code: string;
-                    version: string;
-                }[];
-            }[];
-            totalCount: number;
-        };
-        "PagedResult<StoryModel>": {
-            data: {
-                id?: string;
-                name?: string;
-                entries?: {
-                    [key: string]: unknown;
-                };
-                content?: {
-                    [key: string]: unknown;
-                };
-                requires: {
-                    code: string;
-                    version: string;
-                }[];
-                llmapi: {
-                    code: string;
-                    version: string;
-                } | null;
-                histories?: {
-                    id?: number;
-                    /** @description 编码，同预设下唯一 */
-                    disabled?: boolean;
-                    /** @description 名称 */
-                    code?: string;
-                    /** @description 名称 */
-                    name?: string;
-                    outputId: number;
-                    summary: boolean;
-                    variables: {
-                        [key: string]: unknown;
-                    };
-                    inputs: {
-                        content?: string;
-                        reasoningContent?: string;
-                        variables?: {
-                            op: string;
-                            path: string;
-                            value: unknown;
-                        }[];
-                        properties?: {
-                            [key: string]: unknown;
-                        };
-                        id: number;
-                    }[];
-                    outputs: {
-                        content?: string;
-                        reasoningContent?: string;
-                        variables?: {
-                            op: string;
-                            path: string;
-                            value: unknown;
-                        }[];
-                        properties?: {
-                            [key: string]: unknown;
-                        };
-                        id: number;
-                    }[];
-                }[];
-            }[];
-            totalCount: number;
-        };
         PageOptions: {
             /** @description 页码，默认0 */
             page?: number;
@@ -686,7 +618,6 @@ export interface components {
                     };
                     inputs: {
                         content?: string;
-                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -699,7 +630,6 @@ export interface components {
                     }[];
                     outputs: {
                         content?: string;
-                        reasoningContent?: string;
                         variables?: {
                             op: string;
                             path: string;
@@ -709,6 +639,7 @@ export interface components {
                             [key: string]: unknown;
                         };
                         id: number;
+                        reasoningContent: string;
                     }[];
                 }[];
             };
@@ -763,7 +694,6 @@ export interface components {
             };
             inputs: {
                 content?: string;
-                reasoningContent?: string;
                 variables?: {
                     op: string;
                     path: string;
@@ -776,7 +706,6 @@ export interface components {
             }[];
             outputs: {
                 content?: string;
-                reasoningContent?: string;
                 variables?: {
                     op: string;
                     path: string;
@@ -786,11 +715,11 @@ export interface components {
                     [key: string]: unknown;
                 };
                 id: number;
+                reasoningContent: string;
             }[];
         };
         StoryHistoryMessage: {
             content: string;
-            reasoningContent: string;
             variables: {
                 op: string;
                 path: string;
@@ -802,7 +731,6 @@ export interface components {
         };
         StoryInputMessage: {
             content?: string;
-            reasoningContent?: string;
             variables?: {
                 op: string;
                 path: string;
@@ -845,7 +773,6 @@ export interface components {
                 };
                 inputs: {
                     content?: string;
-                    reasoningContent?: string;
                     variables?: {
                         op: string;
                         path: string;
@@ -858,7 +785,6 @@ export interface components {
                 }[];
                 outputs: {
                     content?: string;
-                    reasoningContent?: string;
                     variables?: {
                         op: string;
                         path: string;
@@ -868,12 +794,12 @@ export interface components {
                         [key: string]: unknown;
                     };
                     id: number;
+                    reasoningContent: string;
                 }[];
             }[];
         };
         StoryOutputMessage: {
             content?: string;
-            reasoningContent?: string;
             variables?: {
                 op: string;
                 path: string;
@@ -883,6 +809,7 @@ export interface components {
                 [key: string]: unknown;
             };
             id: number;
+            reasoningContent: string;
         };
         VariableChangeModel: {
             op: string;
@@ -1076,7 +1003,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PagedResult<LlmapiModel>"];
+                    "application/json": components["schemas"]["PagedResult<any>"];
                 };
             };
             400: components["responses"]["400"];
@@ -1092,7 +1019,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["LlmapiModel"];
+                "application/json": components["schemas"]["any"];
             };
         };
         responses: {
@@ -1132,7 +1059,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LlmapiModel"];
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];
@@ -1177,6 +1104,34 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-llmapis-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
@@ -1472,7 +1427,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PagedResult<PresetModel>"];
+                    "application/json": components["schemas"]["PagedResult<any>"];
                 };
             };
             400: components["responses"]["400"];
@@ -1488,7 +1443,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["PresetModel"];
+                "application/json": components["schemas"]["any"];
             };
         };
         responses: {
@@ -1528,7 +1483,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PresetModel"];
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];
@@ -1584,7 +1539,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
         responses: {
             /** @description Successful response */
             200: {
@@ -1810,7 +1769,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PagedResult<StoryModel>"];
+                    "application/json": components["schemas"]["PagedResult<any>"];
                 };
             };
             400: components["responses"]["400"];
@@ -1826,7 +1785,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["StoryModel"];
+                "application/json": components["schemas"]["any"];
             };
         };
         responses: {
@@ -1866,7 +1825,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["StoryModel"];
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];
@@ -1911,6 +1870,34 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-stories-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };

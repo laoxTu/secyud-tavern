@@ -6,7 +6,7 @@ import type {paths} from './schema.d.ts';
 import {ApiError} from "@/handler/client/models";
 
 type Paths = paths;
-type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';
+type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'open';
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin
@@ -106,6 +106,11 @@ export async function api<
         }
     }
 
+    if (method === "open") {
+        window.open(fullUrl);
+        return;
+    }
+
     return baseRequest(fullUrl, fetchOptions);
 }
 
@@ -113,3 +118,4 @@ export const get = (url: keyof Paths, options?: any) => api(url, 'get', options)
 export const post = (url: keyof Paths, body?: any, options?: any) => api(url, 'post', {...options, body});
 export const put = (url: keyof Paths, body?: any, options?: any) => api(url, 'put', {...options, body});
 export const del = (url: keyof Paths, options?: any) => api(url, 'delete', options);
+export const open = (url: keyof Paths, options?: any) => api(url, 'open', options);

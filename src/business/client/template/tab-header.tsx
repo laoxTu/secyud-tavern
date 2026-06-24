@@ -5,7 +5,7 @@ export interface ModelNavigationTemplateProps {
     modelType: string;
 }
 
-export function ModelNavigationTemplate({modelType}: ModelNavigationTemplateProps) {
+export function ModelTabHeader({modelType}: ModelNavigationTemplateProps) {
     const t = useTranslations();
     return (
         <>
@@ -20,7 +20,7 @@ export interface EntryNavigationTemplateProps {
     icon: React.ComponentType,
 }
 
-export function EntryNavigationTemplate({space, value, icon}: EntryNavigationTemplateProps) {
+export function EntryTabHeader({space, value, icon}: EntryNavigationTemplateProps) {
     const t = useTranslations();
     const Icon = icon;
     return (

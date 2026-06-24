@@ -5,10 +5,11 @@ import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {moduleName} from "@/llmapis/models";
-import {LlmapiConfig, LlmapiConfigProps} from "@/llmapis/client/config-models";
+import {LlmapiConfig} from "@/llmapis/client/config-models";
 import {DeepseekConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
+import {useItemState} from "@/llmapis/client/models";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 const reasoningEffort = ["high", "max"];
@@ -31,9 +32,11 @@ const defaultConfig: DeepseekConfigModel = {
     }
 } as const;
 
-function Content({defaultValue, llmapi}: LlmapiConfigProps) {
+function Content() {
     const t = useTranslations();
-    const config: DeepseekConfigModel = mergeObjects(defaultConfig, defaultValue);
+    const {model} = useItemState();
+    const config: DeepseekConfigModel = mergeObjects(
+        defaultConfig, model?.content["config"]);
     const [thinking, setThinking] = React.useState<boolean>(
         config.parameters.extra_body.thinking.type === "enabled");
 
@@ -45,7 +48,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                         {t(`${moduleName}.apikey`)}
                     </FieldLabel>
                     <Input id={`${moduleName}-apikey`} name={"apikey"} type={"password"}
-                           defaultValue={llmapi?.key}/>
+                           defaultValue={model?.key}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-model`}>

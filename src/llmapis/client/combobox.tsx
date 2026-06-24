@@ -1,5 +1,5 @@
 ﻿'use client';
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {
@@ -27,10 +27,10 @@ export function LlmapiCombobox({defaultValue, name, id}: RequiresComboboxProps) 
     const [searchRequires, setSearchRequires] = useState<RequireModel[]>([]);
     const [needSearch, setNeedSearch] = useState(true);
     const [searchValue, setSearchValue] = useState<string | undefined>();
-    const handleSearch = useCallback(async (search: string | undefined) => {
+    const handleSearch = async (search: string | undefined) => {
         setSearchValue(search);
         setNeedSearch(true);
-    }, []);
+    };
 
     useEffect(() => {
         if (!needSearch) return;

@@ -1,20 +1,20 @@
-﻿import {presetRepository as repository} from "@/presets/server/repository";
-import {interceptor} from "@/handler/server/interceptor";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../models";
 import {
-    generateDeleteModelApi,
-    generateGetModelApi,
-    generateUpdateModelApi
+    apiDeleteModel,
+    apiGetModel,
+    apiUpdateModel
 } from "@/app/api/template";
 
 /**
  * 获取预设
  * @pathParams { id:string }
  * @params { withDetails:boolean }
- * @response PresetModel
+ * @response any
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateGetModelApi(repository)
+    apiGetModel(apiConfig)
 )
 
 /**
@@ -24,7 +24,7 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateUpdateModelApi(repository)
+    apiUpdateModel(apiConfig)
 )
 
 /**
@@ -33,5 +33,5 @@ export const PUT = interceptor.createRoute(
  * @openapi
  */
 export const DELETE = interceptor.createRoute(
-    generateDeleteModelApi(repository)
+    apiDeleteModel(apiConfig)
 )

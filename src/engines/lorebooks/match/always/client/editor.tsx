@@ -13,8 +13,6 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
     const t = useTranslations();
     const model: AlwaysMatchModel = mergeObjects({lastMessage: false}, defaultValue);
 
-    console.debug(entry.name, model.lastMessage);
-
     return (
         <>
             <div className="grid grid-cols-2 gap-4">

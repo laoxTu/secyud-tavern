@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, {useEffect, useState, useCallback, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {
@@ -37,7 +37,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     });
     const {setPage} = useHistoryPageState();
 
-    const loadingCurrentSlot = useCallback(async () => {
+    const loadingCurrentSlot = async () => {
         try {
             setLoadingState(u => ({
                 ...u, loading: true
@@ -66,8 +66,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
                 ...u, loading: false
             }));
         }
-    }, [handleError, params]);
-
+    };
 
     useEffect(() => {
         console.debug(`[StoryPage] loadingState.started: ${loadingState.started}`);

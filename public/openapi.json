@@ -145,332 +145,6 @@
           "totalCount"
         ]
       },
-      "PagedResult<LlmapiModel>": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "entries": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "content": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "code": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string",
-                  "description": "模型供应者"
-                },
-                "provider": {
-                  "type": "string",
-                  "description": "api key secret"
-                },
-                "key": {
-                  "type": "string",
-                  "description": "api key secret"
-                },
-                "builder": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "code",
-                "version"
-              ]
-            }
-          },
-          "totalCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "data",
-          "totalCount"
-        ]
-      },
-      "PagedResult<PresetModel>": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "entries": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "content": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "code": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string"
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "requires": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "string"
-                      },
-                      "version": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "code",
-                      "version"
-                    ]
-                  }
-                }
-              },
-              "required": [
-                "code",
-                "version",
-                "tags",
-                "requires"
-              ]
-            }
-          },
-          "totalCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "data",
-          "totalCount"
-        ]
-      },
-      "PagedResult<StoryModel>": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "entries": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "content": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "requires": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "string"
-                      },
-                      "version": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "code",
-                      "version"
-                    ]
-                  }
-                },
-                "llmapi": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "version": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "version"
-                  ],
-                  "nullable": true
-                },
-                "histories": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "number"
-                      },
-                      "disabled": {
-                        "type": "boolean",
-                        "description": "编码，同预设下唯一"
-                      },
-                      "code": {
-                        "type": "string",
-                        "description": "名称"
-                      },
-                      "name": {
-                        "type": "string",
-                        "description": "名称"
-                      },
-                      "outputId": {
-                        "type": "number"
-                      },
-                      "summary": {
-                        "type": "boolean"
-                      },
-                      "variables": {
-                        "type": "object",
-                        "additionalProperties": {}
-                      },
-                      "inputs": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "content": {
-                              "type": "string"
-                            },
-                            "reasoningContent": {
-                              "type": "string"
-                            },
-                            "variables": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "op": {
-                                    "type": "string"
-                                  },
-                                  "path": {
-                                    "type": "string"
-                                  },
-                                  "value": {}
-                                },
-                                "required": [
-                                  "op",
-                                  "path",
-                                  "value"
-                                ]
-                              }
-                            },
-                            "properties": {
-                              "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "id": {
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "outputs": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "content": {
-                              "type": "string"
-                            },
-                            "reasoningContent": {
-                              "type": "string"
-                            },
-                            "variables": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "op": {
-                                    "type": "string"
-                                  },
-                                  "path": {
-                                    "type": "string"
-                                  },
-                                  "value": {}
-                                },
-                                "required": [
-                                  "op",
-                                  "path",
-                                  "value"
-                                ]
-                              }
-                            },
-                            "properties": {
-                              "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "id": {
-                              "type": "number"
-                            }
-                          },
-                          "required": [
-                            "id"
-                          ]
-                        }
-                      }
-                    },
-                    "required": [
-                      "outputId",
-                      "summary",
-                      "variables",
-                      "inputs",
-                      "outputs"
-                    ]
-                  }
-                }
-              },
-              "required": [
-                "requires",
-                "llmapi"
-              ]
-            }
-          },
-          "totalCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "data",
-          "totalCount"
-        ]
-      },
       "PageOptions": {
         "type": "object",
         "properties": {
@@ -719,9 +393,6 @@
                           "content": {
                             "type": "string"
                           },
-                          "reasoningContent": {
-                            "type": "string"
-                          },
                           "variables": {
                             "type": "array",
                             "items": {
@@ -763,9 +434,6 @@
                           "content": {
                             "type": "string"
                           },
-                          "reasoningContent": {
-                            "type": "string"
-                          },
                           "variables": {
                             "type": "array",
                             "items": {
@@ -792,10 +460,14 @@
                           },
                           "id": {
                             "type": "number"
+                          },
+                          "reasoningContent": {
+                            "type": "string"
                           }
                         },
                         "required": [
-                          "id"
+                          "id",
+                          "reasoningContent"
                         ]
                       }
                     }
@@ -957,9 +629,6 @@
                 "content": {
                   "type": "string"
                 },
-                "reasoningContent": {
-                  "type": "string"
-                },
                 "variables": {
                   "type": "array",
                   "items": {
@@ -1001,9 +670,6 @@
                 "content": {
                   "type": "string"
                 },
-                "reasoningContent": {
-                  "type": "string"
-                },
                 "variables": {
                   "type": "array",
                   "items": {
@@ -1030,10 +696,14 @@
                 },
                 "id": {
                   "type": "number"
+                },
+                "reasoningContent": {
+                  "type": "string"
                 }
               },
               "required": [
-                "id"
+                "id",
+                "reasoningContent"
               ]
             }
           }
@@ -1050,9 +720,6 @@
         "type": "object",
         "properties": {
           "content": {
-            "type": "string"
-          },
-          "reasoningContent": {
             "type": "string"
           },
           "variables": {
@@ -1082,7 +749,6 @@
         },
         "required": [
           "content",
-          "reasoningContent",
           "variables",
           "properties"
         ]
@@ -1091,9 +757,6 @@
         "type": "object",
         "properties": {
           "content": {
-            "type": "string"
-          },
-          "reasoningContent": {
             "type": "string"
           },
           "variables": {
@@ -1217,9 +880,6 @@
                       "content": {
                         "type": "string"
                       },
-                      "reasoningContent": {
-                        "type": "string"
-                      },
                       "variables": {
                         "type": "array",
                         "items": {
@@ -1261,9 +921,6 @@
                       "content": {
                         "type": "string"
                       },
-                      "reasoningContent": {
-                        "type": "string"
-                      },
                       "variables": {
                         "type": "array",
                         "items": {
@@ -1290,10 +947,14 @@
                       },
                       "id": {
                         "type": "number"
+                      },
+                      "reasoningContent": {
+                        "type": "string"
                       }
                     },
                     "required": [
-                      "id"
+                      "id",
+                      "reasoningContent"
                     ]
                   }
                 }
@@ -1317,9 +978,6 @@
         "type": "object",
         "properties": {
           "content": {
-            "type": "string"
-          },
-          "reasoningContent": {
             "type": "string"
           },
           "variables": {
@@ -1348,10 +1006,14 @@
           },
           "id": {
             "type": "number"
+          },
+          "reasoningContent": {
+            "type": "string"
           }
         },
         "required": [
-          "id"
+          "id",
+          "reasoningContent"
         ]
       },
       "VariableChangeModel": {
@@ -1647,7 +1309,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResult<LlmapiModel>"
+                  "$ref": "#/components/schemas/PagedResult<any>"
                 }
               }
             }
@@ -1672,7 +1334,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LlmapiModel"
+                "$ref": "#/components/schemas/any"
               }
             }
           }
@@ -1731,7 +1393,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LlmapiModel"
+                  "$ref": "#/components/schemas/any"
                 }
               }
             }
@@ -1801,6 +1463,52 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/llmapis/import": {
+      "post": {
+        "operationId": "post-llmapis-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -2299,7 +2007,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResult<PresetModel>"
+                  "$ref": "#/components/schemas/PagedResult<any>"
                 }
               }
             }
@@ -2324,7 +2032,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PresetModel"
+                "$ref": "#/components/schemas/any"
               }
             }
           }
@@ -2383,7 +2091,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PresetModel"
+                  "$ref": "#/components/schemas/any"
                 }
               }
             }
@@ -2471,6 +2179,15 @@
           "Presets"
         ],
         "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -2867,7 +2584,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedResult<StoryModel>"
+                  "$ref": "#/components/schemas/PagedResult<any>"
                 }
               }
             }
@@ -2892,7 +2609,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoryModel"
+                "$ref": "#/components/schemas/any"
               }
             }
           }
@@ -2951,7 +2668,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StoryModel"
+                  "$ref": "#/components/schemas/any"
                 }
               }
             }
@@ -3021,6 +2738,52 @@
           }
         ],
         "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/import": {
+      "post": {
+        "operationId": "post-stories-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Stories"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
           "400": {
             "$ref": "#/components/responses/400"
           },

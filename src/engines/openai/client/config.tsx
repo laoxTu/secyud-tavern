@@ -4,11 +4,12 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {moduleName} from "@/llmapis/models";
-import {LlmapiConfig, LlmapiConfigProps} from "@/llmapis/client/config-models";
+import {LlmapiConfig} from "@/llmapis/client/config-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
+import {useItemState} from "@/llmapis/client/models";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -25,9 +26,11 @@ const defaultConfig: OpenAIConfigModel = {
 
 } as const;
 
-function Content({defaultValue, llmapi}: LlmapiConfigProps) {
+function Content() {
     const t = useTranslations();
-    const config: OpenAIConfigModel = mergeObjects(defaultConfig, defaultValue);
+    const {model} = useItemState();
+    const config: OpenAIConfigModel = mergeObjects(
+        defaultConfig, model?.content["config"]);
 
     return (
         <>
@@ -51,7 +54,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                         {t(`${moduleName}.apikey`)}
                     </FieldLabel>
                     <Input id={`${moduleName}-apikey`} name={"apikey"} type={"password"}
-                           defaultValue={llmapi?.key}/>
+                           defaultValue={model?.key}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-stream`}>
@@ -99,7 +102,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                         {t(`${moduleName}.max_tokens`)}
                     </FieldLabel>
                     <Input id={`${moduleName}-max_tokens`} name={"max_tokens"}
-                           type={"number"}  min={0} step={1}
+                           type={"number"} min={0} step={1}
                            defaultValue={config.parameters.max_tokens}/>
                 </Field>
             </div>
@@ -108,7 +111,7 @@ function Content({defaultValue, llmapi}: LlmapiConfigProps) {
                     {t(`${moduleName}.extras`)}
                 </FieldLabel>
                 <Textarea id={`${moduleName}-extras`} name={"extras"}
-                       defaultValue={JSON.stringify(config.extras)}/>
+                          defaultValue={JSON.stringify(config.extras)}/>
             </Field>
         </>
     );

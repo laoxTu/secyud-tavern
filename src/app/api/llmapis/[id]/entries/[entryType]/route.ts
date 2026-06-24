@@ -1,9 +1,8 @@
-
-import {llmapiRepository as repository} from "@/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../../../models";
 import {
-    generateCreateEntryApi,
-    generateGetEntryListApi
+    apiCreateEntry,
+    apiGetEntryList
 } from "@/app/api/template";
 
 /**
@@ -14,7 +13,7 @@ import {
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    generateGetEntryListApi(repository)
+    apiGetEntryList(apiConfig)
 )
 
 /**
@@ -25,5 +24,5 @@ export const GET = interceptor.createRoute(
  * @openapi
  */
 export const POST = interceptor.createRoute(
-    generateCreateEntryApi(repository)
+    apiCreateEntry(apiConfig)
 )

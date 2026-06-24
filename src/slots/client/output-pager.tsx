@@ -9,7 +9,7 @@
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
-import React, {RefObject, useCallback, useEffect, useState} from "react";
+import React, {RefObject, useEffect, useState} from "react";
 import {getCurrentOutput, StoryHistory} from "@/stories/models";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
 import {RenderContext} from "@/slots/client/conversation-models";
@@ -42,7 +42,7 @@ export function OutputPagerButtonGroup() {
 
     const [prepare, setPrepare] = useState<boolean>(true);
 
-    const handleOutputPageChange = useCallback(async (curPage: number) => {
+    const handleOutputPageChange = async (curPage: number) => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
@@ -66,9 +66,9 @@ export function OutputPagerButtonGroup() {
         } catch (error) {
             handleError(error);
         }
-    }, []);
+    };
 
-    const renderCurrentPage = useCallback(async () => {
+    const renderCurrentPage = async () => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
@@ -103,7 +103,7 @@ export function OutputPagerButtonGroup() {
         } catch (err) {
             handleError(err);
         }
-    }, [handleError]);
+    };
 
 
     useEffect(() => {

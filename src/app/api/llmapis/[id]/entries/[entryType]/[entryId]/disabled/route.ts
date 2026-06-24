@@ -1,7 +1,7 @@
-﻿
-import {llmapiRepository as repository} from "@/llmapis/server/repository";
-import {interceptor} from "@/handler/server/interceptor";
-import {generateSetDisableEntryApi} from "@/app/api/template";
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../../../../../models";
+import {apiDisableEntry} from "@/app/api/template";
+
 
 /**
  * 更新条目
@@ -10,5 +10,5 @@ import {generateSetDisableEntryApi} from "@/app/api/template";
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateSetDisableEntryApi(repository)
+    apiDisableEntry(apiConfig)
 )

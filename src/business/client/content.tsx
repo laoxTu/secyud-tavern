@@ -36,6 +36,9 @@ export const useBusinessTabState =
         {
             name: 'business-tab-id',
             storage: createJSONStorage(() => localStorage),
+            partialize: state => ({
+                businessTabId: state.businessTabId,
+            })
         }
     ));
 

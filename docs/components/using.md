@@ -184,12 +184,12 @@ import { ModelListContentTemplate } from "@/components/template/content-template
 />
 ```
 
-### EditFormTemplate（编辑表单）
+### ModelEditForm（编辑表单）
 
 ```tsx
-import { EditFormTemplate } from "@/components/template/edit-form-template";
+import { ModelEditForm } from "@/components/template/edit-form-template";
 
-<EditFormTemplate<MyModel>
+<ModelEditForm<MyModel>
     modelType="mymodel"
     contextType={MyModelContext}
     updateHandler={async (model, data) => {
@@ -210,12 +210,12 @@ import { EditFormTemplate } from "@/components/template/edit-form-template";
 />
 ```
 
-### EntryListTemplate（子条目管理）
+### EntryList（子条目管理）
 
 ```tsx
-import { EntryListTemplate } from "@/components/template/entry-list-template";
+import { EntryList } from "@/components/template/entry-list-template";
 
-<EntryListTemplate<MyModel>
+<EntryList<MyModel>
     modelType="mymodel"
     modelApi="mymodels"
     contextType={MyModelContext}

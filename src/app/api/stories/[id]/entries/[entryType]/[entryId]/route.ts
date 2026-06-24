@@ -1,8 +1,9 @@
-import {storyRepository as repository} from "@/stories/server/repository";
+
 import {interceptor} from "@/handler/server/interceptor";
+import {apiConfig} from "../../../../models";
 import {
-    generateDeleteEntryApi,
-    generateUpdateEntryApi
+    apiDeleteEntry,
+    apiUpdateEntry
 } from "@/app/api/template";
 
 /**
@@ -12,7 +13,7 @@ import {
  * @openapi
  */
 export const PUT = interceptor.createRoute(
-    generateUpdateEntryApi(repository)
+    apiUpdateEntry(apiConfig)
 )
 
 /**
@@ -21,5 +22,5 @@ export const PUT = interceptor.createRoute(
  * @openapi
  */
 export const DELETE = interceptor.createRoute(
-    generateDeleteEntryApi(repository)
+    apiDeleteEntry(apiConfig)
 )

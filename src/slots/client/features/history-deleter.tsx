@@ -2,7 +2,7 @@
 import {del} from "@/client";
 import {getSlotAndHistories, updateStoryHistory, useSlotContext} from "@/slots/client/models";
 import {useTranslations} from "next-intl";
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -25,7 +25,7 @@ export function HistoryDeleter() {
     const [openRemove, setOpenRemove] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
 
-    const deleteCurrentHistory = useCallback(async () => {
+    const deleteCurrentHistory = async () => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
@@ -39,9 +39,9 @@ export function HistoryDeleter() {
         } finally {
             setOpenDelete(false);
         }
-    }, [handleError]);
+    };
 
-    const deleteCurrentOutput = useCallback(async () => {
+    const deleteCurrentOutput = async () => {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
@@ -70,7 +70,7 @@ export function HistoryDeleter() {
         } finally {
             setOpenRemove(false);
         }
-    }, [deleteCurrentHistory]);
+    };
 
     return (<>
         <AlertDialog open={openRemove} onOpenChange={setOpenRemove}>

@@ -1,5 +1,5 @@
 ﻿'use client';
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {RequireModel} from "@/presets/models";
 import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
@@ -29,10 +29,10 @@ export function PresetCombobox({defaultValue, name, id}: RequiresComboboxProps) 
     const [value, setValue] = useState<RequireModel[]>(defaultValue);
     const [needSearch, setNeedSearch] = useState(true);
     const [searchValue, setSearchValue] = useState<string | undefined>();
-    const handleSearchRequires = useCallback(async (search: string | undefined) => {
+    const handleSearchRequires = async (search: string | undefined) => {
         setSearchValue(search);
         setNeedSearch(true);
-    }, []);
+    };
 
     useEffect(() => {
         if (!needSearch) return;

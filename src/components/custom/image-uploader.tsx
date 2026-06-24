@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useRef, useState} from 'react';
 import {AspectRatio} from '@/components/ui/aspect-ratio';
 import {Plus, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
@@ -31,7 +31,7 @@ export function ImageUploader({
     const [preview, setPreview] = useState<string | null>(defaultValue ?? null);
 
     // 处理文件选择
-    const handleFileChange = useCallback(
+    const handleFileChange =
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const file = event.target.files?.[0];
             if (!file) return;
@@ -61,9 +61,7 @@ export function ImageUploader({
 
             // 清空 input 以便重复选择同一文件
             event.target.value = '';
-        },
-        [maxSize, onChange]
-    );
+        };
 
     // 触发文件选择
     const handleClick = () => {
@@ -71,7 +69,7 @@ export function ImageUploader({
     };
 
     // 删除图片
-    const handleRemove = useCallback(
+    const handleRemove =
         (e: React.MouseEvent) => {
             e.stopPropagation();
             setPreview(null);
@@ -79,9 +77,7 @@ export function ImageUploader({
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-        },
-        [onChange]
-    );
+        };
 
     return (
         <div className={cn('relative', className)}>

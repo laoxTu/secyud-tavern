@@ -9,7 +9,7 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
 import {Input} from "@/components/ui/input";
-import {RefObject, useCallback, useEffect} from "react";
+import {RefObject, useEffect} from "react";
 import {handleOutputPageChange} from "@/slots/client/output-pager";
 import {PageState} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
@@ -38,7 +38,7 @@ export function HistoryPagerButtonGroup() {
     const {handleError} = useErrorHandler();
     const {page, setPage} = useHistoryPageState();
 
-    const handleHistoryPageChange = useCallback(async ({curPage, curOutputPage}: {
+    const handleHistoryPageChange = async ({curPage, curOutputPage}: {
         curPage: number,
         curOutputPage?: number
     }) => {
@@ -60,7 +60,7 @@ export function HistoryPagerButtonGroup() {
         } catch (err) {
             handleError(err);
         }
-    }, []);
+    };
 
     useEffect(() => {
         registerCallback(ctx, "handleHistoryPageChange", handleHistoryPageChange);
