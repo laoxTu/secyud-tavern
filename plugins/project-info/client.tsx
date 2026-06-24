@@ -4,8 +4,6 @@
  */
 import * as navigation from '@/business/client/navigation';
 import React from 'react';
-import * as runtime from 'react/jsx-runtime';
-import * as dev_runtime from 'react/jsx-dev-runtime';
 import * as template from "@/components/template/navigation-template";
 import * as intl from "next-intl";
 
