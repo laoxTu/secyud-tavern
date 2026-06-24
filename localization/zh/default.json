@@ -1,7 +1,6 @@
 {
   "default": {
     "author": "作者",
-    "input_author": "输入作者",
     "cancel": "取消",
     "code": "编码",
     "content": "内容",
@@ -67,6 +66,7 @@
   },
   "preset": {
     "regex": "正则",
+    "input_author": "输入作者",
     "lorebook": "世界书",
     "macro": "宏",
     "script": "脚本",

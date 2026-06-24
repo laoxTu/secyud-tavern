@@ -13,7 +13,6 @@ export function isVariableChangeModel(obj: any) {
         obj &&
         typeof obj === 'object' &&
         typeof obj.op === 'string' &&
-        obj.value &&
         typeof obj.path === 'string'
     );
 }
