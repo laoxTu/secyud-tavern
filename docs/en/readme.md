@@ -122,9 +122,11 @@ A story is not a character card — it's a **save file**.
 ## Quick Start
 
 ```bash
-pnpm install
-pnpm db-migrate   # Initialize database
-pnpm dev          # Start dev server → http://localhost:12804
+pnpm install          # Install dependencies
+pnpm build            # Production build
+pnpm gen-plugin-api   # Generate plugin API
+pnpm gen-db-migrate   # Generate DB migration
+pnpm start -p 12804   # Start → http://localhost:12804
 ```
 
 ### Available Commands
@@ -133,10 +135,33 @@ pnpm dev          # Start dev server → http://localhost:12804
 |---|---|
 | `pnpm dev` | Start dev server on port 12804 |
 | `pnpm build` | Production build |
+| `pnpm start` | Start production server |
 | `pnpm db-migrate` | Generate & run database migrations |
-| `pnpm gen-stubs` | Generate plugin API stubs (run after adding new modules) |
-| `pnpm build-plugin <name>` | Bundle a plugin (auto-runs gen-stubs) |
+| `pnpm gen-plugin-api` | Generate plugin API types |
+| `pnpm gen-plugin <name>` | Bundle a plugin → `plugins/<name>/client.js` |
 | `pnpm test` | Run tests |
+
+### Plugin Compilation
+
+Plugin source code (`client.tsx`) is compiled to `client.js` via `pnpm gen-plugin <name>`. The process:
+
+1. Reads `modules` from `plugins/<name>/manifest.json`
+2. esbuild bundles; paths in `modules` are marked `external` (imports preserved)
+3. Post-processing replaces `import { x } from '@/xxx'` with `const { x } = window.__PLUGIN_API__['@/xxx']`
+
+Plugin `manifest.json`:
+```json
+{
+  "id": "my-plugin",
+  "version": "1.0.0",
+  "clientScript": "client.js",
+  "modules": [
+    "react",
+    "@/business/client/navigation",
+    "@/components/ui/button"
+  ]
+}
+```
 
 ## Project Structure
 
@@ -163,7 +188,6 @@ src/
 └── utils/         # Utilities (encryption, Registry topological sort, stream reading)
 
 plugins/           # External plugin directory
-├── _shared/       #   Build shared (shim / stub / alias)
 └── project-info/  #   Example plugin
 ```
 
@@ -207,12 +231,6 @@ Full Render (contentRenderer):
 ## Documentation
 
 Detailed docs in the `docs/` directory. Each module includes `design.md` and `using.md`.
-
-## Roadmap
-
-- [ ] **Additional model APIs**: Contributions welcome
-- [ ] **SillyTavern character card import**: Rule-based import into presets
-- [ ] **History management**: Message editing with caching
 
 ## License
 

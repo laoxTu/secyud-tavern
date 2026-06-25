@@ -1,6 +1,12 @@
 {
-    "id": "project-info",
-    "version": "1.0.0",
-    "clientScript": "client.js",
-    "serverScript": "server.ts"
+  "id": "project-info",
+  "version": "1.0.0",
+  "clientScript": "client.js",
+  "serverScript": "server.ts",
+  "modules": [
+    "react",
+    "next-intl",
+    "@/business/client/navigation",
+    "@/business/client/template/tab-header"
+  ]
 }

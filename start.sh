@@ -1,1 +1,1 @@
-pnpm run start -p 12804
+pnpm start -p 12804

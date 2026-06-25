@@ -2,14 +2,10 @@
  * Project Info 插件
  * 构建: npm run build-plugin project-info
  */
-import * as navigation from '@/business/client/navigation';
+import {businessNavigationManager} from '@/business/client/navigation';
 import React from 'react';
-import * as template from "@/business/client/template/tab-header";
-import * as intl from "next-intl";
-
-const {businessNavigationManager} = navigation;
-const {ModelTabHeader} = template;
-const {useTranslations} = intl;
+import {ModelTabHeader} from "@/business/client/template/tab-header";
+import {useTranslations} from "next-intl";
 
 const tags = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 

@@ -1,3 +1,7 @@
 pnpm install
 
-pnpm run build
+pnpm build
+
+pnpm gen-plugin-api
+
+pnpm gen-db-migrate

@@ -12,9 +12,11 @@ A highly customizable AI role-playing and interactive storytelling platform. No 
 ## 快速开始 / Quick Start
 
 ```bash
-pnpm install
-pnpm db-migrate
-pnpm dev          # http://localhost:12804
+pnpm install          # 安装依赖
+pnpm build            # 生产构建
+pnpm gen-plugin-api   # 生成插件 API
+pnpm gen-db-migrate   # 生成数据库迁移
+pnpm start -p 12804   # 启动 → http://localhost:12804
 ```
 
 ## 开源 / License

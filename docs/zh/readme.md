@@ -122,9 +122,11 @@ OpenAI 引擎支持自定义 baseURL，兼容任何 OpenAI 协议的服务（Loc
 ## 快速开始
 
 ```bash
-pnpm install
-pnpm db-migrate   # 初始化数据库
-pnpm dev          # 启动开发服务器 → http://localhost:12804
+pnpm install          # 安装依赖
+pnpm build            # 生产构建
+pnpm gen-plugin-api   # 生成插件 API
+pnpm gen-db-migrate   # 生成数据库迁移
+pnpm start -p 12804   # 启动 → http://localhost:12804
 ```
 
 ### 可用命令
@@ -133,10 +135,33 @@ pnpm dev          # 启动开发服务器 → http://localhost:12804
 |---|---|
 | `pnpm dev` | 启动开发服务器，端口 12804 |
 | `pnpm build` | 生产构建 |
+| `pnpm start` | 启动生产服务器 |
 | `pnpm db-migrate` | 生成并执行数据库迁移 |
-| `pnpm gen-stubs` | 生成插件 API stub（新增模块后运行） |
-| `pnpm build-plugin <name>` | 打包插件（自动 gen-stubs） |
+| `pnpm gen-plugin-api` | 生成插件 API 类型 |
+| `pnpm gen-plugin <name>` | 打包插件 → `plugins/<name>/client.js` |
 | `pnpm test` | 运行测试 |
+
+### 插件编译
+
+插件源码（`client.tsx`）通过 `pnpm gen-plugin <name>` 编译为 `client.js`。编译流程：
+
+1. 读取 `plugins/<name>/manifest.json` 中的 `modules` 列表
+2. esbuild 打包，`modules` 中的路径标 `external` 保留 import
+3. 后处理将 `import { x } from '@/xxx'` 替换为 `const { x } = window.__PLUGIN_API__['@/xxx']`
+
+插件的 `manifest.json`：
+```json
+{
+  "id": "my-plugin",
+  "version": "1.0.0",
+  "clientScript": "client.js",
+  "modules": [
+    "react",
+    "@/business/client/navigation",
+    "@/components/ui/button"
+  ]
+}
+```
 
 ## 项目结构
 
@@ -163,7 +188,6 @@ src/
 └── utils/         # 工具函数（加密、Registry 拓扑排序、流读取）
 
 plugins/           # 外部插件目录
-├── _shared/       #   构建共享（shim / stub / alias）
 └── project-info/  #   示例插件
 ```
 
@@ -207,12 +231,6 @@ AI 调用 (page.tsx → POST /api/llmapis/{id}/chat):
 ## 文档
 
 详细文档见 `docs/` 目录，每个模块含 `design.md` 和 `using.md`。
-
-## 后续计划
-
-- [ ] **其他模型 API**：欢迎贡献
-- [ ] **SillyTavern 角色卡导入**：按规则导入到预设中
-- [ ] **历史记录管理**：带缓存的消息编辑
 
 ## 开源
 
