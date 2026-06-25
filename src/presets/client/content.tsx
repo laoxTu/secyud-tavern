@@ -14,7 +14,9 @@ import {getAuthor} from "@/business/client/author";
 import {TemplateModelList} from "@/business/client/template";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {modelState} from "@/presets/client/models";
+import {createUseTabState} from "@/business/client/models";
 
+export const usePresetTabState = createUseTabState(presetTabManager);
 
 function Content() {
     const t = useTranslations();
@@ -117,6 +119,7 @@ function Content() {
                     }
                 });
             },
+            useTabState: usePresetTabState,
             tabManager: presetTabManager
         }}>
     </TemplateModelList>;

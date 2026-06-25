@@ -15,7 +15,9 @@ import {moduleName, StoryModel} from "../models";
 import {storyTabManager} from "./tabs";
 import {modelState} from "./models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
+import {createUseTabState} from "@/business/client/models";
 
+export const useStoryTabState = createUseTabState(storyTabManager);
 
 function Content() {
     const t = useTranslations();
@@ -93,6 +95,7 @@ function Content() {
                     }
                 });
             },
+            useTabState: useStoryTabState,
             tabManager: storyTabManager
         }}>
     </TemplateModelList>;

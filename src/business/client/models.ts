@@ -2,6 +2,7 @@
 import {create, StoreApi, UseBoundStore} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {PagedItemsState} from "@/components/custom/pager";
+import {TabManager} from "@/components/custom/tab";
 
 export type UseStoreState<T> = UseBoundStore<StoreApi<T>>;
 
@@ -42,5 +43,19 @@ export function createUseItemState<T>(name?: string) {
                 }),
             }
         ) : func
+    );
+}
+
+export interface TabState {
+    tabId: string;
+    setTabId: (tabId: string) => void;
+}
+
+export function createUseTabState(tabManager: TabManager) {
+    return create<TabState>()(
+        (set) => ({
+            tabId: tabManager.getFirstTab()?.id ?? "",
+            setTabId: (tab) => set({tabId: tab}),
+        })
     );
 }

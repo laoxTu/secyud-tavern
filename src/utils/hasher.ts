@@ -206,7 +206,8 @@ export class Hasher {
 
 function parseInt(text?: string) {
     if (text) {
-        return text.split('').map(u => Number.parseInt(u));
+        return text.split('')
+            .map(u => Number.parseInt(u));
     }
     return undefined;
 }

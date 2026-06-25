@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {ModelState} from "@/business/client/models";
+import {ModelState, TabState, UseStoreState} from "@/business/client/models";
 import {TabManager} from "@/components/custom/tab";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
@@ -36,6 +36,7 @@ export interface ModelContentProps<TModel> {
     exportHandler: (model: TModel) => Promise<void>,
     // 删除模型
     deleteHandler: (model: TModel) => Promise<void>,
+    useTabState: UseStoreState<TabState>;
     tabManager: TabManager;
 }
 
@@ -56,6 +57,7 @@ export function ModelContent<TModel>(
             cloneHandler,
             exportHandler,
             deleteHandler,
+            useTabState,
             tabManager,
         }
     }: Props<TModel>) {
@@ -64,6 +66,7 @@ export function ModelContent<TModel>(
     const [cloneOpen, setCloneOpen] = useState(false);
     const {model, setModel} = useItemState();
     const {fetch} = usePagedItemsState();
+    const {tabId, setTabId} = useTabState();
 
     const refresh = async (model?: TModel) => {
         setModel(model);
@@ -125,7 +128,7 @@ export function ModelContent<TModel>(
     const tabs = tabManager.getSorted();
 
     return (
-        <Tabs defaultValue={tabManager.getFirstTab()?.id}
+        <Tabs value={tabId} onValueChange={setTabId}
               className={"flex flex-col overflow-hidden h-full p-4"}>
             <div className="flex justify-between">
                 <TabsList className="gap-1">
@@ -190,11 +193,12 @@ export function ModelContent<TModel>(
                     </AlertDialog>
                 </div>
             </div>
-            {tabs.map((tab, i) => {
+            {tabs.map((tab) => {
                 const Component = tab.component;
                 if (!Component) return null;
                 return (
-                    <TabsContent key={i} value={tab.id} className="flex-1 overflow-hidden">
+                    <TabsContent key={tab.id} value={tab.id}
+                                 className="flex-1 overflow-hidden">
                         <Component/>
                     </TabsContent>
                 );

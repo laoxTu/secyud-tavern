@@ -12,7 +12,6 @@ import {
 import {useTranslations} from "next-intl";
 import {PagedResult, PageOptions} from "@/business/models";
 import {UseStoreState} from "@/business/client/models";
-import {createJSONStorage, persist} from "zustand/middleware";
 import {create} from "zustand";
 
 export interface PagedItemsState<T> {
@@ -27,8 +26,7 @@ export interface PagedItemsState<T> {
 }
 
 export function createUsePagedItemsState<T>(
-    fetcher: (params: any) => Promise<PagedResult<T>>, name?: string,
-    pageSize: number = 10, search: any = undefined) {
+    fetcher: (params: any) => Promise<PagedResult<T>>, pageSize: number = 5) {
     const func =
         (set: (partial: Partial<PagedItemsState<T>>) => void, get: () => PagedItemsState<T>)
             : PagedItemsState<T> => ({
@@ -36,7 +34,7 @@ export function createUsePagedItemsState<T>(
             maxPage: 0,
             loading: false,
             pageSize: pageSize,
-            search: search,
+            search: undefined,
             params: {},
             async fetch(params) {
                 try {
@@ -75,19 +73,7 @@ export function createUsePagedItemsState<T>(
             }
         });
 
-    return create<PagedItemsState<T>>()(
-        name ? persist(func,
-            {
-                name: name,
-                storage: createJSONStorage(() => localStorage),
-                partialize: (state) => ({
-                    curPage: state.curPage,
-                    pageSize: state.pageSize,
-                    search: state.search,
-                }),
-            }
-        ) : func
-    );
+    return create<PagedItemsState<T>>()(func);
 }
 
 

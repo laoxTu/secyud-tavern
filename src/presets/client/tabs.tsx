@@ -53,7 +53,8 @@ export function DefaultTab() {
                         },
                         version: data.get("version") as string,
                         name: data.get("name") as string,
-                        requires: data.getAll("require").map(u => JSON.parse(u as string)),
+                        requires: data.getAll("require")
+                            .map(u => JSON.parse(u as string)),
                         tags: data.getAll("tag") as string[],
                     },
                     {

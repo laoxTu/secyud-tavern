@@ -28,7 +28,8 @@ function Tab() {
                             "openingRemarks": data.get("openingRemarks") as string
                         },
                         name: data.get("name") as string,
-                        requires: data.getAll("require").map(u => JSON.parse(u as string)),
+                        requires: data.getAll("require")
+                            .map(u => JSON.parse(u as string)),
                         llmapi: tryParseJson(data.get("llmapi") as string),
                     },
                     {

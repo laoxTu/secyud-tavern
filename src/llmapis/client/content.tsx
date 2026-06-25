@@ -12,6 +12,9 @@ import {llmapiTabManager} from "./tabs";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {TemplateModelList} from "@/business/client/template";
 import {modelState} from "./models";
+import {createUseTabState} from "@/business/client/models";
+
+export const useLlmapiTabState = createUseTabState(llmapiTabManager);
 
 function Content() {
     const t = useTranslations();
@@ -95,6 +98,7 @@ function Content() {
                     }
                 });
             },
+            useTabState: useLlmapiTabState,
             tabManager: llmapiTabManager
         }}>
     </TemplateModelList>;
