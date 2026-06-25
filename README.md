@@ -6,8 +6,8 @@ A highly customizable AI role-playing and interactive storytelling platform. No 
 
 ---
 
-- [中文文档](docs/readme/zh.md)
-- [English](docs/readme/en.md)
+- [中文](docs/zh/readme.md) | [English](docs/en/readme.md)
+- [完整文档 / Full Documentation](docs/zh/)
 
 ## 快速开始 / Quick Start
 
