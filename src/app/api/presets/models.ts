@@ -81,5 +81,5 @@ export const apiConfig: TemplateConfig<PresetModel> = {
         return and(...conditions) as SQL;
     },
     conditionMatchId: id => table => validate(id) ? eq(table.id, id) : eq(table.code, id),
-    filename: model => `preset-${model.content.author}-${model.code}.${model.content.coverId ? 'png' : 'json'}`,
+    filename: model => `preset-${model.content.author}-${model.code}-${model.version}.${model.content.coverId ? 'png' : 'json'}`,
 }
