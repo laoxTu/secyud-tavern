@@ -65,22 +65,27 @@ Secyud Tavern 换了一种思路：
 
 ### 2. 模型 (LLM API)
 
-和 SillyTavern 的"插头"一样，是对模型 API 的配置。同样是面向插件可扩展的，每个模型服务商作为一个引擎插件接入，实现三个接口：
+和 SillyTavern 的"插头"一样，是对模型 API 的配置。它拆成两个独立的关注点：
+
+**LLM 引擎** — 模型 API 本身。面向插件可扩展，每个服务商实现两个接口：
 
 | 接口 | 运行时 | 职责 |
 |---|---|---|
 | **Config** | 客户端 | 配置表单 UI（模型选择、参数设置） |
-| **InputBuilder** | 客户端 | 将对话历史 + 世界书转换为 LLM 消息格式 |
 | **Engine** | 服务端 | 调用模型 API，返回 SSE 流式响应 |
 
-目前内置了 **Deepseek** 引擎（Deepseek 官方 API），配置内容包括：
+新增模型服务商只需注册 Config 和 Engine 即可接入。
+
+**InputBuilder** — 构建上下文的模式。它和模型 API 是分开的，负责将对话历史 + 激活的世界书拼成最终发送给 LLM 的消息数组。InputBuilder 也是可插拔的，目前内置了一个默认构建器（按层级注入世界书、合并同角色连续消息），可以通过插件替换或扩展。
+
+目前内置了 **Deepseek** 和 **OpenAI** 两个引擎。以 Deepseek 为例，配置内容包括：
 
 - 模型选择（deepseek-v4-flash / deepseek-v4-pro）
 - API Key（加密存储，自定义字符偏移加密）
 - Temperature / Top-P / Stream / Logprobs
 - Thinking 推理模式（reasoning_effort）
 
-新增模型服务商只需实现上述三个接口并注册到对应 Registry。
+OpenAI 引擎支持自定义 baseURL，兼容任何 OpenAI 协议的服务（LocalAI、Ollama 等）。
 
 ### 3. 故事 (Story)
 
