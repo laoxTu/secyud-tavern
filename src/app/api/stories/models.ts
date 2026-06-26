@@ -12,7 +12,7 @@ export const apiConfig: TemplateConfig<StoryModel> = {
                 .withValue("field", "default.name");
         }
     },
-    checkUpdate: async (model) => {
+    checkUpdate: async (_, model) => {
         if (model.name === "") {
             throw new BusinessError("No name provided", "error.empty_field")
                 .withValue("field", "default.name");

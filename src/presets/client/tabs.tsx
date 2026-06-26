@@ -27,7 +27,7 @@ export function DefaultTab() {
     return <TemplateModelUpdate<PresetModel>
         modelState={modelState}
         props={{
-            updateHandler :async (model, data) => {
+            updateHandler: async (model, data) => {
                 let coverId: string | null = null;
                 if (!changed.current) {
                     coverId = model.content.coverId
@@ -45,7 +45,7 @@ export function DefaultTab() {
                 }
                 console.debug("[cover id]", coverId);
 
-                return  await put("/presets/{id}",
+                return await put("/presets/{id}",
                     {
                         content: {
                             "description": data.get("description") as string,
@@ -53,6 +53,7 @@ export function DefaultTab() {
                         },
                         version: data.get("version") as string,
                         name: data.get("name") as string,
+                        code: model.code,
                         requires: data.getAll("require")
                             .map(u => JSON.parse(u as string)),
                         tags: data.getAll("tag") as string[],
@@ -61,7 +62,7 @@ export function DefaultTab() {
                         params: {"id": model.id,}
                     });
             },
-            updateContent:(model) =>(<>
+            updateContent: (model) => (<>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-cover`}>
                         {t("default.cover")}
@@ -80,8 +81,8 @@ export function DefaultTab() {
                         <FieldLabel htmlFor={`${moduleName}-code`}>
                             {t("default.code")}
                         </FieldLabel>
-                        <Input disabled name="code" id={`${moduleName}-code`}
-                               defaultValue={model.code}/>
+                        <Input name="code" id={`${moduleName}-code`}
+                               disabled defaultValue={model.code}/>
                     </Field>
                     <Field>
                         <FieldLabel htmlFor={`${moduleName}-author`}>

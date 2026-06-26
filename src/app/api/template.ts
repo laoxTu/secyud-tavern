@@ -10,7 +10,7 @@ export interface TemplateConfig<TModel> {
     conditionSearch?: (search: any) => ConditionFunc,
     conditionMatchId?: (id: string) => ConditionFunc,
     checkCreate?: (model: TModel, params: any) => Promise<void>,
-    checkUpdate?: (model: Partial<TModel>, params: any) => Promise<void>,
+    checkUpdate?: (id: string, model: Partial<TModel>, params: any) => Promise<void>,
     filename: (model: TModel) => string,
     exportHandler?: (model: TModel, uint8arr: Uint8Array) => Promise<ReadableStream>,
     importHandler?: (uint8arr: Uint8Array) => Promise<TModel>,
@@ -55,7 +55,7 @@ export function apiUpdateModel<TModel>({repository, checkUpdate}: TemplateConfig
         const {id} = await records.context.params;
         const model = await request.json() as Partial<TModel>;
         if (checkUpdate) {
-            await checkUpdate(model, records.searchParams);
+            await checkUpdate(id, model, records.searchParams);
         }
         const result = await repository.update(id, model);
         return NextResponse.json(result);

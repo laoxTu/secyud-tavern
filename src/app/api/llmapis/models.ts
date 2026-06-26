@@ -24,7 +24,7 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
                 ;
         }
     },
-    checkUpdate: async (model) => {
+    checkUpdate: async (id,model) => {
         if (model.code === "") {
             throw new BusinessError("No code provided", "error.empty_field")
                 .withValue("field", "default.code");
@@ -33,7 +33,7 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
             throw new BusinessError("No name provided", "error.empty_field")
                 .withValue("field", "default.name");
         }
-        if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, model.id)))) as SQL)) {
+        if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
                 .withValue("entity_name", "default.preset")

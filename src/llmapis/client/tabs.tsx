@@ -114,6 +114,7 @@ function DefaultTab() {
                         provider: provider,
                         builder: builder,
                         name: data.get("name") as string,
+                        code: model.code,
                         version: data.get("version") as string,
                         key: model.key === key || !key || key === '' ? undefined : key,
                     } as Partial<LlmapiModel>,
