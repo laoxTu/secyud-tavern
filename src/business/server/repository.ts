@@ -112,7 +112,13 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 await saveModel(model);
             }
 
-            return result[0] as TModel;
+            const res = result[0];
+            return {
+                id: res.id,
+                name: res.name,
+                content: JSON.parse(res.content),
+                ...(mapToModel?.(res as Partial<TMaster>) ?? {})
+            } as TModel;
         },
 
         update: async (id: string, model: Partial<TModel>) => {
@@ -138,7 +144,13 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 .where(eq(masters.id, id))
                 .returning();
 
-            return result[0] as TModel;
+            const res = result[0];
+            return {
+                id: res.id,
+                name: res.name,
+                content: JSON.parse(res.content),
+                ...(mapToModel?.(res as Partial<TMaster>) ?? {})
+            } as TModel;
         },
 
         delete: async (id: string) => {

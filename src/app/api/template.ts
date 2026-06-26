@@ -167,9 +167,9 @@ export function apiDeleteEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
 }
 
 export function apiDisableEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
-    return async (_, records) => {
+    return async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;
-        const {disabled} = await records.searchParams as { disabled: boolean };
+        const {disabled} = await request.json() as { disabled: boolean };
         await repository.entry.setDisabled(id, entryType, entryId, disabled);
         return NextResponse.json(null);
     }

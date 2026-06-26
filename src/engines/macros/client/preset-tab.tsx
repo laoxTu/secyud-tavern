@@ -43,7 +43,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.id,
                         }
                     })
                     return {...entry, disabled};

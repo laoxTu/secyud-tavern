@@ -46,9 +46,9 @@ export function ModelUpdate<TModel extends BaseModel>(
     const handleUpdate = async (data: FormData) => {
         try {
             if (model) {
-                await updateHandler(model, data);
+                const res = await updateHandler(model, data);
                 handleSuccess(t("default.saved_successfully"));
-                await refresh();
+                await refresh(res);
             }
         } catch (error) {
             handleError(error);
