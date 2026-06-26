@@ -47,7 +47,10 @@ function Content() {
                     <FieldLabel htmlFor={`${moduleName}-apikey`}>
                         {t(`${moduleName}.apikey`)}
                     </FieldLabel>
-                    <Input id={`${moduleName}-apikey`} name={"apikey"} type={"password"}
+                    <Input id={`${moduleName}-apikey`}
+                           name={"apikey"}
+                           type={"password"}
+                           autoComplete={'off'}
                            defaultValue={model?.key}/>
                 </Field>
                 <Field>

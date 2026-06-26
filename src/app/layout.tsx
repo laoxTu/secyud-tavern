@@ -9,7 +9,10 @@ import "./app.css"
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
-    description: "Secyud Tavern"
+    description: "Secyud Tavern",
+    icons: {
+        icon: '/favicon.svg',
+    },
 };
 
 export default function RootLayout({

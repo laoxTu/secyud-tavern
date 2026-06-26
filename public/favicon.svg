@@ -1,21 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <!-- 全弧线酒杯（杯体更矮、杯座更高） -->
-    <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
-        <!-- 杯口弧线 -->
-        <path d="M25 36 Q50 22 75 36"/>
-        <!-- 杯体左侧弧 -->
-        <path d="M25 36 Q24 52 34 60"/>
-        <!-- 杯体右侧弧 -->
-        <path d="M75 36 Q76 52 66 60"/>
-        <!-- 杯底弧 -->
-        <path d="M34 60 Q50 66 66 60"/>
-        <!-- 左支撑弧 -->
-        <path d="M46 64 Q44 74 40 78"/>
-        <!-- 右支撑弧 -->
-        <path d="M54 64 Q56 74 60 78"/>
-        <!-- 杯座上弧 -->
-        <path d="M26 84 Q50 72 74 84"/>
-        <!-- 杯座下弧 -->
-        <path d="M26 84 Q50 92 74 84"/>
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- 1. 杯座（真正的椭圆，顶部预留缺口） -->
+        <!-- 底部弧线（向下凸） -->
+        <path d="M 26 84
+                 Q 26 96 50 96
+                 Q 74 96 74 84"
+              stroke-width="4" />
+        <!-- 顶部弧线（向上凸，中间断开预留缺口） -->
+        <path d="M 26 84
+                 Q 26 74 44 74"
+              stroke-width="4" />
+        <path d="M 56 74
+                 Q 74 74 74 84"
+              stroke-width="4" />
+
+        <!-- 2. 杯脚（中层，缩短） -->
+        <path d="M 46 66 Q 45 74 46 80" stroke-width="4" />
+        <path d="M 54 66 Q 55 74 54 80" stroke-width="4" />
+
+        <!-- 3. 杯身（上层） -->
+        <path d="M 22 32 Q 17 50 46 66" stroke-width="4" />
+        <path d="M 78 32 Q 83 50 54 66" stroke-width="4" />
+
+        <!-- 4. 杯口（最上层） -->
+        <path d="M 22 32 Q 22 40 50 40 Q 78 40 78 32 Q 78 24 50 24 Q 22 24 22 32"
+              stroke-width="4" />
+
     </g>
 </svg>
