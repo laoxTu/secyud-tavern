@@ -86,8 +86,7 @@ export function ModelList<TModel extends BaseModel>(
 
     return (
         <ResizablePanelGroup orientation="horizontal">
-            <ResizablePanel defaultSize="320px"
-                            minSize="300px">
+            <ResizablePanel defaultSize="320px">
                 {maxPage === 0 && !search?.fuzzy && !loading ?
                     <div className={"flex h-full pb-24"}>
                         <Empty className={"m-auto"}>
@@ -150,7 +149,7 @@ export function ModelList<TModel extends BaseModel>(
                 }
             </ResizablePanel>
             <ResizableHandle withHandle/>
-            <ResizablePanel minSize="560px">
+            <ResizablePanel>
                 <ModelContent<TModel> key={model?.id ?? ""} modelState={modelState} props={contentProps}/>
             </ResizablePanel>
         </ResizablePanelGroup>

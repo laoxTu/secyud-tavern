@@ -85,7 +85,7 @@ function Tab() {
                     return result;
                 },
                 updateContent: (entry) => (<>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-4">
 
                         <Field>
                             <FieldLabel htmlFor={`${engineName}-key-${entry.id}`}>

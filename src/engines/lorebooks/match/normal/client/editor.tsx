@@ -23,7 +23,7 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
 
     return (
         <>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
                 <Field>
                     <FieldLabel htmlFor={`${engineName}-fitCount-${entry.id}`}>
                         {t("lorebook.fit_count")}

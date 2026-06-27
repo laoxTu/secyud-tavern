@@ -198,7 +198,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                             <FieldGroup>
                                 <FieldSet>
                                     <FieldGroup>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
                                             <Field>
                                                 <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
                                                     {t("default.code")}

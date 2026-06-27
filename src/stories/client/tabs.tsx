@@ -37,7 +37,7 @@ function Tab() {
                     });
             },
             updateContent: (model) => (<>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
                     <Field>
                         <FieldLabel htmlFor={`${moduleName}-name`}>
                             {t("default.name")}

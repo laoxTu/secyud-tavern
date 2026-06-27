@@ -15,7 +15,7 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
 
     return (
         <>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
                 <Field orientation="horizontal">
                     <Checkbox key={model.lastMessage ? 1 : 0}
                               id={`${engineName}-lastMessage-${entry.id}`}
