@@ -5,6 +5,7 @@ import {llmapiRepository} from "@/llmapis/server/repository";
 import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
 import {presetRepository as repository} from "@/presets/server/repository";
+import {Hasher} from "@/utils/hasher";
 
 export const apiConfig: TemplateConfig<LlmapiModel> = {
     repository: llmapiRepository,
@@ -24,7 +25,7 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
                 ;
         }
     },
-    checkUpdate: async (id,model) => {
+    checkUpdate: async (id, model) => {
         if (model.code === "") {
             throw new BusinessError("No code provided", "error.empty_field")
                 .withValue("field", "default.code");
@@ -38,6 +39,9 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
                 .withValue("field", "default.code")
                 .withValue("entity_name", "default.preset")
                 ;
+        }
+        if (model.key && model.key !== "") {
+            model.key = Hasher.instance.encrypt(model.key);
         }
     },
     importHandler: undefined,

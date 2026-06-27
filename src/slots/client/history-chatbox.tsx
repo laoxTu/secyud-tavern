@@ -164,6 +164,10 @@ export function HistoryChatbox() {
                 await updateStoryHistory(slot.story.id, history);
             }
         } catch (err) {
+            if (err instanceof Error && err.name === 'AbortError') {
+                console.log('user abort reply');
+                return; // 或者不处理
+            }
             handleError(err);
         } finally {
             await handleHistoryPageChange(ctx, {curPage: ctx.current.slot?.story.histories?.length ?? 0});

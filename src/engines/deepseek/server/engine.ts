@@ -27,6 +27,11 @@ export class DeepseekEngine implements LlmapiEngine {
             parameter.max_tokens = undefined;
         }
 
+        if (config.parameters.extra_body.thinking.type === "disabled")
+        {
+            parameter.reasoning_effort = undefined;
+        }
+
         return await generateOpenAIReadableStreamReply(context, parameter, openai);
     }
 }
