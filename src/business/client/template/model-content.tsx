@@ -25,7 +25,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import {FieldGroup} from "@/components/ui/field";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {FileTextIcon} from "lucide-react";
+import {CopyIcon, FileTextIcon, FileUpIcon, Trash2Icon} from "lucide-react";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export interface ModelContentProps<TModel> {
     // 克隆 FieldGroup 的内部内容
@@ -129,8 +130,8 @@ export function ModelContent<TModel>(
 
     return (
         <Tabs value={tabId} onValueChange={setTabId}
-              className={"flex flex-col overflow-hidden h-full p-4"}>
-            <div className="flex justify-between">
+              className={"flex flex-col h-full p-4"}>
+            <div className="flex overflow-x-auto scrollbar-none">
                 <TabsList className="gap-1">
                     {tabs.map((tab, index) => {
                         const Component = tab.label;
@@ -141,64 +142,73 @@ export function ModelContent<TModel>(
                         );
                     })}
                 </TabsList>
-                <div className="flex gap-2">
-                    <Button onClick={handleExport}>{t("default.export")}</Button>
-                    <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="secondary">{t("default.copy")}</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <form action={handleClone}
-                                  className="form-reset">
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {t("default.copy_title", {target: t(`default.${moduleName}`)})}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                        {t("default.copy_description", {target: t(`default.${moduleName}`)})}
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <FieldGroup>
-                                    {cloneContent(model)}
-                                </FieldGroup>
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button variant="outline">{t("default.cancel")}</Button>
-                                    </DialogClose>
-                                    <Button type="submit">{t("default.copy")}</Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive">{t("default.delete")}</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    {t("default.delete_title", {target: t(`default.${moduleName}`)})}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {t("default.delete_description", {target: t(`default.${moduleName}`)})}
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
-                                <AlertDialogAction variant={"destructive"} onClick={handleDelete}>
-                                    {t("default.delete")}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
+            </div>
+            <div className="flex flex-row-reverse gap-2">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive"><Trash2Icon/></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {t("default.delete_title", {target: t(`default.${moduleName}`)})}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t("default.delete_description", {target: t(`default.${moduleName}`)})}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
+                            <AlertDialogAction variant={"destructive"} onClick={handleDelete}>
+                                {t("default.delete")}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="secondary">
+                            <CopyIcon/>
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <form action={handleClone}
+                              className="form-reset">
+                            <DialogHeader>
+                                <DialogTitle>
+                                    {t("default.copy_title", {target: t(`default.${moduleName}`)})}
+                                </DialogTitle>
+                                <DialogDescription>
+                                    {t("default.copy_description", {target: t(`default.${moduleName}`)})}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <FieldGroup>
+                                {cloneContent(model)}
+                            </FieldGroup>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">{t("default.cancel")}</Button>
+                                </DialogClose>
+                                <Button type="submit">{t("default.copy")}</Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant={'secondary'} onClick={handleExport}><FileUpIcon/></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('default.export')}</p>
+                    </TooltipContent>
+                </Tooltip>
             </div>
             {tabs.map((tab) => {
                 const Component = tab.component;
                 if (!Component) return null;
                 return (
                     <TabsContent key={tab.id} value={tab.id}
-                                 className="flex-1 overflow-hidden">
+                                 className="flex-1 flex flex-col overflow-hidden">
                         <Component/>
                     </TabsContent>
                 );

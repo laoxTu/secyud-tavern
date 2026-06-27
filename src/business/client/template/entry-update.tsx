@@ -5,8 +5,6 @@ import {EntryState} from "@/business/client/models";
 import {Card, CardContent} from "@/components/ui/card";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {EntryModel} from "@/business/models";
-import {Switch} from "@/components/ui/switch";
-import {Label} from "@/components/ui/label";
 import {
     AlertDialog, AlertDialogAction,
     AlertDialogCancel,
@@ -26,9 +24,10 @@ import {
     DialogClose
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {ChevronsDownIcon, ChevronsUpIcon} from "lucide-react";
+import {ChevronsDownIcon, ChevronsUpIcon, CopyIcon, PlayIcon, PlayOffIcon, Trash2Icon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export interface EntryUpdateProps<TEntry> {
     disableHandler: (entry: TEntry, disabled: boolean) => Promise<TEntry>;
@@ -65,7 +64,9 @@ export function EntryUpdate<TEntry extends EntryModel>(
     const {handleError, handleSuccess} = useErrorHandler();
 
     const [isOpen, setIsOpen] = useState(true);
+    const [disabled, setDisabled] = useState(entry.disabled);
     const [cloneOpen, setCloneOpen] = useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const {fetch} = usePagedItemsState();
     const handleUpdate = async (data: FormData) => {
         try {
@@ -98,11 +99,12 @@ export function EntryUpdate<TEntry extends EntryModel>(
         }
     };
 
-    const handleDisable = async (enabled: boolean) => {
+    const handleDisable = async () => {
         try {
-            await disableHandler(entry, !enabled);
-            handleSuccess(t(enabled ? "default.enable_item" : "default.disable_item"));
+            await disableHandler(entry, !disabled);
+            handleSuccess(t(disabled ? "default.enable_item" : "default.disable_item"));
             await fetch();
+            setDisabled(!disabled);
         } catch (error) {
             handleError(error);
         }
@@ -112,86 +114,111 @@ export function EntryUpdate<TEntry extends EntryModel>(
         <Card className={"w-full"}>
             <CardContent>
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-                    <div className={"flex w-full gap-4 p-1 rounded-md hover:bg-gray-100"}>
+                    <div className={"flex w-full rounded-md hover:bg-gray-100"}>
                         <CollapsibleTrigger asChild>
-                            <label className={"w-full m-auto px-2 cursor-pointer"}>
-                                {entry.name}
-                                <span className={"px-2 text-sm text-gray-500"}>
-                                    {entry.code}
-                                </span>
-                            </label>
+                            <div className={"flex flex-1 cursor-pointer p-2"}>
+                                <p className={"my-auto"}>
+                                    {entry.name}
+                                    <span className={"px-2 text-sm text-gray-500"}>
+                                        {entry.code}
+                                    </span>
+                                </p>
+                            </div>
                         </CollapsibleTrigger>
-                        <div className="flex items-center space-x-2"
-                             onClick={(e) => e.stopPropagation()}>
-                            <Switch id={`${entryType}-disabled-${entry.id}`}
-                                    defaultChecked={!entry.disabled}
-                                    onCheckedChange={handleDisable}/>
-                            <Label className={"min-w-12"}
-                                   htmlFor={`${entryType}-disabled-${entry.id}`}>
-                                {t("default.enabled")}
-                            </Label>
+                        <div className={"m-auto"}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button size={"icon"} variant={"secondary"}
+                                            onClick={handleDisable}>
+                                        {disabled ? <PlayOffIcon color={'red'}/> : <PlayIcon color={'green'}/>}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{disabled ? t("default.enable") : t("default.disable")}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
+                                <DialogTrigger asChild>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button size={'icon'}
+                                                    onClick={() => setCloneOpen(true)}
+                                                    variant={'secondary'}>
+                                                <CopyIcon/>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{t("default.copy")}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <form action={handleClone}
+                                          className="form-reset">
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                {t("default.copy_title", {target: t(`${moduleName}.${entryType}`)})}
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                {t("default.copy_description", {target: t(`${moduleName}.${entryType}`)})}
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <FieldGroup>
+                                            <Field>
+                                                <FieldLabel
+                                                    htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</FieldLabel>
+                                                <Input id={`${entryType}-code`} name="code" required/>
+                                            </Field>
+                                            <Field>
+                                                <FieldLabel
+                                                    htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</FieldLabel>
+                                                <Input id={`${entryType}-name`} name="name" required/>
+                                            </Field>
+                                        </FieldGroup>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button variant="outline">{t("default.cancel")}</Button>
+                                            </DialogClose>
+                                            <Button type="submit">{t("default.copy")}</Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                                <AlertDialogTrigger asChild>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button size={'icon'}
+                                                    onClick={() => setDeleteOpen(true)}
+                                                    variant="destructive"><Trash2Icon/></Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{t("default.delete")}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>{t("default.delete_title", {target: t(`${moduleName}.${entryType}`)})}</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {t("default.delete_description", {target: t(`${moduleName}.${entryType}`)})}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
+                                        <AlertDialogAction variant={"destructive"}
+                                                           onClick={handleDelete}>
+                                            {t("default.delete")}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <CollapsibleTrigger asChild>
+                                <Button size={"icon"} variant={"ghost"}>
+                                    {isOpen ? <ChevronsUpIcon/> : <ChevronsDownIcon/>}
+                                </Button>
+                            </CollapsibleTrigger>
                         </div>
-                        <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
-                            <DialogTrigger asChild>
-                                <Button>{t("default.copy")}</Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <form action={handleClone}
-                                      className="form-reset">
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            {t("default.copy_title", {target: t(`${moduleName}.${entryType}`)})}
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            {t("default.copy_description", {target: t(`${moduleName}.${entryType}`)})}
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <FieldGroup>
-                                        <Field>
-                                            <FieldLabel
-                                                htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</FieldLabel>
-                                            <Input id={`${entryType}-code`} name="code" required/>
-                                        </Field>
-                                        <Field>
-                                            <FieldLabel
-                                                htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</FieldLabel>
-                                            <Input id={`${entryType}-name`} name="name" required/>
-                                        </Field>
-                                    </FieldGroup>
-                                    <DialogFooter>
-                                        <DialogClose asChild>
-                                            <Button variant="outline">{t("default.cancel")}</Button>
-                                        </DialogClose>
-                                        <Button type="submit">{t("default.copy")}</Button>
-                                    </DialogFooter>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive">{t("default.delete")}</Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>{t("default.delete_title", {target: t(`${moduleName}.${entryType}`)})}</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {t("default.delete_description", {target: t(`${moduleName}.${entryType}`)})}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
-                                    <AlertDialogAction variant={"destructive"}
-                                                       onClick={handleDelete}>
-                                        {t("default.delete")}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                        <CollapsibleTrigger asChild>
-                            <Button size={"icon"} variant={"ghost"}>
-                                {isOpen ? <ChevronsUpIcon/> : <ChevronsDownIcon/>}
-                            </Button>
-                        </CollapsibleTrigger>
                     </div>
                     <CollapsibleContent asChild className={"p-1"}>
                         <form action={handleUpdate}>
