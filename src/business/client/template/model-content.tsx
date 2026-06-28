@@ -70,8 +70,12 @@ export function ModelContent<TModel>(
     const {tabId, setTabId} = useTabState();
 
     const refresh = async (model?: TModel) => {
-        setModel(model);
         await fetch();
+        if (!model) {
+            const items = usePagedItemsState.getState().items;
+            model = items && items.length > 0 ? items[0] : undefined;
+        }
+        setModel(model);
     }
 
     const handleExport = async () => {
@@ -102,6 +106,7 @@ export function ModelContent<TModel>(
         try {
             if (model) {
                 await deleteHandler(model);
+                const items = usePagedItemsState.getState().items;
                 await refresh(undefined);
                 handleSuccess(t("default.delete_successfully"));
             }
