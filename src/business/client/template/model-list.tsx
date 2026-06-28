@@ -56,7 +56,10 @@ export function ModelList<TModel extends BaseModel>(
     const [searchInput, setSearchInput] = useState('');
     const {items, search, maxPage, loading, fetch} = usePagedItemsState()
     const {model, setModel} = useItemState();
-    const {panelWidth, setPanelWidth} = useGlobalState();
+    const {
+        panelWidth,
+        setPanelWidth,
+    } = useGlobalState();
     const width = useRef({
         panelWidth,
         update: false
@@ -97,15 +100,18 @@ export function ModelList<TModel extends BaseModel>(
         }
     }
 
-    const changePanelState = (panel: PanelImperativeHandle | null) => {
-        if (!panel) return;
+    const changePanelState =
+        (panel: PanelImperativeHandle | null, setCollapsed: (collapsed: boolean) => void) => {
+            if (!panel) return;
 
-        if (panel.isCollapsed()) {
-            panel.expand();
-        } else {
-            panel.collapse();
+            if (panel.isCollapsed()) {
+                panel.expand();
+                setCollapsed(false);
+            } else {
+                panel.collapse();
+                setCollapsed(true);
+            }
         }
-    }
 
     useEffect(() => {
         (async () => {
@@ -119,15 +125,18 @@ export function ModelList<TModel extends BaseModel>(
         })();
     }, []);
 
+    const collapsedSize = 18;
+
 
     return (
         <ResizablePanelGroup orientation="horizontal"
                              onPointerUp={updateWidth}>
-            <ResizablePanel panelRef={leftPanel} defaultSize={panelWidth}
+            <ResizablePanel panelRef={leftPanel}
                             collapsible={true}
-                            minSize={'18 '}
+                            defaultSize={`${panelWidth}`}
+                            minSize={`${collapsedSize}`}
                             onResize={(size) => {
-                                width.current.panelWidth = size.inPixels;
+                                width.current.panelWidth = size.asPercentage;
                                 width.current.update = true;
                             }}>
                 {maxPage === 0 && !search?.fuzzy && !loading ?
@@ -168,7 +177,9 @@ export function ModelList<TModel extends BaseModel>(
                             </form>
                             <ModelCreate modelState={modelState} props={createProps}/>
                             <Button variant={'ghost'} size={'icon'} onClick={() => {
-                                changePanelState(rightPanel.current);
+                                changePanelState(rightPanel.current, collapsed => {
+                                    setPanelWidth(collapsed ? 100 : 100 - collapsedSize);
+                                });
                             }}>
                                 <FoldHorizontalIcon/>
                             </Button>
@@ -199,11 +210,15 @@ export function ModelList<TModel extends BaseModel>(
             <ResizableHandle withHandle/>
             <ResizablePanel panelRef={rightPanel}
                             collapsible={true}
-                            minSize={'12'}>
+                            minSize={`${collapsedSize}`}>
                 <ModelContent<TModel> key={model?.id ?? ""}
                                       modelState={modelState}
                                       props={contentProps}
-                                      collapse={() => changePanelState(leftPanel.current)}/>
+                                      collapse={() => {
+                                          changePanelState(leftPanel.current, collapsed => {
+                                              setPanelWidth(collapsed ? 0 : collapsedSize);
+                                          });
+                                      }}/>
             </ResizablePanel>
         </ResizablePanelGroup>
     );
