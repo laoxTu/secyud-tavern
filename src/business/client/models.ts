@@ -22,14 +22,16 @@ export interface EntryState<T> {
 
 export interface ItemState<T> {
     model?: T;
+    render: number;
     setModel: (model?: T) => void;
 }
 
 export function createUseItemState<T>(name?: string) {
     const func =
-        (set: (partial: Partial<ItemState<T>>) => void): ItemState<T> => ({
+        (set: (partial: Partial<ItemState<T>>) => void, get: () => ItemState<T>): ItemState<T> => ({
+            render: 0,
             setModel(model) {
-                set({model})
+                set({model, render: get().render + 1});
             }
         });
 

@@ -35,7 +35,7 @@ export function ModelUpdate<TModel extends BaseModel>(
 
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
-    const {model, setModel} = useItemState();
+    const {model, setModel, render} = useItemState();
     const {fetch} = usePagedItemsState();
 
     const refresh = async (model?: TModel) => {
@@ -58,7 +58,7 @@ export function ModelUpdate<TModel extends BaseModel>(
     if (!model) return null;
 
     return (
-        <form className={className} action={handleUpdate}>
+        <form className={className} action={handleUpdate} key={render}>
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>

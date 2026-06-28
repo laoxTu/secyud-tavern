@@ -127,7 +127,6 @@ export function ModelList<TModel extends BaseModel>(
 
     const collapsedSize = 18;
 
-
     return (
         <ResizablePanelGroup orientation="horizontal"
                              onPointerUp={updateWidth}>

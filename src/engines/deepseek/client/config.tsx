@@ -40,6 +40,7 @@ function Content() {
     const [thinking, setThinking] = React.useState<boolean>(
         config.parameters.extra_body.thinking.type === "enabled");
 
+
     return (
         <>
             <div className="grid md:grid-cols-2 gap-4">
