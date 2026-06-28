@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {EditIcon} from "lucide-react";
-import {SlotFeature} from "@/slots/client/feeature-models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRef, useState} from "react";
 import {StoryHistory} from "@/stories/models";
@@ -156,9 +155,4 @@ export function HistoryEditor() {
                 </form>)}
         </DialogContent>
     </Dialog>);
-}
-
-export const historyEditorFeature: SlotFeature = {
-    id: "HistoryEditor",
-    component: HistoryEditor,
 }

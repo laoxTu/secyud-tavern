@@ -16,6 +16,7 @@ import {RenderContext} from "@/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
 import {useHistoryPageState} from "@/slots/client/history-pager";
+import {Input} from "@/components/ui/input";
 
 export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
     await invokeCallback(ctx, "handleOutputPageChange", curPage);
@@ -117,14 +118,15 @@ export function OutputPagerButtonGroup() {
         }
     }, [prepare]);
 
-    return (<ButtonGroup className={"bg-white rounded-md"}>
+    return (<ButtonGroup className={"  bg-white rounded-md"}>
         <Button onClick={() => handleOutputPageChange(page.cur - 1)}
                 disabled={page.cur <= 0} variant="outline">
             <ChevronLeftIcon/>
         </Button>
-        <Button variant={'outline'} disabled>
-            {page.cur + 1} / {page.max}
-        </Button>
+        <Input className={"text-center text-black bg-white min-w-8"}
+               disabled
+               value={`${page.cur + 1}/${page.max}`}>
+        </Input>
         <Button onClick={() => handleOutputPageChange(page.cur + 1)}
                 disabled={page.cur + 1 >= page.max} variant="outline">
             <ChevronRightIcon/>

@@ -14,7 +14,6 @@ import {
 import {Button} from "@/components/ui/button";
 import {DeleteIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState, handleHistoryPageChange} from "@/slots/client/history-pager";
-import {SlotFeature} from "@/slots/client/feeature-models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export function HistoryDeleter() {
@@ -141,9 +140,4 @@ export function HistoryDeleter() {
             </AlertDialogContent>
         </AlertDialog>
     </>);
-}
-
-export const historyDeleterFeature: SlotFeature = {
-    id: "HistoryDeleter",
-    component: HistoryDeleter,
 }

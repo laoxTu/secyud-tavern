@@ -76,8 +76,12 @@ export function HistoryPagerButtonGroup() {
                     disabled={page.cur <= 0} variant="outline">
                 <ChevronLeftIcon/>
             </Button>
-            <Input key={page.cur} defaultValue={page.cur} name='slot-page-index'
-                   disabled={page.max === 0} type={'number'} className={"bg-white"}/>
+            <Input key={page.cur}
+                   defaultValue={page.cur}
+                   name='slot-page-index'
+                   disabled={page.max === 0}
+                   type={'number'}
+                   className={"bg-white"}/>
             <Button onClick={() => handleHistoryPageChange({curPage: page.max})}
                     disabled={page.cur === page.max} variant="outline">
                 {page.max}

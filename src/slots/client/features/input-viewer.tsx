@@ -1,4 +1,4 @@
-import {SlotFeature} from "@/slots/client/feeature-models";
+
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
 import {getSlotAndHistories, useSlotContext} from "@/slots/client/models";
@@ -145,9 +145,4 @@ export function InputViewer() {
             </DialogFooter>
         </DialogContent>
     </Dialog>);
-}
-
-export const inputViewerFeature: SlotFeature = {
-    id: "InputViewer",
-    component: InputViewer,
 }
