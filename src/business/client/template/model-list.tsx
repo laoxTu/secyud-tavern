@@ -85,23 +85,26 @@ export function ModelList<TModel extends BaseModel>(
         }
     }
 
+    const updateWidth = () => {
+        if (width.current.update) {
+            console.debug("width", width.current.panelWidth);
+            setPanelWidth(width.current.panelWidth);
+            width.current.update = false;
+        }
+    }
+
     useEffect(() => {
         void fetch();
     }, []);
 
+
     return (
-        <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanelGroup orientation="horizontal"
+                             onPointerUp={updateWidth}>
             <ResizablePanel defaultSize={panelWidth}
                             onResize={(size) => {
                                 width.current.panelWidth = size.inPixels;
                                 width.current.update = true;
-                            }}
-                            onPointerLeave={() => {
-                                if (width.current.update) {
-                                    console.debug("width", width.current.panelWidth);
-                                    setPanelWidth(width.current.panelWidth);
-                                    width.current.update = false;
-                                }
                             }}>
                 {maxPage === 0 && !search?.fuzzy && !loading ?
                     <div className={"flex h-full pb-24"}>
