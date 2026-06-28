@@ -1,5 +1,5 @@
 'use client';
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
 import {
@@ -20,7 +20,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {PaginationWrapper} from "@/components/custom/pager";
 import {BaseModel} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
-import {ModelState} from "../models";
+import {ModelState, useGlobalState} from "../models";
 import {ModelCreate, ModelCreateProps} from "./model-create";
 import {ModelContentProps, ModelContent} from "./model-content";
 
@@ -53,7 +53,12 @@ export function ModelList<TModel extends BaseModel>(
     // 受控组件，解决搜索刷新后光标位置问题
     const [searchInput, setSearchInput] = useState('');
     const {items, search, maxPage, loading, fetch} = usePagedItemsState()
-    const {model, setModel} = useItemState()
+    const {model, setModel} = useItemState();
+    const {panelWidth, setPanelWidth} = useGlobalState();
+    const width = useRef({
+        panelWidth,
+        update: false
+    });
 
     const applySearch = async (data: FormData) => {
         try {
@@ -86,7 +91,17 @@ export function ModelList<TModel extends BaseModel>(
 
     return (
         <ResizablePanelGroup orientation="horizontal">
-            <ResizablePanel defaultSize="320px">
+            <ResizablePanel defaultSize={panelWidth}
+                            onResize={(size) => {
+                                width.current.panelWidth = size.inPixels;
+                                width.current.update = true;
+                            }}
+                            onMouseLeave={() => {
+                                if (width.current.update) {
+                                    setPanelWidth(width.current.panelWidth);
+                                    width.current.update = false;
+                                }
+                            }}>
                 {maxPage === 0 && !search?.fuzzy && !loading ?
                     <div className={"flex h-full pb-24"}>
                         <Empty className={"m-auto"}>

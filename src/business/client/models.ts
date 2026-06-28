@@ -59,3 +59,21 @@ export function createUseTabState(tabManager: TabManager) {
         })
     );
 }
+
+export interface GlobalState {
+    panelWidth: number;
+    setPanelWidth: (width: number) => void;
+}
+
+export const useGlobalState = create<GlobalState>()(persist((set) => ({
+    panelWidth: 320,
+    setPanelWidth: (width: number) => {
+        set({panelWidth: width});
+    },
+}), {
+    name: "global-state",
+    storage: createJSONStorage(() => localStorage),
+    partialize: (state) => ({
+        panelWidth: state.panelWidth,
+    }),
+}))
