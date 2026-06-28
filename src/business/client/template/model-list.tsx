@@ -96,8 +96,9 @@ export function ModelList<TModel extends BaseModel>(
                                 width.current.panelWidth = size.inPixels;
                                 width.current.update = true;
                             }}
-                            onMouseLeave={() => {
+                            onPointerLeave={() => {
                                 if (width.current.update) {
+                                    console.debug("width", width.current.panelWidth);
                                     setPanelWidth(width.current.panelWidth);
                                     width.current.update = false;
                                 }
