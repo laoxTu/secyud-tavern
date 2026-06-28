@@ -94,7 +94,15 @@ export function ModelList<TModel extends BaseModel>(
     }
 
     useEffect(() => {
-        void fetch();
+        (async () => {
+            await fetch();
+            const items = usePagedItemsState.getState().items;
+            console.debug("items", items);
+            if (!useItemState.getState().model &&
+                items && items.length > 0) {
+                setModel(items[0]);
+            }
+        })();
     }, []);
 
 
