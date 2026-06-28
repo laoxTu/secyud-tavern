@@ -75,7 +75,7 @@ function Tab() {
                         key: data.get("key") as string,
                         value: data.get("value") as string,
                     }
-                    await put('/stories/{id}/entries/{entryType}/{entryId}', result, {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
                             id: model?.id,
                             entryType: engineName,

@@ -176,7 +176,6 @@ function Tab() {
                     })
                 },
                 updateHandler: async (entry, data) => {
-
                     const matchType = data.get("matchType") as string;
                     const result = {
                         ...entry,
@@ -187,9 +186,6 @@ function Tab() {
                         layer: parseInt(data.get("layer") as string),
                         role: data.get("role") as string,
                     }
-                    console.debug(model?.id);
-                    console.debug(engineName);
-                    console.debug(entry.id);
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
                             id: model?.id,

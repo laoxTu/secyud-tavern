@@ -84,7 +84,7 @@ function Tab() {
                         content: editorRef.current?.getValue() ?? "",
                         priority: parseInt(data.get("priority") as string),
                     }
-                    await put('/stories/{id}/entries/{entryType}/{entryId}', result, {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
                             id: model?.id,
                             entryType: engineName,

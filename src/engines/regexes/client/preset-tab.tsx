@@ -78,7 +78,7 @@ function Tab() {
                         replacement: data.get("replacement") as string,
                         target: data.get("target") as string,
                     }
-                    await put('/stories/{id}/entries/{entryType}/{entryId}', result, {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
                             id: model?.id,
                             entryType: engineName,
