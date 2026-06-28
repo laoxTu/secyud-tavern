@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {FieldGroup} from "@/components/ui/field";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {CopyIcon, FileTextIcon, FileUpIcon, Trash2Icon} from "lucide-react";
+import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon, Trash2Icon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export interface ModelContentProps<TModel> {
@@ -44,10 +44,12 @@ export interface ModelContentProps<TModel> {
 interface Props<TModel> {
     modelState: ModelState<TModel>,
     props: ModelContentProps<TModel>,
+    collapse: () => void
 }
 
 export function ModelContent<TModel>(
     {
+        collapse,
         modelState: {
             moduleName,
             useItemState,
@@ -106,7 +108,6 @@ export function ModelContent<TModel>(
         try {
             if (model) {
                 await deleteHandler(model);
-                const items = usePagedItemsState.getState().items;
                 await refresh(undefined);
                 handleSuccess(t("default.delete_successfully"));
             }
@@ -137,6 +138,10 @@ export function ModelContent<TModel>(
         <Tabs value={tabId} onValueChange={setTabId}
               className={"flex flex-col h-full p-4"}>
             <div className="flex overflow-x-auto scrollbar-none">
+
+                <Button variant={'ghost'} size={'icon'} onClick={collapse}>
+                    <FoldHorizontalIcon/>
+                </Button>
                 <TabsList className="gap-1">
                     {tabs.map((tab, index) => {
                         const Component = tab.label;

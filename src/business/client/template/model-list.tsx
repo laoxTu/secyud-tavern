@@ -1,7 +1,7 @@
 'use client';
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
-import {FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
+import {FolderOpenIcon, FoldHorizontalIcon, SearchIcon, XIcon} from "lucide-react";
 import {
     Empty, EmptyContent,
     EmptyDescription, EmptyHeader,
@@ -23,6 +23,8 @@ import {useErrorHandler} from "@/handler/client/error";
 import {ModelState, useGlobalState} from "../models";
 import {ModelCreate, ModelCreateProps} from "./model-create";
 import {ModelContentProps, ModelContent} from "./model-content";
+import {PanelImperativeHandle} from "react-resizable-panels";
+import {Button} from "@/components/ui/button";
 
 
 interface Props<TModel> {
@@ -59,6 +61,8 @@ export function ModelList<TModel extends BaseModel>(
         panelWidth,
         update: false
     });
+    const leftPanel = useRef<PanelImperativeHandle | null>(null);
+    const rightPanel = useRef<PanelImperativeHandle | null>(null);
 
     const applySearch = async (data: FormData) => {
         try {
@@ -93,6 +97,16 @@ export function ModelList<TModel extends BaseModel>(
         }
     }
 
+    const changePanelState = (panel: PanelImperativeHandle | null) => {
+        if (!panel) return;
+
+        if (panel.isCollapsed()) {
+            panel.expand();
+        } else {
+            panel.collapse();
+        }
+    }
+
     useEffect(() => {
         (async () => {
             await fetch();
@@ -109,7 +123,9 @@ export function ModelList<TModel extends BaseModel>(
     return (
         <ResizablePanelGroup orientation="horizontal"
                              onPointerUp={updateWidth}>
-            <ResizablePanel defaultSize={panelWidth}
+            <ResizablePanel panelRef={leftPanel} defaultSize={panelWidth}
+                            collapsible={true}
+                            minSize={'18 '}
                             onResize={(size) => {
                                 width.current.panelWidth = size.inPixels;
                                 width.current.update = true;
@@ -151,6 +167,11 @@ export function ModelList<TModel extends BaseModel>(
                                 </InputGroup>
                             </form>
                             <ModelCreate modelState={modelState} props={createProps}/>
+                            <Button variant={'ghost'} size={'icon'} onClick={() => {
+                                changePanelState(rightPanel.current);
+                            }}>
+                                <FoldHorizontalIcon/>
+                            </Button>
                         </div>
                         <div className="flex-1 h-full overflow-auto">
                             <ItemGroup className={"p-2 gap-3"}>
@@ -176,8 +197,13 @@ export function ModelList<TModel extends BaseModel>(
                 }
             </ResizablePanel>
             <ResizableHandle withHandle/>
-            <ResizablePanel>
-                <ModelContent<TModel> key={model?.id ?? ""} modelState={modelState} props={contentProps}/>
+            <ResizablePanel panelRef={rightPanel}
+                            collapsible={true}
+                            minSize={'12'}>
+                <ModelContent<TModel> key={model?.id ?? ""}
+                                      modelState={modelState}
+                                      props={contentProps}
+                                      collapse={() => changePanelState(leftPanel.current)}/>
             </ResizablePanel>
         </ResizablePanelGroup>
     );

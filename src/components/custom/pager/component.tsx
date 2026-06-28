@@ -154,7 +154,7 @@ export function PaginationWrapper<T>(
         pageVisibleCount,
         className = undefined,
     }: PaginationWrapperProps<T>) {
-    const t = useTranslations();
+    useTranslations();
     const {curPage, maxPage, fetch} = usePagedItemsState();
 
     const handlePageIndexChange = (page: number) => {
@@ -177,8 +177,8 @@ export function PaginationWrapper<T>(
                     <PaginationPrevious
                         onClick={() => handlePageIndexChange(curPage - 1)}
                         className={pagerClass(isFirstPage)}
-                        text={t("page.previous")}
                         aria-disabled={isFirstPage}
+                        text={''}
                     />
                 </PaginationItem>
 
@@ -203,7 +203,7 @@ export function PaginationWrapper<T>(
                         onClick={() => handlePageIndexChange(curPage + 1)}
                         className={pagerClass(isLastPage)}
                         aria-disabled={isLastPage}
-                        text={t("page.next")}
+                        text={''}
                     />
                 </PaginationItem>
             </PaginationContent>
