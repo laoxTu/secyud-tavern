@@ -112,20 +112,25 @@ export function HistoryChatbox() {
             });
 
             if (response.body) {
-                let content = '';
+                let content = "";
 
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('[HistoryChatbox] reply canceled');
                         break;
                     }
-
+                    let render = false;
                     if (chunk?.reasoning_content) {
                         currentOutput.reasoningContent += chunk.reasoning_content;
+                        render = true;
                     }
-                    const chunkContent: string | undefined | null = chunk.content;
-                    if (!chunkContent || chunkContent === '') continue;
-                    content += chunkContent;
+                    if (chunk?.content) {
+                        content += chunk.content;
+                        render = true;
+                    }
+                    if (!render) {
+                        continue;
+                    }
                     // 流式渲染条件
                     // 故事页面为最新，输出页面为最新
                     const {page} = useHistoryPageState.getState();
@@ -149,7 +154,6 @@ export function HistoryChatbox() {
                         await conversationManager.streamRenderer
                             .use(provider =>
                                 provider.onRenderStream(streamContext));
-                        console.debug("[HistoryChatbox] render stream: ", chunkContent);
                         iframe.contentWindow!.postMessage({
                             type: "streamContent", data: streamContext.data
                         }, "*");
