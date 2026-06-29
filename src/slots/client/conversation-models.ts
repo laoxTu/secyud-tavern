@@ -66,3 +66,11 @@ export interface SlotStreamRenderer extends Registerable {
     // 渲染
     onRenderStream(ctx: RenderContext): Promise<void>;
 }
+
+
+export function renderData(ctx: RenderContext, type: string, data: any) {
+    const g = ctx.window as { __messageData?: Record<string, any> };
+    g.__messageData ??= new Map<string, any>();
+    g.__messageData[type] = data;
+    ctx.window.postMessage({type, data}, "*");
+}

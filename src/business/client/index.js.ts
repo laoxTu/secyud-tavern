@@ -11,8 +11,9 @@ export function registerBusinessClient() {
  */
 export const submitTextareaOnKey: KeyboardEventHandler<HTMLTextAreaElement> =
     (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
+        if ((e.ctrlKey || e.metaKey) && (e.code === 'Enter' || e.code === 'KeyS')) {
             e.preventDefault();
+            e.stopPropagation();
             e.currentTarget?.form?.requestSubmit();
         }
     }
@@ -22,6 +23,7 @@ interface IKeyboardEvent {
     metaKey: boolean;
     code: string;
     preventDefault: () => void;
+    stopPropagation: () => void;
 }
 
 /**
@@ -31,8 +33,9 @@ interface IKeyboardEvent {
  */
 export const submitFormOnKey =
     (e: IKeyboardEvent, formRef: RefObject<HTMLFormElement | null>) => {
-        if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
+        if ((e.ctrlKey || e.metaKey) && (e.code === 'Enter' || e.code === 'KeyS')) {
             e.preventDefault();
+            e.stopPropagation();
             // 提交表单
             formRef.current?.requestSubmit();
         }

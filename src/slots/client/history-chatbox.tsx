@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/input-group";
 import {
     LlmapiInputContext, LlmapiOutputContext,
-    RenderContext,
+    RenderContext, renderData,
 } from "@/slots/client/conversation-models";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
@@ -155,9 +155,10 @@ export function HistoryChatbox() {
                         await conversationManager.streamRenderer
                             .use(provider =>
                                 provider.onRenderStream(streamContext));
-                        iframe.contentWindow!.postMessage({
-                            type: "streamContent", data: streamContext.data
-                        }, "*");
+                        renderData(streamContext, "content", {
+                            ...streamContext.data,
+                            inputs: undefined
+                        });
                     }
                 }
                 // for 循环内可能不渲染，所以重新解析一下变量

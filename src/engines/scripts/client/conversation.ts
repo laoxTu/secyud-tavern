@@ -1,5 +1,6 @@
 'use client';
 import {
+    renderData,
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
@@ -32,7 +33,7 @@ export const scriptConversationProvider:
         ctx.slot.content[engineArrayName] = slotEntries;
     },
     onRenderStream: async (ctx) => {
-        ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
+        renderData(ctx, "variables", generateCurrentVariables(ctx.history));
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
@@ -50,15 +51,22 @@ export const scriptConversationProvider:
                 // link 类型意味着链接
                 if (slotEntry.type === 'link') {
                     script.src = slotEntry.content.trim();
-                    script.async = false;
-                    script.defer = false;
                 } else {
                     script.type = slotEntry.type ?? "";
                     script.innerHTML = slotEntry.content;
                 }
-                ctx.document.body.appendChild(script);
+                await new Promise((resolve, reject) => {
+                    if (script.type === 'importmap') {
+                        ctx.document.head.appendChild(script);
+                        resolve(undefined);
+                    } else {
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        ctx.document.body.appendChild(script);
+                    }
+                });
             }
         }
-        ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
+        renderData(ctx, "variables", generateCurrentVariables(ctx.history));
     }
 };

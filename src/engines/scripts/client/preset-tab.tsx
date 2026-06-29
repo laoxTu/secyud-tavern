@@ -80,10 +80,11 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                 {t("default.content")}
             </FieldLabel>
             <input type={'hidden'} name={'content'} value={content}/>
-            <MonacoEditor className={editorClassName} height={'20rem'}
-                          language={language}
+            <MonacoEditor className={editorClassName} height={'30rem'}
+                          language={language} options={{automaticLayout: true}}
                           value={content} onChange={setContent}
                           onMount={handleEditorDidMount}
+
             />
         </Field>
     </>);

@@ -12,7 +12,7 @@ import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
 import React, {RefObject, useEffect, useState} from "react";
 import {getCurrentOutput, StoryHistory} from "@/stories/models";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/slots/client/conversation";
-import {RenderContext} from "@/slots/client/conversation-models";
+import {renderData, RenderContext} from "@/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
 import {useHistoryPageState} from "@/slots/client/history-pager";
@@ -98,9 +98,7 @@ export function OutputPagerButtonGroup() {
             await conversationManager.contentRenderer
                 .use(provider =>
                     provider.onRenderContent(renderContext));
-            renderContext.window.postMessage({
-                type: "renderContent", data: renderContext.data
-            }, "*");
+            renderData(renderContext, "content", renderContext.data);
         } catch (err) {
             handleError(err);
         }
