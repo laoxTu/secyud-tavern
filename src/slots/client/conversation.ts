@@ -1,5 +1,4 @@
 'use client';
-import {Registry} from "@/utils/register";
 import {applyPatch, extractVariableChanges, getCurrentOutput, StoryHistory, StoryInputMessage} from "@/stories/models";
 import {SlotModel} from "@/slots/models";
 import {
@@ -10,13 +9,14 @@ import {
     SlotContentRenderer,
     SlotInitializer, SlotStreamRenderer
 } from "@/slots/client/conversation-models";
+import {ClientRegistry} from "@/plugins/client";
 
 export const conversationManager = {
-    initializer: new Registry<SlotInitializer>("SlotInitializer"),
-    inputProcesser: new Registry<LlmapiInputProcesser>("LlmapiInputProcesser"),
-    outputProcesser: new Registry<LlmapiOutputProcesser>("LlmapiOutputProcesser"),
-    contentRenderer: new Registry<SlotContentRenderer>("SlotContentRenderer"),
-    streamRenderer: new Registry<SlotStreamRenderer>("SlotStreamRenderer"),
+    initializer: new ClientRegistry<SlotInitializer>("SlotInitializer"),
+    inputProcesser: new ClientRegistry<LlmapiInputProcesser>("LlmapiInputProcesser"),
+    outputProcesser: new ClientRegistry<LlmapiOutputProcesser>("LlmapiOutputProcesser"),
+    contentRenderer: new ClientRegistry<SlotContentRenderer>("SlotContentRenderer"),
+    streamRenderer: new ClientRegistry<SlotStreamRenderer>("SlotStreamRenderer"),
 };
 
 

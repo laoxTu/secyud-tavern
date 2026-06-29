@@ -40,7 +40,7 @@ export default getRequestConfig(async ({}) => {
     // 遍历所有路径
     for (const dirName of localizationPaths) {
         const localizationDir = path.join(/*turbopackIgnore: true*/dirName, 'localization', language);
-        console.log(`[localization] analyze dir: ${localizationDir}`);
+        console.debug(`[localization] analyze dir: ${localizationDir}`);
         try {
             await fs.access(localizationDir);
         } catch {
@@ -55,7 +55,7 @@ export default getRequestConfig(async ({}) => {
             const content = await fs.readFile(filePath, 'utf-8');
             const messages = JSON.parse(content);
             allMessages = mergeObjects(allMessages, messages);
-            console.log(`[localization] ✅ loading localization file: ${filePath}.json`);
+            console.debug(`[localization] ✅ loading localization file: ${filePath}.json`);
         }
     }
 

@@ -1,8 +1,12 @@
-﻿import {Registry} from "@/utils/register";
-import {LlmapiEngine} from "./engine-models";
-import {moduleName} from "../models";
+﻿import {LlmapiEngine} from "./engine-models";
+import {getInstance, ServerRegistry} from "@/plugins/server";
 
-export class LlmEngineRegistry extends Registry<LlmapiEngine> {
+class LlmEngineRegistry extends ServerRegistry<LlmapiEngine> {
+
+
+    static getInstance() {
+        return getInstance("llmEngine", (u) => new LlmEngineRegistry(u));
+    }
 }
 
-export const llmapiEngineRegistry = new LlmEngineRegistry(moduleName,)
+export const llmapiEngineRegistry = LlmEngineRegistry.getInstance();

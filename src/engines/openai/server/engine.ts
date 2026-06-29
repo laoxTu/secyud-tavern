@@ -15,7 +15,7 @@ export async function generateOpenAIReadableStreamReply(context: LlmapiRequestCo
             async start(controller) {
                 // 4. 监听外部 abort 信号（前端断开时触发）
                 const onAbort = () => {
-                    console.log('client abort the api stream.');
+                    console.warn('client abort the api stream.');
                     completion.controller.abort();
                     controller.close();
                 };

@@ -1,6 +1,4 @@
-﻿import {registerHasher} from "@/utils/hasher";
-import * as dotenv from "dotenv";
-import {interceptor} from "@/handler/server/interceptor";
+﻿import {interceptor} from "@/handler/server/interceptor";
 import {errorInterceptor} from "@/handler/server/error-interceptor";
 import {paramInterceptor} from "@/handler/server/param-interceptor";
 import {pluginManager} from "@/plugins/manager";
@@ -12,12 +10,10 @@ import {registerLorebooksServer} from "@/engines/lorebooks/server";
 import {registerMacrosServer} from "@/engines/macros/server";
 import {registerOpenAIServer} from "@/engines/openai/server";
 
-let initialized = false;
-
 export async function registerServerPlugins() {
-    if (initialized) return;
-    initialized = true;
-    dotenv.config();
+    const global = globalThis as { __initialized?: boolean };
+    if (global.__initialized) return;
+    global.__initialized = true;
     interceptor.register(
         errorInterceptor,
         paramInterceptor
@@ -31,6 +27,12 @@ export async function registerServerPlugins() {
     registerScriptsServer();
     registerMacrosServer();
 
-    registerHasher();
+    if (process.env.NODE_ENV === 'development') {
+        // ✅ 替换为 console.log（带时间戳和前缀）
+        console.debug = (...args: any[]) => {
+            console.log(`[DEBUG] ${new Date().toISOString()}`, ...args);
+        };
+    }
+
     await pluginManager.loadServerPlugins();
 }

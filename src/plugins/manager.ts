@@ -2,6 +2,7 @@
 import {PluginManifest} from "@/plugins/models";
 import {get} from "@/client";
 
+
 class PluginManager extends Registry<PluginManifest> {
     initialized: boolean = false;
 
@@ -56,7 +57,7 @@ class PluginManager extends Registry<PluginManifest> {
                 console.log('[plugin manager] Edge runtime: skipping file operations');
                 return;
             }
-            console.log(`[${this.name}] ℹ️ load plugin: ${manifest.id}`);
+            console.debug(`[${this.name}] ℹ️ load plugin: ${manifest.id}`);
             const pluginModule = await import(/* webpackIgnore: true */`${manifest.directory}/${script}`);
             const plugin = pluginModule.default;
             await plugin();
@@ -85,4 +86,7 @@ class PluginManager extends Registry<PluginManifest> {
     }
 }
 
-export const pluginManager = new PluginManager();
+export const pluginManager = (() =>
+    (
+        globalThis as { __pluginManager?: PluginManager }
+    ).__pluginManager ??= new PluginManager())();

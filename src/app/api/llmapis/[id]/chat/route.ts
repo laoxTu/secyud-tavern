@@ -3,7 +3,7 @@ import {NextResponse} from "next/server";
 import {llmapiRepository} from "@/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
 import {llmapiEngineRegistry} from "@/llmapis/server/engine";
-import {Hasher} from "@/utils/hasher";
+import {hasher} from "@/utils/hasher";
 import {BusinessError} from "@/handler/models";
 import {LlmapiInputModel} from "@/slots/models";
 
@@ -38,7 +38,7 @@ export const POST = interceptor.createRoute(
                 .withValue("id", provider);
         }
 
-        const apiKey = llmapi.key ? Hasher.instance.decrypt(llmapi.key) : "";
+        const apiKey = llmapi.key ? hasher.decrypt(llmapi.key) : "";
 
         const config = llmapi.content.config ?? {};
 

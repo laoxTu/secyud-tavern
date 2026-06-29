@@ -1,5 +1,5 @@
-﻿import {Registry} from "@/utils/register";
-import {SlotFeature} from "@/slots/client/feeature-models";
+﻿import {SlotFeature} from "@/slots/client/feeature-models";
+import {ClientRegistry} from "@/plugins/client";
 
 
-export const slotFeatureManager = new Registry<SlotFeature>("config");
+export const slotFeatureManager = new ClientRegistry<SlotFeature>("config");

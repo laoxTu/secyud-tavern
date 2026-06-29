@@ -1,8 +1,8 @@
-﻿import {Registry} from "@/utils/register";
-import {LlmapiInputBuilder} from "./input-builder-models";
+﻿import {LlmapiInputBuilder} from "./input-builder-models";
 import {llmapiLorebookInputBuilder} from "@/engines/lorebooks/client/input-builder";
+import {ClientRegistry} from "@/plugins/client";
 
-export class LlmapiInputBuilderManager extends Registry<LlmapiInputBuilder> {
+export class LlmapiInputBuilderManager extends ClientRegistry<LlmapiInputBuilder> {
     constructor(builders: LlmapiInputBuilder[]) {
         super("inputBuilderManager");
         for (const builder of builders) {

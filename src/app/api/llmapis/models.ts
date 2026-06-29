@@ -5,7 +5,7 @@ import {llmapiRepository} from "@/llmapis/server/repository";
 import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
 import {presetRepository as repository} from "@/presets/server/repository";
-import {Hasher} from "@/utils/hasher";
+import {hasher} from "@/utils/hasher";
 
 export const apiConfig: TemplateConfig<LlmapiModel> = {
     repository: llmapiRepository,
@@ -41,7 +41,7 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
                 ;
         }
         if (model.key && model.key !== "") {
-            model.key = Hasher.instance.encrypt(model.key);
+            model.key = hasher.encrypt(model.key);
         }
     },
     importHandler: undefined,

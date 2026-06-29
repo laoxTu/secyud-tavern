@@ -17,7 +17,7 @@ interface Parameter {
  * 算法通过字符位置映射、奇偶匹配和随机插入等方式实现加密，
  * 并使用反向过程进行解密。
  */
-export class Hasher {
+class Hasher {
     static instance: Hasher;
 
     /**
@@ -212,10 +212,11 @@ function parseInt(text?: string) {
     return undefined;
 }
 
-export function registerHasher() {
-    const container = 'zxcvbnm,./asdfghjkl;\'qwertyuiop[]1234567890-=!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>?'
-    Hasher.instance = new Hasher(container,
+export const hasher = (() => {
+    const global = globalThis as { __hasher?: Hasher };
+    return global.__hasher ??= new Hasher(
+        'zxcvbnm,./asdfghjkl;\'qwertyuiop[]1234567890-=!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>?',
         parseInt(process.env.SECRET_SALT) ?? [9, 1, 2, 6, 6, 8, 2],
         parseInt(process.env.SECRET_KEYS) ?? [8, 8, 3, 4, 7, 2, 3, 7]
-    )
-}
+    );
+})();

@@ -1,4 +1,4 @@
-﻿import {ServerRegistry} from "@/plugins/server";
+﻿import {ServerRegistry, getInstance} from "@/plugins/server";
 import {NextRequest, NextResponse} from "next/server";
 import {registerServerPlugins} from "@/server-registerer";
 import {InterceptorModels} from "./interceptor-models";
@@ -6,7 +6,12 @@ import {InterceptorModels} from "./interceptor-models";
 export type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
 export type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
 
-export class Interceptor extends ServerRegistry<InterceptorModels> {
+class Interceptor extends ServerRegistry<InterceptorModels> {
+
+    constructor(name: string) {
+        super(name);
+    }
+
     createRoute(route: NextRouter): NextHandler {
         return async (request: NextRequest, context: any) => {
             await registerServerPlugins();
@@ -41,6 +46,10 @@ export class Interceptor extends ServerRegistry<InterceptorModels> {
             return dispatch(0);
         };
     }
+
+    static getInstance() {
+        return getInstance("interceptors", (u) => new Interceptor(u));
+    }
 }
 
-export const interceptor = new Interceptor("interceptor manager");
+export const interceptor = Interceptor.getInstance();

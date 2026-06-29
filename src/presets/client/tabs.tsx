@@ -71,7 +71,7 @@ export function DefaultTab() {
                                    accept={"image/png"}
                                    defaultValue={model.content.coverId ? `/api/images/${model.content.coverId}` : undefined}
                                    onChange={file => {
-                                       console.log("file", file);
+                                       console.debug("file", file);
                                        setCoverFile(file);
                                        changed.current = true;
                                    }}/>

@@ -10,7 +10,7 @@ export default async function getPluginManifests() {
     try {
         await fs.access(pluginDir);
     } catch {
-        console.log(`[plugin loader] 📁 plugins folder not found: ${pluginDir}`);
+        console.warn(`[plugin loader] 📁 plugins folder not found: ${pluginDir}`);
         return;
     }
 

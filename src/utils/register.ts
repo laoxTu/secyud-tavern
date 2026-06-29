@@ -1,5 +1,4 @@
-﻿
-export interface Registerable {
+﻿export interface Registerable {
     id: string;
     requires?: string[];
 }
@@ -9,7 +8,7 @@ export class Registry<T extends Registerable> {
     private sorted: T[] | null = null;
     protected readonly name: string;
 
-    constructor(name: string) {
+    protected constructor(name: string) {
         this.name = name;
     }
 
@@ -33,7 +32,7 @@ export class Registry<T extends Registerable> {
 
     async use(action: (t: T) => Promise<void>, endFlag?: () => boolean) {
         const items = this.getSorted();
-        console.log(`[${this.name}] find ${items.length} registrable...`);
+        console.debug(`[${this.name}] find ${items.length} registrable...`);
 
         for (const item of items) {
             if (endFlag && endFlag()) {
