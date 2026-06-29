@@ -36,6 +36,7 @@ export const styleConversationProvider:
             if (set.has(id)) continue;
             set.add(id);
             if (slotEntry.type === 'link') {
+                // style 的链接用的是link[rel='stylesheet']的href
                 const style = ctx.document.createElement("link");
                 style.id = id;
                 style.rel = "stylesheet";

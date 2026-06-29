@@ -17,6 +17,7 @@ import {entryState} from "./models";
 import {PresetStyleModel, engineName} from "../models";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {PresetScriptModel} from "@/engines/scripts/models";
+import {submitFormOnKey} from "@/business/client/index.js";
 
 const styleTypes = ["", "link", "text/css"];
 
@@ -29,15 +30,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
         // here is the editor instance
         // you can store it in `useRef` for further usage
         editorRef.current = editor;
-
-        editor.onKeyDown((e) => {
-            if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                // 提交表单
-                formRef.current?.requestSubmit();
-            }
-        });
+        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
     }
 
     const language = (() => {

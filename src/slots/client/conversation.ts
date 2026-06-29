@@ -12,10 +12,15 @@ import {
 import {ClientRegistry} from "@/plugins/client";
 
 export const conversationManager = {
+    // 加载存档后需要做的事情，一般是初始化资源，将该排序的排序，该请求的请求。
     initializer: new ClientRegistry<SlotInitializer>("SlotInitializer"),
+    // 输入处理，用于处理输入，这里输入各个注册的是有依赖顺序的，否则一些字段不存在。
     inputProcesser: new ClientRegistry<LlmapiInputProcesser>("LlmapiInputProcesser"),
+    // 处理输出，有些东西需要保存，这里进行保存的准备。
     outputProcesser: new ClientRegistry<LlmapiOutputProcesser>("LlmapiOutputProcesser"),
+    // 渲染画面，这里是非流式的渲染画面，可以重载一些东西。
     contentRenderer: new ClientRegistry<SlotContentRenderer>("SlotContentRenderer"),
+    // 流式渲染，这里快速替换内容，不宜处理复杂逻辑。
     streamRenderer: new ClientRegistry<SlotStreamRenderer>("SlotStreamRenderer"),
 };
 

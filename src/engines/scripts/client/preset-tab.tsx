@@ -16,6 +16,7 @@ import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {submitFormOnKey} from "@/business/client/index.js";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -28,15 +29,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
         // here is the editor instance
         // you can store it in `useRef` for further usage
         editorRef.current = editor;
-
-        editor.onKeyDown((e) => {
-            if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                // 提交表单
-                formRef.current?.requestSubmit();
-            }
-        });
+        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
     }
 
     const language = (() => {

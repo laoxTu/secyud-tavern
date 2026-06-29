@@ -47,6 +47,7 @@ export const scriptConversationProvider:
                 set.add(id);
                 const script = ctx.document.createElement("script");
                 script.id = id;
+                // link 类型意味着链接
                 if (slotEntry.type === 'link') {
                     script.src = slotEntry.content.trim();
                 } else {

@@ -23,7 +23,7 @@ import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {toast} from "sonner";
 import {editorClassName} from "@/components/consts";
-import {submitTextareaOnKey} from "@/business/client/index.js";
+import {submitFormOnKey, submitTextareaOnKey} from "@/business/client/index.js";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -39,15 +39,7 @@ export function HistoryEditor() {
         // here is the editor instance
         // you can store it in `useRef` for further usage
         editorRef.current = editor;
-
-        editor.onKeyDown((e) => {
-            if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                // 提交表单
-                formRef.current?.requestSubmit();
-            }
-        });
+        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
     }
 
     const handleDialogOpen = (open: boolean) => {
