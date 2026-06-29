@@ -229,6 +229,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         masterId: masterId,
                         entryType: type,
                         entryId: e.id,
+                        disabled: e.disabled,
                         search: bindSearch(type, e),
                         content: JSON.stringify({
                             ...e,
