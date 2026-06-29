@@ -15,6 +15,8 @@ import {
 import {Button} from "@/components/ui/button";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {FilePlusIcon} from "lucide-react";
 
 export interface EntryCreateProps<TEntry> {
     createHandler: (data: FormData) => Promise<void>,
@@ -54,7 +56,16 @@ export function EntryCreate<TEntry>(
     return (
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
-                <Button>{t("default.create")}</Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button onClick={() => setCreateOpen(true)}>
+                            <FilePlusIcon/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('default.create')}</p>
+                    </TooltipContent>
+                </Tooltip>
             </DialogTrigger>
             <DialogContent>
                 <form action={handleCreate}

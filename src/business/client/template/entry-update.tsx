@@ -134,7 +134,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>{disabled ? t("default.enable") : t("default.disable")}</p>
+                                    <p>{disabled ? t("default.disable_item") : t("default.enable_item")}</p>
                                 </TooltipContent>
                             </Tooltip>
                             <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
