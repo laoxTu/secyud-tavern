@@ -156,8 +156,8 @@ export function HistoryChatbox() {
                             .use(provider =>
                                 provider.onRenderStream(streamContext));
                         renderData(streamContext, "content", {
-                            ...streamContext.data,
-                            inputs: undefined
+                            output: streamContext.data.output,
+                            reasoningContent: streamContext.data.reasoningContent
                         });
                     }
                 }
