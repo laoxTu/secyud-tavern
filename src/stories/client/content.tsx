@@ -5,7 +5,7 @@ import {del, get, open, post} from "@/client";
 import {Field} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
-import {ItemContent, ItemTitle} from "@/components/ui/item";
+import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
 import {Button} from "@/components/ui/button";
 import {TabConfig} from "@/components/custom/tab";
 import {useRouter} from "next/navigation";
@@ -16,6 +16,7 @@ import {storyTabManager} from "./tabs";
 import {modelState} from "./models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {createUseTabState} from "@/business/client/models";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
 export const useStoryTabState = createUseTabState(storyTabManager);
 
@@ -26,14 +27,26 @@ function Content() {
     return <TemplateModelList<StoryModel>
         modelState={modelState}
         itemContent={(model) => (<>
-            <ItemContent>
-                <ItemTitle className="flex">
-                    <span className={"w-full overflow-hidden"}> {model.name} - {model.id} </span>
-                    <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
-                            variant={'outline'}>
-                        <CornerDownLeftIcon/>
-                    </Button>
+            <ItemContent className={'flex-1 truncate'}>
+                <ItemTitle className="truncate">
+                    {model.name} - <span className="text-muted-foreground">{
+                    model.content["openingRemarks"]?.substring(0, 100) ?? ""
+                }</span>
                 </ItemTitle>
+                <ItemDescription>{model.llmapi?.code}</ItemDescription>
+            </ItemContent>
+            <ItemContent className="flex-none text-center">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
+                                variant={'outline'}>
+                            <CornerDownLeftIcon/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('story.enter')}</p>
+                    </TooltipContent>
+                </Tooltip>
             </ItemContent>
         </>)}
         createProps={{

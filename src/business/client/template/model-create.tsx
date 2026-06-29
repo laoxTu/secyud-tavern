@@ -16,6 +16,8 @@ import {Button} from "@/components/ui/button";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {ModelState} from "@/business/client/models";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {FileDownIcon, FilePlusIcon} from "lucide-react";
 
 export interface ModelCreateProps<TModel> {
     // 创建 FieldGroup 的内部内容。
@@ -86,7 +88,16 @@ export function ModelCreate<TModel>(
         <>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                 <DialogTrigger asChild>
-                    <Button>{t("default.create")}</Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button onClick={() => setCreateOpen(true)}>
+                                <FilePlusIcon/>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.create')}</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </DialogTrigger>
                 <DialogContent>
                     <form action={handleCreate} className="form-reset">
@@ -112,7 +123,17 @@ export function ModelCreate<TModel>(
             </Dialog>
             <Dialog open={importOpen} onOpenChange={setImportOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline">{t("default.import")}</Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="outline"
+                                    onClick={() => setImportOpen(true)}>
+                                <FileDownIcon/>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.import')}</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </DialogTrigger>
                 <DialogContent>
                     <form action={handleImport}

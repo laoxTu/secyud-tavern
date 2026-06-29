@@ -202,7 +202,7 @@ export function HistoryChatbox() {
                 history = {
                     id: 0,
                     disabled: false,
-                    code: input.length > 10 ? input.substring(0, 10) : input,
+                    code: input.substring(0, 10),
                     name: "0",
                     inputs: [],
                     summary: summary,

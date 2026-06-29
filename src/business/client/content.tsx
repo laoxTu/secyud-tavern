@@ -53,9 +53,9 @@ export function BusinessPageContent() {
     };
     return (
         <div className="flex flex-col h-full">
-            <div className="flex pt-1 px-2 justify-between">
-                <NavigationMenu>
-                    <NavigationMenuList className={"space-x-2"}>
+            <div className="flex pt-1 px-2">
+                <NavigationMenu className={'flex-1 overflow-auto scrollbar-none max-w-full justify-normal'}>
+                    <NavigationMenuList className={"gap-2 text-nowrap"}>
                         {tabs.map((tab, index) => {
                             const Component = tab.label;
                             return (
@@ -75,7 +75,7 @@ export function BusinessPageContent() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger asChild className={'my-auto'}>
                         <Button variant="ghost">{t('default.language')}</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -88,7 +88,6 @@ export function BusinessPageContent() {
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
             </div>
             <div className="flex-1 p-1 overflow-hidden">
                 <Separator/>

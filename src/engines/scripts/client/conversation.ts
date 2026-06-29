@@ -10,7 +10,7 @@ import {PresetScriptModel, engineName, engineArrayName} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
 import {generateCurrentVariables} from "@/slots/client/conversation";
 
-const scriptId = "injected-scripts";
+const prefix = "injected-script";
 
 export const scriptConversationProvider:
     SlotInitializer
@@ -36,13 +36,21 @@ export const scriptConversationProvider:
         ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
     },
     onRenderContent: async (ctx) => {
-        if (!ctx.document.getElementById(scriptId)) {
+        const window = (ctx.window as any);
+        if (!window.__injectedStyleInitialized) {
+            window.__injectedStyleInitialized = true;
             console.debug('start generate injected-scripts');
-            const scripts = ctx.document.createElement("script");
-            scripts.id = scriptId;
+            const set = new Set<string>();
             const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
-            scripts.innerHTML = slotEntries.map((u) => u.content).join("\n");
-            ctx.document.body.appendChild(scripts)
+            for (const slotEntry of slotEntries) {
+                const id = `${prefix}-${slotEntry.code}`;
+                if (set.has(id)) continue;
+                set.add(id);
+                const script = ctx.document.createElement("script");
+                script.id = id;
+                script.innerHTML = slotEntry.content;
+                ctx.document.body.appendChild(script);
+            }
         }
         ctx.window.postMessage({type: "variables", data: generateCurrentVariables(ctx.history)}, "*");
     }

@@ -35,8 +35,7 @@ function Content() {
                 </ItemMedia>
                 <ItemContent>
                     <ItemTitle className="line-clamp-1">
-                        {model.name} - {" "}
-                        <span className="text-muted-foreground">{model.code}</span>
+                        {model.name} - <span className="text-muted-foreground">{model.code}</span>
                     </ItemTitle>
                     <ItemDescription>{model.content.author}</ItemDescription>
                 </ItemContent>

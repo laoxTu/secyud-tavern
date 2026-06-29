@@ -2,7 +2,7 @@
 import {PresetStyleModel, engineName, engineArrayName} from "../models";
 import {EntryModel} from "@/business/models";
 
-const styleId = "injected-styles";
+const prefix = "injected-style";
 
 export const styleConversationProvider:
     SlotInitializer
@@ -23,13 +23,22 @@ export const styleConversationProvider:
         ctx.slot.content[engineArrayName] = slotEntries;
     },
     onRenderContent: async (ctx) => {
-        if (!ctx.document.getElementById(styleId)) {
-            console.debug('start generate injected-styles');
-            const styles = ctx.document.createElement("style");
-            styles.id = styleId;
-            const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
-            styles.innerHTML = slotEntries.map((u) => u.content).join("\n");
-            ctx.document.head.appendChild(styles)
+        const window = (ctx.window as any);
+        if (window.__injectedStyleInitialized) {
+            return;
+        }
+        window.__injectedStyleInitialized = true;
+        console.debug('[injected-styles] start generate');
+        const set = new Set<string>();
+        const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
+        for (const slotEntry of slotEntries) {
+            const id = `${prefix}-${slotEntry.code}`;
+            if (set.has(id)) continue;
+            set.add(id);
+            const style = ctx.document.createElement("style");
+            style.id = id;
+            style.innerHTML = slotEntry.content;
+            ctx.document.head.appendChild(style)
         }
     }
 };

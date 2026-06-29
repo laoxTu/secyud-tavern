@@ -157,24 +157,26 @@ export function ModelList<TModel extends BaseModel>(
                     </div> :
                     <div className="flex flex-col p-2 gap-2 h-full">
                         <div className="flex p-2 gap-2">
-                            <form action={applySearch} className={"flex-1"}>
-                                {searchContent?.()}
-                                <InputGroup>
-                                    <InputGroupInput name="search" id={`${modelState}-list-search`}
-                                                     placeholder={t("default.search")}
-                                                     value={searchInput}
-                                                     onChange={(e) => setSearchInput(e.target.value)}/>
-                                    <InputGroupAddon align={"inline-end"}>
-                                        <InputGroupButton onClick={resetSearch}>
-                                            <XIcon/>
-                                        </InputGroupButton>
-                                        <InputGroupButton type="submit">
-                                            <SearchIcon/>
-                                        </InputGroupButton>
-                                    </InputGroupAddon>
-                                </InputGroup>
-                            </form>
-                            <ModelCreate modelState={modelState} props={createProps}/>
+                            <div className="flex-1 flex overflow-x-auto scrollbar-none gap-2">
+                                <form action={applySearch} className={"flex-1"}>
+                                    {searchContent?.()}
+                                    <InputGroup>
+                                        <InputGroupInput name="search" id={`${modelState}-list-search`}
+                                                         placeholder={t("default.search")}
+                                                         value={searchInput}
+                                                         onChange={(e) => setSearchInput(e.target.value)}/>
+                                        <InputGroupAddon align={"inline-end"}>
+                                            <InputGroupButton onClick={resetSearch}>
+                                                <XIcon/>
+                                            </InputGroupButton>
+                                            <InputGroupButton type="submit">
+                                                <SearchIcon/>
+                                            </InputGroupButton>
+                                        </InputGroupAddon>
+                                    </InputGroup>
+                                </form>
+                                <ModelCreate modelState={modelState} props={createProps}/>
+                            </div>
                             <Button variant={'ghost'} size={'icon'} onClick={() => {
                                 changePanelState(rightPanel.current, collapsed => {
                                     setPanelWidth(collapsed ? 100 : 100 - collapsedSize);
@@ -187,7 +189,7 @@ export function ModelList<TModel extends BaseModel>(
                             <ItemGroup className={"p-2 gap-3"}>
                                 {items && items.map((item, i) => (
                                     <Item key={i} asChild
-                                          className={item.id === model?.id ? "bg-gray-100" : ""}
+                                          className={"overflow-hidden" + (item.id === model?.id ? " bg-gray-100" : "")}
                                           variant={"outline"}
                                           role="listitem" onClick={() => setModel(item)}>
                                         <a className={'cursor-pointer'}>

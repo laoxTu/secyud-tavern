@@ -72,8 +72,7 @@ export function getOpeningHistory(slot: SlotModel) {
         const openingRemarks = slot.story.content?.openingRemarks ?? "";
         openingHistory = {
             id: 0,
-            code: openingRemarks.length > 10 ?
-                openingRemarks.substring(0, 10) : openingRemarks,
+            code: openingRemarks.substring(0, 10),
             name: "0",
             disabled: false,
             inputs: [openingMessage],

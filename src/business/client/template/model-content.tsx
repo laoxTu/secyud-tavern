@@ -137,12 +137,11 @@ export function ModelContent<TModel>(
     return (
         <Tabs value={tabId} onValueChange={setTabId}
               className={"flex flex-col h-full p-4"}>
-            <div className="flex overflow-x-auto scrollbar-none">
-
+            <div className="flex">
                 <Button variant={'ghost'} size={'icon'} onClick={collapse}>
                     <FoldHorizontalIcon/>
                 </Button>
-                <TabsList className="gap-1">
+                <TabsList className="overflow-x-auto scrollbar-none gap-1 justify-normal">
                     {tabs.map((tab, index) => {
                         const Component = tab.label;
                         return (
