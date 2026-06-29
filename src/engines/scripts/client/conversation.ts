@@ -56,14 +56,13 @@ export const scriptConversationProvider:
                     script.innerHTML = slotEntry.content;
                 }
                 await new Promise((resolve, reject) => {
-                    if (script.type === 'importmap') {
-                        ctx.document.head.appendChild(script);
+                    if (script.type !== 'link') {
                         resolve(undefined);
                     } else {
                         script.onload = resolve;
                         script.onerror = reject;
-                        ctx.document.body.appendChild(script);
                     }
+                    ctx.document.head.appendChild(script);
                 });
             }
         }

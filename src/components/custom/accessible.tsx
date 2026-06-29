@@ -22,7 +22,10 @@ export function AccessibleComponent({children, className}
                  onMouseEnter={() => setHovered(true)}>
             </div>
             <div className={`h-screen ${isVisible ? '' : 'hidden'}`}
-                 onClick={() => setHovered(false)}>
+                 onClick={() => {
+                     setHovered(false);
+                     setFocused(false);
+                 }}>
             </div>
             <div className={`transition-all duration-75 ${isVisible ? '' : 'hidden'}`}
                  onMouseLeave={() => setHovered(false)}

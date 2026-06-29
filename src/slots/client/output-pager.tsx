@@ -98,6 +98,7 @@ export function OutputPagerButtonGroup() {
             await conversationManager.contentRenderer
                 .use(provider =>
                     provider.onRenderContent(renderContext));
+            console.debug("[OutputPager] contentRenderer finished");
             renderData(renderContext, "content", renderContext.data);
         } catch (err) {
             handleError(err);
