@@ -15,6 +15,9 @@ import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {entryState} from "./models";
 import {PresetStyleModel, engineName} from "../models";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+
+const styleTypes = ["", "link", "text/css"];
 
 function Tab() {
     const t = useTranslations();
@@ -83,6 +86,7 @@ function Tab() {
                         ...entry,
                         content: editorRef.current?.getValue() ?? "",
                         priority: parseInt(data.get("priority") as string),
+                        type: data.get("type") as string,
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
@@ -102,6 +106,26 @@ function Tab() {
                             <Input name="priority" type={"number"}
                                    id={`${engineName}-priority-${entry.id}`}
                                    defaultValue={entry.priority}/>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                                {t("default.type")}
+                            </FieldLabel>
+                            <Select name={'type'} defaultValue={entry.type ?? ""}>
+                                <SelectTrigger className="w-full"
+                                               id={`${engineName}-type-${entry.id}`}>
+                                    <SelectValue/>
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                    <SelectGroup>
+                                        {styleTypes.map((e) =>
+                                            <SelectItem key={e} value={e}>
+                                                {e}
+                                            </SelectItem>
+                                        )}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         </Field>
                     </div>
                     <Field>

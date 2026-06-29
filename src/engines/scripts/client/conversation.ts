@@ -4,7 +4,6 @@ import {
     SlotInitializer,
     SlotStreamRenderer
 } from "@/slots/client/conversation-models";
-import {PresetStyleModel} from "@/engines/styles/models";
 import {EntryModel} from "@/business/models";
 import {PresetScriptModel, engineName, engineArrayName} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
@@ -37,18 +36,23 @@ export const scriptConversationProvider:
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
-        if (!window.__injectedStyleInitialized) {
-            window.__injectedStyleInitialized = true;
+        if (!window.__injectedScriptInitialized) {
+            window.__injectedScriptInitialized = true;
             console.debug('start generate injected-scripts');
             const set = new Set<string>();
-            const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
+            const slotEntries: PresetScriptModel[] = ctx.slot.content[engineArrayName];
             for (const slotEntry of slotEntries) {
                 const id = `${prefix}-${slotEntry.code}`;
                 if (set.has(id)) continue;
                 set.add(id);
                 const script = ctx.document.createElement("script");
                 script.id = id;
-                script.innerHTML = slotEntry.content;
+                if (slotEntry.type === 'link') {
+                    script.src = slotEntry.content.trim();
+                } else {
+                    script.type = slotEntry.type ?? "";
+                    script.innerHTML = slotEntry.content;
+                }
                 ctx.document.body.appendChild(script);
             }
         }

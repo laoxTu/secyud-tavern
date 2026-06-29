@@ -3,8 +3,8 @@
 export interface PresetStyleModel extends EntryModel {
     content: string;
     priority: number;
+    type?: string;
 }
-
 
 export const engineName = "style";
 export const engineArrayName = "styles";

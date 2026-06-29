@@ -35,10 +35,19 @@ export const styleConversationProvider:
             const id = `${prefix}-${slotEntry.code}`;
             if (set.has(id)) continue;
             set.add(id);
-            const style = ctx.document.createElement("style");
-            style.id = id;
-            style.innerHTML = slotEntry.content;
-            ctx.document.head.appendChild(style)
+            if (slotEntry.type === 'link') {
+                const style = ctx.document.createElement("link");
+                style.id = id;
+                style.rel = "stylesheet";
+                style.href = slotEntry.content.trim();
+                ctx.document.head.appendChild(style)
+            } else {
+                const style = ctx.document.createElement("style");
+                style.id = id;
+                style.innerHTML = slotEntry.content;
+                ctx.document.head.appendChild(style)
+            }
+
         }
     }
 };
