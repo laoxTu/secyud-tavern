@@ -23,6 +23,7 @@ import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {toast} from "sonner";
 import {editorClassName} from "@/components/consts";
+import {submitTextareaOnKey} from "@/business/client/index.js";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -130,7 +131,8 @@ export function HistoryEditor() {
                                     </FieldLabel>
                                     <Textarea defaultValue={u.content}
                                               name={`history_input-${i}`}
-                                              id={`history_input-${i}`}/>
+                                              id={`history_input-${i}`}
+                                              onKeyDown={submitTextareaOnKey}/>
                                 </Field>))}
                             {history.outputs.map((u, i) => (
                                 <Field key={i}>
@@ -140,7 +142,8 @@ export function HistoryEditor() {
                                     </FieldLabel>
                                     <Textarea defaultValue={u.content}
                                               name={`history_output-${i}`}
-                                              id={`history_output-${i}`}/>
+                                              id={`history_output-${i}`}
+                                              onKeyDown={submitTextareaOnKey}/>
                                 </Field>))}
                         </FieldGroup>
                     </FieldSet>

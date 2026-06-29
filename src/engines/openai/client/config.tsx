@@ -10,6 +10,7 @@ import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/llmapis/client/models";
+import {submitTextareaOnKey} from "@/business/client/index.js";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -114,7 +115,8 @@ function Content() {
                     {t(`${moduleName}.extras`)}
                 </FieldLabel>
                 <Textarea id={`${moduleName}-extras`} name={"extras"}
-                          defaultValue={JSON.stringify(config.extras)}/>
+                          defaultValue={JSON.stringify(config.extras)}
+                          onKeyDown={submitTextareaOnKey}/>
             </Field>
         </>
     );

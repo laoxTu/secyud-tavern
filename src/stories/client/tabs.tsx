@@ -14,6 +14,7 @@ import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
 import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
+import {submitTextareaOnKey} from "@/business/client/index.js";
 
 
 function Tab() {
@@ -66,6 +67,7 @@ function Tab() {
                     </FieldLabel>
                     <Textarea name="openingRemarks" id={`${moduleName}-opening_remarks`}
                               defaultValue={model.content.openingRemarks ?? ""}
+                              onKeyDown={submitTextareaOnKey}
                     />
                 </Field>
             </>)

@@ -15,6 +15,7 @@ import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, PresetModel} from "../models";
 import {modelState} from "./models";
+import {submitTextareaOnKey} from "@/business/client/index.js";
 
 export const defaultTags = [
     "theme", "story", "preset"
@@ -126,7 +127,8 @@ export function DefaultTab() {
                         {t("default.description")}
                     </FieldLabel>
                     <Textarea name="description" id={`${moduleName}-description`}
-                              defaultValue={model.content.description ?? ""}/>
+                              defaultValue={model.content.description ?? ""}
+                              onKeyDown={submitTextareaOnKey}/>
                 </Field>
             </>)
         }}/>

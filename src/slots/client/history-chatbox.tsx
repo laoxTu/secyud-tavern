@@ -34,6 +34,7 @@ import {useTranslations} from "next-intl";
 import {readStream, tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
 import {handleHistoryPageChange, useHistoryPageState} from "@/slots/client/history-pager";
+import {submitTextareaOnKey} from "@/business/client/index.js";
 
 export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
     return ctx.current.content["ReplyAbortController"] as AbortController
@@ -264,12 +265,7 @@ export function HistoryChatbox() {
                 <InputGroupTextarea id='slot-user-input'
                                     name='slot-user-input'
                                     placeholder={t('default.ctrl_enter_submit')}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && e.ctrlKey) {
-                                            e.preventDefault();
-                                            e.currentTarget.form?.requestSubmit();
-                                        }
-                                    }}/>
+                                    onKeyDown={submitTextareaOnKey}/>
                 <InputGroupAddon align="inline-end">
                     <InputGroupText>
                         <Checkbox name={'summary'} id={'summary-checkbox'}/>
