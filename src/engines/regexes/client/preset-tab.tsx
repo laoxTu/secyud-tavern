@@ -78,6 +78,8 @@ function Tab() {
                         pattern: data.get("pattern") as string,
                         replacement: data.get("replacement") as string,
                         target: data.get("target") as string,
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {

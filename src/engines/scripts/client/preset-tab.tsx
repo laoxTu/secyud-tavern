@@ -1,5 +1,5 @@
 ﻿import {PaletteIcon} from "lucide-react";
-import React, {useRef} from "react";
+import React, {RefObject, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {del, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
@@ -10,7 +10,7 @@ import {TemplateEntryList} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/presets/client/models";
 import {moduleName} from "@/presets/models";
-import Editor, {OnMount} from "@monaco-editor/react";
+import MonacoEditor, {OnMount} from "@monaco-editor/react";
 import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {entryState} from "./models";
@@ -19,15 +19,85 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
-function Tab() {
+function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
-    const {model} = useItemState();
     const editorRef = useRef<IStandaloneCodeEditor>(null);
+    const [type, setType] = useState(entry.type ?? "");
+    const [content, setContent] = useState<string | undefined>(entry.content);
     const handleEditorDidMount: OnMount = (editor) => {
         // here is the editor instance
         // you can store it in `useRef` for further usage
         editorRef.current = editor;
+
+        editor.onKeyDown((e) => {
+            if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                // 提交表单
+                formRef.current?.requestSubmit();
+            }
+        });
     }
+
+    const language = (() => {
+        switch (type) {
+            case "link":
+                return "plaintext";
+            case "importmap":
+                return "json";
+            default:
+                return "javascript";
+        }
+    })();
+
+    return (<>
+        <div className="grid md:grid-cols-2 gap-4">
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                    {t("default.priority")}
+                </FieldLabel>
+                <Input name="priority" type={"number"}
+                       id={`${engineName}-priority-${entry.id}`}
+                       defaultValue={entry.priority}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                    {t("default.type")}
+                </FieldLabel>
+                <Select name={'type'}
+                        value={type} onValueChange={setType}>
+                    <SelectTrigger className="w-full"
+                                   id={`${engineName}-type-${entry.id}`}>
+                        <SelectValue/>
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                        <SelectGroup>
+                            {scriptTypes.map((e) =>
+                                <SelectItem key={e} value={e}>
+                                    {e}
+                                </SelectItem>
+                            )}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+            </Field>
+        </div>
+        <Field>
+            <FieldLabel onClick={() => editorRef.current?.focus()}>
+                {t("default.content")}
+            </FieldLabel>
+            <input type={'hidden'} name={'content'} value={content}/>
+            <MonacoEditor className={editorClassName} height={'20rem'}
+                          language={language}
+                          value={content} onChange={setContent}
+                          onMount={handleEditorDidMount}
+            />
+        </Field>
+    </>);
+}
+
+function Tab() {
+    const {model} = useItemState();
     return (
         <TemplateEntryList<PresetScriptModel>
             entryState={entryState}
@@ -84,9 +154,11 @@ function Tab() {
                 updateHandler: async (entry, data) => {
                     const result = {
                         ...entry,
-                        content: editorRef.current?.getValue() ?? "",
+                        content: data.get("content") as string,
                         priority: parseInt(data.get("priority") as string),
                         type: data.get("type") as string,
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
@@ -97,47 +169,8 @@ function Tab() {
                     });
                     return result;
                 },
-                updateContent: (entry) => (<>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                                {t("default.priority")}
-                            </FieldLabel>
-                            <Input name="priority" type={"number"}
-                                   id={`${engineName}-priority-${entry.id}`}
-                                   defaultValue={entry.priority}/>
-                        </Field>
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                                {t("default.type")}
-                            </FieldLabel>
-                            <Select name={'type'} defaultValue={entry.type ?? ""}>
-                                <SelectTrigger className="w-full"
-                                               id={`${engineName}-type-${entry.id}`}>
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectGroup>
-                                        {scriptTypes.map((e) =>
-                                            <SelectItem key={e} value={e}>
-                                                {e}
-                                            </SelectItem>
-                                        )}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </Field>
-                    </div>
-                    <Field>
-                        <FieldLabel onClick={() => editorRef.current?.focus()}>
-                            {t("default.content")}
-                        </FieldLabel>
-                        <Editor className={editorClassName}
-                                defaultLanguage={'javascript'} height={'20rem'}
-                                defaultValue={entry.content}
-                                onMount={handleEditorDidMount}/>
-                    </Field>
-                </>)
+                updateContent: (entry, formRef) =>
+                    (<Editor entry={entry} formRef={formRef}/>)
             }}/>
     );
 }

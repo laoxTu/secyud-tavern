@@ -1,6 +1,6 @@
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import React, {useState} from "react";
+import React, {RefObject, useRef, useState} from "react";
 import {EntryState} from "@/business/client/models";
 import {Card, CardContent} from "@/components/ui/card";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
@@ -32,7 +32,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 export interface EntryUpdateProps<TEntry> {
     disableHandler: (entry: TEntry, disabled: boolean) => Promise<TEntry>;
     updateHandler: (entry: TEntry, data: FormData) => Promise<TEntry>;
-    updateContent: (entry: TEntry) => React.ReactNode;
+    updateContent: (entry: TEntry, formRef: RefObject<HTMLFormElement | null>) => React.ReactNode;
     deleteHandler: (entry: TEntry) => Promise<void>;
     cloneHandler: (entry: TEntry, data: FormData) => Promise<void>;
 }
@@ -67,6 +67,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
     const [disabled, setDisabled] = useState(entry.disabled);
     const [cloneOpen, setCloneOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
     const {fetch} = usePagedItemsState();
     const handleUpdate = async (data: FormData) => {
         try {
@@ -221,7 +222,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                         </div>
                     </div>
                     <CollapsibleContent asChild className={"p-1"}>
-                        <form action={handleUpdate}>
+                        <form action={handleUpdate} ref={formRef}>
                             <FieldGroup>
                                 <FieldSet>
                                     <FieldGroup>
@@ -243,7 +244,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                                        defaultValue={entry.name}/>
                                             </Field>
                                         </div>
-                                        {updateContent(entry)}
+                                        {updateContent(entry, formRef)}
                                     </FieldGroup>
                                 </FieldSet>
                                 <Field orientation="horizontal">

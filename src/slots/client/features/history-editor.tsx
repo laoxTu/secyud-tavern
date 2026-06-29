@@ -33,11 +33,21 @@ export function HistoryEditor() {
     const [history, setHistory] = useState<StoryHistory | undefined>(undefined);
     const [open, setOpen] = useState<boolean>(false);
     const editorRef = useRef<IStandaloneCodeEditor>(null);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const handleEditorDidMount: OnMount = (editor) => {
         // here is the editor instance
         // you can store it in `useRef` for further usage
         editorRef.current = editor;
+
+        editor.onKeyDown((e) => {
+            if ((e.ctrlKey || e.metaKey) && e.code === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                // 提交表单
+                formRef.current?.requestSubmit();
+            }
+        });
     }
 
     const handleDialogOpen = (open: boolean) => {
@@ -108,7 +118,7 @@ export function HistoryEditor() {
         </DialogTrigger>
         <DialogContent>
             {history && (
-                <form action={handleHistoryUpdate}>
+                <form action={handleHistoryUpdate} ref={formRef}>
                     <DialogHeader>
                         <DialogTitle>{t('slot.edit_history')}</DialogTitle>
                     </DialogHeader>

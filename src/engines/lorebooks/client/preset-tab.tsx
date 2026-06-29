@@ -187,6 +187,8 @@ function Tab() {
                         priority: parseInt(data.get("priority") as string),
                         layer: parseInt(data.get("layer") as string),
                         role: data.get("role") as string,
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {

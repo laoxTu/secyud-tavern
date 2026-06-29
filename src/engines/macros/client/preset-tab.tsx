@@ -75,6 +75,8 @@ function Tab() {
                         ...entry,
                         key: data.get("key") as string,
                         value: data.get("value") as string,
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
