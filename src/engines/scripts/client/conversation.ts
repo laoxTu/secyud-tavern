@@ -50,6 +50,8 @@ export const scriptConversationProvider:
                 // link 类型意味着链接
                 if (slotEntry.type === 'link') {
                     script.src = slotEntry.content.trim();
+                    script.async = false;
+                    script.defer = false;
                 } else {
                     script.type = slotEntry.type ?? "";
                     script.innerHTML = slotEntry.content;
