@@ -1,4 +1,7 @@
 {
+  "default": {
+    "about": "About"
+  },
   "about": {
     "tag1": "Presets as Bundles",
     "tag2": "Multi-Core Parallel",
