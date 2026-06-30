@@ -1,104 +1,167 @@
 /**
- * 插件打包脚本
- * 用法: pnpm generate-plugin <plugin-name>
+ * 生成 src/plugins/manifests.ts
+ * 扫描 plugins 子目录，将 manifest.json 内容内联，
+ * 并为每个有 serverScript 的插件生成静态 import，
+ * 使服务端插件可以直接引用 @/ 模块。
  *
- * esbuild 打包 → 将 manifest.modules 中的 import 替换为读 window.__PLUGIN_API__
+ * 用法: npx tsx scripts/generate-plugin-manifests.ts
  */
-import * as esbuild from 'esbuild';
-import path from 'path';
-import fs from 'fs';
 import {fileURLToPath} from 'url';
+import fs from "fs/promises";
+import path from "path";
+import {PluginManifest} from "@/plugins/models";
+import {PluginManager} from "@/plugins/manager";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const pluginsDir = path.join(root, 'plugins');
 
-const pluginName = process.argv[2];
-if (!pluginName) {
-    console.error('用法: pnpm generate-plugin <plugin-name>');
-    process.exit(1);
+await generatePlugin();
+
+async function generatePlugin() {
+    const pluginManager = new PluginManager("GeneratePlugin");
+    pluginManager.register(...(await getPluginManifests()))
+    const manifests = pluginManager.getSorted();
+    const manifestPath = path.join(root, 'src', 'plugins', 'manifests.ts');
+    await fs.writeFile(manifestPath,
+        `export const manifests = ${JSON.stringify(manifests)}`);
+    const serverRegisterPath = path.join(root, 'src', 'plugins', 'server', 'registerer.ts');
+    const serverPlugins = manifests.filter(
+        u => u.serverScript && u.serverScript !== "")
+    await fs.writeFile(serverRegisterPath,
+        `${serverPlugins
+            .map((u, i) =>
+                `import registerer${i} from '@plugins/${u.folder}/${u.serverScript}';`)
+            .join(" ")}export async function registerServerPlugin() {${serverPlugins
+            .map((u, i) =>
+                `await registerer${i}();`)
+            .join("")}}
+        `);
+    const clientRegisterPath = path.join(root, 'src', 'plugins', 'client', 'registerer.ts');
+    const clientPlugins = manifests.filter(
+        u => u.clientScript && u.clientScript !== "")
+    await fs.writeFile(clientRegisterPath,
+        `${clientPlugins
+            .map((u, i) =>
+                `import registerer${i} from '@plugins/${u.folder}/${u.clientScript}';`)
+            .join(" ")}export async function registerClientPlugin() {${clientPlugins
+            .map((u, i) =>
+                `await registerer${i}();`)
+            .join("")}}
+        `);
 }
 
-const pluginDir = path.join(pluginsDir, pluginName);
-if (!fs.existsSync(pluginDir)) {
-    console.error(`插件目录不存在: ${pluginDir}`);
-    process.exit(1);
+async function getPluginManifests() {
+    // 检查插件目录是否存在
+    try {
+        await fs.access(pluginsDir);
+    } catch {
+        console.warn(`[plugin loader] 📁 plugins folder not found.`);
+        return [];
+    }
+
+    // 读取 plugins 目录下的所有文件夹
+    const entries = await fs.readdir(pluginsDir, {withFileTypes: true});
+    const folders = entries
+        .filter(entry => entry.isDirectory() && !entry.name.startsWith("_"))
+        .map(entry => entry.name);
+
+    console.info(`[plugin loader] 📂 find ${folders.length} plugins folder:`, folders);
+
+    const manifests: PluginManifest[] = [];
+    for (const folder of folders) {
+        const manifestPath = path.join(pluginsDir, folder, "manifest.json");
+
+        try {
+            await fs.access(manifestPath);
+            const manifestText = await fs.readFile(manifestPath, 'utf-8');
+            const manifest = JSON.parse(manifestText) as PluginManifest;
+            manifest.folder = folder;
+            manifests.push(manifest);
+            console.info(`[plugin loader] 📂 find plugin: ${folder}`);
+        } catch (e) {
+            console.warn(`[plugin loader] 📂 ${folder} is not a plugin directory.`);
+        }
+    }
+    return manifests;
 }
 
-const manifestPath = path.join(pluginDir, 'manifest.json');
-const manifest = fs.existsSync(manifestPath)
-    ? JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
-    : {};
-const modules: string[] = manifest.modules ?? [];
-
-// react/jsx-runtime 是 jsx automatic 编译产物，react 在 modules 里就自动补上
-if (modules.includes('react')) {
-    modules.push('react/jsx-runtime', 'react/jsx-dev-runtime');
-}
-
-const entry = ['client.tsx', 'client.ts']
-    .map(f => path.join(pluginDir, f))
-    .find(f => fs.existsSync(f));
-
-if (!entry) {
-    console.error(`未找到入口文件 (client.tsx / client.ts): ${pluginDir}`);
-    process.exit(1);
-}
-
-const outFile = path.join(pluginDir, 'client.js');
-
-console.log(`[generate-plugin] ${pluginName}`);
-console.log(`  入口: ${path.relative(root, entry)}`);
-console.log(`  输出: ${path.relative(root, outFile)}`);
-console.log(`  modules: ${modules.join(', ') || '(无)'}`);
-
-// esbuild 打包（非 module 的正常 bundle，module 标 external 保留 import）
-await esbuild.build({
-    entryPoints: [entry],
-    bundle: true,
-    outfile: outFile,
-    format: 'esm',
-    platform: 'browser',
-    target: 'es2020',
-    jsx: 'automatic',
-    tsconfig: path.join(root, 'tsconfig.json'),
-    loader: {'.ts': 'tsx'},
-    external: modules,
-    minify: false,
-    sourcemap: 'inline',
-});
-
-// 后处理：将 external 残留的 import 语句替换为读 window.__PLUGIN_API__
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\\/@]/g, '\\$&');
-let output = fs.readFileSync(outFile, 'utf-8');
-
-for (const mod of modules) {
-    const api = `window.__PLUGIN_API__['${mod}']`;
-
-    // import x, { a, b } from 'mod'  →  const { default: x, a, b } = window.__PLUGIN_API__['mod'];
-    output = output.replace(
-        new RegExp(`import\\s*(\\w+)\\s*,\\s*\\{([^}]*)\\}\\s*from\\s*['"]${escapeRe(mod)}['"];?`, 'g'),
-        (_, defaultName, names) => `const { default: ${defaultName}, ${names} } = ${api};`,
-    );
-
-    // import { a, b } from 'mod'  →  const { a, b } = window.__PLUGIN_API__['mod'];
-    output = output.replace(
-        new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*['"]${escapeRe(mod)}['"];?`, 'g'),
-        (_, names) => `const {${names}} = ${api};`,
-    );
-
-    // import * as x from 'mod'  →  const x = window.__PLUGIN_API__['mod'];
-    output = output.replace(
-        new RegExp(`import\\s*\\*\\s*as\\s*(\\w+)\\s*from\\s*['"]${escapeRe(mod)}['"];?`, 'g'),
-        (_, name) => `const ${name} = ${api};`,
-    );
-
-    // import x from 'mod'  →  const { default: x } = window.__PLUGIN_API__['mod'];
-    output = output.replace(
-        new RegExp(`import\\s*(\\w+)\\s*from\\s*['"]${escapeRe(mod)}['"];?`, 'g'),
-        (_, name) => `const { default: ${name} } = ${api};`,
-    );
-}
-
-fs.writeFileSync(outFile, output);
-console.log(`[generate-plugin] ✅ 完成`);
+//
+// const outFile = path.join(root, 'src', 'plugins', 'manifests.ts');
+// // ---- 1. 扫描插件目录 ----
+// const plugins: { manifest: Manifest; serverTsExists: boolean }[] = [];
+//
+// if (fs.existsSync(pluginsDir)) {
+//     for (const name of fs.readdirSync(pluginsDir, {withFileTypes: true})) {
+//         if (!name.isDirectory() || name.name.startsWith('_')) continue;
+//
+//         const pluginDir = path.join(pluginsDir, name.name);
+//         const manifestPath = path.join(pluginDir, 'manifest.json');
+//
+//         if (!fs.existsSync(manifestPath)) continue;
+//
+//         const raw = JSON.parse(fs.readFileSync(manifestPath, 'utf-8')) as Manifest;
+//         raw.path = `/plugins/${name.name}`;
+//
+//         const serverTs = ['server.ts', 'server.tsx']
+//             .map(f => path.join(pluginDir, f))
+//             .find(f => fs.existsSync(f));
+//
+//         plugins.push({
+//             manifest: raw,
+//             serverTsExists: !!serverTs,
+//         });
+//     }
+// }
+//
+// // ---- 2. 生成文件 ----
+// const lines: string[] = [
+//     '// Auto-generated by scripts/generate-plugin-manifests.ts — DO NOT EDIT',
+//     '// eslint-disable',
+//     "import type { PluginManifest } from './models';",
+//     '',
+// ];
+//
+// // 生成 server module 静态 import
+// const imports: string[] = [];
+// const entries: string[] = [];
+//
+// for (const [i, p] of plugins.entries()) {
+//     const relDir = path.relative(path.dirname(outFile), path.join(pluginsDir, p.manifest.id));
+//
+//     if (p.serverTsExists) {
+//         imports.push(`import * as _server_${i} from '${relDir.replace(/\\/g, '/')}/server';`);
+//     } else {
+//         imports.push(`const _server_${i}: any = null;`);
+//     }
+//
+//     const mods = JSON.stringify(p.manifest.modules ?? []);
+//     entries.push(
+//         `    {` +
+//         ` id: '${p.manifest.id}',` +
+//         ` version: '${p.manifest.version}',` +
+//         ` path: '${p.manifest.path}',` +
+//         ` ${p.manifest.serverScript ? `serverScript: '${p.manifest.serverScript}',` : ''}` +
+//         ` ${p.manifest.clientScript ? `clientScript: '${p.manifest.clientScript}',` : ''}` +
+//         ` modules: ${mods},` +
+//         ` serverModule: _server_${i},` +
+//         ` }`
+//     );
+// }
+//
+// lines.push(...imports);
+// lines.push('');
+// lines.push(`export interface PluginEntry extends PluginManifest {`);
+// lines.push(`    serverModule: { default: () => Promise<void> | void } | null;`);
+// lines.push(`}`);
+// lines.push('');
+// lines.push('const _entries: PluginEntry[] = [');
+// lines.push(entries.join(',\n'));
+// lines.push('];');
+// lines.push('');
+// lines.push('export function getPluginEntries(): PluginEntry[] {');
+// lines.push('    return _entries;');
+// lines.push('}');
+//
+// fs.writeFileSync(outFile, lines.join('\n') + '\n');
+// console.log(`[generate-plugin-manifests] ✅ ${plugins.length} plugins → ${outFile}`);

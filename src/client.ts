@@ -13,9 +13,8 @@ const getBaseUrl = () => {
     }
     return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 }
-// 基础请求函数
-const baseRequest = async (url: string, options: RequestInit) => {
-    const response = await fetch(getBaseUrl() + url, options);
+
+export async function handleResponse(response: Response) {
     const contentType = response.headers.get("Content-Type");
 
     if (!contentType?.includes("application/json")) {
@@ -26,7 +25,6 @@ const baseRequest = async (url: string, options: RequestInit) => {
     if (!response.ok) {
         throw new ApiError(json.message ?? "Internal Server Error", json.code, json.data);
     }
-
     return json;
 }
 
@@ -110,8 +108,8 @@ export async function api<
         window.open(fullUrl);
         return;
     }
-
-    return baseRequest(fullUrl, fetchOptions);
+    const response = await fetch(getBaseUrl() + url, options);
+    return await handleResponse(response);
 }
 
 export const get = (url: keyof Paths, options?: any) => api(url, 'get', options);

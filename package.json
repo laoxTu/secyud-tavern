@@ -9,9 +9,8 @@
     "start": "next start",
     "test": "vitest",
     "gen-client-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
-    "gen-plugin-api": "npx tsx scripts/generate-plugin-api.ts",
     "gen-db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
-    "gen-plugin": "node scripts/generate-plugin.ts"
+    "gen-plugin": "npx scripts/generate-plugin.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

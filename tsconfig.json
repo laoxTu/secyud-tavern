@@ -26,7 +26,8 @@
       "@/*": [
         "./src/*"
       ],
-      "@tests/*": ["./tests/*"]
+      "@tests/*": ["./tests/*"],
+      "@plugins/*": ["./plugins/*"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },

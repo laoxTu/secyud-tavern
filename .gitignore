@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+/src/plugins/manifests.ts
+/src/plugins/server/registerer.ts
+/src/plugins/client/registerer.ts
 /database/images
 /database/*.db
 # dependencies

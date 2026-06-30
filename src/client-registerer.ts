@@ -1,8 +1,6 @@
 ﻿'use client';
 import {useEffect, useRef, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
-import {pluginManager} from "@/plugins/manager";
-import {pluginApi} from "@/plugins/client/api";
 import {registerDeepseekClient} from "@/engines/deepseek/client";
 import {registerStylesClient} from "@/engines/styles/client";
 import {registerScriptsClient} from "@/engines/scripts/client";
@@ -16,6 +14,7 @@ import {registerSlotClient} from "@/slots/client";
 import {registerBusinessClient} from "@/business/client/index.js";
 import {registerComponents} from "@/components";
 import {registerOpenAIClient} from "@/engines/openai/client";
+import {registerClientPlugin} from "@/plugins/client/registerer";
 
 async function loadClientPlugins() {
     registerComponents();
@@ -34,12 +33,7 @@ async function loadClientPlugins() {
     registerScriptsClient();
     registerMacrosClient();
 
-    // 动态 import：plugin.ts 包含 monaco-editor 等浏览器专用库，
-    // 必须在客户端加载，SSR 会因 window 不存在而崩溃
-    const {buildPluginApi} = await import('./plugins/client/api-list');
-    buildPluginApi();
-
-    await pluginManager.loadClientPlugins(pluginApi);
+    await registerClientPlugin();
 }
 
 export const useClientPlugins = () => {

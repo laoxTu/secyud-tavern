@@ -5,7 +5,6 @@ export class ServerRegistry<T extends Registerable> extends Registry<T> {
     protected constructor(name: string) {
         super(name);
     }
-
 }
 
 export function getInstance<T extends ServerRegistry<any>>(
