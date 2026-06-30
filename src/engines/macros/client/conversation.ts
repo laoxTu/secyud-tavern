@@ -14,9 +14,9 @@ import {StoryHistory} from "@/stories/models";
 const eta = new Eta();
 
 function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
-    const macroObject: Record<string, any> = ctx.slot.content[engineArrayName];
+    const cache: MacroConversationCache = ctx.slot.content[engineArrayName];
     return {
-        ...macroObject,
+        ...cache.variables,
         variables: generateCurrentVariables(ctx.history, false),
     }
 }
