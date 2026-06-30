@@ -108,7 +108,7 @@ export async function api<
         window.open(fullUrl);
         return;
     }
-    const response = await fetch(getBaseUrl() + url, options);
+    const response = await fetch(getBaseUrl() + "/api" + url, options);
     return await handleResponse(response);
 }
 
