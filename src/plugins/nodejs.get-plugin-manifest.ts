@@ -20,7 +20,7 @@ export default async function getPluginManifests() {
         .filter(entry => entry.isDirectory() && !entry.name.startsWith("_"))
         .map(entry => entry.name);
 
-    console.log(`[plugin loader] 📂 find ${folders.length} plugins folder:`, folders);
+    console.info(`[plugin loader] 📂 find ${folders.length} plugins folder:`, folders);
 
     const manifests: PluginManifest[] = [];
     for (const folder of folders) {
@@ -34,7 +34,7 @@ export default async function getPluginManifests() {
             manifest.path = `/${pluginDir}/${folder}`;
             manifest.directory = pathToFileURL(pluginPath).toString();
             manifests.push(manifest);
-            console.log(`[plugin loader] 📂 find plugin: ${pluginDir}/${folder}`);
+            console.info(`[plugin loader] 📂 find plugin: ${pluginDir}/${folder}`);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_e) {
             console.warn(`[plugin loader] 📂 ${pluginDir}/${folder} is not a plugin directory.`);

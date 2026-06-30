@@ -54,14 +54,14 @@ class PluginManager extends Registry<PluginManifest> {
         try {
             if (!script) return;
             if (process.env.NEXT_RUNTIME !== 'nodejs') {
-                console.log('[plugin manager] Edge runtime: skipping file operations');
+                console.info('[plugin manager] Edge runtime: skipping file operations');
                 return;
             }
             console.debug(`[${this.name}] ℹ️ load plugin: ${manifest.id}`);
             const pluginModule = await import(/* webpackIgnore: true */`${manifest.directory}/${script}`);
             const plugin = pluginModule.default;
             await plugin();
-            console.log(`[${this.name}] ✅ load plugin: ${manifest.id}`);
+            console.info(`[${this.name}] ✅ load plugin: ${manifest.id}`);
         } catch (error) {
             console.error(`[${this.name}] ❌ load plugin ${manifest.id} failed:`, error);
             throw error;

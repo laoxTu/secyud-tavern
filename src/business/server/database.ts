@@ -13,7 +13,7 @@ export class DatabaseManager {
 
     async migrate() {
         await migrate(this.db, {migrationsFolder: dbMigrationFolder});
-        console.log("[business manager] business migrated successfully");
+        console.info("[business manager] business migrated successfully");
     }
 }
 

@@ -23,12 +23,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
-      drizzle-kit:
-        specifier: ^0.31.10
-        version: 0.31.10
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@libsql/client@0.17.4)
@@ -114,6 +108,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.2
         version: 6.0.2(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4))
+      drizzle-kit:
+        specifier: ^0.31.10
+        version: 0.31.10
       esbuild:
         specifier: ^0.28.1
         version: 0.28.1
