@@ -92,31 +92,30 @@ export interface PaginationWrapperProps<T> {
  * @example generatePaginationRange(5, 10, 7) => [1, '...', 4, 5, 6, '...', 10]
  */
 function generatePaginationRange(
-    currentPage: number,
-    totalPages: number,
-    pageVisibleCount: number = 5
+    pageCur: number,
+    pageMax: number,
+    pageCnt: number = 5
 ): number [] {
     // 确保参数是有效数字
-    const current = Math.max(0, Math.min(currentPage, totalPages - 1));
-    const total = Math.max(0, totalPages);
-    const max = Math.max(3, Math.min(pageVisibleCount, total));
+    pageMax = Math.max(pageMax, 0);
+    pageCur = Math.max(0, Math.min(pageMax - 1, pageCur));
 
     // 显示所有页
-    if (total <= max) {
-        return Array.from({length: total}, (_, i) => i);
+    if (pageMax <= pageCnt) {
+        return Array.from({length: pageMax}, (_, i) => i);
     }
 
-    let startPage = current - Math.floor((max - 3) / 2);
-    let endPage = startPage + max;
+    let startPage = Math.max(0, pageCur - Math.floor(pageCnt / 2));
+    let endPage = startPage + pageCnt;
 
     // 调整边界
     if (startPage <= 0) {
         startPage = 0;
-        endPage = max;
+        endPage = pageCnt;
     }
-    if (endPage >= total) {
-        endPage = total;
-        startPage = total - max;
+    if (endPage >= pageMax) {
+        endPage = pageMax;
+        startPage = endPage - pageCnt;
     }
 
     const pages: number[] = [];
@@ -134,12 +133,12 @@ function generatePaginationRange(
     }
 
     // 添加右侧省略号
-    if (endPage < total) {
+    if (endPage < pageMax) {
         pages.push(-1);
     }
 
-    if (total > 1)
-        pages.push(total - 1);
+    if (pageMax > 1)
+        pages.push(pageMax - 1);
 
     return pages;
 }
