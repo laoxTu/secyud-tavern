@@ -3,12 +3,6 @@
     engineArrayName,
     PresetLorebookModel,
     compareLorebook,
-    setLorebooks,
-    setStartLorebooks,
-    setEndLorebooks,
-    getLorebooks,
-    getStartLorebooks,
-    getEndLorebooks
 } from "../models";
 import {matchName} from "../match/always/models";
 import {generateCurrentVariables} from "@/slots/client/conversation";
@@ -22,6 +16,12 @@ import {
 import {getCurrentOutput, StoryHistoryMessage} from "@/stories/models";
 
 
+export interface LorebookConversationCache {
+    before: PresetLorebookModel[],
+    after: PresetLorebookModel[]
+    entries: Record<string, PresetLorebookModel>
+}
+
 export const lorebookConversationProvider:
     SlotInitializer
     & LlmapiInputProcesser
@@ -29,35 +29,33 @@ export const lorebookConversationProvider:
     = {
     id: engineName,
     onInitialize: async (ctx) => {
-        const lorebooks: Record<string, PresetLorebookModel> = {};
-        const startLorebooks: PresetLorebookModel[] = [];
-        const endLorebooks: PresetLorebookModel[] = [];
+        const cache: LorebookConversationCache = {
+            before: [],
+            after: [],
+            entries: {}
+        };
         for (const preset of ctx.slot.presets) {
-            const entryLorebooks = preset.entries
+            const entries = preset.entries
                 ?.[engineArrayName] as PresetLorebookModel[];
-            if (!entryLorebooks) continue;
-            for (const lorebook of entryLorebooks) {
-                if (lorebook.disabled) continue;
-                const id = `${preset.code}-${lorebook.code}`;
+            if (!entries) continue;
+            for (const entry of entries) {
+                if (entry.disabled) continue;
+                const id = `${preset.code}-${entry.code}`;
                 // 替换code，唯一标识
-                lorebook.code = id;
-                if (lorebook.matchType === matchName) {
-                    if (lorebook.matchExpression?.lastMessage)
-                        endLorebooks.push(lorebook);
-                    else startLorebooks.push(lorebook);
+                entry.code = id;
+                if (entry.matchType === matchName) {
+                    if (entry.matchExpression?.lastMessage)
+                        cache.after.push(entry);
+                    else cache.before.push(entry);
                 } else {
-                    lorebooks[id] = lorebook;
+                    cache.entries[id] = entry;
                 }
             }
         }
-        setLorebooks(ctx.slot.content, lorebooks);
-        setStartLorebooks(ctx.slot.content, startLorebooks);
-        setEndLorebooks(ctx.slot.content, endLorebooks);
+        ctx.slot.content[engineArrayName] = cache;
     },
     onProcessInput: async (ctx) => {
-        const lorebooks = getLorebooks(ctx.slot.content);
-        setStartLorebooks(ctx.content, getStartLorebooks(ctx.slot.content));
-        setEndLorebooks(ctx.content, getEndLorebooks(ctx.slot.content));
+        const cache: LorebookConversationCache = ctx.slot.content[engineArrayName];
 
         const prepareLorebooks: PresetLorebookModel[] = [];
         // 将世界书拷贝到上下文中，用于生成提示词。
@@ -78,13 +76,13 @@ export const lorebookConversationProvider:
         function setActiveLorebooks(history: LlmapiHistory, message: StoryHistoryMessage, includeOutput: boolean) {
             console.debug("setActiveLorebooks: message", message);
             if (!message.properties[engineArrayName]) {
-                tryFillActiveLorebooks(lorebooks, {
+                tryFillActiveLorebooks(cache.entries, {
                     history, message,
                     variables: generateCurrentVariables(ctx.history, includeOutput)
                 });
             }
             for (const lorebookName of message.properties[engineArrayName]) {
-                const lorebook = lorebooks[lorebookName];
+                const lorebook = cache.entries[lorebookName];
                 if (lorebook) {
                     prepareLorebooks.push(lorebook);
                 }
@@ -94,9 +92,9 @@ export const lorebookConversationProvider:
     onProcessOutput: async (ctx) => {
         const message = getCurrentOutput(ctx.history);
         if (message) {
-            const lorebooks = getLorebooks(ctx.slot.content);
+            const cache: LorebookConversationCache = ctx.slot.content[engineArrayName];
 
-            tryFillActiveLorebooks(lorebooks, {
+            tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message,
                 variables: generateCurrentVariables(ctx.history, true)
             });

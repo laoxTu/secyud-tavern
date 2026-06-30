@@ -1,6 +1,7 @@
 ﻿import {Registerable} from "@/utils/register";
 import {StoryHistory, StoryHistoryMessage} from "@/stories/models";
 import {PresetLorebookModel} from "@/engines/lorebooks/models";
+import {ComponentType} from "react";
 
 export interface MatcherProps {
     defaultValue: any,
@@ -15,7 +16,7 @@ export interface MatcherMatchContext {
 }
 
 export interface Matcher extends Registerable {
-    editor: React.ComponentType<MatcherProps>,
+    editor: ComponentType<MatcherProps>,
     getEditorValue: (data: FormData) => any,
     match: (ctx: MatcherMatchContext, expression: any) => boolean,
 }

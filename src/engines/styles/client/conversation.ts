@@ -1,8 +1,11 @@
 ﻿import {SlotContentRenderer, SlotInitializer} from "@/slots/client/conversation-models";
 import {PresetStyleModel, engineName, engineArrayName} from "../models";
-import {EntryModel} from "@/business/models";
 
 const prefix = "injected-style";
+
+export interface StyleConversationCache {
+    entries: PresetStyleModel[];
+}
 
 export const styleConversationProvider:
     SlotInitializer
@@ -10,17 +13,20 @@ export const styleConversationProvider:
     = {
     id: engineName,
     onInitialize: async (ctx) => {
-        const slotEntries = [];
+        const cache: StyleConversationCache = {
+            entries: [],
+        };
         for (const preset of ctx.slot.presets) {
-            const entries: (PresetStyleModel & EntryModel)[] = preset.entries?.[engineArrayName];
+            const entries: PresetStyleModel[] = preset
+                .entries?.[engineArrayName];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
-                slotEntries.push(entry);
+                cache.entries.push(entry);
             }
         }
-        slotEntries.sort((a, b) => a.priority - b.priority);
-        ctx.slot.content[engineArrayName] = slotEntries;
+        cache.entries.sort((a, b) => a.priority - b.priority);
+        ctx.slot.content[engineArrayName] = cache;
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
@@ -29,26 +35,25 @@ export const styleConversationProvider:
         }
         window.__injectedStyleInitialized = true;
         console.debug('[injected-styles] start generate');
+        const cache: StyleConversationCache = ctx.slot.content[engineArrayName];
         const set = new Set<string>();
-        const slotEntries: PresetStyleModel[] = ctx.slot.content[engineArrayName];
-        for (const slotEntry of slotEntries) {
-            const id = `${prefix}-${slotEntry.code}`;
+        for (const entry of cache.entries) {
+            const id = `${prefix}-${entry.code}`;
             if (set.has(id)) continue;
             set.add(id);
-            if (slotEntry.type === 'link') {
+            if (entry.type === 'link') {
                 // style 的链接用的是link[rel='stylesheet']的href
-                const style = ctx.document.createElement("link");
-                style.id = id;
-                style.rel = "stylesheet";
-                style.href = slotEntry.content.trim();
-                ctx.document.head.appendChild(style)
+                const link = ctx.document.createElement("link");
+                link.id = id;
+                link.rel = "stylesheet";
+                link.href = entry.content.trim();
+                ctx.document.head.appendChild(link)
             } else {
                 const style = ctx.document.createElement("style");
                 style.id = id;
-                style.innerHTML = slotEntry.content;
+                style.innerHTML = entry.content;
                 ctx.document.head.appendChild(style)
             }
-
         }
     }
 };

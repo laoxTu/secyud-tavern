@@ -6,7 +6,6 @@ import {
     SlotInitializer,
     SlotStreamRenderer
 } from "@/slots/client/conversation-models";
-import {EntryModel} from "@/business/models";
 import {Eta} from 'eta/core';
 import {generateCurrentVariables} from "@/slots/client/conversation";
 import {SlotModel} from "@/slots/models";
@@ -20,6 +19,10 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
         ...macroObject,
         variables: generateCurrentVariables(ctx.history, false),
     }
+}
+
+export interface MacroConversationCache {
+    variables: Record<string, any>;
 }
 
 export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
@@ -46,16 +49,18 @@ export const macroConversationProvider:
     = {
     id: engineName,
     onInitialize: async (ctx) => {
-        const macroObject: Record<string, any> = {};
+        const cache: MacroConversationCache = {
+            variables: {}
+        }
         for (const preset of ctx.slot.presets) {
-            const entries: (PresetMacroModel & EntryModel)[] = preset.entries?.[engineArrayName];
+            const entries: PresetMacroModel[] = preset.entries?.[engineArrayName];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
-                macroObject[entry.key] = entry.value;
+                cache.variables[entry.key] = entry.value;
             }
         }
-        ctx.slot.content[engineArrayName] = macroObject;
+        ctx.slot.content[engineArrayName] = cache;
     },
     onRenderStream: async (ctx) => {
         const data = ctx.data;

@@ -17,8 +17,7 @@ interface Parameter {
  * 算法通过字符位置映射、奇偶匹配和随机插入等方式实现加密，
  * 并使用反向过程进行解密。
  */
-class Hasher {
-    static instance: Hasher;
+export class Hasher {
 
     /**
      * 构造函数

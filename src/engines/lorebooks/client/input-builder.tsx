@@ -1,11 +1,11 @@
 ﻿import {
     compareLorebook,
-    engineArrayName, getEndLorebooks,
-    getStartLorebooks, LorebookInputBuilderModel,
+    engineArrayName,
+    LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
 import {LlmapiMessage} from "@/slots/models";
-import { LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
+import {LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/slots/client/conversation-models";
 import {getCurrentOutput} from "@/stories/models";
 import {useTranslations} from "next-intl";
@@ -15,6 +15,7 @@ import {moduleName} from "@/llmapis/models";
 import {Input} from "@/components/ui/input";
 import React from "react";
 import {useItemState} from "@/llmapis/client/models";
+import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 
 export async function defaultBuildInput(
     ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
@@ -26,13 +27,14 @@ export async function defaultBuildInput(
     }
     const llmapiMessages: LlmapiMessage[] = [];
     const visitedLorebooks = new Set<string>();
+    const entries: LorebookConversationCache = ctx.slot.content[engineArrayName];
     for (let i = 0; i < histories.length; i++) {
         const history = histories[i];
         const lorebooks = history.properties[engineArrayName] as PresetLorebookModel[];
         if (i === 0)
-            fillLorebooks(lorebooks, getStartLorebooks(ctx.content));
+            fillLorebooks(lorebooks, entries.before);
         else if (i === histories.length - 1)
-            fillLorebooks(lorebooks, getEndLorebooks(ctx.content));
+            fillLorebooks(lorebooks, entries.after);
 
         let j = 0;
         for (; j < lorebooks.length; j++) {

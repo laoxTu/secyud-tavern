@@ -8,7 +8,7 @@ import {pluginManager} from "@/plugins/manager";
  * @openapi
  */
 export const GET = interceptor.createRoute(
-    async (request, records) => {
+    async () => {
         const plugins = await pluginManager.getPlugins()
         return NextResponse.json(plugins);
     }
