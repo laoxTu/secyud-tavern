@@ -53,15 +53,27 @@ export function createUsePagedItemsState<T>(
                     }
 
                     const {search, pageSize, curPage, params: curParams} = get();
-                    const res = await fetcher({
+                    let res = await fetcher({
                         search: search,
                         pageSize: pageSize,
                         page: curPage,
                         ...curParams,
                     })
+
+                    const maxPage = Math.ceil(res.totalCount / pageSize);
+                    if (curPage >= maxPage && maxPage > 0) {
+                        set({curPage: maxPage - 1});
+                        res = await fetcher({
+                            search: search,
+                            pageSize: pageSize,
+                            page: maxPage - 1,
+                            ...curParams,
+                        })
+                    }
+
                     set({
                         items: res.data,
-                        maxPage: Math.ceil(res.totalCount / pageSize),
+                        maxPage: maxPage,
                     });
                 } catch (error) {
                     throw error;
