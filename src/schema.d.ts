@@ -180,39 +180,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/plugins": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 获取预设分页列表 */
-        get: operations["get-plugins"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/plugins/{pluginId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["get-plugins-{pluginId}"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/presets": {
         parameters: {
             query?: never;
@@ -537,20 +504,6 @@ export interface components {
             /** @description 可选搜索项 */
             search?: unknown;
         };
-        PluginManifest: {
-            id?: string;
-            requires?: string[];
-            /** @description 后端脚本名称 */
-            version: string;
-            /** @description 前端脚本名称 */
-            serverScript?: string;
-            /** @description 前端脚本名称 */
-            clientScript?: string;
-            /** @description 目录, 加载后赋值, 默认空字符串 */
-            path: string;
-            /** @description 目录, 加载后赋值, 默认空字符串 */
-            directory?: string;
-        };
         PresetModel: {
             id?: string;
             name?: string;
@@ -569,10 +522,6 @@ export interface components {
             }[];
         };
         ReadableStream: unknown;
-        Registerable: {
-            id: string;
-            requires?: string[];
-        };
         RequireModel: {
             code: string;
             version: string;
@@ -1351,56 +1300,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            400: components["responses"]["400"];
-            500: components["responses"]["500"];
-        };
-    };
-    "get-plugins": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PluginManifest"][];
-                };
-            };
-            400: components["responses"]["400"];
-            500: components["responses"]["500"];
-        };
-    };
-    "get-plugins-{pluginId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Path parameter: pluginId
-                 * @example 123
-                 */
-                pluginId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
