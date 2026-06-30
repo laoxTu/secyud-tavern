@@ -188,7 +188,7 @@ src/
 └── utils/         # Utilities (encryption, Registry topological sort, stream reading)
 
 plugins/           # External plugin directory
-└── project-info/  #   Example plugin
+└── my-plugin/  #   Example plugin
 ```
 
 ### Engine Execution Pipeline

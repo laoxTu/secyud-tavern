@@ -98,16 +98,16 @@ function Tab() {
                                    id={`${engineName}-key-${entry.id}`}
                                    defaultValue={entry.key}/>
                         </Field>
-                        <Field>
-                            <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
-                                {t("macro.value")}
-                            </FieldLabel>
-                            <Textarea name="value"
-                                      id={`${engineName}-value-${entry.id}`}
-                                      defaultValue={entry.value}
-                                      onKeyDown={submitTextareaOnKey}/>
-                        </Field>
                     </div>
+                    <Field>
+                        <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
+                            {t("macro.value")}
+                        </FieldLabel>
+                        <Textarea name="value"
+                                  id={`${engineName}-value-${entry.id}`}
+                                  defaultValue={entry.value}
+                                  onKeyDown={submitTextareaOnKey}/>
+                    </Field>
                 </>)
             }}/>
     );

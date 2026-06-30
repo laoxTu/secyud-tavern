@@ -188,7 +188,7 @@ src/
 └── utils/         # 工具函数（加密、Registry 拓扑排序、流读取）
 
 plugins/           # 外部插件目录
-└── project-info/  #   示例插件
+└── my-plugin/  #   示例插件
 ```
 
 ### 引擎执行流程
