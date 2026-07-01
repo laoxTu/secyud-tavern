@@ -1,22 +1,10 @@
 ﻿'use client'
 
-import {KeyboardEventHandler, RefObject} from "react";
+import {RefObject} from "react";
 
 export function registerBusinessClient() {
 }
 
-/**
- * 方便复用 ctrl + enter 作为text area的提交
- * @param e
- */
-export const submitTextareaOnKey: KeyboardEventHandler<HTMLTextAreaElement> =
-    (e) => {
-        if ((e.ctrlKey || e.metaKey) && (e.code === 'Enter' || e.code === 'KeyS')) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.currentTarget?.form?.requestSubmit();
-        }
-    }
 
 interface IKeyboardEvent {
     ctrlKey: boolean;
@@ -24,7 +12,23 @@ interface IKeyboardEvent {
     code: string;
     preventDefault: () => void;
     stopPropagation: () => void;
+    currentTarget?: {
+        form: HTMLFormElement | null;
+    }
 }
+
+/**
+ * 方便复用 ctrl + enter 作为text area的提交
+ * @param e
+ */
+export const submitTargetFormOnKey =
+    (e: IKeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && (e.code === 'Enter' || e.code === 'KeyS')) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget?.form?.requestSubmit();
+        }
+    }
 
 /**
  * 方便复用 ctrl + enter 作为各种editor的提交

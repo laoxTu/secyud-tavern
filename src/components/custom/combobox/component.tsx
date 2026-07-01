@@ -9,16 +9,18 @@ import {
 } from "@/components/ui/combobox";
 import {useState} from "react";
 import {useTranslations} from "next-intl";
+import {submitTargetFormOnKey} from "@/business/client/index.js";
 
 
 interface CustomComboboxProps {
     extraValue?: any[],
     defaultValue: any[],
     id?: string,
+    placeholder?: string,
     name?: string,
 }
 
-export function CustomCombobox({defaultValue, id, name, extraValue}: CustomComboboxProps) {
+export function CustomCombobox({defaultValue, id, name, placeholder, extraValue}: CustomComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();
     const [input, setInput] = useState("");
@@ -34,14 +36,15 @@ export function CustomCombobox({defaultValue, id, name, extraValue}: CustomCombo
                   inputValue={input}
                   onInputValueChange={e => setInput(e)}
                   items={[...new Set([...extraValue ?? [], ...value, input])]}>
-            <ComboboxChips ref={anchor} className="w-full" >
-                <ComboboxValue >
+            <ComboboxChips ref={anchor} className="w-full">
+                <ComboboxValue>
                     {(values) => (
                         <>
                             {values.map((value: string) => (
                                 <ComboboxChip key={value}>{value}</ComboboxChip>
                             ))}
-                            <ComboboxChipsInput/>
+                            <ComboboxChipsInput placeholder={placeholder}
+                                                onKeyDown={submitTargetFormOnKey}/>
                         </>
                     )}
                 </ComboboxValue>

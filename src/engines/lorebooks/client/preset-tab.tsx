@@ -22,7 +22,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
-import {submitTextareaOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client/index.js";
 
 const roles = ["system", "user", "assistant"]
 
@@ -111,7 +111,7 @@ function EditorContent({entry}: {
                 <Textarea name="content"
                           id={`${engineName}-content-${entry.id}`}
                           defaultValue={entry.content}
-                          onKeyDown={submitTextareaOnKey}/>
+                          onKeyDown={submitTargetFormOnKey}/>
             </Field>
         </>
     );

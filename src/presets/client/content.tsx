@@ -13,8 +13,9 @@ import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
 import {TemplateModelList} from "@/business/client/template";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
-import {modelState} from "@/presets/client/models";
+import {defaultTags, modelState} from "@/presets/client/models";
 import {createUseTabState} from "@/business/client/models";
+import {CustomCombobox} from "@/components/custom/combobox";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
 
@@ -22,6 +23,17 @@ function Content() {
     const t = useTranslations();
     return <TemplateModelList<PresetModel>
         modelState={modelState}
+        searchAccessor={data => ({
+            tags: data.getAll("tag") as string[]
+        })}
+        searchContent={() => {
+            return (<>
+                <CustomCombobox defaultValue={[]}
+                                name={"tag"}
+                                placeholder={t("default.tags")}
+                                extraValue={defaultTags}/>
+            </>);
+        }}
         itemContent={(model) =>
             <>
                 <ItemMedia variant={'image'}>

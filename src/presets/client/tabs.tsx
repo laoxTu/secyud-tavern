@@ -14,12 +14,9 @@ import {BusinessError} from "@/handler/models";
 import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, PresetModel} from "../models";
-import {modelState} from "./models";
-import {submitTextareaOnKey} from "@/business/client/index.js";
+import {defaultTags, modelState} from "./models";
+import {submitTargetFormOnKey} from "@/business/client/index.js";
 
-export const defaultTags = [
-    "theme", "story", "preset"
-];
 
 export function DefaultTab() {
     const t = useTranslations();
@@ -128,7 +125,7 @@ export function DefaultTab() {
                     </FieldLabel>
                     <Textarea name="description" id={`${moduleName}-description`}
                               defaultValue={model.content.description ?? ""}
-                              onKeyDown={submitTextareaOnKey}/>
+                              onKeyDown={submitTargetFormOnKey}/>
                 </Field>
             </>)
         }}/>

@@ -33,20 +33,20 @@ const buildUrl = (url: string, params?: Record<string, any>) => {
     if (!params) return url;
 
     let result = url;
-    const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
         if (value === undefined || value === null) return;
-
         if (result.includes(`{${key}}`)) {
             result = result.replace(`{${key}}`, String(value));
-        } else {
-            searchParams.append(key, String(value));
+            params[key] = undefined;
+        }
+        else if (typeof value === 'object') {
+            params[key] = JSON.stringify(value);
         }
     });
-
-    const queryString = searchParams.toString();
-    return queryString ? `${result}?${queryString}` : result;
+    const queryString = new URLSearchParams(params).toString();
+    return queryString && queryString.length > 0 ?
+        `${result}?${queryString}` : result;
 }
 
 /**

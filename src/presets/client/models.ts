@@ -12,3 +12,6 @@ export const usePagedItemsState =
 export const modelState: ModelState<PresetModel> = {
     moduleName, modulePlural, useItemState, usePagedItemsState
 };
+export const defaultTags = [
+    "theme", "story", "preset"
+];

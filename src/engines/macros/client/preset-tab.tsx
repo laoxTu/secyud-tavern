@@ -12,7 +12,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {TemplateEntryList} from "@/business/client/template";
 import {entryState} from "./models";
 import {del, post, put} from "@/client";
-import {submitTextareaOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client/index.js";
 
 function Tab() {
     const t = useTranslations();
@@ -106,7 +106,7 @@ function Tab() {
                         <Textarea name="value"
                                   id={`${engineName}-value-${entry.id}`}
                                   defaultValue={entry.value}
-                                  onKeyDown={submitTextareaOnKey}/>
+                                  onKeyDown={submitTargetFormOnKey}/>
                     </Field>
                 </>)
             }}/>

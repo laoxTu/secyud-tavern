@@ -13,7 +13,7 @@ import {entryState} from "./models";
 import {PresetRegexModel, engineName} from "../models";
 import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {submitTextareaOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client/index.js";
 
 function Tab() {
     const t = useTranslations();
@@ -132,7 +132,7 @@ function Tab() {
                             <Textarea name="replacement"
                                       id={`${engineName}-replacement-${entry.id}`}
                                       defaultValue={entry.replacement}
-                                      onKeyDown={submitTextareaOnKey}/>
+                                      onKeyDown={submitTargetFormOnKey}/>
                         </Field>
                     </>)
             }}/>

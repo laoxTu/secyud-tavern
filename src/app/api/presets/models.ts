@@ -1,5 +1,5 @@
 import {TemplateConfig} from "@/app/api/template";
-import {and, arrayOverlaps, eq, like, not, or, SQL} from "drizzle-orm";
+import {and, eq, like, not, or, SQL} from "drizzle-orm";
 import {presetRepository as repository, presetRepository} from "@/presets/server/repository";
 import {PresetModel} from "@/presets/models";
 import {validate} from "uuid";
@@ -76,7 +76,9 @@ export const apiConfig: TemplateConfig<PresetModel> = {
         }
         const tags: string[] = search?.tags ?? [];
         if (tags.length > 0) {
-            conditions.push(arrayOverlaps(table.tags, tags));
+            conditions.push(or(
+                ...tags.map(u => like(table.tags, `%${u}%`))
+            ) as SQL);
         }
         return and(...conditions) as SQL;
     },

@@ -69,12 +69,12 @@ export function ModelList<TModel extends BaseModel>(
 
     const applySearch = async (data: FormData) => {
         try {
-            await fetch({
-                search: {
-                    fuzzy: data.get("search") as string,
-                    ...searchAccessor?.(data) ?? {}
-                }
-            });
+            const search = {
+                fuzzy: data.get("search") as string,
+                ...searchAccessor?.(data) ?? {}
+            }
+            console.debug("search", search);
+            await fetch({search});
         } catch (err) {
             handleError(err);
         }
@@ -156,9 +156,9 @@ export function ModelList<TModel extends BaseModel>(
                         </Empty>
                     </div> :
                     <div className="flex flex-col p-2 gap-2 h-full">
-                        <div className="flex p-2 gap-2">
+                        <div className="flex p-2 gap-2 items-center">
                             <div className="flex-1 flex overflow-x-auto scrollbar-none gap-2">
-                                <form action={applySearch} className={"flex-1"}>
+                                <form action={applySearch} className={"flex-1 p-2 space-y-1"}>
                                     {searchContent?.()}
                                     <InputGroup>
                                         <InputGroupInput name="search" id={`${modelState}-list-search`}
@@ -175,8 +175,8 @@ export function ModelList<TModel extends BaseModel>(
                                         </InputGroupAddon>
                                     </InputGroup>
                                 </form>
-                                <ModelCreate modelState={modelState} props={createProps}/>
                             </div>
+                            <ModelCreate modelState={modelState} props={createProps}/>
                             <Button variant={'ghost'} size={'icon'} onClick={() => {
                                 changePanelState(rightPanel.current, collapsed => {
                                     setPanelWidth(collapsed ? 100 : 100 - collapsedSize);

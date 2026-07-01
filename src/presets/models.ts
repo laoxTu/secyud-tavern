@@ -1,6 +1,5 @@
 ﻿import {BaseModel} from "@/business/models";
 
-
 export interface RequireModel {
     code: string,
     version: string,
