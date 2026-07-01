@@ -22,4 +22,5 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
 
 项目已开源，随意学习，禁止商用。Open source. Free to study, commercial use prohibited.
 
-🔗 [https://github.com/laoxTu/secyud-tavern](https://github.com/laoxTu/secyud-tavern)
+🔗 [项目地址](https://github.com/laoxTu/secyud-tavern)
+🔗 [使用指南](https://github.com/laoxTu/secyud-tavern-docs)
