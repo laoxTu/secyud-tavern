@@ -3,9 +3,10 @@ import {NextResponse} from "next/server";
 import {llmapiRepository} from "@/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
 import {llmapiEngineRegistry} from "@/llmapis/server/engine";
-import {hasher} from "@/utils/hasher";
+import {hasher} from "@/utils/server/hasher";
 import {BusinessError} from "@/handler/models";
 import {LlmapiInputModel} from "@/slots/models";
+import {getCache} from "@/utils/server/cache";
 
 /**
  * 调用指定 LLM API 进行流式对话
@@ -24,11 +25,22 @@ export const POST = interceptor.createRoute(
         console.debug("llmapi chat:");
         console.debug(input);
 
-        const llmapi = await llmapiRepository.get(id, true);
-        if (!llmapi) {
-            throw new BusinessError('entity not found', "default.entity_not_found")
-                .withValue("id", id);
-        }
+        const llmapi = await getCache(`llmapi_chat_${id}`,
+            async () => {
+                const entity = await llmapiRepository.get(id);
+                if (!entity) {
+                    throw new BusinessError('entity not found', "default.entity_not_found")
+                        .withValue("id", id);
+                }
+                return {
+                    provider: entity.provider,
+                    key: entity.key,
+                    content: {
+                        config: entity.content.config,
+                    },
+                };
+            }, {minute: 5});
+
 
         const provider = llmapi.provider as string;
         console.debug("use engine " + provider);
