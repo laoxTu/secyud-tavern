@@ -1,10 +1,8 @@
 ﻿export interface DeepseekConfigModel {
     parameters: {
         model: string,
-        extra_body: {
-            thinking: {
-                type: 'enabled' | 'disabled',
-            },
+        thinking: {
+            type: 'enabled' | 'disabled',
         },
         // 思考强度控制
         reasoning_effort: string, // high/max

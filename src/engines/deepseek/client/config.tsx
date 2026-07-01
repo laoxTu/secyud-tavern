@@ -17,10 +17,8 @@ const reasoningEffort = ["high", "max"];
 const defaultConfig: DeepseekConfigModel = {
     parameters: {
         model: "deepseek-v4-flash",
-        extra_body: {
-            thinking: {
-                type: "enabled"
-            },
+        thinking: {
+            type: "enabled"
         },
         reasoning_effort: "high",
         stream: true,
@@ -38,7 +36,7 @@ function Content() {
     const config: DeepseekConfigModel = mergeObjects(
         defaultConfig, model?.content["config"]);
     const [thinking, setThinking] = React.useState<boolean>(
-        config.parameters.extra_body.thinking.type === "enabled");
+        config.parameters.thinking.type === "enabled");
 
 
     return (
@@ -168,10 +166,8 @@ export const config: LlmapiConfig =
             return {
                 parameters: {
                     model: data.get('model') as string,
-                    extra_body: {
-                        thinking: {
-                            type: (Boolean(data.get('thinking') as string) ? "enabled" : "disabled"),
-                        },
+                    thinking: {
+                        type: (Boolean(data.get('thinking') as string) ? "enabled" : "disabled"),
                     },
                     reasoning_effort: data.get('reasoning_effort') as string,
                     stream: Boolean(data.get('stream') as string),
