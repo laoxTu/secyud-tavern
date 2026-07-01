@@ -34,16 +34,21 @@ const buildUrl = (url: string, params?: Record<string, any>) => {
 
     let result = url;
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value === undefined || value === null) return;
-        if (result.includes(`{${key}}`)) {
-            result = result.replace(`{${key}}`, String(value));
-            params[key] = undefined;
+    for (const key of Object.keys(params)) {
+        const value = params[key];
+        if (value === undefined) {
+            delete params[key];
         }
-        else if (typeof value === 'object') {
+        else if (result.includes(`{${key}}`))
+        {
+            result = result.replace(`{${key}}`, String(value));
+            delete params[key];
+        }
+        else if (typeof value === 'object'){
             params[key] = JSON.stringify(value);
         }
-    });
+    }
+
     const queryString = new URLSearchParams(params).toString();
     return queryString && queryString.length > 0 ?
         `${result}?${queryString}` : result;
