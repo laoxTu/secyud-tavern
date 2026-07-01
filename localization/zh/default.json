@@ -16,6 +16,7 @@
     "create_title": "创建{target}",
     "created_successfully": "创建成功",
     "ctrl_enter_submit": "按 Ctrl + Enter 发送消息，Enter 换行",
+    "day": "日",
     "delete": "删除",
     "delete_description": "您确定要删除这个{target}吗？这个操作是不可逆的。",
     "delete_successfully": "删除成功",
@@ -27,8 +28,8 @@
     "empty_items": "空列表",
     "empty_title": "空的{target}列表",
     "en": "English",
-    "enable_item": "已启用",
     "enable": "启用",
+    "enable_item": "已启用",
     "entity_not_found": "目标未找到（ID：{id}）",
     "export": "导出",
     "id": "ID",
@@ -39,6 +40,7 @@
     "language": "语言",
     "layer": "层级",
     "llmapi": "模型",
+    "month": "月",
     "name": "名称",
     "preset": "预设",
     "priority": "优先级",
@@ -60,6 +62,7 @@
     "total_chars": "总字符",
     "type": "类型",
     "version": "版本",
+    "year": "年",
     "zh": "简体中文"
   },
   "page": {
