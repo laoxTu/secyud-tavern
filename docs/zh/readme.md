@@ -123,8 +123,8 @@ OpenAI 引擎支持自定义 baseURL，兼容任何 OpenAI 协议的服务（Loc
 
 ```bash
 pnpm install          # 安装依赖
+pnpm gen-plugin       # 扫描插件，生成注册入口
 pnpm build            # 生产构建
-pnpm gen-plugin-api   # 生成插件 API
 pnpm gen-db-migrate   # 生成数据库迁移
 pnpm start -p 12804   # 启动 → http://localhost:12804
 ```
@@ -136,32 +136,32 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
 | `pnpm dev` | 启动开发服务器，端口 12804 |
 | `pnpm build` | 生产构建 |
 | `pnpm start` | 启动生产服务器 |
-| `pnpm db-migrate` | 生成并执行数据库迁移 |
-| `pnpm gen-plugin-api` | 生成插件 API 类型 |
-| `pnpm gen-plugin <name>` | 打包插件 → `plugins/<name>/client.js` |
+| `pnpm gen-plugin` | 扫描 `plugins/` 目录，生成 manifest 列表和服务端/客户端注册入口 |
+| `pnpm gen-db-migrate` | 生成并执行数据库迁移 |
 | `pnpm test` | 运行测试 |
 
 ### 插件编译
 
-插件源码（`client.tsx`）通过 `pnpm gen-plugin <name>` 编译为 `client.js`。编译流程：
+插件不再单独编译，而是和项目一起构建。`pnpm gen-plugin`（或 `pnpm build`）扫描 `plugins/` 目录，生成三份静态文件：
 
-1. 读取 `plugins/<name>/manifest.json` 中的 `modules` 列表
-2. esbuild 打包，`modules` 中的路径标 `external` 保留 import
-3. 后处理将 `import { x } from '@/xxx'` 替换为 `const { x } = window.__PLUGIN_API__['@/xxx']`
+- `src/plugins/manifests.ts` — 内联的 manifest 数据
+- `src/plugins/server/registerer.ts` — 所有服务端插件的静态 import
+- `src/plugins/client/registerer.ts` — 所有客户端插件的静态 import
+
+服务端插件通过 `@plugins/*` 路径别名（映射到 `plugins/` 目录）被 Next.js/webpack 直接编译进项目，`@/` 等别名在构建时完整解析，无需运行时路径处理。客户端插件同样是静态 import，和项目一起打包。
 
 插件的 `manifest.json`：
 ```json
 {
   "id": "my-plugin",
   "version": "1.0.0",
-  "clientScript": "client.js",
-  "modules": [
-    "react",
-    "@/business/client/navigation",
-    "@/components/ui/button"
-  ]
+  "clientScript": "client",
+  "serverScript": "server"
 }
 ```
+
+- `clientScript` / `serverScript`：入口文件名（无扩展名），分别指向 `client/index.tsx` 和 `server/index.ts`
+- 不再需要 `modules` 字段——插件直接 `import` 宿主模块，由构建工具在编译时解析
 
 ## 项目结构
 

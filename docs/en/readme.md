@@ -123,8 +123,8 @@ A story is not a character card — it's a **save file**.
 
 ```bash
 pnpm install          # Install dependencies
+pnpm gen-plugin       # Scan plugins, generate registration entries
 pnpm build            # Production build
-pnpm gen-plugin-api   # Generate plugin API
 pnpm gen-db-migrate   # Generate DB migration
 pnpm start -p 12804   # Start → http://localhost:12804
 ```
@@ -136,32 +136,32 @@ pnpm start -p 12804   # Start → http://localhost:12804
 | `pnpm dev` | Start dev server on port 12804 |
 | `pnpm build` | Production build |
 | `pnpm start` | Start production server |
-| `pnpm db-migrate` | Generate & run database migrations |
-| `pnpm gen-plugin-api` | Generate plugin API types |
-| `pnpm gen-plugin <name>` | Bundle a plugin → `plugins/<name>/client.js` |
+| `pnpm gen-plugin` | Scan `plugins/`, generate manifest list and server/client registration entries |
+| `pnpm gen-db-migrate` | Generate & run database migrations |
 | `pnpm test` | Run tests |
 
 ### Plugin Compilation
 
-Plugin source code (`client.tsx`) is compiled to `client.js` via `pnpm gen-plugin <name>`. The process:
+Plugins are no longer compiled separately — they build together with the project. `pnpm gen-plugin` (or `pnpm build`) scans the `plugins/` directory and generates three static files:
 
-1. Reads `modules` from `plugins/<name>/manifest.json`
-2. esbuild bundles; paths in `modules` are marked `external` (imports preserved)
-3. Post-processing replaces `import { x } from '@/xxx'` with `const { x } = window.__PLUGIN_API__['@/xxx']`
+- `src/plugins/manifests.ts` — inlined manifest data
+- `src/plugins/server/registerer.ts` — static imports of all server plugins
+- `src/plugins/client/registerer.ts` — static imports of all client plugins
+
+Server plugins are imported via the `@plugins/*` path alias (mapped to the `plugins/` directory) and compiled directly by Next.js/webpack. `@/` aliases are fully resolved at build time — no runtime path handling needed. Client plugins are also static imports, bundled together with the project.
 
 Plugin `manifest.json`:
 ```json
 {
   "id": "my-plugin",
   "version": "1.0.0",
-  "clientScript": "client.js",
-  "modules": [
-    "react",
-    "@/business/client/navigation",
-    "@/components/ui/button"
-  ]
+  "clientScript": "client",
+  "serverScript": "server"
 }
 ```
+
+- `clientScript` / `serverScript`: entry filename (no extension), pointing to `client/index.tsx` and `server/index.ts`
+- No `modules` field needed — plugins directly `import` host modules, resolved by the bundler at compile time
 
 ## Project Structure
 

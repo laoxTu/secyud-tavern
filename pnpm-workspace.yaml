@@ -4,3 +4,5 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: false
+packages:
+  - 'plugins/*'
