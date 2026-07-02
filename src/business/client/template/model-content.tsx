@@ -67,6 +67,7 @@ export function ModelContent<TModel>(
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
     const [cloneOpen, setCloneOpen] = useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const {model, setModel} = useItemState();
     const {fetch} = usePagedItemsState();
     const {tabId, setTabId} = useTabState();
@@ -153,9 +154,19 @@ export function ModelContent<TModel>(
                 </TabsList>
             </div>
             <div className="flex flex-row-reverse gap-2">
-                <AlertDialog>
+                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive"><Trash2Icon/></Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant={'destructive'}
+                                        onClick={() => setDeleteOpen(true)}>
+                                    <Trash2Icon/>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{t('default.delete')}</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -176,9 +187,17 @@ export function ModelContent<TModel>(
                 </AlertDialog>
                 <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
                     <DialogTrigger asChild>
-                        <Button variant="secondary">
-                            <CopyIcon/>
-                        </Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant={'secondary'}
+                                        onClick={() => setCloneOpen(true)}>
+                                    <CopyIcon/>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{t('default.copy')}</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </DialogTrigger>
                     <DialogContent>
                         <form action={handleClone}
