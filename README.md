@@ -22,5 +22,18 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
 
 项目已开源，随意学习，禁止商用。Open source. Free to study, commercial use prohibited.
 
+## 环境
+
+注意，为了防止数据库泄露导致的api key被盗，一定要创建.env文件并配置，这些数字您不必记住，只要足够复杂即可，并且将程序拷贝给他人时，注意不要拷贝.env 文件！
+
+Note, to prevent your API key from being stolen due to a database leak, make sure to create a .env file and configure it. You don't need to remember these numbers, just make them complex enough.And when you copy the program to others, be careful not to copy the .env file!
+
+SECRET_SALT=随机的数字 Random number
+SECRET_KEYS=随机的数字 Random number
+```dotenv
+SECRET_SALT=567891561654987498
+SECRET_KEYS=4489977816556689136
+```
+
 🔗 [项目地址](https://github.com/laoxTu/secyud-tavern)
 🔗 [使用指南](https://github.com/laoxTu/secyud-tavern-docs)
