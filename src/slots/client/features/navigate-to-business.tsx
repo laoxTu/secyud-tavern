@@ -11,10 +11,8 @@ export function NavigateToBusiness() {
     const t = useTranslations();
 
     return (
-
         <Tooltip>
             <TooltipTrigger asChild>
-
                 <Button onClick={() => route.replace("/business")}
                         variant={'outline'}>
                     <ArrowBigLeftIcon/>

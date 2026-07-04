@@ -38,7 +38,7 @@ function Content() {
             <ItemContent className="flex-none text-center">
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button onClick={() => router.replace(`/business/stories/${model.id}`)}
+                        <Button onClick={() => router.push(`/business/stories/${model.id}`)}
                                 variant={'outline'}>
                             <CornerDownLeftIcon/>
                         </Button>
