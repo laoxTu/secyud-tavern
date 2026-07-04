@@ -7,6 +7,7 @@
     "content": "内容",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
+    "story_lack_config_llmapi": "故事没有选择模型，无法开始。",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
     "copy_title": "复制{target}",

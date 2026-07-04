@@ -67,6 +67,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
     const [disabled, setDisabled] = useState(entry.disabled);
     const [cloneOpen, setCloneOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [key, setKey] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
     const {fetch} = usePagedItemsState();
     const handleUpdate = async (data: FormData) => {
@@ -74,6 +75,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
             await updateHandler(entry, data);
             handleSuccess(t("default.saved_successfully"));
             await fetch();
+            setKey(u => u + 1);
         } catch (error) {
             handleError(error);
         }
@@ -112,7 +114,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
     };
 
     return (
-        <Card className={"w-full"}>
+        <Card className={"w-full"} key={key}>
             <CardContent>
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                     <div className={"flex w-full rounded-md hover:bg-gray-100"}>

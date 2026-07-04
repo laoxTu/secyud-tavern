@@ -112,8 +112,8 @@ export function EntryList<TEntry extends EntryModel>(
                 <EntryCreate entryState={entryState} props={createProps}/>
             </div>
             <div className="flex-1 overflow-auto space-y-2 p-2">
-                {items && items.map((entry, i) =>
-                    <EntryUpdate key={`${search}-${curPage}-${i}`} entryState={entryState}
+                {items && items.map((entry) =>
+                    <EntryUpdate key={`${search}-${curPage}-${entry.id}`} entryState={entryState}
                                  props={updateProps} entry={entry}/>
                 )}
             </div>
