@@ -57,7 +57,7 @@ export async function defaultBuildInput(
         }
 
         const output = getCurrentOutput(history);
-        if (output) {
+        if (output && i < histories.length - 1) {
             tryPushMessage("assistant", output.content);
         }
     }
