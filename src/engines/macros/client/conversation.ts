@@ -64,15 +64,15 @@ export const macroConversationProvider:
     },
     onRenderStream: async (ctx) => {
         const data = ctx.data;
-        data.output = eta.renderString(data.output, buildMacroObject(ctx));
+        data.output = await eta.renderStringAsync(data.output, buildMacroObject(ctx));
     },
     onRenderContent: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
         const data = ctx.data;
         const inputs = data.inputs;
         for (let i = 0; i < inputs.length; i++) {
-            inputs[i] = eta.renderString(inputs[i], macroObject);
+            inputs[i] = await eta.renderStringAsync(inputs[i], macroObject);
         }
-        data.output = eta.renderString(data.output, macroObject);
+        data.output = await eta.renderStringAsync(data.output, macroObject);
     }
 };

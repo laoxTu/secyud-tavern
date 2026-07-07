@@ -156,7 +156,15 @@ export function ModelList<TModel extends BaseModel>(
                         </Empty>
                     </div> :
                     <div className="flex flex-col p-2 gap-2 h-full">
-                        <div className="flex p-2 gap-2 items-center">
+                        <div className="flex p-2 gap-2 items-center flex-row-reverse">
+                            <Button variant={'ghost'} size={'icon'} onClick={() => {
+                                changePanelState(rightPanel.current, collapsed => {
+                                    setPanelWidth(collapsed ? 100 : 100 - collapsedSize);
+                                });
+                            }}>
+                                <FoldHorizontalIcon/>
+                            </Button>
+                            <ModelCreate modelState={modelState} props={createProps}/>
                             <div className="flex-1 flex overflow-x-auto scrollbar-none gap-2">
                                 <form action={applySearch} className={"flex-1 p-2 space-y-1"}>
                                     {searchContent?.()}
@@ -176,14 +184,6 @@ export function ModelList<TModel extends BaseModel>(
                                     </InputGroup>
                                 </form>
                             </div>
-                            <ModelCreate modelState={modelState} props={createProps}/>
-                            <Button variant={'ghost'} size={'icon'} onClick={() => {
-                                changePanelState(rightPanel.current, collapsed => {
-                                    setPanelWidth(collapsed ? 100 : 100 - collapsedSize);
-                                });
-                            }}>
-                                <FoldHorizontalIcon/>
-                            </Button>
                         </div>
                         <div className="flex-1 h-full overflow-auto">
                             <ItemGroup className={"p-2 gap-3"}>
