@@ -11,7 +11,10 @@ import {generateCurrentVariables} from "@/slots/client/conversation";
 import {SlotModel} from "@/slots/models";
 import {StoryHistory} from "@/stories/models";
 
-const eta = new Eta();
+const eta = new Eta({
+    autoTrim: false,
+    rmWhitespace: false,
+});
 
 function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
     const cache: MacroConversationCache = ctx.slot.content[engineArrayName];
