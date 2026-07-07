@@ -1,10 +1,9 @@
-
 import {fileURLToPath} from 'url';
 import fs from "fs/promises";
 import path from "path";
 import {PluginManifest} from "@/plugins/models";
 import {PluginManager} from "@/plugins/manager";
-
+import { randomBytes } from 'crypto';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const pluginsDir = path.join(root, 'plugins');
@@ -42,6 +41,31 @@ async function generatePlugin() {
                 `await registerer${i}();`)
             .join("")}}
         `);
+    try {
+        const envFilePath = path.join(root, '.env');
+        // 使用 'wx' 标志
+        await fs.writeFile(envFilePath, `SECRET_SALT=${generateSecureDigitString(40)}\r\nSECRET_KEYS=${generateSecureDigitString(39)}`, {flag: 'wx'});
+        console.log('generated .env file!');
+        return true;
+    } catch (err: any) {
+        if (err.code !== 'EEXIST') {
+            throw err;
+        }
+    }
+}
+
+function generateSecureDigitString(length: number): string {
+    if (length <= 0) return '';
+
+    // 每次生成 1 字节（0-255），取 0-9 的映射
+    const bytes = randomBytes(length);
+    let result = '';
+
+    for (let i = 0; i < length; i++) {
+        // 取模 10 得到 0-9
+        result += bytes[i] % 10;
+    }
+    return result;
 }
 
 async function getPluginManifests() {
