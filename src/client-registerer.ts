@@ -11,10 +11,11 @@ import {registerStoryClient} from "@/stories/client";
 import {registerPresetClient} from "@/presets/client";
 import {registerMacrosClient} from "@/engines/macros/client";
 import {registerSlotClient} from "@/slots/client";
-import {registerBusinessClient} from "@/business/client/index.js";
+import {registerBusinessClient} from "@/business/client";
 import {registerComponents} from "@/components";
 import {registerOpenAIClient} from "@/engines/openai/client";
 import {registerClientPlugin} from "@/plugins/client/registerer";
+import {registerSettingClient} from "@/settings/client";
 
 async function loadClientPlugins() {
     registerComponents();
@@ -23,6 +24,8 @@ async function loadClientPlugins() {
     registerPresetClient();
     registerLlmapiClient();
     registerSlotClient();
+
+    registerSettingClient();
 
     registerDeepseekClient();
     registerOpenAIClient();

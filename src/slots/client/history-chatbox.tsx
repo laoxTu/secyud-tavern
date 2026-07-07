@@ -34,7 +34,7 @@ import {useTranslations} from "next-intl";
 import {readStream, tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
 import {handleHistoryPageChange, useHistoryPageState} from "@/slots/client/history-pager";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client";
 
 export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
     return ctx.current.content["ReplyAbortController"] as AbortController

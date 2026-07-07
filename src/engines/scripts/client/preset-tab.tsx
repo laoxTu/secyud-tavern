@@ -16,7 +16,8 @@ import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {submitFormOnKey} from "@/business/client/index.js";
+import {submitFormOnKey} from "@/business/client";
+import {useTheme} from "next-themes";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -25,6 +26,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
     const editorRef = useRef<IStandaloneCodeEditor>(null);
     const [type, setType] = useState(entry.type ?? "");
     const [content, setContent] = useState<string | undefined>(entry.content);
+    const {theme} = useTheme();
     const handleEditorDidMount: OnMount = (editor) => {
         // here is the editor instance
         // you can store it in `useRef` for further usage
@@ -81,6 +83,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
             </FieldLabel>
             <input type={'hidden'} name={'content'} value={content}/>
             <MonacoEditor className={editorClassName} height={'30rem'}
+                          theme={theme === 'dark' ? 'vs-dark' : 'light'}
                           language={language} options={{automaticLayout: true}}
                           value={content} onChange={setContent}
                           onMount={handleEditorDidMount}

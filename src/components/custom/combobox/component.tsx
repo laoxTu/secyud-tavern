@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/combobox";
 import {useState} from "react";
 import {useTranslations} from "next-intl";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client";
 
 
 interface CustomComboboxProps {

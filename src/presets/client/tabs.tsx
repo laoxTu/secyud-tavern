@@ -15,7 +15,7 @@ import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, PresetModel} from "../models";
 import {defaultTags, modelState} from "./models";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client";
 
 
 export function DefaultTab() {

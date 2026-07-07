@@ -189,7 +189,7 @@ export function ModelList<TModel extends BaseModel>(
                             <ItemGroup className={"p-2 gap-3"}>
                                 {items && items.map((item, i) => (
                                     <Item key={i} asChild
-                                          className={"overflow-hidden" + (item.id === model?.id ? " bg-gray-100" : "")}
+                                          className={"overflow-hidden" + (item.id === model?.id ? " bg-secondary text-secondary-foreground" : "")}
                                           variant={"outline"}
                                           role="listitem" onClick={() => setModel(item)}>
                                         <a className={'cursor-pointer'}>

@@ -6,6 +6,7 @@ import {Toaster} from "sonner";
 import {TooltipProvider} from "@/components/ui/tooltip";
 import "./globals.css"
 import "./app.css"
+import {ThemeProvider} from "@/components/theme-provider";
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
@@ -21,14 +22,21 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html>
+        <html suppressHydrationWarning>
         <body>
-        <NextIntlClientProvider>
-            <TooltipProvider>
-                {children}
-            </TooltipProvider>
-        </NextIntlClientProvider>
-        <Toaster/>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme='system'
+            enableSystem
+            storageKey="settings-theme"
+            disableTransitionOnChange>
+            <NextIntlClientProvider>
+                <TooltipProvider>
+                    {children}
+                </TooltipProvider>
+            </NextIntlClientProvider>
+            <Toaster/>
+        </ThemeProvider>
         </body>
         </html>
     );

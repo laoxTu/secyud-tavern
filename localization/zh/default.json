@@ -7,6 +7,7 @@
     "content": "内容",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
+    "setting": "设置",
     "story_lack_config_llmapi": "故事没有选择模型，无法开始。",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
@@ -159,6 +160,10 @@
     "target_both": "全部替换",
     "target_input": "替换输入",
     "target_output": "替换输出"
+  },
+  "setting": {
+    "theme": "主题",
+    "default": "默认"
   },
   "error": {
     "empty_field": "{field}不可以为空！",

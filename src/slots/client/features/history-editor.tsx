@@ -23,7 +23,8 @@ import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {toast} from "sonner";
 import {editorClassName} from "@/components/consts";
-import {submitFormOnKey, submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitFormOnKey, submitTargetFormOnKey} from "@/business/client";
+import {useTheme} from "next-themes";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -31,6 +32,7 @@ export function HistoryEditor() {
     const ctx = useSlotContext();
     const {page} = useHistoryPageState();
     const [history, setHistory] = useState<StoryHistory | undefined>(undefined);
+    const {theme} = useTheme();
     const [open, setOpen] = useState<boolean>(false);
     const editorRef = useRef<IStandaloneCodeEditor>(null);
     const formRef = useRef<HTMLFormElement>(null);
@@ -121,6 +123,7 @@ export function HistoryEditor() {
                                     {t('slot.variable')}
                                 </FieldLabel>
                                 <Editor className={editorClassName} defaultLanguage={'json'} height={'10rem'}
+                                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
                                         defaultValue={JSON.stringify(history.variables)}
                                         onMount={handleEditorDidMount}/>
                             </Field>

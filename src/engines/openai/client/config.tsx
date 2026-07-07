@@ -10,7 +10,7 @@ import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/llmapis/client/models";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",

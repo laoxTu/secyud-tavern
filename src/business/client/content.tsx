@@ -63,7 +63,7 @@ export function BusinessPageContent() {
                                     <NavigationMenuLink asChild>
                                         <a className={
                                             businessTabId === tab.id
-                                                ? 'pointer-events-none bg-gray-100'
+                                                ? 'pointer-events-none bg-secondary text-secondary-foreground'
                                                 : 'cursor-pointer'
                                         } onClick={() => setBusinessTabId(tab.id)}>
                                             <Component/>

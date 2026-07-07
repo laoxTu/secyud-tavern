@@ -21,11 +21,12 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
-import {submitFormOnKey} from "@/business/client/index.js";
+import {submitFormOnKey} from "@/business/client";
 import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import MonacoEditor, {OnMount} from "@monaco-editor/react";
 import {editorClassName} from "@/components/consts";
+import {useTheme} from "next-themes";
 
 const roles = ["system", "user", "assistant"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -37,6 +38,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
     const [type, setType] = useState(entry.type ?? "");
     const editorRef = useRef<IStandaloneCodeEditor>(null);
     const [content, setContent] = useState<string | undefined>(entry.content);
+    const {theme} = useTheme();
     const handleEditorDidMount: OnMount = (editor) => {
         // here is the editor instance
         // you can store it in `useRef` for further usage
@@ -154,6 +156,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                 </FieldLabel>
                 <input type={'hidden'} name={'content'} value={content}/>
                 <MonacoEditor className={editorClassName} height={'30rem'}
+                              theme={theme === 'dark' ? 'vs-dark' : 'light'}
                               language={language} options={{automaticLayout: true}}
                               value={content} onChange={setContent}
                               onMount={handleEditorDidMount}

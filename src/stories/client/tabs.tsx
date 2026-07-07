@@ -14,7 +14,7 @@ import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
 import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitTargetFormOnKey} from "@/business/client";
 
 
 function Tab() {
