@@ -43,7 +43,7 @@ export function EntryList<TEntry extends EntryModel>(
     const t = useTranslations();
     const [searchInput, setSearchInput] = useState('');
     const {handleError} = useErrorHandler();
-    const {items, maxPage, curPage, search, loading, params, fetch} = usePagedItemsState();
+    const {items, maxPage, search, loading, params, fetch} = usePagedItemsState();
 
     const searchEntries = async (data: FormData) => {
         try {
@@ -111,9 +111,11 @@ export function EntryList<TEntry extends EntryModel>(
                 </form>
                 <EntryCreate entryState={entryState} props={createProps}/>
             </div>
-            <div className="flex-1 overflow-auto space-y-2 p-2">
-                {items && items.map((entry) =>
-                    <EntryUpdate key={`${search}-${curPage}-${entry.id}`} entryState={entryState}
+
+            <div className="flex-1 overflow-auto space-y-2 p-2"
+                 key={`entry-loading-${loading}`}>
+                {items && items.map((entry, i) =>
+                    <EntryUpdate key={`${entry.id}-${i}`} entryState={entryState}
                                  props={updateProps} entry={entry}/>
                 )}
             </div>

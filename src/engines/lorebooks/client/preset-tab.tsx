@@ -1,4 +1,4 @@
-﻿import React, {useState} from "react";
+﻿import React, {RefObject, useRef, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
 import {moduleName} from "@/presets/models";
 import {matchName} from "../match/always/models";
@@ -22,19 +21,43 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
-import {submitTargetFormOnKey} from "@/business/client/index.js";
+import {submitFormOnKey} from "@/business/client/index.js";
+import {editor} from "monaco-editor";
+import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
+import MonacoEditor, {OnMount} from "@monaco-editor/react";
+import {editorClassName} from "@/components/consts";
 
-const roles = ["system", "user", "assistant"]
+const roles = ["system", "user", "assistant"];
+const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
 
-function EditorContent({entry}: {
-    entry: PresetLorebookModel,
-}) {
+function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: RefObject<HTMLFormElement | null> }) {
+    const t = useTranslations();
     const matchEditors = lorebookMatcherRegistry.records;
     const [editor, setEditor] = useState(matchEditors[entry.matchType]);
-    const t = useTranslations();
+    const [type, setType] = useState(entry.type ?? "");
+    const editorRef = useRef<IStandaloneCodeEditor>(null);
+    const [content, setContent] = useState<string | undefined>(entry.content);
+    const handleEditorDidMount: OnMount = (editor) => {
+        // here is the editor instance
+        // you can store it in `useRef` for further usage
+        editorRef.current = editor;
+        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
+    }
     const handleChange = (type: string) => {
         setEditor(matchEditors[type]);
     };
+
+    const language = (() => {
+        switch (type) {
+            case "link":
+                return "plaintext";
+            case "json":
+                return "json";
+            default:
+                return "plaintext";
+        }
+    })();
+
     return (
         <>
             <div className="grid md:grid-cols-2 gap-4">
@@ -76,6 +99,27 @@ function EditorContent({entry}: {
                     </Select>
                 </Field>
                 <Field>
+                    <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                        {t("default.type")}
+                    </FieldLabel>
+                    <Select name={'type'}
+                            value={type} onValueChange={setType}>
+                        <SelectTrigger className="w-full"
+                                       id={`${engineName}-type-${entry.id}`}>
+                            <SelectValue/>
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                            <SelectGroup>
+                                {contentTypes.map((e) =>
+                                    <SelectItem key={e} value={e}>
+                                        {e}
+                                    </SelectItem>
+                                )}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </Field>
+                <Field>
                     <FieldLabel htmlFor={`lorebook-match_type-${entry.id}`}>
                         {t("lorebook.match_type")}
                     </FieldLabel>
@@ -108,10 +152,12 @@ function EditorContent({entry}: {
                 <FieldLabel htmlFor={`${engineName}-content-${entry.id}`}>
                     {t("default.content")}
                 </FieldLabel>
-                <Textarea name="content"
-                          id={`${engineName}-content-${entry.id}`}
-                          defaultValue={entry.content}
-                          onKeyDown={submitTargetFormOnKey}/>
+                <input type={'hidden'} name={'content'} value={content}/>
+                <MonacoEditor className={editorClassName} height={'30rem'}
+                              language={language} options={{automaticLayout: true}}
+                              value={content} onChange={setContent}
+                              onMount={handleEditorDidMount}
+                />
             </Field>
         </>
     );
@@ -184,6 +230,7 @@ function Tab() {
                         matchType: matchType,
                         matchExpression: matchEditors[matchType].getEditorValue(data),
                         content: data.get("content") as string,
+                        type: data.get("type") as string,
                         priority: parseInt(data.get("priority") as string),
                         layer: parseInt(data.get("layer") as string),
                         role: data.get("role") as string,
@@ -199,7 +246,8 @@ function Tab() {
                     });
                     return result;
                 },
-                updateContent: (entry) => (<EditorContent entry={entry}/>)
+                updateContent: (entry, formRef) =>
+                    (<EditorContent entry={entry} formRef={formRef}/>)
             }}/>
     );
 }

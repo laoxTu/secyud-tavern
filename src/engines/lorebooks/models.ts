@@ -2,6 +2,7 @@
 
 export interface PresetLorebookModel extends EntryModel {
     // 匹配类型
+    type?: string;
     matchType: string,
     // 匹配表达式
     matchExpression: any,

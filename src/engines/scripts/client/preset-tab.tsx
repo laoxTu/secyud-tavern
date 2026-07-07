@@ -84,7 +84,6 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                           language={language} options={{automaticLayout: true}}
                           value={content} onChange={setContent}
                           onMount={handleEditorDidMount}
-
             />
         </Field>
     </>);
