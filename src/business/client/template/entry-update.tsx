@@ -93,7 +93,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
     const handleDelete = async () => {
         try {
             await deleteHandler(entry);
-            handleSuccess(t("default.saved_successfully"));
+            handleSuccess(t("default.delete_successfully"));
             await fetch();
         } catch (error) {
             handleError(error);

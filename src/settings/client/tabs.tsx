@@ -10,17 +10,24 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {useTheme} from "next-themes";
 import {useDefaultSettingState} from "@/settings/client/models";
 import {Input} from "@/components/ui/input";
+import {useErrorHandler} from "@/handler/client/error";
 
 const themes = ['system', 'dark', 'light'];
 
 function Tab() {
     const t = useTranslations();
     const {theme, setTheme} = useTheme();
+    const {handleError, handleSuccess} = useErrorHandler();
     const {author, setAuthor} = useDefaultSettingState();
 
     const handleSubmit = async (data: FormData) => {
-        setTheme(data.get('theme') as string);
-        setAuthor(data.get('author') as string);
+        try {
+            setTheme(data.get('theme') as string);
+            setAuthor(data.get('author') as string);
+            handleSuccess(t("default.saved_successfully"));
+        } catch (e) {
+            handleError(e);
+        }
     }
     return (
         <form action={handleSubmit} className={"h-full"}>

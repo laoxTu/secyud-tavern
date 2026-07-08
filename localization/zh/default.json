@@ -93,6 +93,7 @@
     "match_type": "匹配类型",
     "match_type_always": "常驻",
     "match_type_event": "事件",
+    "match_type_vector": "向量",
     "match_type_normal": "一般",
     "max_date": "最大日期",
     "min_date": "最小日期",

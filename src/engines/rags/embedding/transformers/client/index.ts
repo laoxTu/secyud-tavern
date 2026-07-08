@@ -13,7 +13,7 @@ export interface TransformerModelInfo {
 export const transformerModels: Record<string, TransformerModelInfo> = {
     "all-MiniLM-L6-v2":
         {
-            model: "sentence-transformers/all-MiniLM-L6-v2",
+            model: "all-MiniLM-L6-v2",
             dimension: 384,
         }
 };
@@ -26,8 +26,13 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
         if (!model || model === '') {
             model = 'all-MiniLM-L6-v2';
         }
-        env.remoteHost = config["huggingface_mirror"] ?? 'https://huggingface.co';
+        env.allowLocalModels = true;
+        env.localModelPath = '/models/';
+        env.allowRemoteModels = false;
+        // env.remoteHost = config["huggingface_mirror"] ?? 'https://huggingface.co';
+        // console.debug("[transformer] remoteHost: ", env.remoteHost);
         const info = transformerModels[model];
+        console.debug("[transformer]", info);
         const extractor = await pipeline("feature-extraction", info.model);
         return {
             embeddingDimension: info.dimension,

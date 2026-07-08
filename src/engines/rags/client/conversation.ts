@@ -27,12 +27,13 @@ export async function tryFillActiveVectors({lorebookDb, message, generator}: Rag
     if (!generator || !lorebookDb) {
         return null;
     }
+    const embedding = await generator.generateEmbedding({
+        content: message.content
+    });
     const results = await search(lorebookDb, {
         mode: 'vector', // 核心：结合全文和向量搜索
         vector: {
-            value: await generator.generateEmbedding({
-                content: message.content
-            }), // 用于向量匹配
+            value: embedding, // 用于向量匹配
             property: 'embedding', // 指定要匹配的向量字段
         },
         // 可选：限制返回数量
@@ -40,6 +41,7 @@ export async function tryFillActiveVectors({lorebookDb, message, generator}: Rag
         // 可选：设定相似度阈值，低于此分数的不返回
         similarity: 0.75
     });
+    console.debug("[rag]", results);
     const activeLorebooks: string[] = results.hits.map(u => u.document.name);
 
     message.properties[enginePlural] = activeLorebooks;
@@ -57,6 +59,7 @@ export const ragConversationProvider:
         const manager = embeddingGeneratorManager;
         const state = useRagSettingState.getState();
         const provider = manager.records[state.embeddingGenerator];
+
         if (!provider) return;
         cache.generator = await provider.getGenerator();
         cache.lorebookDb = create<RagVectorSchema>({
@@ -68,16 +71,17 @@ export const ragConversationProvider:
 
         for (const preset of ctx.slot.presets) {
             const entries = preset.entries
-                ?.[enginePlural] as PresetLorebookModel[];
+                ?.[lorebookEnginePlural] as PresetLorebookModel[];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled || entry.matchType !== matchName) continue;
                 const name = `${preset.code}-${entry.code}`;
+                const embedding = await cache.generator.generateEmbedding({
+                    content: entry.content,
+                });
                 await insert(cache.lorebookDb, {
                     name,
-                    embedding: await cache.generator.generateEmbedding({
-                        content: entry.content,
-                    })
+                    embedding
                 })
             }
         }

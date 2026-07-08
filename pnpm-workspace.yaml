@@ -2,8 +2,8 @@ allowBuilds:
   '@parcel/watcher': false
   '@swc/core': true
   esbuild: true
-  onnxruntime-node: set this to true or false
-  protobufjs: set this to true or false
+  onnxruntime-node: true
+  protobufjs: false
   sharp: true
   unrs-resolver: false
 packages:

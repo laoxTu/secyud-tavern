@@ -8,18 +8,25 @@ import {BookIcon} from "lucide-react";
 import {engineName} from "@/engines/rags/models";
 import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
 import {useRagSettingState} from "@/engines/rags/client/models";
+import {useErrorHandler} from "@/handler/client/error";
 
 function Tab() {
     const t = useTranslations();
     const {embeddingGenerator} = useRagSettingState();
+    const {handleError, handleSuccess} = useErrorHandler();
     const generators = embeddingGeneratorManager.records;
     const [editor, setEditor] = useState(generators[embeddingGenerator]);
 
     const handleSubmit = async (data: FormData) => {
-        useRagSettingState.setState({
-            embeddingGenerator: editor.id,
-            embeddingGeneratorConfig: editor.getEditorValue(data),
-        });
+        try {
+            useRagSettingState.setState({
+                embeddingGenerator: editor.id,
+                embeddingGeneratorConfig: editor.getEditorValue(data),
+            });
+            handleSuccess(t("default.saved_successfully"));
+        } catch (e) {
+            handleError(e);
+        }
     }
     return (
         <form action={handleSubmit} className={"h-full"}>

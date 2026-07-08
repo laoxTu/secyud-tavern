@@ -2,6 +2,7 @@
 /src/plugins/manifests.ts
 /src/plugins/server/registerer.ts
 /src/plugins/client/registerer.ts
+/public/models/*
 /database/images
 /database/*.db
 # dependencies
