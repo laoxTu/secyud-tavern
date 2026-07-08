@@ -9,6 +9,7 @@ import {engineName} from "@/engines/rags/models";
 import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
 import {useRagSettingState} from "@/engines/rags/client/models";
 import {useErrorHandler} from "@/handler/client/error";
+import {Checkbox} from "@/components/ui/checkbox";
 
 function Tab() {
     const t = useTranslations();
@@ -20,6 +21,7 @@ function Tab() {
     const handleSubmit = async (data: FormData) => {
         try {
             useRagSettingState.setState({
+                disabled: Boolean(data.get("disabled") as string),
                 embeddingGenerator: editor.id,
                 embeddingGeneratorConfig: editor.getEditorValue(data),
             });
@@ -34,6 +36,13 @@ function Tab() {
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
                         <div className="grid md:grid-cols-2 gap-4">
+                            <Field>
+                                <FieldLabel htmlFor="setting-rag-disabled">
+                                    {t("default.disable")}
+                                </FieldLabel>
+                                <Checkbox id={"setting-rag-disabled"}
+                                          name="disabled"/>
+                            </Field>
                             <Field>
                                 <FieldLabel htmlFor="setting-generator">
                                     {t("rag.embedding_generator")}
