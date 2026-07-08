@@ -1,0 +1,33 @@
+﻿import {interceptor} from "@/handler/server/interceptor";
+import {NextResponse} from "next/server";
+import {settingRepository} from "@/settings/server/repository";
+
+/**
+ * 获取预设
+ * @pathParams { id:string }
+ * @params { withDetails:boolean }
+ * @response { id: string, data: string}
+ * @openapi
+ */
+export const GET = interceptor.createRoute(
+    async (request, records) => {
+        const {id} = await records.context.params;
+        const setting = await settingRepository.get(id);
+        return NextResponse.json(setting ?? {});
+    }
+)
+
+/**
+ * 更新预设
+ * @pathParams { id:string }
+ * @body {data: string}
+ * @openapi
+ */
+export const PUT = interceptor.createRoute(
+    async (request, records) => {
+        const {id} = await records.context.params;
+        const {data} = await request.json();
+        const setting = await settingRepository.set({id, data});
+        return NextResponse.json(setting);
+    }
+)

@@ -1,12 +1,12 @@
-import Cookies from "js-cookie";
 import {v4 as uuidv4} from "uuid";
+import {useDefaultSettingState} from "@/settings/client/models";
 
 
 export function getAuthor(t: any) {
-    let author = Cookies.get("author") ?? null;
+    let author = useDefaultSettingState.getState().author;
     if (!author) {
-        author = window.prompt(t("preset.input_author"), '');
-        Cookies.set("author", author ?? uuidv4());
+        author = window.prompt(t("preset.input_author"), '') ?? uuidv4();
+        useDefaultSettingState.setState({author});
     }
 
     return author;
