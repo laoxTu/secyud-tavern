@@ -41,20 +41,24 @@ export interface RagEmbeddingGeneratorProvider extends Registerable {
 
 export interface RagSettingState {
     embeddingGenerator: string;
+    disabled: boolean;
     embeddingGeneratorConfig: Record<string, any>;
 }
 
 export const useRagSettingState = create<RagSettingState>()(
-    persist(() => ({
+    persist<RagSettingState>(() => ({
             embeddingGenerator: "",
             embeddingGeneratorConfig: {},
+            disabled: false,
         }),
         {
             name: "ragSettingState",
             storage: createJSONStorage(() => remoteStorage),
             partialize: (state) => ({
+                disabled: state.disabled,
                 embeddingGenerator: state.embeddingGenerator,
                 embeddingGeneratorConfig: state.embeddingGeneratorConfig,
             }),
         }
-    ));
+    )
+);

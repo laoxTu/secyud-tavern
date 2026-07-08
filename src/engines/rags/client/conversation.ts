@@ -58,8 +58,8 @@ export const ragConversationProvider:
         const cache: RagConversationCache = {};
         const manager = embeddingGeneratorManager;
         const state = useRagSettingState.getState();
+        if (state.disabled) return;
         const provider = manager.records[state.embeddingGenerator];
-
         if (!provider) return;
         cache.generator = await provider.getGenerator();
         cache.lorebookDb = create<RagVectorSchema>({
@@ -88,6 +88,7 @@ export const ragConversationProvider:
         ctx.slot.content[enginePlural] = cache;
     },
     onProcessInput: async (ctx) => {
+        if (useRagSettingState.getState().disabled) return;
         const cache: RagConversationCache = ctx.slot.content[enginePlural];
         if (!cache.generator || !cache.lorebookDb) return;
 
@@ -128,6 +129,7 @@ export const ragConversationProvider:
         }
     },
     onProcessOutput: async (ctx) => {
+        if (useRagSettingState.getState().disabled) return;
         const message = getCurrentOutput(ctx.history);
         if (message) {
             const cache: RagConversationCache = ctx.slot.content[enginePlural];
