@@ -1,5 +1,5 @@
 ﻿import {SlotContentRenderer, SlotInitializer} from "@/slots/client/conversation-models";
-import {PresetStyleModel, engineName, engineArrayName} from "../models";
+import {PresetStyleModel, engineName, enginePlural} from "../models";
 
 const prefix = "injected-style";
 
@@ -18,7 +18,7 @@ export const styleConversationProvider:
         };
         for (const preset of ctx.slot.presets) {
             const entries: PresetStyleModel[] = preset
-                .entries?.[engineArrayName];
+                .entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
@@ -26,7 +26,7 @@ export const styleConversationProvider:
             }
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
-        ctx.slot.content[engineArrayName] = cache;
+        ctx.slot.content[enginePlural] = cache;
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
@@ -35,7 +35,7 @@ export const styleConversationProvider:
         }
         window.__injectedStyleInitialized = true;
         console.debug('[injected-styles] start generate');
-        const cache: StyleConversationCache = ctx.slot.content[engineArrayName];
+        const cache: StyleConversationCache = ctx.slot.content[enginePlural];
         const set = new Set<string>();
         for (const entry of cache.entries) {
             const id = `${prefix}-${entry.code}`;

@@ -1,9 +1,10 @@
-﻿import {engineArrayName, engineName, PresetLorebookModel} from "../models";
+﻿import {enginePlural, engineName, PresetLorebookModel} from "../models";
 import {ClientRegistry} from "@/plugins/client";
 import {Matcher, MatcherMatchContext} from "./match-models";
 import {alwaysMatcher} from "@/engines/lorebooks/match/always/client";
 import {normalMatcher} from "@/engines/lorebooks/match/normal/client";
 import {eventMatcher} from "@/engines/lorebooks/match/event/client";
+import {vectorMatcher} from "@/engines/lorebooks/match/vector/client";
 
 export class MatcherRegistry extends ClientRegistry<Matcher> {
     constructor(name: string, matchers?: Matcher[],) {
@@ -16,7 +17,7 @@ export class MatcherRegistry extends ClientRegistry<Matcher> {
     }
 }
 
-export const lorebookMatcherRegistry = new MatcherRegistry(engineName, [alwaysMatcher, normalMatcher, eventMatcher]);
+export const lorebookMatcherRegistry = new MatcherRegistry(engineName, [alwaysMatcher, normalMatcher, eventMatcher, vectorMatcher]);
 
 export function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookModel>,
                                        context: MatcherMatchContext) {
@@ -30,5 +31,6 @@ export function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookM
             activeLorebooks.push(key);
         }
     }
-    message.properties[engineArrayName] = activeLorebooks;
+    message.properties[enginePlural] = activeLorebooks;
+    return activeLorebooks;
 }

@@ -7,4 +7,4 @@ export interface PresetRegexModel extends EntryModel{
 }
 
 export const engineName = "regex";
-export const engineArrayName = "regexes";
+export const enginePlural = "regexes";

@@ -7,4 +7,4 @@ export interface PresetScriptModel extends EntryModel {
 }
 
 export const engineName = "script";
-export const engineArrayName = "scripts";
+export const enginePlural = "scripts";

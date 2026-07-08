@@ -1,4 +1,4 @@
-﻿import {engineName, engineArrayName, PresetMacroModel} from "../models";
+﻿import {engineName, enginePlural, PresetMacroModel} from "../models";
 import {moduleName as llmapiModuleName} from "@/llmapis/models";
 import {
     LlmapiInputProcesser,
@@ -17,7 +17,7 @@ const eta = new Eta({
 });
 
 function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
-    const cache: MacroConversationCache = ctx.slot.content[engineArrayName];
+    const cache: MacroConversationCache = ctx.slot.content[enginePlural];
     return {
         ...cache.variables,
         variables: generateCurrentVariables(ctx.history, false),
@@ -56,14 +56,14 @@ export const macroConversationProvider:
             variables: {}
         }
         for (const preset of ctx.slot.presets) {
-            const entries: PresetMacroModel[] = preset.entries?.[engineArrayName];
+            const entries: PresetMacroModel[] = preset.entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
                 cache.variables[entry.key] = entry.value;
             }
         }
-        ctx.slot.content[engineArrayName] = cache;
+        ctx.slot.content[enginePlural] = cache;
     },
     onRenderStream: async (ctx) => {
         const data = ctx.data;

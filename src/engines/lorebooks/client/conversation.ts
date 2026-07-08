@@ -1,8 +1,7 @@
 ﻿import {
     engineName,
-    engineArrayName,
+    enginePlural,
     PresetLorebookModel,
-    compareLorebook,
 } from "../models";
 import {matchName} from "../match/always/models";
 import {generateCurrentVariables} from "@/slots/client/conversation";
@@ -14,6 +13,7 @@ import {
     SlotInitializer
 } from "@/slots/client/conversation-models";
 import {getCurrentOutput, StoryHistoryMessage} from "@/stories/models";
+import {engineName as ragEngineName} from '@/engines/rags/models';
 
 
 export interface LorebookConversationCache {
@@ -28,6 +28,7 @@ export const lorebookConversationProvider:
     & LlmapiOutputProcesser
     = {
     id: engineName,
+    requires: [ragEngineName],
     onInitialize: async (ctx) => {
         const cache: LorebookConversationCache = {
             before: [],
@@ -36,7 +37,7 @@ export const lorebookConversationProvider:
         };
         for (const preset of ctx.slot.presets) {
             const entries = preset.entries
-                ?.[engineArrayName] as PresetLorebookModel[];
+                ?.[enginePlural] as PresetLorebookModel[];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
@@ -52,10 +53,10 @@ export const lorebookConversationProvider:
                 }
             }
         }
-        ctx.slot.content[engineArrayName] = cache;
+        ctx.slot.content[enginePlural] = cache;
     },
     onProcessInput: async (ctx) => {
-        const cache: LorebookConversationCache = ctx.slot.content[engineArrayName];
+        const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
 
         const prepareLorebooks: PresetLorebookModel[] = [];
         // 将世界书拷贝到上下文中，用于生成提示词。
@@ -64,7 +65,12 @@ export const lorebookConversationProvider:
                 setActiveLorebooks(history, input, false);
             }
 
-            history.properties["lorebooks"] = [...prepareLorebooks].sort(compareLorebook);
+            const lorebooks = history.properties[enginePlural];
+            // 设置缓存，缓存的世界书来源可能不一样，如果前面设置过，需要合并。
+            history.properties[enginePlural] = [
+                ...(lorebooks ?? []),
+                ...prepareLorebooks];
+
             prepareLorebooks.length = 0;
 
             const output = getCurrentOutput(history);
@@ -75,13 +81,13 @@ export const lorebookConversationProvider:
 
         function setActiveLorebooks(history: LlmapiHistory, message: StoryHistoryMessage, includeOutput: boolean) {
             console.debug("setActiveLorebooks: message", message);
-            if (!message.properties[engineArrayName]) {
+            // 从持久化数据中设置/读取 string[]
+            const lorebookNames = message.properties[enginePlural] ??
                 tryFillActiveLorebooks(cache.entries, {
                     history, message,
                     variables: generateCurrentVariables(ctx.history, includeOutput)
                 });
-            }
-            for (const lorebookName of message.properties[engineArrayName]) {
+            for (const lorebookName of lorebookNames) {
                 const lorebook = cache.entries[lorebookName];
                 if (lorebook) {
                     prepareLorebooks.push(lorebook);
@@ -92,7 +98,7 @@ export const lorebookConversationProvider:
     onProcessOutput: async (ctx) => {
         const message = getCurrentOutput(ctx.history);
         if (message) {
-            const cache: LorebookConversationCache = ctx.slot.content[engineArrayName];
+            const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
 
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message,

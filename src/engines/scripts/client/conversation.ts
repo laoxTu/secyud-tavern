@@ -5,7 +5,7 @@ import {
     SlotInitializer,
     SlotStreamRenderer
 } from "@/slots/client/conversation-models";
-import {PresetScriptModel, engineName, engineArrayName} from "../models";
+import {PresetScriptModel, engineName, enginePlural} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
 import {generateCurrentVariables} from "@/slots/client/conversation";
 import {mergeObjects} from "@/utils";
@@ -32,7 +32,7 @@ export const scriptConversationProvider:
             entries: []
         }
         for (const preset of ctx.slot.presets) {
-            const scripts: PresetScriptModel[] = preset.entries?.[engineArrayName];
+            const scripts: PresetScriptModel[] = preset.entries?.[enginePlural];
             if (!scripts) continue;
             for (const script of scripts) {
                 if (script.disabled) continue;
@@ -51,7 +51,7 @@ export const scriptConversationProvider:
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
         cache.importMap = JSON.stringify(cache.importMap);
-        ctx.slot.content[engineArrayName] = cache;
+        ctx.slot.content[enginePlural] = cache;
     },
     onRenderStream: async (ctx) => {
         renderData(ctx, "variables", generateCurrentVariables(ctx.history));
@@ -62,7 +62,7 @@ export const scriptConversationProvider:
         if (!window.__injectedScriptInitialized) {
             window.__injectedScriptInitialized = true;
             console.debug('start generate injected-scripts');
-            const cache: ScriptConversationCache = ctx.slot.content[engineArrayName];
+            const cache: ScriptConversationCache = ctx.slot.content[enginePlural];
 
             if (cache.importMap !== "{}") {
                 const script = ctx.document.createElement("script");

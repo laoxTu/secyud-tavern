@@ -16,6 +16,7 @@ import {registerComponents} from "@/components";
 import {registerOpenAIClient} from "@/engines/openai/client";
 import {registerClientPlugin} from "@/plugins/client/registerer";
 import {registerSettingClient} from "@/settings/client";
+import {registerRagsClient} from "@/engines/rags/client";
 
 async function loadClientPlugins() {
     registerComponents();
@@ -31,6 +32,7 @@ async function loadClientPlugins() {
     registerOpenAIClient();
 
     registerLorebooksClient();
+    registerRagsClient();
     registerRegexesClient();
     registerStylesClient();
     registerScriptsClient();

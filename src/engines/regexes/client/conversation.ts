@@ -4,7 +4,7 @@
     SlotInitializer,
     SlotStreamRenderer
 } from "@/slots/client/conversation-models";
-import {engineName, engineArrayName, PresetRegexModel} from "../models";
+import {engineName, enginePlural, PresetRegexModel} from "../models";
 import {getCurrentOutput} from "@/stories/models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 
@@ -25,7 +25,7 @@ export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[engineArrayName]
+        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
         for (const message of ctx.histories) {
             for (const input of message.inputs) {
                 input.content = applyRegexes(cache.inputs, input.content);
@@ -51,7 +51,7 @@ export const regexConversationProvider:
             outputs: []
         }
         for (const preset of ctx.slot.presets) {
-            const entries: PresetRegexModel[] = preset.entries?.[engineArrayName];
+            const entries: PresetRegexModel[] = preset.entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
@@ -63,15 +63,15 @@ export const regexConversationProvider:
                 }
             }
         }
-        ctx.slot.content[engineArrayName] = cache;
+        ctx.slot.content[enginePlural] = cache;
     },
     onRenderStream: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[engineArrayName]
+        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
         const data = ctx.data;
         data.output = applyRegexes(cache.outputs, data.output);
     },
     onRenderContent: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[engineArrayName]
+        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
         console.debug('start apply regex for input');
         const data = ctx.data;
         const inputs = data.inputs;

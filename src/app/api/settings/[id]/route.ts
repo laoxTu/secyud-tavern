@@ -27,7 +27,7 @@ export const PUT = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
         const {data} = await request.json();
-        const setting = await settingRepository.set({id, data});
-        return NextResponse.json(setting);
+        await settingRepository.set({id, data});
+        return NextResponse.json(null);
     }
 )

@@ -30,4 +30,4 @@ export function compareLorebook(lft: PresetLorebookModel, rht: PresetLorebookMod
 
 
 export const engineName = "lorebook";
-export const engineArrayName = "lorebooks";
+export const enginePlural = "lorebooks";

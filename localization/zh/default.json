@@ -163,7 +163,14 @@
   },
   "setting": {
     "theme": "主题",
+    "author": "作者",
+    "rag": "向量库",
     "default": "默认"
+  },
+  "rag": {
+    "huggingface_mirror": "huggingface 镜像",
+    "embedding_generator": "向量生成器",
+    "embedding_generator_model": "向量生成模型"
   },
   "error": {
     "empty_field": "{field}不可以为空！",

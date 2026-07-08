@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "631281b3-5ad5-4f9d-b09c-f468f3d4f445",
+  "id": "44317dbd-b20b-4804-8ad2-db956a71b2ca",
   "prevId": "7bd9896a-74cb-4f19-9487-4608e15bfc4c",
   "tables": {
     "image_file": {
@@ -365,8 +365,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "settings": {
-      "name": "settings",
+    "setting": {
+      "name": "setting",
       "columns": {
         "id": {
           "name": "id",

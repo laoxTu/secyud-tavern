@@ -6,4 +6,4 @@ export interface PresetMacroModel extends EntryModel {
 }
 
 export const engineName = "macro";
-export const engineArrayName = "macros";
+export const enginePlural = "macros";

@@ -5,6 +5,7 @@ const withNextIntlConfig = createNextIntlPlugin('./src/localization/request.ts')
 
 
 const nextConfig: NextConfig = {
+    serverExternalPackages: ['@huggingface/transformers', 'onnxruntime-node'],
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production' ? {exclude: ['error', 'warn', 'info']} : false,
     },

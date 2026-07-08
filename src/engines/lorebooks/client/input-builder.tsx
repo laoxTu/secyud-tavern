@@ -1,6 +1,6 @@
 ﻿import {
     compareLorebook,
-    engineArrayName,
+    enginePlural,
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
@@ -19,6 +19,7 @@ import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation
 
 export async function defaultBuildInput(
     ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
+    // 待填充的历史，从最后一个summary开始
     const histories = ctx.histories;
 
     const cache: { role: string, content: string[] } = {
@@ -27,10 +28,11 @@ export async function defaultBuildInput(
     }
     const llmapiMessages: LlmapiMessage[] = [];
     const visitedLorebooks = new Set<string>();
-    const entries: LorebookConversationCache = ctx.slot.content[engineArrayName];
+    const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
     for (let i = 0; i < histories.length; i++) {
         const history = histories[i];
-        const lorebooks = history.properties[engineArrayName] as PresetLorebookModel[];
+        // 这里是api history 缓存，和message的properties不是同一实例
+        const lorebooks = history.properties[enginePlural] as PresetLorebookModel[];
         if (i === 0)
             fillLorebooks(lorebooks, entries.before);
         else if (i === histories.length - 1)
@@ -67,8 +69,8 @@ export async function defaultBuildInput(
     console.debug("llmapiMessages: ", llmapiMessages);
     return llmapiMessages;
 
-    function fillLorebooks(lorebooks: PresetLorebookModel[], added: PresetLorebookModel[]) {
-        for (const add of added) {
+    function fillLorebooks(lorebooks: PresetLorebookModel[], adds: PresetLorebookModel[]) {
+        for (const add of adds) {
             lorebooks.push(add);
         }
         lorebooks.sort(compareLorebook);

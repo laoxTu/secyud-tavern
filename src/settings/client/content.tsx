@@ -8,15 +8,15 @@ import {createUseTabState} from "@/business/client/models";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Separator} from "@/components/ui/separator";
 
-export const useStoryTabState = createUseTabState(settingTabManager);
+export const useSettingTabState = createUseTabState(settingTabManager);
 
 function Content() {
-    const {tabId, setTabId} = useStoryTabState();
+    const {tabId, setTabId} = useSettingTabState();
     const tabs = settingTabManager.getSorted();
 
     return (
-        <Tabs value={tabId} onValueChange={setTabId} orientation="vertical" className={"flex h-full p-4"}>
-            <TabsList className="overflow-y-auto scrollbar-none gap-1 justify-normal">
+        <Tabs value={tabId} onValueChange={setTabId} className={"flex flex-col h-full p-4"}>
+            <TabsList className="overflow-x-auto scrollbar-none gap-1 justify-normal">
                 {tabs.map((tab, index) => {
                     const Component = tab.label;
                     return (
@@ -26,13 +26,13 @@ function Content() {
                     );
                 })}
             </TabsList>
-            <Separator orientation={'vertical'}/>
+            <Separator orientation={'horizontal'}/>
             {tabs.map((tab) => {
                 const Component = tab.component;
                 if (!Component) return null;
                 return (
                     <TabsContent key={tab.id} value={tab.id}
-                                 className="w-full h-full">
+                                 className="flex-1">
                         <Component/>
                     </TabsContent>
                 );

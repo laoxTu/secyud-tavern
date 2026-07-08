@@ -7,4 +7,4 @@ export interface PresetStyleModel extends EntryModel {
 }
 
 export const engineName = "style";
-export const engineArrayName = "styles";
+export const enginePlural = "styles";
