@@ -1,4 +1,4 @@
-﻿import {SlotContentRenderer, SlotInitializer} from "@/slots/client/conversation-models";
+﻿import {SlotContentRenderer, SlotInitializer} from "@/modules/slots/client/conversation-models";
 import {PresetStyleModel, engineName, enginePlural} from "../models";
 
 const prefix = "injected-style";

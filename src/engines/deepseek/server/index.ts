@@ -1,4 +1,4 @@
-﻿import {llmapiEngineRegistry} from "@/llmapis/server/engine";
+﻿import {llmapiEngineRegistry} from "@/modules/llmapis/server/engine";
 import {DeepseekEngine} from "@/engines/deepseek/server/engine";
 
 export function registerDeepseekServer() {

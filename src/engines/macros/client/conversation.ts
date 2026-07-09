@@ -1,15 +1,15 @@
 ﻿import {engineName, enginePlural, PresetMacroModel} from "../models";
-import {moduleName as llmapiModuleName} from "@/llmapis/models";
+import {moduleName as llmapiModuleName} from "@/modules/llmapis/models";
 import {
     LlmapiInputProcesser,
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
-} from "@/slots/client/conversation-models";
+} from "@/modules/slots/client/conversation-models";
 import {Eta} from 'eta/core';
-import {generateCurrentVariables} from "@/slots/client/conversation";
-import {SlotModel} from "@/slots/models";
-import {StoryHistory} from "@/stories/models";
+import {generateCurrentVariables} from "@/modules/slots/client/conversation";
+import {SlotModel} from "@/modules/slots/models";
+import {StoryHistory} from "@/modules/stories/models";
 
 const eta = new Eta({
     autoTrim: false,

@@ -1,5 +1,5 @@
-﻿import {presetTabManager} from "@/presets/client/tabs";
-import {conversationManager} from "@/slots/client/conversation";
+﻿import {presetTabManager} from "@/modules/presets/client/tabs";
+import {conversationManager} from "@/modules/slots/client/conversation";
 import {tabConfig} from "./preset-tab";
 import {macroConversationProvider, macroLlmapiInputProcesser} from "./conversation";
 

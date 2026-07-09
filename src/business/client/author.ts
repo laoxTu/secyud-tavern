@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from "uuid";
-import {useDefaultSettingState} from "@/settings/client/models";
+import {useDefaultSettingState} from "@/modules/settings/client/models";
 
 
 export function getAuthor(t: any) {

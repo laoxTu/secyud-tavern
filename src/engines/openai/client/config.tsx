@@ -3,13 +3,13 @@ import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
-import {moduleName} from "@/llmapis/models";
-import {LlmapiConfig} from "@/llmapis/client/config-models";
+import {moduleName} from "@/modules/llmapis/models";
+import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
-import {useItemState} from "@/llmapis/client/models";
+import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 
 const defaultConfig: OpenAIConfigModel = {

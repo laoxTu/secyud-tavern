@@ -3,9 +3,9 @@
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
-} from "@/slots/client/conversation-models";
+} from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
-import {getCurrentOutput} from "@/stories/models";
+import {getCurrentOutput} from "@/modules/stories/models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 
 export interface RegexConversationCache {

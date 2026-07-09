@@ -1,14 +1,14 @@
 import {eq} from "drizzle-orm";
-import {presetRepository} from "@/presets/server/repository";
+import {presetRepository} from "@/modules/presets/server/repository";
 import {NextResponse} from "next/server";
-import type {PresetModel} from "@/presets/models";
+import type {PresetModel} from "@/modules/presets/models";
 import {BusinessError} from "@/handler/models";
-import {storyRepository} from "@/stories/server/repository";
-import {llmapiRepository} from "@/llmapis/server/repository";
+import {storyRepository} from "@/modules/stories/server/repository";
+import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
-import {presets} from "@/presets/server/db-entities";
-import {SlotModel} from "@/slots/models";
-import {StoryHistory} from "@/stories/models";
+import {presets} from "@/modules/presets/server/db-entities";
+import {SlotModel} from "@/modules/slots/models";
+import {StoryHistory} from "@/modules/stories/models";
 import {EntryModel} from "@/business/models";
 
 /**

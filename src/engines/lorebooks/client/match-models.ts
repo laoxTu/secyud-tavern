@@ -1,5 +1,5 @@
 ﻿import {Registerable} from "@/utils/register";
-import {StoryHistory, StoryHistoryMessage} from "@/stories/models";
+import {StoryHistory, StoryHistoryMessage} from "@/modules/stories/models";
 import {PresetLorebookModel} from "@/engines/lorebooks/models";
 import {ComponentType} from "react";
 

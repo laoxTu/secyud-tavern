@@ -1,5 +1,6 @@
 ﻿export interface Registerable {
     id: string;
+    sequence?: number;
     requires?: string[];
 }
 
@@ -80,7 +81,9 @@ export class Registry<T extends Registerable> {
      */
     protected sortByRequires(): T[] {
         const records = this.records;
-        console.debug(`[${this.name}] sort ${Object.keys(records).length} items`);
+        const recordList = Object.values(records)
+            .sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+        console.debug(`[${this.name}] sort ${recordList.length} items`);
         const sorted: T[] = [];
         const visited = new Set<string>();
 
@@ -95,7 +98,8 @@ export class Registry<T extends Registerable> {
         }
 
         // 填充依赖关系
-        for (const id in records) {
+        for (const record of recordList) {
+            const id = record.id;
             const deps = records[id].requires;
             if (!deps) continue;
             for (const dep of deps) {
@@ -138,8 +142,8 @@ export class Registry<T extends Registerable> {
         }
 
         // 4. 循环依赖检测：如果排序结果数量不等于总节点数，说明存在环
-        if (sorted.length !== Object.keys(records).length) {
-            const remaining = Object.keys(records).filter(id => !visited.has(id));
+        if (sorted.length !== recordList.length) {
+            const remaining = recordList.filter(t => !visited.has(t.id));
             throw new Error(`[Sort Error] Circular dependency detected involving: ${remaining.join(', ')}`);
         }
 

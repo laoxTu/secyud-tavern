@@ -1,7 +1,7 @@
 import {TemplateConfig} from "@/app/api/template";
 import {and, eq, like, not, or, SQL} from "drizzle-orm";
-import {presetRepository as repository, presetRepository} from "@/presets/server/repository";
-import {PresetModel} from "@/presets/models";
+import {presetRepository as repository, presetRepository} from "@/modules/presets/server/repository";
+import {PresetModel} from "@/modules/presets/models";
 import {validate} from "uuid";
 import {splitPNGAndDataUniversal} from "@/utils/png";
 import {imageRepository} from "@/business/server/image-repository";

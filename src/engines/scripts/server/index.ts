@@ -1,4 +1,4 @@
-﻿import {presetStorage} from "@/presets/server/storage";
+﻿import {presetStorage} from "@/modules/presets/server/storage";
 import {scriptStorageProvider} from "./storage";
 
 

@@ -1,6 +1,6 @@
-import {conversationManager} from "@/slots/client/conversation";
+import {conversationManager} from "@/modules/slots/client/conversation";
 import {ragConversationProvider} from "@/engines/rags/client/conversation";
-import {settingTabManager} from "@/settings/client/tabs";
+import {settingTabManager} from "@/modules/settings/client/tabs";
 import {settingTab} from "./setting-tab";
 
 export function registerRagsClient() {

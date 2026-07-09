@@ -1,11 +1,11 @@
 import {NextResponse} from "next/server";
 
-import {llmapiRepository} from "@/llmapis/server/repository";
+import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
-import {llmapiEngineRegistry} from "@/llmapis/server/engine";
+import {llmapiEngineRegistry} from "@/modules/llmapis/server/engine";
 import {hasher} from "@/utils/server/hasher";
 import {BusinessError} from "@/handler/models";
-import {LlmapiInputModel} from "@/slots/models";
+import {LlmapiInputModel} from "@/modules/slots/models";
 import {getCache} from "@/utils/server/cache";
 
 /**

@@ -1,6 +1,6 @@
 ﻿import {interceptor} from "@/handler/server/interceptor";
 import {NextResponse} from "next/server";
-import {settingRepository} from "@/settings/server/repository";
+import {settingRepository} from "@/modules/settings/server/repository";
 
 /**
  * 获取预设

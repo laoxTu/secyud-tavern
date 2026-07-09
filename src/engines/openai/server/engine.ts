@@ -1,5 +1,5 @@
 ﻿import {OpenAI} from "openai";
-import {LlmapiEngine, LlmapiRequestContext} from "@/llmapis/server/engine-models";
+import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {Stream} from "openai/streaming";
 

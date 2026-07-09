@@ -1,10 +1,10 @@
 import {TemplateConfig} from "@/app/api/template";
 import {and, eq, like, not, or, SQL} from "drizzle-orm";
-import {LlmapiModel} from "@/llmapis/models";
-import {llmapiRepository} from "@/llmapis/server/repository";
+import {LlmapiModel} from "@/modules/llmapis/models";
+import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
-import {presetRepository as repository} from "@/presets/server/repository";
+import {presetRepository as repository} from "@/modules/presets/server/repository";
 import {hasher} from "@/utils/server/hasher";
 
 export const apiConfig: TemplateConfig<LlmapiModel> = {

@@ -1,8 +1,8 @@
 import {TemplateConfig} from "@/app/api/template";
-import {StoryModel} from "@/stories/models";
+import {StoryModel} from "@/modules/stories/models";
 import {and, like, SQL} from "drizzle-orm";
 import {BusinessError} from "@/handler/models";
-import {storyRepository} from "@/stories/server/repository";
+import {storyRepository} from "@/modules/stories/server/repository";
 
 export const apiConfig: TemplateConfig<StoryModel> = {
     repository: storyRepository,

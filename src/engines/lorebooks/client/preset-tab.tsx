@@ -12,11 +12,11 @@ import {
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
-import {moduleName} from "@/presets/models";
+import {moduleName} from "@/modules/presets/models";
 import {matchName} from "../match/always/models";
 import {TemplateEntryList} from "@/business/client/template";
 import {del, post, put} from "@/client";
-import {useItemState} from "@/presets/client/models";
+import {useItemState} from "@/modules/presets/client/models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";

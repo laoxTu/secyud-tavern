@@ -4,12 +4,12 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {moduleName} from "@/llmapis/models";
-import {LlmapiConfig} from "@/llmapis/client/config-models";
+import {moduleName} from "@/modules/llmapis/models";
+import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
 import {DeepseekConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
-import {useItemState} from "@/llmapis/client/models";
+import {useItemState} from "@/modules/llmapis/client/models";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 const reasoningEffort = ["high", "max"];

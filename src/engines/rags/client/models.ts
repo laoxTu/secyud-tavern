@@ -1,9 +1,9 @@
 import {Orama, Vector} from "@orama/orama";
-import {StoryHistoryMessage} from "@/stories/models";
+import {StoryHistoryMessage} from "@/modules/stories/models";
 import {Registerable} from "@/utils/register";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
-import {remoteStorage} from "@/settings/client/models";
+import {remoteStorage} from "@/modules/settings/client/models";
 import {ComponentType} from "react";
 
 

@@ -4,10 +4,10 @@ import {
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
-} from "@/slots/client/conversation-models";
+} from "@/modules/slots/client/conversation-models";
 import {PresetScriptModel, engineName, enginePlural} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
-import {generateCurrentVariables} from "@/slots/client/conversation";
+import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {mergeObjects} from "@/utils";
 
 const prefix = "injected-script";

@@ -4,17 +4,17 @@
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
-import {LlmapiMessage} from "@/slots/models";
-import {LlmapiInputBuilder} from "@/llmapis/client/input-builder-models";
-import {LlmapiInputContext} from "@/slots/client/conversation-models";
-import {getCurrentOutput} from "@/stories/models";
+import {LlmapiMessage} from "@/modules/slots/models";
+import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
+import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
+import {getCurrentOutput} from "@/modules/stories/models";
 import {useTranslations} from "next-intl";
 import {mergeObjects} from "@/utils";
 import {Field, FieldLabel} from "@/components/ui/field";
-import {moduleName} from "@/llmapis/models";
+import {moduleName} from "@/modules/llmapis/models";
 import {Input} from "@/components/ui/input";
 import React from "react";
-import {useItemState} from "@/llmapis/client/models";
+import {useItemState} from "@/modules/llmapis/client/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 
 export async function defaultBuildInput(

@@ -1,5 +1,5 @@
 ﻿import {OpenAI} from "openai";
-import {LlmapiEngine, LlmapiRequestContext} from "@/llmapis/server/engine-models";
+import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
 import {DeepseekConfigModel, engineName} from "../models";
 import {generateOpenAIReadableStreamReply} from "@/engines/openai/server/engine";
 

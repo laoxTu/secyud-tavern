@@ -4,15 +4,15 @@
     PresetLorebookModel,
 } from "../models";
 import {matchName} from "../match/always/models";
-import {generateCurrentVariables} from "@/slots/client/conversation";
+import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {tryFillActiveLorebooks} from "@/engines/lorebooks/client/match";
 import {
     LlmapiHistory,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
     SlotInitializer
-} from "@/slots/client/conversation-models";
-import {getCurrentOutput, StoryHistoryMessage} from "@/stories/models";
+} from "@/modules/slots/client/conversation-models";
+import {getCurrentOutput, StoryHistoryMessage} from "@/modules/stories/models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
 
 

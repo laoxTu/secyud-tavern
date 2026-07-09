@@ -6,8 +6,8 @@ import {
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
     SlotInitializer
-} from "@/slots/client/conversation-models";
-import {getCurrentOutput, StoryHistoryMessage} from "@/stories/models";
+} from "@/modules/slots/client/conversation-models";
+import {getCurrentOutput, StoryHistoryMessage} from "@/modules/stories/models";
 import {
     RagConversationCache,
     RagSearchContext,
