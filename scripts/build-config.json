@@ -1,0 +1,5 @@
+{
+  "mirrors": {
+    "huggingface" : "https://hf-mirror.com"
+  }
+}

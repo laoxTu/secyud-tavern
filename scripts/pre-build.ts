@@ -10,9 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const pluginsDir = path.join(root, 'plugins');
 
-await generatePlugin();
+await preBuild();
 
-async function generatePlugin() {
+async function preBuild() {
+    const config = await import('./build-config.json');
     const pluginManager = new PluginManager("GeneratePlugin");
     pluginManager.register(...(await getPluginManifests()));
     const manifests = pluginManager.getSorted();
@@ -55,10 +56,37 @@ async function generatePlugin() {
         }
     }
 
-    await downloadFile(
-        "https://hf-mirror.com/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_quantized.onnx",
-        path.join(root, 'public', 'models', 'all-MiniLM-L6-v2/onnx/model_quantized.onnx'));
+    await downloadFromHuggingface(
+        "Xenova/all-MiniLM-L6-v2", "all-MiniLM-L6-v2",
+        [
+            "config.json",
+            // "onnx/model.onnx",
+            "tokenizer_config.json",
+            "tokenizer.json",
+            "onnx/model_quantized.onnx"
+        ]);
+
+    await downloadFromHuggingface(
+        "Xenova/bge-small-zh-v1.5", "bge-small-zh-v1.5",
+        [
+            "config.json",
+            // "onnx/model.onnx",
+            "tokenizer_config.json",
+            "tokenizer.json",
+            "onnx/model_quantized.onnx",
+        ]);
+
+
+    async function downloadFromHuggingface(repository: string, local: string, files: string[]) {
+
+        for (const file of files) {
+            await downloadFile(
+                `${config.mirrors.huggingface}/${repository}/resolve/main/${file}`,
+                path.join(root, 'public', 'models', `${local}/${file}`));
+        }
+    }
 }
+
 
 function generateSecureDigitString(length: number): string {
     if (length <= 0) return '';

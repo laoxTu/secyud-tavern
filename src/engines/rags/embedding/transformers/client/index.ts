@@ -11,11 +11,14 @@ export interface TransformerModelInfo {
 }
 
 export const transformerModels: Record<string, TransformerModelInfo> = {
-    "all-MiniLM-L6-v2":
-        {
-            model: "all-MiniLM-L6-v2",
-            dimension: 384,
-        }
+    "all-MiniLM-L6-v2": {
+        model: "all-MiniLM-L6-v2",
+        dimension: 384,
+    },
+    "bge-small-zh-v1.5": {
+        model: "bge-small-zh-v1.5",
+        dimension: 512,
+    },
 };
 
 export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
@@ -29,6 +32,7 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
         env.allowLocalModels = true;
         env.localModelPath = '/models/';
         env.allowRemoteModels = false;
+        env.useBrowserCache = false;
         // env.remoteHost = config["huggingface_mirror"] ?? 'https://huggingface.co';
         // console.debug("[transformer] remoteHost: ", env.remoteHost);
         const info = transformerModels[model];

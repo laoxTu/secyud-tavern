@@ -15,9 +15,10 @@ export type RagVectorSchema = typeof ragVectorSchema & { embedding: Vector };
 
 
 export interface RagConversationCache {
-    lorebookDb?: Orama<RagVectorSchema>;
-    generator?: RagEmbeddingGenerator;
+    lorebookDb: Orama<RagVectorSchema>;
+    generator: RagEmbeddingGenerator;
 }
+
 
 
 export interface RagSearchContext extends RagConversationCache {

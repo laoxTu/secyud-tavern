@@ -1,5 +1,5 @@
 import {useTranslations} from "next-intl";
-import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
+import {Field, FieldContent, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
@@ -40,8 +40,10 @@ function Tab() {
                                 <FieldLabel htmlFor="setting-rag-disabled">
                                     {t("default.disable")}
                                 </FieldLabel>
-                                <Checkbox id={"setting-rag-disabled"}
-                                          name="disabled"/>
+                                <FieldContent>
+                                    <Checkbox id={"setting-rag-disabled"}
+                                              name="disabled"/>
+                                </FieldContent>
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="setting-generator">
