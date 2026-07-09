@@ -4,7 +4,6 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {useRagSettingState} from "@/engines/rags/client/models";
 import {transformerModels} from "@/engines/rags/embedding/transformers/client/index";
-import {Input} from "@/components/ui/input";
 
 export function Editor() {
     const t = useTranslations();
@@ -31,13 +30,6 @@ export function Editor() {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor="transformers-huggingface_mirror">
-                    {t("rag.huggingface_mirror")}
-                </FieldLabel>
-                <Input name="huggingface_mirror" id={`transformers-huggingface_mirror`}
-                       defaultValue={embeddingGeneratorConfig["huggingface_mirror"]}/>
             </Field>
         </div>
     </>);

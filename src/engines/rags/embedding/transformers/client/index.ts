@@ -32,9 +32,6 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
         env.allowLocalModels = true;
         env.localModelPath = '/models/';
         env.allowRemoteModels = false;
-        env.useBrowserCache = false;
-        // env.remoteHost = config["huggingface_mirror"] ?? 'https://huggingface.co';
-        // console.debug("[transformer] remoteHost: ", env.remoteHost);
         const info = transformerModels[model];
         console.debug("[transformer]", info);
         const extractor = await pipeline("feature-extraction", info.model);
@@ -52,8 +49,7 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
     editor: Editor,
     getEditorValue(data: FormData): Record<string, any> {
         return {
-            model: data.get("model") as string,
-            huggingface_mirror: data.get("huggingface_mirror") as string,
+            model: data.get("model"),
         };
     },
     id: "transformers"
