@@ -52,12 +52,10 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
 
     const language = (() => {
         switch (type) {
-            case "link":
+            case "":
                 return "plaintext";
-            case "json":
-                return "json";
             default:
-                return "plaintext";
+                return type;
         }
     })();
 
