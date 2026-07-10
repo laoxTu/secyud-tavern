@@ -3,7 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/docs/guide" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/docs" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/plugins/secyud-tavern-importer" vcs="Git" />
   </component>
 </project>
