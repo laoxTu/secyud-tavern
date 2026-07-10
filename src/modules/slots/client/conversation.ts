@@ -1,5 +1,11 @@
 'use client';
-import {applyPatch, extractVariableChanges, getCurrentOutput, StoryHistory, StoryInputMessage} from "@/modules/stories/models";
+import {
+    applyPatch,
+    extractVariableChanges,
+    getCurrentOutput,
+    StoryHistory,
+    StoryInputMessage
+} from "@/modules/stories/models";
 import {SlotModel} from "@/modules/slots/models";
 import {
     LlmapiHistory,
@@ -43,11 +49,13 @@ export function generateCurrentVariables(history: StoryHistory, includeOutput: b
 
 export function generateInputBuildContext(inputContext: LlmapiInputContext) {
     const histories = inputContext.slot.story.histories!
-    const start = histories.findLastIndex(u => u.summary);
+    let start = histories.slice(0, histories.length - 1)
+        .findLastIndex(u => u.summary);
     if (start === -1) {
         const openingHistory = getOpeningHistory(inputContext.slot);
         inputContext.histories.push(map(openingHistory));
     }
+
     for (let i = Math.max(start, 0); i < histories.length; i++) {
         inputContext.histories.push(map(histories[i]));
     }
