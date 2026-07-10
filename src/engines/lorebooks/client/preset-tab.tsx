@@ -27,6 +27,7 @@ import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import MonacoEditor, {OnMount} from "@monaco-editor/react";
 import {editorClassName} from "@/components/consts";
 import {useTheme} from "next-themes";
+import {defaultEditorOptions} from "@/components";
 
 const roles = ["system", "user", "assistant"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -157,7 +158,8 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                 <input type={'hidden'} name={'content'} value={content}/>
                 <MonacoEditor className={editorClassName} height={'30rem'}
                               theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                              language={language} options={{automaticLayout: true}}
+                              language={language}
+                              options={defaultEditorOptions}
                               value={content} onChange={setContent}
                               onMount={handleEditorDidMount}
                 />

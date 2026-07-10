@@ -19,6 +19,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {PresetScriptModel} from "@/engines/scripts/models";
 import {submitFormOnKey} from "@/business/client";
 import {useTheme} from "next-themes";
+import {defaultEditorOptions} from "@/components";
 
 const styleTypes = ["", "link", "text/css"];
 
@@ -84,6 +85,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                           theme={theme === 'dark' ? 'vs-dark' : 'light'}
                           language={language} height={'20rem'}
                           value={content} onChange={setContent}
+                          options={defaultEditorOptions}
                           onMount={handleEditorDidMount}/>
         </Field>
     </>);

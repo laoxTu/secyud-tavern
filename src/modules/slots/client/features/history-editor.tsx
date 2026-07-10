@@ -25,6 +25,7 @@ import {toast} from "sonner";
 import {editorClassName} from "@/components/consts";
 import {submitFormOnKey, submitTargetFormOnKey} from "@/business/client";
 import {useTheme} from "next-themes";
+import {defaultEditorOptions} from "@/components";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -125,6 +126,7 @@ export function HistoryEditor() {
                                 <Editor className={editorClassName} defaultLanguage={'json'} height={'10rem'}
                                         theme={theme === 'dark' ? 'vs-dark' : 'light'}
                                         defaultValue={JSON.stringify(history.variables)}
+                                        options={defaultEditorOptions}
                                         onMount={handleEditorDidMount}/>
                             </Field>
                         </FieldGroup>

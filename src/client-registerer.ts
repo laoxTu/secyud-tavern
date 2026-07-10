@@ -12,14 +12,12 @@ import {registerPresetClient} from "@/modules/presets/client";
 import {registerMacrosClient} from "@/engines/macros/client";
 import {registerSlotClient} from "@/modules/slots/client";
 import {registerBusinessClient} from "@/business/client";
-import {registerComponents} from "@/components";
 import {registerOpenAIClient} from "@/engines/openai/client";
 import {registerClientPlugin} from "@/plugins/client/registerer";
 import {registerSettingClient} from "@/modules/settings/client";
 import {registerRagsClient} from "@/engines/rags/client";
 
 async function loadClientPlugins() {
-    registerComponents();
     registerBusinessClient();
     registerStoryClient();
     registerPresetClient();

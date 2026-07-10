@@ -18,6 +18,7 @@ import {PresetScriptModel, engineName} from "../models";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {submitFormOnKey} from "@/business/client";
 import {useTheme} from "next-themes";
+import {defaultEditorOptions} from "@/components";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -84,7 +85,8 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
             <input type={'hidden'} name={'content'} value={content}/>
             <MonacoEditor className={editorClassName} height={'30rem'}
                           theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                          language={language} options={{automaticLayout: true}}
+                          options={defaultEditorOptions}
+                          language={language}
                           value={content} onChange={setContent}
                           onMount={handleEditorDidMount}
             />
