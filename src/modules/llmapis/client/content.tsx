@@ -73,14 +73,18 @@ function Content() {
                     name: data.get("name") as string,
                 })
             },
-            cloneContent: () => (<>
+            cloneContent: (model) => (<>
                 <Field>
                     <Label htmlFor={`${moduleName}-clone-code`}>{t("default.code") + "*"}</Label>
-                    <Input id={`${moduleName}-clone-code`} name="code" required/>
+                    <Input id={`${moduleName}-clone-code`}
+                           defaultValue={model.code}
+                           name="code" required/>
                 </Field>
                 <Field>
                     <Label htmlFor={`${moduleName}-clone-name`}>{t("default.name") + "*"}</Label>
-                    <Input id={`${moduleName}-clone-name`} name="name" required/>
+                    <Input id={`${moduleName}-clone-name`}
+                           defaultValue={model.name}
+                           name="name" required/>
                 </Field>
             </>),
             exportHandler: async (model) => {

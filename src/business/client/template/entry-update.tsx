@@ -167,13 +167,21 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                         <FieldGroup>
                                             <Field>
                                                 <FieldLabel
-                                                    htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</FieldLabel>
-                                                <Input id={`${entryType}-code`} name="code" required/>
+                                                    htmlFor={`${entryType}-code`}>
+                                                    {t("default.code") + "*"}
+                                                </FieldLabel>
+                                                <Input id={`${entryType}-code`} name="code"
+                                                       defaultValue={entry.code}
+                                                       required/>
                                             </Field>
                                             <Field>
                                                 <FieldLabel
-                                                    htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</FieldLabel>
-                                                <Input id={`${entryType}-name`} name="name" required/>
+                                                    htmlFor={`${entryType}-name`}>
+                                                    {t("default.name") + "*"}
+                                                </FieldLabel>
+                                                <Input id={`${entryType}-name`} name="name"
+                                                       defaultValue={entry.name}
+                                                       required/>
                                             </Field>
                                         </FieldGroup>
                                         <DialogFooter>
