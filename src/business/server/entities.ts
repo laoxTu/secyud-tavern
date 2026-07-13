@@ -1,5 +1,4 @@
-﻿
-import {integer, primaryKey, SQLiteColumn, sqliteTable, text, UpdateDeleteAction} from "drizzle-orm/sqlite-core";
+﻿import {index, integer, primaryKey, SQLiteColumn, sqliteTable, text, UpdateDeleteAction} from "drizzle-orm/sqlite-core";
 import {customType} from "drizzle-orm/sqlite-core";
 
 export type BaseEntity = { [x: string]: any; };
@@ -34,7 +33,7 @@ export const jsonField = <T = any>(name: string) =>
         },
     })(name);
 
-export function masterTable(tableName: string, extraColumns: any = {}) {
+export function masterTable(tableName: string, extraColumns: any = {}, options: (table: any) => any[]) {
     return sqliteTable(tableName, {
         id: text("id").primaryKey(),
         name: text("name").notNull(),
@@ -42,7 +41,7 @@ export function masterTable(tableName: string, extraColumns: any = {}) {
         ...extraColumns,
         createdAt: text("created_at").notNull(),
         updatedAt: text("updated_at").notNull(),
-    })
+    }, options)
 }
 
 export function entryTable(tableName: string, masterRef: () => SQLiteColumn, options: {
@@ -53,10 +52,13 @@ export function entryTable(tableName: string, masterRef: () => SQLiteColumn, opt
         masterId: text("master_id").notNull().references(masterRef, options),
         entryType: text("entry_type").notNull(),
         entryId: integer("entry_id").notNull(),
-        search: text("search").notNull(),
+        search: text("search").notNull().default(''),
+        sorter: text("sorter").notNull().default(''),
         disabled: integer("disabled", {mode: 'boolean'}).notNull().default(false),
         content: text("content").notNull(),
     }, (table) => [
-        primaryKey({columns: [table.masterId, table.entryType, table.entryId]})
+        primaryKey({columns: [table.masterId, table.entryType, table.entryId]}),
+        index(`${tableName}_search_idx`).on(table.search),
+        index(`${tableName}_sorter_idx`).on(table.sorter),
     ]);
 }

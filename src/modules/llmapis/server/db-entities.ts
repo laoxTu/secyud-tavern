@@ -1,5 +1,5 @@
 ﻿import {entryTable, masterTable} from "@/business/server/entities";
-import {text} from "drizzle-orm/sqlite-core";
+import {index, text} from "drizzle-orm/sqlite-core";
 import {moduleName} from "../models";
 
 // 存档主表
@@ -9,7 +9,9 @@ export const llmapis = masterTable(moduleName, {
     builder: text("builder"),
     key: text("key"),
     version: text("version").notNull(),
-});
+}, table => [
+    index(`${moduleName}_code_idx`).on(table.code),
+]);
 
 // 存档从表
 export const llmapiEntries = entryTable(

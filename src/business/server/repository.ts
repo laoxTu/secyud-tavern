@@ -32,6 +32,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     loadModel: (model: TModel) => Promise<void>,
     saveModel: (model: TModel) => Promise<void>,
     bindSearch: (type: string, entry: any) => string,
+    bindSorter: (type: string, entry: any) => string,
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 
@@ -202,7 +203,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 let query: any = db
                     .select()
                     .from(entries)
-                    .where(and(...condition));
+                    .where(and(...condition))
+                    .orderBy(entries.sorter);
 
                 if (pageSize) {
                     query = query.limit(pageSize);
@@ -231,6 +233,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         entryId: e.id,
                         disabled: e.disabled,
                         search: bindSearch(type, e),
+                        sorter: bindSorter(type, e),
                         content: JSON.stringify({
                             ...e,
                             id: undefined,
@@ -259,6 +262,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         entryId: entryId,
                         disabled: false,
                         search: bindSearch(type, entry),
+                        sorter: bindSorter(type, entry),
                         content: JSON.stringify({
                             ...entry,
                             id: undefined
@@ -288,6 +292,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 const updateData: Record<string, unknown> = {
                     updatedAt: new Date().toISOString(),
                     search: bindSearch(type, entry),
+                    sorter: bindSorter(type, entry),
                     content: JSON.stringify({
                         ...entry,
                         id: undefined,

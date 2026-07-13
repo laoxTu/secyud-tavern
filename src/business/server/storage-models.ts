@@ -9,10 +9,15 @@ export interface ModelStorageProvider<T> extends Registerable {
     // 仅导入，复制时会使用
     saveModel: (model: T) => Promise<void>,
     // 存储 entry时提取 search 字段
-    bindSearch: (entry: any) => string
+    bindSearch: (entry: any) => string,
+    // 存储 entry时提取 sorter 字段
+    bindSorter: (entry: any) => string,
 }
 
-export function createSimpleStorageProvider<T extends BaseModel>(id: string, arrayName: string, repository: Repository<T>): ModelStorageProvider<T> {
+export function createSimpleStorageProvider<T extends BaseModel, TEntry extends EntryModel>(
+    id: string, arrayName: string, repository: Repository<T>,
+    bindSearch?: (entry: TEntry) => string,
+    bindSorter?: (entry: TEntry) => string): ModelStorageProvider<T> {
     return {
         id: id,
         loadModel: async (model: T) => {
@@ -31,8 +36,11 @@ export function createSimpleStorageProvider<T extends BaseModel>(id: string, arr
                     model.id, id, model.entries[arrayName]);
             }
         },
-        bindSearch: (entry: EntryModel) => {
+        bindSearch: bindSearch ?? ((entry: TEntry) => {
             return entry.name + entry.code;
-        }
+        }),
+        bindSorter: bindSorter ?? ((entry: TEntry) => {
+            return entry.name + entry.code;
+        })
     }
 }

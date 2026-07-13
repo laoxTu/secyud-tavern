@@ -9,6 +9,7 @@ export const llmapiRepository =
         llmapiStorage.loadModel.bind(llmapiStorage),
         llmapiStorage.saveModel.bind(llmapiStorage),
         llmapiStorage.bindSearch.bind(llmapiStorage),
+        llmapiStorage.bindSorter.bind(llmapiStorage),
         (model) => ({
             code: model.code,
             version: model.version,

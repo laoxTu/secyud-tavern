@@ -9,6 +9,7 @@ export const storyRepository =
         storyStorage.loadModel.bind(storyStorage),
         storyStorage.saveModel.bind(storyStorage),
         storyStorage.bindSearch.bind(storyStorage),
+        storyStorage.bindSorter.bind(storyStorage),
         (model) => ({
             requires: model.requires,
             llmapi: model.llmapi,

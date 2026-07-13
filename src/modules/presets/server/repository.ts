@@ -9,6 +9,7 @@ export const presetRepository =
         presetStorage.loadModel.bind(presetStorage),
         presetStorage.saveModel.bind(presetStorage),
         presetStorage.bindSearch.bind(presetStorage),
+        presetStorage.bindSorter.bind(presetStorage),
         (model) => ({
             code: model.code,
             version: model.version,

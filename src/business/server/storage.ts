@@ -22,6 +22,12 @@ export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> {
         return provider?.bindSearch(entry) ?? `${entry?.name}${entry.code}`;
     }
 
+    // 搜索字段，对排序字段拼接，可以实现排序
+    bindSorter(type: string, entry: any) {
+        const provider = this.records[type];
+        return provider?.bindSorter(entry) ?? `${entry?.name}${entry.code}`;
+    }
+
     static getInstance<T>(name: string) {
         return getInstance(name + "Storage", u => new ModelStorage<T>(u));
     }
