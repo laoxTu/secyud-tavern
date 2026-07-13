@@ -7,4 +7,5 @@ export interface PluginManifest extends Registerable {
     // 前端脚本名称
     clientScript?: string;
     folder: string;
+    disabled: boolean;
 }

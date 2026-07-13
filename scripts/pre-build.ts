@@ -127,6 +127,7 @@ async function getPluginManifests() {
             await promise.access(manifestPath);
             const manifestText = await promise.readFile(manifestPath, 'utf-8');
             const manifest = JSON.parse(manifestText) as PluginManifest;
+            if (manifest.disabled) continue;
             manifest.folder = folder;
             manifests.push(manifest);
             console.info(`[plugin loader] 📂 find plugin: ${folder}`);
