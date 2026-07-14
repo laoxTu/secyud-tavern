@@ -1,5 +1,5 @@
 ﻿'use client';
-import React from "react";
+import React, {RefObject, useRef} from "react";
 import {useTranslations} from "next-intl";
 import {Field, FieldGroup, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
@@ -11,7 +11,7 @@ export interface ModelUpdateProps<TModel extends BaseModel> {
     // 根据原模型和表单更新模型，返回更新后的模型。
     updateHandler: (model: TModel, data: FormData) => Promise<TModel>;
     // 编辑 FieldGroup 的内部内容。
-    updateContent: (model: TModel) => React.ReactNode;
+    updateContent: (model: TModel, formRef:  RefObject<HTMLFormElement | null>) => React.ReactNode;
 }
 
 interface Props<TModel extends BaseModel> {
@@ -37,6 +37,7 @@ export function ModelUpdate<TModel extends BaseModel>(
     const {handleError, handleSuccess} = useErrorHandler();
     const {model, setModel, render} = useItemState();
     const {fetch} = usePagedItemsState();
+    const formRef = useRef<HTMLFormElement>(null);
 
     const refresh = async (model?: TModel) => {
         setModel(model);
@@ -58,11 +59,11 @@ export function ModelUpdate<TModel extends BaseModel>(
     if (!model) return null;
 
     return (
-        <form className={className} action={handleUpdate} key={render}>
+        <form ref={formRef} className={className} action={handleUpdate} key={render}>
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        {updateContent(model)}
+                        {updateContent(model, formRef)}
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

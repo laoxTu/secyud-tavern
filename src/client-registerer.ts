@@ -16,12 +16,14 @@ import {registerOpenAIClient} from "@/engines/openai/client";
 import {registerClientPlugin} from "@/plugins/client/registerer";
 import {registerSettingClient} from "@/modules/settings/client";
 import {registerRagsClient} from "@/engines/rags/client";
+import {registerComfyUIClient} from "@/modules/comfyui/client";
 
 async function loadClientPlugins() {
     registerBusinessClient();
     registerStoryClient();
     registerPresetClient();
     registerLlmapiClient();
+    registerComfyUIClient();
     registerSlotClient();
 
     registerSettingClient();
