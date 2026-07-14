@@ -3,7 +3,6 @@ import {imageRepository} from "@/business/server/image-repository";
 import {NextResponse} from "next/server";
 
 /**
- * 获取预设
  * @pathParams { id:string }
  * @response ReadableStream
  * @openapi
@@ -26,7 +25,6 @@ export const GET = interceptor.createRoute(
 
 
 /**
- * 删除预设
  * @pathParams { id:string }
  * @openapi
  */

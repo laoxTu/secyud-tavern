@@ -1103,6 +1103,1212 @@
     }
   },
   "paths": {
+    "/comfyuis/models": {
+      "get": {
+        "operationId": "get-comfyuis-models",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项",
+            "example": "example"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-comfyuis-models",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows": {
+      "get": {
+        "operationId": "get-comfyuis-workflows",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项",
+            "example": "example"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-comfyuis-workflows",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/{id}": {
+      "get": {
+        "operationId": "get-comfyuis-models-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-comfyuis-models-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-comfyuis-models-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/import": {
+      "post": {
+        "operationId": "post-comfyuis-models-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}": {
+      "get": {
+        "operationId": "get-comfyuis-workflows-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-comfyuis-workflows-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-comfyuis-workflows-{id}",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/import": {
+      "post": {
+        "operationId": "post-comfyuis-workflows-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/{id}/export": {
+      "get": {
+        "operationId": "get-comfyuis-models-{id}-export",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}/export": {
+      "get": {
+        "operationId": "get-comfyuis-workflows-{id}-export",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadableStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/{id}/entries/{entryType}": {
+      "get": {
+        "operationId": "get-comfyuis-models-{id}-entries-{entryType}",
+        "summary": "获取条目分页列表",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项",
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-comfyuis-models-{id}-entries-{entryType}",
+        "summary": "创建条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}/entries/{entryType}": {
+      "get": {
+        "operationId": "get-comfyuis-workflows-{id}-entries-{entryType}",
+        "summary": "获取条目分页列表",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项",
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-comfyuis-workflows-{id}-entries-{entryType}",
+        "summary": "创建条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/{id}/entries/{entryType}/{entryId}": {
+      "put": {
+        "operationId": "put-comfyuis-models-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-comfyuis-models-{id}-entries-{entryType}-{entryId}",
+        "summary": "删除条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}": {
+      "put": {
+        "operationId": "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
+        "summary": "删除条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled": {
+      "put": {
+        "operationId": "put-comfyuis-models-{id}-entries-{entryType}-{entryId}-disabled",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled": {
+      "put": {
+        "operationId": "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}-disabled",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/images": {
       "post": {
         "operationId": "post-images",
@@ -1143,7 +2349,7 @@
     "/images/{id}": {
       "get": {
         "operationId": "get-images-{id}",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Images"
@@ -1154,9 +2360,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1181,7 +2387,7 @@
       },
       "delete": {
         "operationId": "delete-images-{id}",
-        "summary": "删除预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Images"
@@ -1192,9 +2398,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1211,7 +2417,7 @@
     "/llmapis": {
       "get": {
         "operationId": "get-llmapis",
-        "summary": "获取预设分页列表",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1225,7 +2431,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -1235,7 +2442,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -1245,7 +2453,8 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
           }
         ],
         "responses": {
@@ -1269,7 +2478,7 @@
       },
       "post": {
         "operationId": "post-llmapis",
-        "summary": "创建预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1315,7 +2524,7 @@
     "/llmapis/{id}": {
       "get": {
         "operationId": "get-llmapis-{id}",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1326,9 +2535,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1353,7 +2562,7 @@
       },
       "put": {
         "operationId": "put-llmapis-{id}",
-        "summary": "更新预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1364,9 +2573,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1390,7 +2599,7 @@
       },
       "delete": {
         "operationId": "delete-llmapis-{id}",
-        "summary": "删除预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1401,9 +2610,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1477,9 +2686,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1515,7 +2724,7 @@
     "/llmapis/{id}/export": {
       "get": {
         "operationId": "get-llmapis-{id}-export",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Llmapis"
@@ -1526,9 +2735,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1569,7 +2778,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -1579,7 +2789,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -1589,7 +2800,28 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           }
         ],
         "responses": {
@@ -1624,9 +2856,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -1691,9 +2923,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -1711,9 +2943,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -1748,9 +2980,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -1768,9 +3000,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -1798,9 +3030,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -1818,9 +3050,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -1837,7 +3069,7 @@
     "/presets": {
       "get": {
         "operationId": "get-presets",
-        "summary": "获取预设分页列表",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -1851,7 +3083,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -1861,7 +3094,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -1871,7 +3105,8 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
           }
         ],
         "responses": {
@@ -1895,7 +3130,7 @@
       },
       "post": {
         "operationId": "post-presets",
-        "summary": "创建预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -1941,7 +3176,7 @@
     "/presets/{id}": {
       "get": {
         "operationId": "get-presets-{id}",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -1952,9 +3187,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -1979,7 +3214,7 @@
       },
       "put": {
         "operationId": "put-presets-{id}",
-        "summary": "更新预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -1990,9 +3225,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2016,7 +3251,7 @@
       },
       "delete": {
         "operationId": "delete-presets-{id}",
-        "summary": "删除预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -2027,9 +3262,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2092,7 +3327,7 @@
     "/presets/{id}/export": {
       "get": {
         "operationId": "get-presets-{id}-export",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Presets"
@@ -2103,9 +3338,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2146,7 +3381,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -2156,7 +3392,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -2166,7 +3403,28 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           }
         ],
         "responses": {
@@ -2201,9 +3459,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2268,9 +3526,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2288,9 +3546,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -2325,9 +3583,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2345,9 +3603,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -2375,9 +3633,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2395,9 +3653,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -2414,7 +3672,7 @@
     "/settings/{id}": {
       "get": {
         "operationId": "get-settings-{id}",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Settings"
@@ -2425,9 +3683,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2440,10 +3698,12 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": false
                     },
                     "data": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": false
                     }
                   },
                   "required": [
@@ -2464,7 +3724,7 @@
       },
       "put": {
         "operationId": "put-settings-{id}",
-        "summary": "更新预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Settings"
@@ -2475,9 +3735,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2494,7 +3754,7 @@
     "/stories": {
       "get": {
         "operationId": "get-stories",
-        "summary": "获取预设分页列表",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2508,7 +3768,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -2518,7 +3779,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -2528,7 +3790,8 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
           }
         ],
         "responses": {
@@ -2552,7 +3815,7 @@
       },
       "post": {
         "operationId": "post-stories",
-        "summary": "创建预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2598,7 +3861,7 @@
     "/stories/{id}": {
       "get": {
         "operationId": "get-stories-{id}",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2609,9 +3872,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2636,7 +3899,7 @@
       },
       "put": {
         "operationId": "put-stories-{id}",
-        "summary": "更新预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2647,9 +3910,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2673,7 +3936,7 @@
       },
       "delete": {
         "operationId": "delete-stories-{id}",
-        "summary": "删除预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2684,9 +3947,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2749,7 +4012,7 @@
     "/stories/{id}/export": {
       "get": {
         "operationId": "get-stories-{id}-export",
-        "summary": "获取预设",
+        "summary": "",
         "description": "",
         "tags": [
           "Stories"
@@ -2760,9 +4023,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2800,9 +4063,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           }
         ],
@@ -2843,7 +4106,8 @@
               "type": "number",
               "description": "页码，默认0"
             },
-            "description": "页码，默认0"
+            "description": "页码，默认0",
+            "example": 1
           },
           {
             "in": "query",
@@ -2853,7 +4117,8 @@
               "type": "number",
               "description": "每页条数，默认20"
             },
-            "description": "每页条数，默认20"
+            "description": "每页条数，默认20",
+            "example": 1
           },
           {
             "in": "query",
@@ -2863,7 +4128,28 @@
               "description": "可选搜索项",
               "type": "string"
             },
-            "description": "可选搜索项"
+            "description": "可选搜索项",
+            "example": "example"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
           }
         ],
         "responses": {
@@ -2898,9 +4184,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2965,9 +4251,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -2985,9 +4271,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -3022,9 +4308,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -3042,9 +4328,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -3072,9 +4358,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: id"
           },
           {
@@ -3092,9 +4378,9 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             },
-            "example": 123,
+            "example": "123",
             "description": "Path parameter: entryId"
           }
         ],
@@ -3110,6 +4396,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Comfyuis"
+    },
     {
       "name": "Images"
     },

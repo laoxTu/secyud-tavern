@@ -4,6 +4,242 @@
  */
 
 export interface paths {
+    "/comfyuis/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-models"];
+        put?: never;
+        post: operations["post-comfyuis-models"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-workflows"];
+        put?: never;
+        post: operations["post-comfyuis-workflows"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-models-{id}"];
+        put: operations["put-comfyuis-models-{id}"];
+        post?: never;
+        delete: operations["delete-comfyuis-models-{id}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-comfyuis-models-import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-workflows-{id}"];
+        put: operations["put-comfyuis-workflows-{id}"];
+        post?: never;
+        delete: operations["delete-comfyuis-workflows-{id}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建预设 */
+        post: operations["post-comfyuis-workflows-import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-models-{id}-export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get-comfyuis-workflows-{id}-export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/{id}/entries/{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取条目分页列表 */
+        get: operations["get-comfyuis-models-{id}-entries-{entryType}"];
+        put?: never;
+        /** 创建条目 */
+        post: operations["post-comfyuis-models-{id}-entries-{entryType}"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/{id}/entries/{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取条目分页列表 */
+        get: operations["get-comfyuis-workflows-{id}-entries-{entryType}"];
+        put?: never;
+        /** 创建条目 */
+        post: operations["post-comfyuis-workflows-{id}-entries-{entryType}"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/{id}/entries/{entryType}/{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-comfyuis-models-{id}-entries-{entryType}-{entryId}"];
+        post?: never;
+        /** 删除条目 */
+        delete: operations["delete-comfyuis-models-{id}-entries-{entryType}-{entryId}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}"];
+        post?: never;
+        /** 删除条目 */
+        delete: operations["delete-comfyuis-workflows-{id}-entries-{entryType}-{entryId}"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-comfyuis-models-{id}-entries-{entryType}-{entryId}-disabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 更新条目 */
+        put: operations["put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}-disabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/images": {
         parameters: {
             query?: never;
@@ -28,11 +264,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-images-{id}"];
         put?: never;
         post?: never;
-        /** 删除预设 */
         delete: operations["delete-images-{id}"];
         options?: never;
         head?: never;
@@ -46,10 +280,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设分页列表 */
         get: operations["get-llmapis"];
         put?: never;
-        /** 创建预设 */
         post: operations["post-llmapis"];
         delete?: never;
         options?: never;
@@ -64,12 +296,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-llmapis-{id}"];
-        /** 更新预设 */
         put: operations["put-llmapis-{id}"];
         post?: never;
-        /** 删除预设 */
         delete: operations["delete-llmapis-{id}"];
         options?: never;
         head?: never;
@@ -117,7 +346,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-llmapis-{id}-export"];
         put?: never;
         post?: never;
@@ -187,10 +415,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设分页列表 */
         get: operations["get-presets"];
         put?: never;
-        /** 创建预设 */
         post: operations["post-presets"];
         delete?: never;
         options?: never;
@@ -205,12 +431,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-presets-{id}"];
-        /** 更新预设 */
         put: operations["put-presets-{id}"];
         post?: never;
-        /** 删除预设 */
         delete: operations["delete-presets-{id}"];
         options?: never;
         head?: never;
@@ -241,7 +464,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-presets-{id}-export"];
         put?: never;
         post?: never;
@@ -311,9 +533,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-settings-{id}"];
-        /** 更新预设 */
         put: operations["put-settings-{id}"];
         post?: never;
         delete?: never;
@@ -329,10 +549,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设分页列表 */
         get: operations["get-stories"];
         put?: never;
-        /** 创建预设 */
         post: operations["post-stories"];
         delete?: never;
         options?: never;
@@ -347,12 +565,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-stories-{id}"];
-        /** 更新预设 */
         put: operations["put-stories-{id}"];
         post?: never;
-        /** 删除预设 */
         delete: operations["delete-stories-{id}"];
         options?: never;
         head?: never;
@@ -383,7 +598,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 获取预设 */
         get: operations["get-stories-{id}-export"];
         put?: never;
         post?: never;
@@ -877,6 +1091,748 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "get-comfyuis-models": {
+        parameters: {
+            query?: {
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
+                page?: number;
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
+                pageSize?: number;
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-workflows": {
+        parameters: {
+            query?: {
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
+                page?: number;
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
+                pageSize?: number;
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-workflows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-models-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-models-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-comfyuis-models-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-models-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-workflows-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-workflows-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-comfyuis-workflows-{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-workflows-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: string;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-models-{id}-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadableStream"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-workflows-{id}-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadableStream"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-models-{id}-entries-{entryType}": {
+        parameters: {
+            query?: {
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
+                page?: number;
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
+                pageSize?: number;
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-models-{id}-entries-{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: number;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-workflows-{id}-entries-{entryType}": {
+        parameters: {
+            query?: {
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
+                page?: number;
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
+                pageSize?: number;
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-workflows-{id}-entries-{entryType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        id: number;
+                    };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-models-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-comfyuis-models-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "delete-comfyuis-workflows-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-models-{id}-entries-{entryType}-{entryId}-disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}-disabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "post-images": {
         parameters: {
             query?: never;
@@ -910,7 +1866,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -938,7 +1894,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -951,11 +1907,20 @@ export interface operations {
     "get-llmapis": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
@@ -1014,7 +1979,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1042,7 +2007,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1065,7 +2030,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1112,7 +2077,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1144,7 +2109,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1166,15 +2131,35 @@ export interface operations {
     "get-llmapis-{id}-entries-{entryType}": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1201,7 +2186,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1240,7 +2225,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1250,7 +2235,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1273,7 +2258,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1283,7 +2268,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1302,7 +2287,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1312,7 +2297,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1325,11 +2310,20 @@ export interface operations {
     "get-presets": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
@@ -1388,7 +2382,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1416,7 +2410,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1439,7 +2433,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1486,7 +2480,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1508,15 +2502,35 @@ export interface operations {
     "get-presets-{id}-entries-{entryType}": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1543,7 +2557,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1582,7 +2596,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1592,7 +2606,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1615,7 +2629,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1625,7 +2639,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1644,7 +2658,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -1654,7 +2668,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -1673,7 +2687,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1704,7 +2718,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1717,11 +2731,20 @@ export interface operations {
     "get-stories": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
@@ -1780,7 +2803,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1808,7 +2831,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1831,7 +2854,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1878,7 +2901,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1906,7 +2929,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
             };
             cookie?: never;
         };
@@ -1928,15 +2951,35 @@ export interface operations {
     "get-stories-{id}-entries-{entryType}": {
         parameters: {
             query?: {
-                /** @description 页码，默认0 */
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
                 page?: number;
-                /** @description 每页条数，默认20 */
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
                 pageSize?: number;
-                /** @description 可选搜索项 */
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
                 search?: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1963,7 +3006,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -2002,7 +3045,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -2012,7 +3055,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -2035,7 +3078,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -2045,7 +3088,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };
@@ -2064,7 +3107,7 @@ export interface operations {
                  * @description Path parameter: id
                  * @example 123
                  */
-                id: number;
+                id: string;
                 /**
                  * @description Path parameter: entryType
                  * @example example
@@ -2074,7 +3117,7 @@ export interface operations {
                  * @description Path parameter: entryId
                  * @example 123
                  */
-                entryId: number;
+                entryId: string;
             };
             cookie?: never;
         };

@@ -3,7 +3,6 @@ import {NextResponse} from "next/server";
 import {settingRepository} from "@/modules/settings/server/repository";
 
 /**
- * 获取预设
  * @pathParams { id:string }
  * @params { withDetails:boolean }
  * @response { id: string, data: string}
@@ -18,7 +17,6 @@ export const GET = interceptor.createRoute(
 )
 
 /**
- * 更新预设
  * @pathParams { id:string }
  * @body {data: string}
  * @openapi

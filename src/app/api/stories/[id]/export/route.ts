@@ -3,7 +3,6 @@ import {apiConfig} from "../../models";
 import {apiExportModel} from "@/app/api/template";
 
 /**
- * 获取预设
  * @pathParams { id:string }
  * @response ReadableStream
  * @openapi

@@ -5,261 +5,791 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
-      "message": "Route /images/{id} contains path parameters id but no @pathParams type is defined.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\images\\[id]\\route.ts",
-      "routePath": "/images/{id}"
+      "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "metadata": {
+        "typeName": "any",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "metadata": {
+        "typeName": "T",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "metadata": {
+        "typeName": "T",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/export contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\export\\route.ts",
+      "routePath": "/comfyuis/models/{id}/export",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"ReadableStream\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "metadata": {
+        "typeName": "ReadableStream",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\route.ts",
+      "routePath": "/comfyuis/models/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\route.ts",
+      "routePath": "/comfyuis/models/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/models/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\route.ts",
+      "routePath": "/comfyuis/models/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/export contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\export\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/export",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /images/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\images\\[id]\\route.ts",
-      "routePath": "/images/{id}"
+      "routePath": "/images/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /images/{id} contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\images\\[id]\\route.ts",
+      "routePath": "/images/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/chat contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\chat\\route.ts",
-      "routePath": "/llmapis/{id}/chat"
+      "routePath": "/llmapis/{id}/chat",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"LlmInputModel\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "metadata": {
+        "typeName": "LlmInputModel",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
-      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}/disabled"
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/llmapis/{id}/entries/{entryType}"
+      "routePath": "/llmapis/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/llmapis/{id}/entries/{entryType}"
+      "routePath": "/llmapis/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id}/export contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\export\\route.ts",
-      "routePath": "/llmapis/{id}/export"
+      "routePath": "/llmapis/{id}/export",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
-      "routePath": "/llmapis/{id}"
+      "routePath": "/llmapis/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
-      "routePath": "/llmapis/{id}"
+      "routePath": "/llmapis/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /llmapis/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts",
-      "routePath": "/llmapis/{id}"
+      "routePath": "/llmapis/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled"
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryType}"
+      "routePath": "/presets/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/presets/{id}/entries/{entryType}"
+      "routePath": "/presets/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id}/export contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\export\\route.ts",
-      "routePath": "/presets/{id}/export"
+      "routePath": "/presets/{id}/export",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\route.ts",
-      "routePath": "/presets/{id}"
+      "routePath": "/presets/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\route.ts",
-      "routePath": "/presets/{id}"
+      "routePath": "/presets/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /presets/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\route.ts",
-      "routePath": "/presets/{id}"
+      "routePath": "/presets/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /settings/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\settings\\[id]\\route.ts",
-      "routePath": "/settings/{id}"
+      "routePath": "/settings/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /settings/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\settings\\[id]\\route.ts",
-      "routePath": "/settings/{id}"
+      "routePath": "/settings/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
-      "routePath": "/stories/{id}/entries/{entryType}/{entryId}/disabled"
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/stories/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
-      "routePath": "/stories/{id}/entries/{entryType}/{entryId}"
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/stories/{id}/entries/{entryType}"
+      "routePath": "/stories/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
-      "routePath": "/stories/{id}/entries/{entryType}"
+      "routePath": "/stories/{id}/entries/{entryType}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/export contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\export\\route.ts",
-      "routePath": "/stories/{id}/export"
+      "routePath": "/stories/{id}/export",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
-      "routePath": "/stories/{id}"
+      "routePath": "/stories/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
-      "routePath": "/stories/{id}"
+      "routePath": "/stories/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
-      "routePath": "/stories/{id}"
+      "routePath": "/stories/{id}",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     },
     {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /stories/{id}/slot contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\slot\\route.ts",
-      "routePath": "/stories/{id}/slot"
+      "routePath": "/stories/{id}/slot",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.09130000000004657,
-    "loadCustomFragmentsMs": 0.0005999999999630745,
-    "prepareDocumentMs": 0.09190000000000964,
-    "scanRouteFilesMs": 3.035600000000045,
-    "deriveRoutePathMs": 0.3681999999996606,
-    "filterRouteCandidatesMs": 0.034799999999791,
-    "sourcePrecheckMs": 2.2697000000006256,
-    "readRouteFilesMs": 2.0414999999998145,
-    "parseRouteFilesMs": 22.6217000000006,
-    "analyzeRouteFilesMs": 11.52029999999968,
+    "prepareTemplateMs": 0.0764000000000351,
+    "loadCustomFragmentsMs": 0.0006000000000199179,
+    "prepareDocumentMs": 0.07700000000005502,
+    "scanRouteFilesMs": 2.9850999999999885,
+    "deriveRoutePathMs": 0.5992000000013604,
+    "filterRouteCandidatesMs": 0.04359999999974207,
+    "sourcePrecheckMs": 4.183399999999892,
+    "readRouteFilesMs": 1.9861999999990303,
+    "parseRouteFilesMs": 3.9408000000017864,
+    "analyzeRouteFilesMs": 11.46230000000071,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 34.41170000000034,
-    "registerRouteMs": 2014.5734,
-    "getSchemaContentMs": 256.2835999999993,
-    "createRequestParamsMs": 0.5771999999986974,
+    "processRouteFilesMs": 16.585200000000327,
+    "registerRouteMs": 2694.8123000000032,
+    "getSchemaContentMs": 51.59120000000166,
+    "createRequestParamsMs": 0.819199999999455,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 1755.9281999999996,
+    "processResponsesMs": 233.3365000000017,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2014.6501999999987,
-    "sortAndMergePathsMs": 0.8051000000000386,
-    "buildPathsMs": 0.8051000000000386,
-    "defaultComponentsAndErrorsMs": 0.1926999999996042,
-    "mergeSchemasMs": 0.589799999999741,
-    "finalizeDocumentMs": 6.203899999999976,
-    "totalMs": 2063.3602,
-    "scanRoutesMs": 2052.097499999999
+    "buildOperationsMs": 2707.2734999999993,
+    "sortAndMergePathsMs": 1.1907000000001062,
+    "buildPathsMs": 1.1907000000001062,
+    "defaultComponentsAndErrorsMs": 0.1893000000000029,
+    "mergeSchemasMs": 0.29369999999971697,
+    "zodPreScanMs": 324.9622,
+    "zodPreprocessMs": 65.63780000000054,
+    "zodConvertMs": 274.141900000001,
+    "finalizeDocumentMs": 7.41190000000006,
+    "totalMs": 3146.1021,
+    "scanRoutesMs": 2726.8437999999996
   }
 }
