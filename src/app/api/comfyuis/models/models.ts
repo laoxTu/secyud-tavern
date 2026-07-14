@@ -1,14 +1,12 @@
 import {TemplateConfig} from "@/app/api/template";
 import {and, eq, like, not, or, SQL} from "drizzle-orm";
-import {LlmapiModel} from "@/modules/llmapis/models";
-import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
-import {presetRepository as repository} from "@/modules/presets/server/repository";
-import {hasher} from "@/utils/server/hasher";
+import {comfyuiModelRepository as repository} from "@/modules/comfyui/server/repository";
+import {ComfyUIModelModel} from "@/modules/comfyui/models";
 
-export const apiConfig: TemplateConfig<LlmapiModel> = {
-    repository: llmapiRepository,
+export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
+    repository: repository,
     checkCreate: async (model) => {
         if (model.code === "") {
             throw new BusinessError("No code provided", "error.empty_field")
@@ -21,7 +19,7 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
-                .withValue("entity_name", "default.llmapi")
+                .withValue("entity_name", "default.comfyui_workflow")
                 ;
         }
     },
@@ -37,11 +35,8 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
         if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
-                .withValue("entity_name", "default.llmapi")
+                .withValue("entity_name", "default.comfyui_workflow")
                 ;
-        }
-        if (model.key && model.key !== "") {
-            model.key = hasher.encrypt(model.key);
         }
     },
     importHandler: undefined,

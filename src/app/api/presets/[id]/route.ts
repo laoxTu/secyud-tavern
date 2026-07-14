@@ -7,7 +7,6 @@ import {
 } from "@/app/api/template";
 
 /**
- * 获取预设
  * @pathParams { id:string }
  * @params { withDetails:boolean }
  * @response any
@@ -18,7 +17,6 @@ export const GET = interceptor.createRoute(
 )
 
 /**
- * 更新预设
  * @pathParams { id:string }
  * @body any
  * @openapi
@@ -28,7 +26,6 @@ export const PUT = interceptor.createRoute(
 )
 
 /**
- * 删除预设
  * @pathParams { id:string }
  * @openapi
  */
