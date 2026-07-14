@@ -105,10 +105,10 @@ export function ImageUploader({
                     {preview ? (
                         // 有图片时显示预览
                         <>
-                            <Image
-                                src={preview}
-                                alt="file upload"
-                                fill
+                            <Image src={preview}
+                                   alt="file upload"
+                                   fill
+                                   className={'object-contain'}
                             />
                             {/* 悬停时的遮罩层和删除按钮 */}
                             <div

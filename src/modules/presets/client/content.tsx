@@ -42,7 +42,7 @@ function Content() {
                         alt={model.name}
                         width={32}
                         height={32}
-                        className="object-cover"
+                        className="object-contain"
                     />
                 </ItemMedia>
                 <ItemContent>
