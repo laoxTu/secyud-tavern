@@ -48,7 +48,10 @@ import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import Link from "next/link";
+import {Badge} from "@/components/ui/badge";
+import {CustomCombobox} from "@/components/custom/combobox";
 
+const defaultTypes = ["VAE", "Checkpoint", "LORA", "Text Encoder"];
 const sourceTypes = ["civital.com", "civital.red"];
 
 async function fillModelFromCivital(url: string, source: string, model: ComfyUIModelModel) {
@@ -59,8 +62,8 @@ async function fillModelFromCivital(url: string, source: string, model: ComfyUIM
     const response = await fetch(`${url}/api/v1/model-versions/${source}`);
     const meta = await response.json();
     console.debug(`meta ${source}: `, meta);
-    const {name: fileName, type} = meta.files[0];
-    const {name: modelName} = meta.model;
+    const {name: fileName} = meta.files[0];
+    const {name: modelName, type} = meta.model;
     model.type = type;
     model.code = fileName;
     model.name = modelName;
@@ -112,6 +115,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                         description: data.get("description"),
                         path: data.get("path"),
                         url: data.get("url"),
+                        coverSrc: data.get("cover_src"),
                         coverId
                     }
                 } as Partial<LlmapiModel>,
@@ -178,6 +182,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     {model.content.description}
                 </ItemDescription>
             </ItemContent>
+            <div className={'absolute top-4 left-4'}>
+                <Badge variant="secondary">{model.type}</Badge>
+            </div>
             <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
                 {
                     model.content.url && <Tooltip>
@@ -243,13 +250,13 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                         </Tooltip>
                     </DrawerTrigger>
                     <DrawerContent>
-                        <form action={handleUpdate}>
+                        <form className={'h-full flex flex-col'} action={handleUpdate}>
                             <DrawerHeader>
                                 <DrawerTitle>
                                     {t("default.update_title", {target: t(`${moduleName}.model`)})}
                                 </DrawerTitle>
                             </DrawerHeader>
-                            <FieldGroup className="p-4">
+                            <FieldGroup className="p-4 overflow-auto flex-1">
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-cover-${model.id}`}>
                                         {t("default.cover")}
@@ -263,6 +270,14 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                                        setCoverFile(file);
                                                        changed.current = true;
                                                    }}/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-cover_src-${model.id}`}>
+                                        {t("default.cover_src")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-cover_src-${model.id}`}
+                                           defaultValue={model.content.url}
+                                           name="cover_src"/>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-code-${model.id}`}>
@@ -282,6 +297,14 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                            name="name"/>
                                 </Field>
                                 <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-type-${model.id}`}>
+                                        {t("default.type")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-type-${model.id}`}
+                                           defaultValue={model.type}
+                                           name="type"/>
+                                </Field>
+                                <Field>
                                     <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
                                         {t("comfyui.model_path")}
                                     </FieldLabel>
@@ -296,6 +319,14 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                     <Input id={`${moduleName}-description-${model.id}`}
                                            defaultValue={model.content.description}
                                            name="description"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-url-${model.id}`}>
+                                        {t("default.url")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-url-${model.id}`}
+                                           defaultValue={model.content.url}
+                                           name="url"/>
                                 </Field>
                             </FieldGroup>
                             <DrawerFooter>
@@ -377,6 +408,7 @@ function Content() {
     const applySearch = async (data: FormData) => {
         try {
             const search = {
+                types: data.getAll("type") as string[],
                 fuzzy: data.get("search") as string,
             }
             console.debug("search", search);
@@ -513,26 +545,34 @@ function Content() {
                 </Dialog>
             </div>
             <form action={applySearch}>
-                <InputGroup>
-                    <InputGroupInput name="search" id={`comfyui-model-list-search`}
-                                     placeholder={t("default.search")}
-                                     value={searchInput}
-                                     onChange={(e) => setSearchInput(e.target.value)}/>
-                    <InputGroupAddon align={"inline-end"}>
-                        <InputGroupButton onClick={resetSearch}>
-                            <XIcon/>
-                        </InputGroupButton>
-                        <InputGroupButton type="submit">
-                            <SearchIcon/>
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <CustomCombobox defaultValue={[]}
+                                    name={"type"}
+                                    placeholder={t("default.types")}
+                                    extraValue={defaultTypes}/>
+                    <InputGroup>
+                        <InputGroupInput name="search" id={`comfyui-model-list-search`}
+                                         placeholder={t("default.search")}
+                                         value={searchInput}
+                                         onChange={(e) => setSearchInput(e.target.value)}/>
+                        <InputGroupAddon align={"inline-end"}>
+                            <InputGroupButton onClick={resetSearch}>
+                                <XIcon/>
+                            </InputGroupButton>
+                            <InputGroupButton type="submit">
+                                <SearchIcon/>
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
+                </div>
             </form>
         </div>
-        <div className={'flex-1 flex flex-col'}>
-            <ItemGroup className={"flex-1 flex flex-row flex-wrap overflow-y-auto items-start"}>
-                {items && items.map((u) => (<ContentItem model={u} key={u.id}/>))}
-            </ItemGroup>
+        <div className={'flex-1 flex flex-col overflow-hidden'}>
+            <div className={'flex-1 overflow-y-auto'}>
+                <ItemGroup className={"flex flex-row flex-wrap items-start"}>
+                    {items && items.map((u) => (<ContentItem model={u} key={u.id}/>))}
+                </ItemGroup>
+            </div>
 
             <PaginationWrapper usePagedItemsState={useModelPagedItemsState}/>
         </div>

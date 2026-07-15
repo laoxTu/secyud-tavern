@@ -1,5 +1,5 @@
 import {TemplateConfig} from "@/app/api/template";
-import {and, eq, like, not, or, SQL} from "drizzle-orm";
+import {and, eq, like, not, or, inArray, SQL} from "drizzle-orm";
 import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
 import {comfyuiModelRepository as repository} from "@/modules/comfyui/server/repository";
@@ -81,6 +81,10 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
                 like(table.name, `%${fuzzy}%`),
                 like(table.code, `%${fuzzy}%`)
             ) as SQL);
+        }
+        const types: string[] = search?.types ?? [];
+        if (types.length > 0) {
+            conditions.push(inArray(table.type, types));
         }
         return and(...conditions) as SQL;
     },

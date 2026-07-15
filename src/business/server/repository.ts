@@ -80,6 +80,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 .select()
                 .from(masters)
                 .where(condition)
+                .orderBy(masters.id)
                 .offset(offset)
                 .limit(pageSize);
 
