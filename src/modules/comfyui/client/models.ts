@@ -2,7 +2,7 @@
 import {createUseItemState, ModelState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
-import {ComfyUIModelModel, ComfyUIWorkflowModel, moduleName, modulePlural} from "../models";
+import {ComfyUIModelModel, ComfyUIWorkflowModel, moduleName} from "../models";
 
 export const useItemState = createUseItemState<ComfyUIWorkflowModel>()
 export const usePagedItemsState = createUsePagedItemsState<ComfyUIWorkflowModel>(

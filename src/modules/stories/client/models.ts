@@ -2,7 +2,7 @@
 import {createUseItemState, ModelState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
-import { moduleName, modulePlural, StoryModel} from "../models";
+import { moduleName, StoryModel} from "../models";
 
 export const useItemState = createUseItemState<StoryModel>()
 export const usePagedItemsState = createUsePagedItemsState<StoryModel>(

@@ -6,6 +6,7 @@ import type {PagedResult, PageOptions} from "@/business/models";
 import {BaseModel} from "@/business/models";
 import {BusinessError} from "@/handler/models";
 import {databaseManager} from "@/business/server/database";
+import {mergeObjects} from "@/utils";
 
 export type ConditionFunc = (table: any) => SQL;
 
@@ -133,11 +134,10 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 ...(mapToEntity?.(model) ?? {})
             };
 
-            if (model.name !== undefined) updateData.name = model.name;
-            if (model.content !== undefined) updateData.content = JSON.stringify({
-                ...exist.content,
-                ...model.content
-            });
+            if (model.name !== undefined)
+                updateData.name = model.name;
+            if (model.content !== undefined)
+                updateData.content = mergeObjects(exist.content, model.content);
 
             const result = await db
                 .update(masters)

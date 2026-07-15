@@ -2,7 +2,7 @@
 import {createUseItemState, ModelState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
-import {LlmapiModel, moduleName, modulePlural} from "../models";
+import {LlmapiModel, moduleName} from "../models";
 
 export const useItemState = createUseItemState<LlmapiModel>()
 export const usePagedItemsState = createUsePagedItemsState<LlmapiModel>(

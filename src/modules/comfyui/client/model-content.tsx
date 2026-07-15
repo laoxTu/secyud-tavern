@@ -106,8 +106,12 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
 
             await put("/comfyuis/models/{id}",
                 {
+                    code: model.code,
+                    name: data.get("name"),
                     content: {
+                        description: data.get("description"),
                         path: data.get("path"),
+                        url: data.get("url"),
                         coverId
                     }
                 } as Partial<LlmapiModel>,
@@ -145,7 +149,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
 
     return (
         <Item key={key}
-              className={'min-w-1/4 w-64 h-80 overflow-hidden relative'}
+              className={'min-w-1/4 w-64 overflow-hidden relative'}
               variant={"outline"}>
             <ItemHeader>
                 <HoverCard>
@@ -168,7 +172,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     </HoverCardContent>
                 </HoverCard>
             </ItemHeader>
-            <ItemContent>
+            <ItemContent className={'h-24'}>
                 <ItemTitle>{model.name}</ItemTitle>
                 <ItemDescription className={'wrap-break-word break-all'}>
                     {model.content.description}
@@ -261,11 +265,37 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                                    }}/>
                                 </Field>
                                 <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-code-${model.id}`}>
+                                        {t("default.code")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-code-${model.id}`}
+                                           defaultValue={model.code}
+                                           disabled
+                                           name="code"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-name-${model.id}`}>
+                                        {t("default.name")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-name-${model.id}`}
+                                           defaultValue={model.name}
+                                           name="name"/>
+                                </Field>
+                                <Field>
                                     <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
                                         {t("comfyui.model_path")}
                                     </FieldLabel>
                                     <Input id={`${moduleName}-path-${model.id}`}
+                                           defaultValue={model.content.path}
                                            name="path"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-description-${model.id}`}>
+                                        {t("default.description")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-description-${model.id}`}
+                                           defaultValue={model.content.description}
+                                           name="description"/>
                                 </Field>
                             </FieldGroup>
                             <DrawerFooter>
@@ -500,7 +530,7 @@ function Content() {
             </form>
         </div>
         <div className={'flex-1 flex flex-col'}>
-            <ItemGroup className={"flex-1 flex flex-row flex-wrap overflow-y-auto"}>
+            <ItemGroup className={"flex-1 flex flex-row flex-wrap overflow-y-auto items-start"}>
                 {items && items.map((u) => (<ContentItem model={u} key={u.id}/>))}
             </ItemGroup>
 
