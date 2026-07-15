@@ -169,7 +169,7 @@ export function ModelList<TModel extends BaseModel>(
                                 <form action={applySearch} className={"flex-1 p-2 space-y-1"}>
                                     {searchContent?.()}
                                     <InputGroup>
-                                        <InputGroupInput name="search" id={`${modelState}-list-search`}
+                                        <InputGroupInput name="search" id={`${modelState.moduleName}-list-search`}
                                                          placeholder={t("default.search")}
                                                          value={searchInput}
                                                          onChange={(e) => setSearchInput(e.target.value)}/>

@@ -10,7 +10,7 @@ export const usePagedItemsState =
         return await get('/presets', {params: options})
     }, 10);
 export const modelState: ModelState<PresetModel> = {
-    moduleName, modulePlural, useItemState, usePagedItemsState
+    moduleName, useItemState, usePagedItemsState
 };
 export const defaultTags = [
     "theme", "story", "preset"

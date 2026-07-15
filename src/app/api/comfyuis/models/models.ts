@@ -4,6 +4,9 @@ import {validate} from "uuid";
 import {BusinessError} from "@/handler/models";
 import {comfyuiModelRepository as repository} from "@/modules/comfyui/server/repository";
 import {ComfyUIModelModel} from "@/modules/comfyui/models";
+import {splitPNGAndDataUniversal} from "@/utils/png";
+import {imageRepository} from "@/business/server/image-repository";
+import {v4 as uuidv4} from "uuid";
 
 export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
     repository: repository,
@@ -39,8 +42,37 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
                 ;
         }
     },
-    importHandler: undefined,
-    exportHandler: undefined,
+    importHandler: async (uint8) => {
+        const data = splitPNGAndDataUniversal(uint8);
+        const model: ComfyUIModelModel = JSON.parse(new TextDecoder().decode(data.extraData));
+        if (data.imageData) {
+            const imgBuffer = Buffer.from(data.imageData);
+            model.content.coverId = await imageRepository.create(imgBuffer, "image/png");
+        }
+
+        const exist = await repository.get(model.code, false, (table) => eq(table.code, model.code));
+        if (exist) {
+            model.id = exist.id;
+        } else {
+            model.id = uuidv4();
+        }
+        return model;
+    },
+    exportHandler: async (model, uint8arr) => {
+        const coverId = model.content.coverId;
+        const image =
+            coverId ? await imageRepository.get(coverId) : null;
+
+        return new ReadableStream({
+            start(controller) {
+                if (image?.buffer) {
+                    controller.enqueue(image.buffer);
+                }
+                controller.enqueue(uint8arr);
+                controller.close();  // 关闭流
+            }
+        });
+    },
     conditionSearch: (search) => (table) => {
         const conditions: SQL[] = [];
         const fuzzy = search?.fuzzy;

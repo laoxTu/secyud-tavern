@@ -10,5 +10,5 @@ export const usePagedItemsState = createUsePagedItemsState<StoryModel>(
         return  await get('/stories', {params: options})
     }, 10);
 export const modelState: ModelState<StoryModel> = {
-    moduleName, modulePlural, useItemState, usePagedItemsState
+    moduleName, useItemState, usePagedItemsState
 };

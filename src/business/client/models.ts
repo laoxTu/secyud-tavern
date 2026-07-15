@@ -8,7 +8,6 @@ export type UseStoreState<T> = UseBoundStore<StoreApi<T>>;
 
 export interface ModelState<T> {
     moduleName: string;
-    modulePlural: string;
     useItemState: UseStoreState<ItemState<T>>;
     usePagedItemsState: UseStoreState<PagedItemsState<T>>;
 }

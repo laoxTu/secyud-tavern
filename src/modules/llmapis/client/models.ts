@@ -10,5 +10,5 @@ export const usePagedItemsState = createUsePagedItemsState<LlmapiModel>(
         return await get('/llmapis', {params: options})
     }, 10);
 export const modelState: ModelState<LlmapiModel> = {
-    moduleName, modulePlural, useItemState, usePagedItemsState
+    moduleName, useItemState, usePagedItemsState
 };

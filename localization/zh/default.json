@@ -3,11 +3,17 @@
     "author": "作者",
     "cancel": "取消",
     "chars": "字符",
+    "link": "链接",
     "code": "编码",
     "content": "内容",
+    "update": "更新",
+    "update_title": "更新{target}",
+    "update_description": "更新{target}的内容",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
     "setting": "设置",
+    "comfyui_workflow": "ComfyUI工作流",
+    "comfyui_model": "ComfyUI模型",
     "story_lack_config_llmapi": "故事没有选择模型，无法开始。",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
@@ -79,6 +85,17 @@
     "macro": "宏",
     "script": "脚本",
     "style": "样式"
+  },
+  "comfyui": {
+    "source_type": "源类型",
+    "source_id": "源ID",
+    "model": "模型",
+    "model_path": "模型子路径",
+    "source_civital": {
+      "invalid_source_id": "Civital的模型版本ID非法。",
+      "com": "https://civital.com (modelVersionId)",
+      "red": "https://civital.red (modelVersionId)"
+    }
   },
   "macro": {
     "key": "键",

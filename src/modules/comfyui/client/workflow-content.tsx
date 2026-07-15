@@ -109,7 +109,7 @@ function Content() {
 
 
 export const comfyuiWorkflowNavigationContent: TabConfig = {
-    id: moduleName,
+    id: `${moduleName}_workflow`,
     label: () => <ModelTabHeader modelType={`${moduleName}_workflow`}/>,
     component: Content
 } as const;
