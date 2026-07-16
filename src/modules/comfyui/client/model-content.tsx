@@ -51,6 +51,26 @@ import {Badge} from "@/components/ui/badge";
 import {CustomCombobox} from "@/components/custom/combobox";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
 
+function ItemCover({model}: { model: ComfyUIModelModel }) {
+    let src = '/images/default_cover.png';
+    if (model.content.coverId)
+        src = `/api/images/${model.content.coverId}`;
+    else if (model.content.coverSrc)
+        src = model.content.coverSrc;
+    return (<AspectRatio ratio={1}>
+        {src.endsWith('mp4') ?
+            <video src={src} controls preload="metadata"
+                   className="object-cover rounded-sm aspect-square"/> :
+            <Image
+                src={src}
+                alt={model.name}
+                fill
+                unoptimized
+                className="object-cover rounded-sm"
+            />}
+    </AspectRatio>);
+}
+
 function ContentItem({model}: { model: ComfyUIModelModel }) {
 
     const t = useTranslations();
@@ -119,34 +139,20 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
         }
     };
 
-    let src = '/images/default_cover.png';
-    if (model.content.coverId)
-        src = `/api/images/${model.content.coverId}`;
-    else if (model.content.coverSrc)
-        src = model.content.coverSrc;
-
-    return (
+    return (<div className={'min-w-1/4 w-64 p-2'}>
         <Item key={key}
-              className={'min-w-1/4 w-64 overflow-hidden relative'}
+              className={'overflow-hidden relative'}
               variant={"outline"}>
             <ItemHeader>
                 <HoverCard>
-                    <HoverCardTrigger asChild>
-                        <AspectRatio ratio={1}>
-                            {src.endsWith('mp4') ?
-                                <video src={src} controls preload="metadata"
-                                       className="object-cover rounded-sm aspect-square"/> :
-                                <Image
-                                    src={src}
-                                    alt={model.name}
-                                    fill
-                                    unoptimized
-                                    className="object-cover rounded-sm"
-                                />}
-                        </AspectRatio>
+                    <HoverCardTrigger className={'w-full'}>
+                        <ItemCover model={model}/>
                     </HoverCardTrigger>
-                    <HoverCardContent asChild className={'bg-card w-full'}>
-                        <div dangerouslySetInnerHTML={{__html: model.content.html}}/>
+                    <HoverCardContent asChild className={'bg-card overflow-auto w-full max-w-lvw max-h-96'}>
+                        {model.content.html ? <div dangerouslySetInnerHTML={{__html: model.content.html}}/> :
+                            <div>
+
+                            </div>}
                     </HoverCardContent>
                 </HoverCard>
             </ItemHeader>
@@ -156,8 +162,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     {model.content.description}
                 </ItemDescription>
             </ItemContent>
-            <div className={'absolute top-4 left-4'}>
+            <div className={'absolute top-4 left-4 flex flex-col gap-2'}>
                 <Badge variant="secondary">{model.type}</Badge>
+                <Badge variant="secondary">{model.content.baseModel}</Badge>
             </div>
             <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
                 {
@@ -317,7 +324,8 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     </DrawerContent>
                 </Drawer>
             </ItemActions>
-        </Item>);
+        </Item>
+    </div>);
 }
 
 function Content() {
@@ -533,7 +541,7 @@ function Content() {
         </div>
         <div className={'flex-1 flex flex-col overflow-hidden'}>
             <div className={'flex-1 overflow-y-auto'}>
-                <ItemGroup className={"flex flex-row flex-wrap items-start"}>
+                <ItemGroup className={"flex flex-row flex-wrap items-start gap-0"}>
                     {items && items.map((u) => (<ContentItem model={u} key={u.id}/>))}
                 </ItemGroup>
             </div>

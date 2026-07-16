@@ -89,9 +89,9 @@ export function ComfyUIModelCombobox({type, defaultValue, name, id}: ComboboxPro
                             <ComboboxItem key={item.content.path} value={item.content.path}>
                                 <HoverCard>
                                     <HoverCardTrigger>
-                                        {`${item.content.path}-${item.name}`}
+                                        {`${item.content.baseModel}-${item.content.path}-${item.name}`}
                                     </HoverCardTrigger>
-                                    <HoverCardContent asChild className={'bg-card w-full'}>
+                                    <HoverCardContent className={'bg-card w-full'}>
                                         {src && <AspectRatio ratio={1}>
                                             {src.endsWith('mp4') ?
                                                 <video src={src} controls preload="metadata"

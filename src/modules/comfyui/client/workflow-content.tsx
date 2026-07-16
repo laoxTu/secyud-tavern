@@ -107,7 +107,6 @@ function Content() {
     </TemplateModelList>;
 }
 
-
 export const comfyuiWorkflowNavigationContent: TabConfig = {
     id: `${moduleName}_workflow`,
     label: () => <ModelTabHeader modelType={`${moduleName}_workflow`}/>,

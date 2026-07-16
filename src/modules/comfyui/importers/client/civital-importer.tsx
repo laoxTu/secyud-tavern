@@ -80,6 +80,7 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
                         html: meta.description,
                         downloadUrl: meta.downloadUrl,
                         coverSrc: imageSrc,
+                        baseModel: meta.baseModel,
                     },
 
                 };
