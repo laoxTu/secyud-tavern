@@ -11,4 +11,14 @@
         this.data[key] = value;
         return this;
     }
+
+}
+
+export class Check {
+    static NotEmpty(fieldName: string, value?: string, namespace?: string) {
+        if (!value) {
+            throw new BusinessError(`No ${fieldName} provided`, "error.empty_field")
+                .withValue("field", `${namespace ?? "default"}.${fieldName}`);
+        }
+    }
 }

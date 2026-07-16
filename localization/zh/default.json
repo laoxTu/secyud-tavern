@@ -93,12 +93,13 @@
     "source_type": "源类型",
     "source_id": "源ID",
     "model": "模型",
-    "model_path": "模型子路径",
-    "source_civital": {
-      "invalid_source_id": "Civital的模型版本ID非法。",
-      "com": "https://civital.com (modelVersionId)",
-      "red": "https://civital.red (modelVersionId)"
-    }
+    "importer": "导入方式",
+    "importer_civitai": "civitai",
+    "civitai": {
+      "model_id": "模型ID (二选一)",
+      "model_version_id": "版本ID (二选一)"
+    },
+    "model_path": "模型子路径"
   },
   "macro": {
     "key": "键",

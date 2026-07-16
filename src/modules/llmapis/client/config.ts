@@ -4,4 +4,4 @@ import {LlmapiConfig} from "./config-models";
 export class LlmapiConfigRegistry extends ClientRegistry<LlmapiConfig> {
 }
 
-export const llmapiConfigRegistry = new LlmapiConfigRegistry("llmapi config");
+export const llmapiConfigRegistry = new LlmapiConfigRegistry("llmapiConfig");

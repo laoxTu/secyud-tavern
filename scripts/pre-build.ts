@@ -22,7 +22,7 @@ async function preBuild() {
         `export const manifests = ${JSON.stringify(manifests)}`);
     const serverRegisterPath = path.join(root, 'src', 'plugins', 'server', 'registerer.ts');
     const serverPlugins = manifests.filter(
-        u => u.serverScript && u.serverScript !== "")
+        u => u.serverScript)
     await promise.writeFile(serverRegisterPath,
         `${serverPlugins
             .map((u, i) =>
@@ -34,7 +34,7 @@ async function preBuild() {
         `);
     const clientRegisterPath = path.join(root, 'src', 'plugins', 'client', 'registerer.ts');
     const clientPlugins = manifests.filter(
-        u => u.clientScript && u.clientScript !== "")
+        u => u.clientScript)
     await promise.writeFile(clientRegisterPath,
         `${clientPlugins
             .map((u, i) =>

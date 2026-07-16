@@ -5,19 +5,13 @@ import {PresetModel} from "@/modules/presets/models";
 import {validate} from "uuid";
 import {splitPNGAndDataUniversal} from "@/utils/png";
 import {imageRepository} from "@/business/server/image-repository";
-import {BusinessError} from "@/handler/models";
+import {BusinessError, Check} from "@/handler/models";
 
 export const apiConfig: TemplateConfig<PresetModel> = {
     repository: presetRepository,
     checkCreate: async (model) => {
-        if (model.code === "") {
-            throw new BusinessError("No code provided", "error.empty_field")
-                .withValue("field", "default.code");
-        }
-        if (model.name === "") {
-            throw new BusinessError("No name provided", "error.empty_field")
-                .withValue("field", "default.name");
-        }
+        Check.NotEmpty('code', model.code);
+        Check.NotEmpty('name', model.name);
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -26,14 +20,8 @@ export const apiConfig: TemplateConfig<PresetModel> = {
         }
     },
     checkUpdate: async (id, model) => {
-        if (model.code === "") {
-            throw new BusinessError("No code provided", "error.empty_field")
-                .withValue("field", "default.code");
-        }
-        if (model.name === "") {
-            throw new BusinessError("No name provided", "error.empty_field")
-                .withValue("field", "default.name");
-        }
+        Check.NotEmpty('code', model.code);
+        Check.NotEmpty('name', model.name);
         if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -68,7 +56,7 @@ export const apiConfig: TemplateConfig<PresetModel> = {
     conditionSearch: (search) => (table) => {
         const conditions: SQL[] = [];
         const fuzzy = search?.fuzzy;
-        if (fuzzy && fuzzy !== "") {
+        if (fuzzy) {
             conditions.push(or(
                 like(table.name, `%${fuzzy}%`),
                 like(table.code, `%${fuzzy}%`)

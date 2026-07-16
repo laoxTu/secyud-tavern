@@ -1,21 +1,15 @@
 import {TemplateConfig} from "@/app/api/template";
 import {and, eq, like, not, or, SQL} from "drizzle-orm";
 import {validate} from "uuid";
-import {BusinessError} from "@/handler/models";
+import {BusinessError, Check} from "@/handler/models";
 import {comfyuiWorkflowRepository as repository} from "@/modules/comfyui/server/repository";
 import {ComfyUIWorkflowModel} from "@/modules/comfyui/models";
 
 export const apiConfig: TemplateConfig<ComfyUIWorkflowModel> = {
     repository: repository,
     checkCreate: async (model) => {
-        if (model.code === "") {
-            throw new BusinessError("No code provided", "error.empty_field")
-                .withValue("field", "default.code");
-        }
-        if (model.name === "") {
-            throw new BusinessError("No name provided", "error.empty_field")
-                .withValue("field", "default.name");
-        }
+        Check.NotEmpty('code', model.code);
+        Check.NotEmpty('name', model.name);
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -24,14 +18,8 @@ export const apiConfig: TemplateConfig<ComfyUIWorkflowModel> = {
         }
     },
     checkUpdate: async (id, model) => {
-        if (model.code === "") {
-            throw new BusinessError("No code provided", "error.empty_field")
-                .withValue("field", "default.code");
-        }
-        if (model.name === "") {
-            throw new BusinessError("No name provided", "error.empty_field")
-                .withValue("field", "default.name");
-        }
+        Check.NotEmpty('code', model.code);
+        Check.NotEmpty('name', model.name);
         if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -44,7 +32,7 @@ export const apiConfig: TemplateConfig<ComfyUIWorkflowModel> = {
     conditionSearch: (search) => (table) => {
         const conditions: SQL[] = [];
         const fuzzy = search?.fuzzy;
-        if (fuzzy && fuzzy !== "") {
+        if (fuzzy) {
             conditions.push(or(
                 like(table.name, `%${fuzzy}%`),
                 like(table.code, `%${fuzzy}%`)

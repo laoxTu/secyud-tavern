@@ -18,8 +18,8 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 
 function ConfigContent() {
     const t = useTranslations();
-    const records = llmapiConfigRegistry.records;
     const {model} = useItemState();
+    const records = llmapiConfigRegistry.records;
     const defaultProvider = model?.provider ?? Object.values(records)[0].id;
     const [editor, setEditor] = useState(records[defaultProvider]);
     const EditorComponent = editor.component;

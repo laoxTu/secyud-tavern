@@ -2,7 +2,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {TabConfig} from "@/components/custom/tab";
-import {ComfyUIModelModel, moduleName} from "../models";
+import {ComfyUIModelModel, modelTypes, moduleName} from "../models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {PaginationWrapper} from "@/components/custom/pager";
 import {useModelPagedItemsState} from "@/modules/comfyui/client/models";
@@ -26,7 +26,6 @@ import {del, post, put} from "@/client";
 import {Label} from "@/components/ui/label";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {ApiError} from "@/handler/client/models";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -50,32 +49,7 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import Link from "next/link";
 import {Badge} from "@/components/ui/badge";
 import {CustomCombobox} from "@/components/custom/combobox";
-
-const defaultTypes = ["VAE", "Checkpoint", "LORA", "Text Encoder"];
-const sourceTypes = ["civital.com", "civital.red"];
-
-async function fillModelFromCivital(url: string, source: string, model: ComfyUIModelModel) {
-    if (source.trim() === '' || isNaN(Number(source))) {
-        throw new ApiError("source for civital should be a number", "comfyui.source_civital.invalid_source_id");
-    }
-
-    const response = await fetch(`${url}/api/v1/model-versions/${source}`);
-    const meta = await response.json();
-    console.debug(`meta ${source}: `, meta);
-    const {name: fileName} = meta.files[0];
-    const {name: modelName, type} = meta.model;
-    model.type = type;
-    model.code = fileName;
-    model.name = modelName;
-    model.content.url = `${url}/model-versions/${source}`;
-    model.content.path = fileName;
-    model.content.description = meta.name;
-    model.content.html = meta.description;
-    model.content.downloadUrl = meta.downloadUrl;
-    if (meta.images.length > 0) {
-        model.content.coverSrc = meta.images[0].url;
-    }
-}
+import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
 
 function ContentItem({model}: { model: ComfyUIModelModel }) {
 
@@ -355,6 +329,11 @@ function Content() {
     // 受控组件，解决搜索刷新后光标位置问题
     const [searchInput, setSearchInput] = useState(search?.fuzzy ?? "");
 
+    const importers = comfyUIModelImporterRegistry.records;
+    const defaultImporter = Object.values(importers)[0].id;
+    const [importer, setImporter] = useState(importers[defaultImporter]);
+    const ImporterComponent = importer.component;
+
     const handleCreate = async (data: FormData) => {
         try {
             await post("/comfyuis/models", {
@@ -374,29 +353,16 @@ function Content() {
 
     const handleImport = async (data: FormData) => {
         try {
-            const sourceType = data.get("source_type") as string;
-            const source = data.get("source") as string;
-            console.debug(`source: ${sourceType} ${source}`);
-            const model: ComfyUIModelModel = {
-                id: "",
-                code: "",
-                name: "",
-                type: "",
-                content: {}
-            };
-            if (sourceType === "civital.com") {
-                // https://civitai.com
-                await fillModelFromCivital("https://civitai.com", source, model);
-            } else if (sourceType === "civital.red") {
-                // https://civitai.red
-                await fillModelFromCivital("https://civitai.red", source, model);
+            const models = await importer.generate(data);
+            const encoder = new TextEncoder();
+            for (const model of models) {
+                const data = encoder.encode(JSON.stringify(model));
+                await post("/comfyuis/models/import", data, {
+                    headers: {
+                        'Content-Type': "application/octet-stream"
+                    }
+                });
             }
-
-            await post("/comfyuis/models/import", (new TextEncoder()).encode(JSON.stringify(model)), {
-                headers: {
-                    'Content-Type': "application/octet-stream"
-                }
-            });
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));
@@ -507,30 +473,28 @@ function Content() {
                             </DialogHeader>
                             <FieldGroup>
                                 <Field>
-                                    <FieldLabel
-                                        htmlFor={`${moduleName}-import-source_type`}>{t("comfyui.source_type")}</FieldLabel>
-                                    <Select name="source_type" required
-                                            defaultValue={"civital.red"}>
+                                    <FieldLabel htmlFor={`${moduleName}-importer`}>
+                                        {t(`${moduleName}.importer`)}
+                                    </FieldLabel>
+                                    <Select name="importer"
+                                            defaultValue={defaultImporter}
+                                            onValueChange={type => setImporter(importers[type])}>
                                         <SelectTrigger className="w-full"
-                                                       id={`${moduleName}-import-source_type`}>
+                                                       id={`${moduleName}-importer`}>
                                             <SelectValue/>
                                         </SelectTrigger>
                                         <SelectContent position="popper">
                                             <SelectGroup>
-                                                {sourceTypes.map((e) =>
-                                                    <SelectItem key={e} value={e}>
-                                                        {t(`${moduleName}.source_${e}`)}
+                                                {comfyUIModelImporterRegistry.getSorted().map((e) =>
+                                                    <SelectItem key={e.id} value={e.id}>
+                                                        {t(`${moduleName}.importer_${e.id}`)}
                                                     </SelectItem>
                                                 )}
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                 </Field>
-                                <Field>
-                                    <FieldLabel
-                                        htmlFor={`${moduleName}-import-source`}>{t("comfyui.source_id")}</FieldLabel>
-                                    <Input id={`${moduleName}-import-source`} name="source" required/>
-                                </Field>
+                                <ImporterComponent/>
                             </FieldGroup>
                             <DialogFooter>
                                 <DialogClose asChild>
@@ -549,7 +513,7 @@ function Content() {
                     <CustomCombobox defaultValue={[]}
                                     name={"type"}
                                     placeholder={t("default.types")}
-                                    extraValue={defaultTypes}/>
+                                    extraValue={modelTypes}/>
                     <InputGroup>
                         <InputGroupInput name="search" id={`comfyui-model-list-search`}
                                          placeholder={t("default.search")}

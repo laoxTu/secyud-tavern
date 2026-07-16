@@ -12,5 +12,7 @@ export interface ComfyUIWorkflowModel extends BaseModel {
 }
 
 
+export const modelTypes = ["vae", "diffusion_model", "lora", "text_encoder", "checkpoint"];
+
 export const moduleName = 'comfyui';
 export const modulePlural = 'comfyuis';
