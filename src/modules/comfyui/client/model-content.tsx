@@ -58,8 +58,8 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [updateOpen, setUpdateOpen] = useState(false);
     const [coverFile, setCoverFile] = useState<File | null>(null);
-    const changed = useRef(false);
     const {handleError, handleSuccess} = useErrorHandler();
+    const changed = useRef(false);
     const {fetch} = useModelPagedItemsState();
 
     const handleUpdate = async (data: FormData) => {

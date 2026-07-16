@@ -38,7 +38,9 @@ export function LlmapiCombobox({defaultValue, name, id}: RequiresComboboxProps) 
             try {
                 const res = await get("/llmapis", {
                     params: {
-                        search: searchValue,
+                        search: {
+                            fuzzy: searchValue,
+                        },
                     }
                 }) as PagedResult<LlmapiModel>;
                 const requires = res.data.map(item => ({

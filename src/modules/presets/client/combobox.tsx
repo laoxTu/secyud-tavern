@@ -40,9 +40,12 @@ export function PresetCombobox({defaultValue, name, id}: RequiresComboboxProps) 
             try {
                 const res = await get("/presets", {
                     params: {
-                        search: searchValue,
+                        search: {
+                            fuzzy: searchValue
+                        },
                     }
                 }) as PagedResult<PresetModel>;
+                console.debug(`search count: ${res.totalCount}`);
                 const requires = res.data.map(item => ({
                     code: item.code,
                     version: item.version
