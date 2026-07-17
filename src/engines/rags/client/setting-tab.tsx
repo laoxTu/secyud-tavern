@@ -50,14 +50,12 @@ function Tab() {
                                     {t("rag.embedding_generator")}
                                 </FieldLabel>
                                 <Select name="generator" defaultValue={embeddingGenerator}
-                                        onValueChange={v => {
-                                            setEditor(generators[v]);
-                                        }}>
+                                        onValueChange={t => t && setEditor(generators[t])}>
                                     <SelectTrigger className="w-full"
                                                    id={`setting-generator`}>
                                         <SelectValue/>
                                     </SelectTrigger>
-                                    <SelectContent position="popper">
+                                    <SelectContent>
                                         <SelectGroup>
                                             {embeddingGeneratorManager.getSorted().map((v) =>
                                                 <SelectItem key={v.id} value={v.id}>

@@ -138,7 +138,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             if (model.name !== undefined)
                 updateData.name = model.name;
             if (model.content !== undefined)
-                updateData.content = mergeObjects(exist.content, model.content);
+                updateData.content = JSON.stringify(mergeObjects(exist.content, model.content)) ;
 
             const result = await db
                 .update(masters)

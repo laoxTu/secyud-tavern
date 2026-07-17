@@ -73,19 +73,15 @@ export function HistoryDeleter() {
 
     return (<>
         <AlertDialog open={openRemove} onOpenChange={setOpenRemove}>
-            <AlertDialogTrigger asChild>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="destructive"
-                                onClick={() => setOpenRemove(true)}
-                                disabled={page.cur === 0}>
-                            <DeleteIcon/>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{t('slot.delete_output_tip')}</p>
-                    </TooltipContent>
-                </Tooltip>
+            <AlertDialogTrigger render={<Tooltip/>}>
+                <TooltipTrigger onClick={() => setOpenRemove(true)}
+                                render={<Button variant="destructive"
+                                                disabled={page.cur === 0}/>}>
+                    <DeleteIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{t('slot.delete_output_tip')}</p>
+                </TooltipContent>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -107,19 +103,15 @@ export function HistoryDeleter() {
         </AlertDialog>
 
         <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
-            <AlertDialogTrigger asChild>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="destructive"
-                                onClick={() => setOpenDelete(true)}
-                                disabled={page.cur === 0}>
-                            <TrashIcon/>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{t('slot.delete_history_tip')}</p>
-                    </TooltipContent>
-                </Tooltip>
+            <AlertDialogTrigger render={<Tooltip/>}>
+                <TooltipTrigger onClick={() => setOpenDelete(true)}
+                                render={<Button variant="destructive"
+                                                disabled={page.cur === 0}/>}>
+                    <TrashIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{t('slot.delete_history_tip')}</p>
+                </TooltipContent>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

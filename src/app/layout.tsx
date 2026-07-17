@@ -7,6 +7,10 @@ import {TooltipProvider} from "@/components/ui/tooltip";
 import "./globals.css"
 import "./app.css"
 import {ThemeProvider} from "@/components/theme-provider";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
     title: "Secyud Tavern",
@@ -22,7 +26,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html suppressHydrationWarning>
+        <html suppressHydrationWarning className={cn("font-sans", geist.variable)}>
         <body>
         <ThemeProvider
             attribute="class"

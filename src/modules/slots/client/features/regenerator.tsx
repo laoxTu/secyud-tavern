@@ -14,11 +14,9 @@ export function Regenerator() {
     const {page} = useHistoryPageState();
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <Button onClick={() => generateLlmapiReply(ctx)}
-                        disabled={page.max === 0} variant="outline">
-                    <RotateCcwIcon/>
-                </Button>
+            <TooltipTrigger onClick={() => generateLlmapiReply(ctx)}
+                            render={<Button disabled={page.max === 0} variant="outline"/>}>
+                <RotateCcwIcon/>
             </TooltipTrigger>
             <TooltipContent>
                 <p>{t('slot.regenerate_reply_tip')}</p>

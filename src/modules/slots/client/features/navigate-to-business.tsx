@@ -12,11 +12,9 @@ export function NavigateToBusiness() {
 
     return (
         <Tooltip>
-            <TooltipTrigger asChild>
-                <Button onClick={() => route.replace("/business")}
-                        variant={'outline'}>
-                    <ArrowBigLeftIcon/>
-                </Button>
+            <TooltipTrigger onClick={() => route.replace("/business")}
+                            render={<Button variant="outline"/>}>
+                <ArrowBigLeftIcon/>
             </TooltipTrigger>
             <TooltipContent>
                 <p>{t('slot.back_home_tip')}</p>

@@ -36,7 +36,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
     const t = useTranslations();
     const matchEditors = lorebookMatcherRegistry.records;
     const [editor, setEditor] = useState(matchEditors[entry.matchType]);
-    const [type, setType] = useState(entry.type ?? "");
+    const [type, setType] = useState(entry.type ?? null);
     const editorRef = useRef<IStandaloneCodeEditor>(null);
     const [content, setContent] = useState<string | undefined>(entry.content);
     const {theme} = useTheme();
@@ -46,17 +46,10 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
         editorRef.current = editor;
         editor.onKeyDown((e) => submitFormOnKey(e, formRef));
     }
-    const handleChange = (type: string) => {
-        setEditor(matchEditors[type]);
-    };
 
     const language = (() => {
-        switch (type) {
-            case "":
-                return "plaintext";
-            default:
-                return type;
-        }
+        if(type) return type;
+        return "plaintext";
     })();
 
     return (
@@ -88,7 +81,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                                        id={`lorebook-role-${entry.id}`}>
                             <SelectValue/>
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                             <SelectGroup>
                                 {roles.map((v) =>
                                     <SelectItem key={v} value={v}>
@@ -109,7 +102,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                                        id={`${engineName}-type-${entry.id}`}>
                             <SelectValue/>
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                             <SelectGroup>
                                 {contentTypes.map((e) =>
                                     <SelectItem key={e} value={e}>
@@ -126,12 +119,12 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                     </FieldLabel>
                     <Select name="matchType"
                             defaultValue={entry.matchType}
-                            onValueChange={handleChange}>
+                            onValueChange={t => t &&  setEditor(matchEditors[t])}>
                         <SelectTrigger className="w-full"
                                        id={`lorebook-match_type-${entry.id}`}>
                             <SelectValue/>
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                             <SelectGroup>
                                 {lorebookMatcherRegistry.getSorted().map((e) =>
                                     <SelectItem key={e.id} value={e.id}>

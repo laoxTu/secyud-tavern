@@ -1,4 +1,3 @@
-
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
 import {getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
@@ -12,7 +11,11 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {ViewIcon} from "lucide-react";
 import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
-import {conversationManager, generateCurrentVariables, generateInputBuildContext} from "@/modules/slots/client/conversation";
+import {
+    conversationManager,
+    generateCurrentVariables,
+    generateInputBuildContext
+} from "@/modules/slots/client/conversation";
 import {tryGetLastItem} from "@/utils";
 import {extractVariableChanges, StoryHistory} from "@/modules/stories/models";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
@@ -87,18 +90,15 @@ export function InputViewer() {
     };
 
     return (<Dialog open={open} onOpenChange={handleDialogOpen}>
-        <DialogTrigger asChild>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button variant="outline"
-                            onClick={() => handleDialogOpen(true)}>
-                        <ViewIcon/>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>{t('slot.input_viewer_tip')}</p>
-                </TooltipContent>
-            </Tooltip>
+        <DialogTrigger render={<Tooltip/>}>
+
+            <TooltipTrigger onClick={() => handleDialogOpen(true)}
+                            render={<Button variant="outline"/>}>
+                <ViewIcon/>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{t('slot.input_viewer_tip')}</p>
+            </TooltipContent>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
@@ -117,7 +117,7 @@ export function InputViewer() {
                     <div className={'overflow-y-auto scrollbar-thin max-h-96'}>
                         <p>{`${t('default.total_chars')}: ${inputContext?.messages?.reduce(
                             (acc, cur) => acc + cur.content.length, 0) ?? 0}`}</p>
-                        <Accordion type="multiple">
+                        <Accordion multiple>
                             {inputContext && inputContext.messages.map((u, i) => (
                                 <AccordionItem value={`${i}`} key={i}>
                                     <AccordionTrigger>
@@ -137,10 +137,8 @@ export function InputViewer() {
                     </div>
             }
             <DialogFooter>
-                <DialogClose asChild>
-                    <Button variant="outline">
-                        {t('default.cancel')}
-                    </Button>
+                <DialogClose render={<Button variant="outline"/>}>
+                    {t('default.cancel')}
                 </DialogClose>
             </DialogFooter>
         </DialogContent>

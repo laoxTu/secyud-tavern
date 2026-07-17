@@ -60,7 +60,7 @@ function Content() {
                         <SelectTrigger className="w-full" id={`${moduleName}-model`}>
                             <SelectValue/>
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                             <SelectGroup>
                                 {models.map((e) =>
                                     <SelectItem key={e} value={e}>
@@ -78,7 +78,7 @@ function Content() {
                     <FieldContent>
                         <Checkbox id={`${moduleName}-thinking`} name={"thinking"}
                                   checked={thinking}
-                                  onCheckedChange={e => setThinking(e === true)}/>
+                                  onCheckedChange={e => setThinking(e)}/>
                     </FieldContent>
                 </Field>
                 <Field>
@@ -126,7 +126,7 @@ function Content() {
                                        id={`${moduleName}-reasoning_effort`}>
                             <SelectValue/>
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                             <SelectGroup>
                                 {reasoningEffort.map((e) =>
                                     <SelectItem key={e} value={e}>

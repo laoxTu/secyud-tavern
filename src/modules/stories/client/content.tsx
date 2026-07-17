@@ -37,11 +37,9 @@ function Content() {
             </ItemContent>
             <ItemContent className="flex-none text-center">
                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button onClick={() => router.push(`/business/stories/${model.id}`)}
-                                variant={'outline'}>
-                            <CornerDownLeftIcon/>
-                        </Button>
+                    <TooltipTrigger onClick={() => router.push(`/business/stories/${model.id}`)}
+                                    render={<Button variant={'outline'}/>}>
+                        <CornerDownLeftIcon/>
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>{t('story.enter')}</p>

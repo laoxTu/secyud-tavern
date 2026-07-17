@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import {Input} from "@/components/ui/input";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {FilePlusIcon} from "lucide-react";
 
@@ -55,17 +55,14 @@ export function EntryCreate<TEntry>(
 
     return (
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button onClick={() => setCreateOpen(true)}>
-                            <FilePlusIcon/>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{t('default.create')}</p>
-                    </TooltipContent>
-                </Tooltip>
+            <DialogTrigger render={<Tooltip/>}>
+                <TooltipTrigger onClick={() => setCreateOpen(true)}
+                                render={<Button/>}>
+                    <FilePlusIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{t('default.create')}</p>
+                </TooltipContent>
             </DialogTrigger>
             <DialogContent>
                 <form action={handleCreate}
@@ -89,8 +86,8 @@ export function EntryCreate<TEntry>(
                         </Field>
                     </FieldGroup>
                     <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant="outline">{t("default.cancel")}</Button>
+                        <DialogClose render={<Button variant="outline"/>}>
+                            {t("default.cancel")}
                         </DialogClose>
                         <Button type="submit">{t("default.create")}</Button>
                     </DialogFooter>

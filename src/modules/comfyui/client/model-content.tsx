@@ -18,7 +18,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Button} from "@/components/ui/button";
+import {Button, buttonVariants} from "@/components/ui/button";
 import {FileDownIcon, FilePlusIcon, LinkIcon, SearchIcon, SquarePenIcon, Trash2Icon, XIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -148,11 +148,12 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     <HoverCardTrigger className={'w-full'}>
                         <ItemCover model={model}/>
                     </HoverCardTrigger>
-                    <HoverCardContent asChild className={'bg-card overflow-auto w-full max-w-lvw max-h-96'}>
-                        {model.content.html ? <div dangerouslySetInnerHTML={{__html: model.content.html}}/> :
-                            <div>
-
-                            </div>}
+                    <HoverCardContent className={'bg-card overflow-auto w-full max-w-lvw max-h-96'}
+                                      render={
+                                          model.content.html ?
+                                              <div dangerouslySetInnerHTML={{__html: model.content.html}}/> :
+                                              <div></div>
+                                      }>
                     </HoverCardContent>
                 </HoverCard>
             </ItemHeader>
@@ -169,13 +170,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
             <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
                 {
                     model.content.url && <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button asChild
-                                    variant="link">
-                                <Link href={model.content.url} target="_blank">
-                                    <LinkIcon/>
-                                </Link>
-                            </Button>
+                        <TooltipTrigger className={buttonVariants({variant: 'link'})}
+                                        render={<Link href={model.content.url} target="_blank"/>}>
+                            <LinkIcon/>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>{t("default.link")}</p>
@@ -183,17 +180,15 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     </Tooltip>
                 }
                 <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                    <AlertDialogTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size={'icon'}
-                                        onClick={() => setDeleteOpen(true)}
-                                        variant="destructive"><Trash2Icon/></Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t("default.delete")}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                    <AlertDialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setDeleteOpen(true)}
+                                        render={<Button size={'icon'}
+                                                        variant="destructive"/>}>
+                            <Trash2Icon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t("default.delete")}</p>
+                        </TooltipContent>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -215,20 +210,17 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 </AlertDialog>
 
                 <Drawer open={updateOpen} onOpenChange={setUpdateOpen}
-                        direction={'right'}>
-                    <DrawerTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size={'icon'}
-                                        onClick={() => setUpdateOpen(true)}
-                                        variant="ghost">
-                                    <SquarePenIcon/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t("default.update")}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                        swipeDirection={'right'}>
+                    <DrawerTrigger render={<Tooltip/>}>
+
+                        <TooltipTrigger onClick={() => setUpdateOpen(true)}
+                                        render={<Button size={'icon'}
+                                                        variant="ghost"/>}>
+                            <SquarePenIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t("default.update")}</p>
+                        </TooltipContent>
                     </DrawerTrigger>
                     <DrawerContent>
                         <form className={'h-full flex flex-col'} action={handleUpdate}>
@@ -314,10 +306,8 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                 <Button type={'submit'}>
                                     {t("default.save")}
                                 </Button>
-                                <DrawerClose asChild>
-                                    <Button variant="outline">
-                                        {t("default.cancel")}
-                                    </Button>
+                                <DrawerClose render={<Button variant="outline"/>}>
+                                    {t("default.cancel")}
                                 </DrawerClose>
                             </DrawerFooter>
                         </form>
@@ -413,17 +403,14 @@ function Content() {
         <div className={'flex flex-col gap-2'}>
             <div className={'overflow-x-auto flex flex-row-reverse scrollbar-none gap-1 justify-normal'}>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button onClick={() => setCreateOpen(true)}>
-                                    <FilePlusIcon/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t('default.create')}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                    <DialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setCreateOpen(true)}
+                                        render={<Button/>}>
+                            <FilePlusIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.create')}</p>
+                        </TooltipContent>
                     </DialogTrigger>
                     <DialogContent>
                         <form action={handleCreate} className="form-reset">
@@ -446,8 +433,8 @@ function Content() {
                                 </Field>
                             </FieldGroup>
                             <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="outline">{t("default.cancel")}</Button>
+                                <DialogClose render={<Button variant="outline"/>}>
+                                    {t("default.cancel")}
                                 </DialogClose>
                                 <Button type="submit">{t("default.create")}</Button>
                             </DialogFooter>
@@ -455,18 +442,14 @@ function Content() {
                     </DialogContent>
                 </Dialog>
                 <Dialog open={importOpen} onOpenChange={setImportOpen}>
-                    <DialogTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="outline"
-                                        onClick={() => setImportOpen(true)}>
-                                    <FileDownIcon/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t('default.import')}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                    <DialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setImportOpen(true)}
+                                        render={<Button variant="outline"/>}>
+                            <FileDownIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.import')}</p>
+                        </TooltipContent>
                     </DialogTrigger>
                     <DialogContent>
                         <form action={handleImport}
@@ -486,12 +469,12 @@ function Content() {
                                     </FieldLabel>
                                     <Select name="importer"
                                             defaultValue={defaultImporter}
-                                            onValueChange={type => setImporter(importers[type])}>
+                                            onValueChange={t => t && setImporter(importers[t])}>
                                         <SelectTrigger className="w-full"
                                                        id={`${moduleName}-importer`}>
                                             <SelectValue/>
                                         </SelectTrigger>
-                                        <SelectContent position="popper">
+                                        <SelectContent>
                                             <SelectGroup>
                                                 {comfyUIModelImporterRegistry.getSorted().map((e) =>
                                                     <SelectItem key={e.id} value={e.id}>
@@ -505,8 +488,8 @@ function Content() {
                                 <ImporterComponent/>
                             </FieldGroup>
                             <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="outline">{t("default.cancel")}</Button>
+                                <DialogClose render={<Button variant="outline"/>}>
+                                    {t("default.cancel")}
                                 </DialogClose>
                                 <Button type="submit">
                                     {t("default.import")}

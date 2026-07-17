@@ -60,14 +60,13 @@ export function BusinessPageContent() {
                             const Component = tab.label;
                             return (
                                 <NavigationMenuItem key={index}>
-                                    <NavigationMenuLink asChild>
-                                        <a className={
+                                    <NavigationMenuLink
+                                        className={
                                             businessTabId === tab.id
                                                 ? 'pointer-events-none bg-secondary text-secondary-foreground'
                                                 : 'cursor-pointer'
                                         } onClick={() => setBusinessTabId(tab.id)}>
-                                            <Component/>
-                                        </a>
+                                        <Component/>
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
                             );
@@ -75,8 +74,9 @@ export function BusinessPageContent() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild className={'my-auto'}>
-                        <Button variant="ghost">{t('default.language')}</Button>
+                    <DropdownMenuTrigger render={<Button variant="ghost"/>}
+                                         className={'my-auto'}>
+                        {t('default.language')}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuGroup>

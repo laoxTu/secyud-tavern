@@ -155,18 +155,15 @@ export function ModelContent<TModel>(
             </div>
             <div className="flex flex-row-reverse gap-2">
                 <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                    <AlertDialogTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant={'destructive'}
-                                        onClick={() => setDeleteOpen(true)}>
-                                    <Trash2Icon/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t('default.delete')}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                    <AlertDialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setDeleteOpen(true)}
+                                        render={<Button variant={'destructive'}/>}>
+
+                            <Trash2Icon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.delete')}</p>
+                        </TooltipContent>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -186,18 +183,14 @@ export function ModelContent<TModel>(
                     </AlertDialogContent>
                 </AlertDialog>
                 <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
-                    <DialogTrigger asChild>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant={'secondary'}
-                                        onClick={() => setCloneOpen(true)}>
-                                    <CopyIcon/>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{t('default.copy')}</p>
-                            </TooltipContent>
-                        </Tooltip>
+                    <DialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setCloneOpen(true)}
+                                        render={<Button variant={'secondary'}/>}>
+                            <CopyIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.copy')}</p>
+                        </TooltipContent>
                     </DialogTrigger>
                     <DialogContent>
                         <form action={handleClone}
@@ -214,8 +207,8 @@ export function ModelContent<TModel>(
                                 {cloneContent(model)}
                             </FieldGroup>
                             <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="outline">{t("default.cancel")}</Button>
+                                <DialogClose render={<Button variant="outline"/>}>
+                                    {t("default.cancel")}
                                 </DialogClose>
                                 <Button type="submit">{t("default.copy")}</Button>
                             </DialogFooter>
@@ -223,8 +216,9 @@ export function ModelContent<TModel>(
                     </DialogContent>
                 </Dialog>
                 <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant={'secondary'} onClick={handleExport}><FileUpIcon/></Button>
+                    <TooltipTrigger onClick={handleExport}
+                                    render={<Button variant={'secondary'}/>}>
+                        <FileUpIcon/>
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>{t('default.export')}</p>

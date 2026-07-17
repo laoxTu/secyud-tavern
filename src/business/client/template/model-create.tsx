@@ -87,17 +87,14 @@ export function ModelCreate<TModel>(
     return (
         <>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-                <DialogTrigger asChild>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button onClick={() => setCreateOpen(true)}>
-                                <FilePlusIcon/>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{t('default.create')}</p>
-                        </TooltipContent>
-                    </Tooltip>
+                <DialogTrigger render={<Tooltip/>}>
+                    <TooltipTrigger onClick={() => setCreateOpen(true)}
+                                    render={<Button/>}>
+                        <FilePlusIcon/>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('default.create')}</p>
+                    </TooltipContent>
                 </DialogTrigger>
                 <DialogContent>
                     <form action={handleCreate} className="form-reset">
@@ -113,8 +110,8 @@ export function ModelCreate<TModel>(
                             {createContent()}
                         </FieldGroup>
                         <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline">{t("default.cancel")}</Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
                             </DialogClose>
                             <Button type="submit">{t("default.create")}</Button>
                         </DialogFooter>
@@ -122,18 +119,14 @@ export function ModelCreate<TModel>(
                 </DialogContent>
             </Dialog>
             <Dialog open={importOpen} onOpenChange={setImportOpen}>
-                <DialogTrigger asChild>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="outline"
-                                    onClick={() => setImportOpen(true)}>
-                                <FileDownIcon/>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{t('default.import')}</p>
-                        </TooltipContent>
-                    </Tooltip>
+                <DialogTrigger render={<Tooltip/>}>
+                    <TooltipTrigger onClick={() => setImportOpen(true)}
+                                    render={<Button variant="outline"/>}>
+                        <FileDownIcon/>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('default.import')}</p>
+                    </TooltipContent>
                 </DialogTrigger>
                 <DialogContent>
                     <form action={handleImport}
@@ -154,8 +147,8 @@ export function ModelCreate<TModel>(
                             </Field>
                         </FieldGroup>
                         <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline">{t("default.cancel")}</Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
                             </DialogClose>
                             <Button type="submit">
                                 {t("default.import")}

@@ -26,7 +26,7 @@ const styleTypes = ["", "link", "text/css"];
 function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
     const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [type, setType] = useState(entry.type ?? "");
+    const [type, setType] = useState(entry.type ?? null);
     const [content, setContent] = useState<string | undefined>(entry.content);
     const {theme} = useTheme();
     const handleEditorDidMount: OnMount = (editor) => {
@@ -64,7 +64,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                                    id={`${engineName}-type-${entry.id}`}>
                         <SelectValue/>
                     </SelectTrigger>
-                    <SelectContent position="popper">
+                    <SelectContent>
                         <SelectGroup>
                             {styleTypes.map((e) =>
                                 <SelectItem key={e} value={e}>

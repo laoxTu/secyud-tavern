@@ -24,10 +24,6 @@ function ConfigContent() {
     const [editor, setEditor] = useState(records[defaultProvider]);
     const EditorComponent = editor.component;
 
-    const handleChange = (type: string) => {
-        setEditor(records[type]);
-    };
-
     return (<>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
@@ -35,12 +31,12 @@ function ConfigContent() {
             </FieldLabel>
             <Select name="provider"
                     defaultValue={defaultProvider}
-                    onValueChange={handleChange}>
+                    onValueChange={t => t && setEditor(records[t])}>
                 <SelectTrigger className="w-full"
                                id={`${moduleName}-provider`}>
                     <SelectValue/>
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent>
                     <SelectGroup>
                         {llmapiConfigRegistry.getSorted().map((e) =>
                             <SelectItem key={e.id} value={e.id}>
@@ -63,10 +59,6 @@ function BuilderContent() {
     const [editor, setEditor] = useState(records[defaultBuilder]);
     const EditorComponent = editor.component;
 
-    const handleChange = (type: string) => {
-        setEditor(records[type]);
-    };
-
     return <>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-builder`}>
@@ -74,12 +66,12 @@ function BuilderContent() {
             </FieldLabel>
             <Select name="builder"
                     defaultValue={defaultBuilder}
-                    onValueChange={handleChange}>
+                    onValueChange={t => t && setEditor(records[t])}>
                 <SelectTrigger className="w-full"
                                id={`${moduleName}-builder`}>
                     <SelectValue/>
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent>
                     <SelectGroup>
                         {llmapiInputBuilderManager.getSorted().map((e) =>
                             <SelectItem key={e.id} value={e.id}>

@@ -51,7 +51,7 @@ function Tab() {
                                                    id={`setting-theme`}>
                                         <SelectValue/>
                                     </SelectTrigger>
-                                    <SelectContent position="popper">
+                                    <SelectContent>
                                         <SelectGroup>
                                             {themes.map((v) =>
                                                 <SelectItem key={v} value={v}>

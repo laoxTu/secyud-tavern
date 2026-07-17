@@ -97,19 +97,15 @@ export function HistoryEditor() {
     };
 
     return (<Dialog open={open} onOpenChange={handleDialogOpen}>
-        <DialogTrigger asChild>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button variant="outline"
-                            disabled={page.cur === 0}
-                            onClick={() => handleDialogOpen(true)}>
-                        <EditIcon/>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>{t('slot.edit_history_tip')}</p>
-                </TooltipContent>
-            </Tooltip>
+        <DialogTrigger render={<Tooltip/>}>
+            <TooltipTrigger onClick={() => handleDialogOpen(true)}
+                            render={<Button variant="outline"
+                                            disabled={page.cur === 0}/>}>
+                <EditIcon/>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{t('slot.edit_history_tip')}</p>
+            </TooltipContent>
         </DialogTrigger>
         <DialogContent>
             {history && (
@@ -155,10 +151,8 @@ export function HistoryEditor() {
                         </FieldGroup>
                     </FieldSet>
                     <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant="outline">
-                                {t('default.cancel')}
-                            </Button>
+                        <DialogClose render={<Button variant="outline"/>}>
+                            {t('default.cancel')}
                         </DialogClose>
                         <Button type="submit">{t('default.save')}</Button>
                     </DialogFooter>

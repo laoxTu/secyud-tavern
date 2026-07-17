@@ -188,13 +188,13 @@ export function ModelList<TModel extends BaseModel>(
                         <div className="flex-1 h-full overflow-auto">
                             <ItemGroup className={"p-2 gap-3"}>
                                 {items && items.map((item, i) => (
-                                    <Item key={i} asChild
-                                          className={"overflow-hidden" + (item.id === model?.id ? " bg-secondary text-secondary-foreground" : "")}
+                                    <Item key={i}
+                                          className={`cursor-pointer overflow-hidden${
+                                              item.id === model?.id ? " bg-secondary text-secondary-foreground" : ""
+                                          }`}
                                           variant={"outline"}
                                           role="listitem" onClick={() => setModel(item)}>
-                                        <a className={'cursor-pointer'}>
-                                            {itemContent(item)}
-                                        </a>
+                                        {itemContent(item)}
                                     </Item>
                                 ))}
                             </ItemGroup>

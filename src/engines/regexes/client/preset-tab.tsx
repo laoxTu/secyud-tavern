@@ -101,7 +101,7 @@ function Tab() {
                                     <SelectTrigger className="w-full" id={`${engineName}-target-${entry.id}`}>
                                         <SelectValue/>
                                     </SelectTrigger>
-                                    <SelectContent position="popper">
+                                    <SelectContent>
                                         <SelectGroup>
                                             <SelectItem value={"both"}>
                                                 {t(`regex.target_both`)}

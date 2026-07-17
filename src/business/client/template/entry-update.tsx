@@ -116,42 +116,37 @@ export function EntryUpdate<TEntry extends EntryModel>(
             <CardContent>
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                     <div className={"flex w-full rounded-md hover:bg-gray-100"}>
-                        <CollapsibleTrigger asChild>
-                            <div className={"flex flex-1 cursor-pointer p-2"}>
-                                <p className={"my-auto"}>
-                                    {entry.name}
-                                    <span className={"px-2 text-sm text-gray-500"}>
+                        <CollapsibleTrigger nativeButton={false}
+                                            className={"flex flex-1 cursor-pointer p-2"}
+                                            render={<div/>}>
+                            <p className={"my-auto"}>
+                                {entry.name}
+                                <span className={"px-2 text-sm text-gray-500"}>
                                         {entry.code}
                                     </span>
-                                </p>
-                            </div>
+                            </p>
                         </CollapsibleTrigger>
                         <div className={"m-auto"}>
                             <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button size={"icon"} variant={"secondary"}
-                                            onClick={handleDisable}>
-                                        {disabled ? <PlayOffIcon color={'red'}/> : <PlayIcon color={'green'}/>}
-                                    </Button>
+                                <TooltipTrigger onClick={handleDisable}
+                                                render={<Button size={"icon"}
+                                                                variant={"secondary"}/>}>
+                                    {disabled ? <PlayOffIcon color={'red'}/> : <PlayIcon color={'green'}/>}
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>{disabled ? t("default.disable_item") : t("default.enable_item")}</p>
                                 </TooltipContent>
                             </Tooltip>
                             <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
-                                <DialogTrigger asChild>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button size={'icon'}
-                                                    onClick={() => setCloneOpen(true)}
-                                                    variant={'secondary'}>
-                                                <CopyIcon/>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{t("default.copy")}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
+                                <DialogTrigger render={<Tooltip/>}>
+                                    <TooltipTrigger onClick={() => setCloneOpen(true)}
+                                                    render={<Button size={'icon'}
+                                                                    variant={'secondary'}/>}>
+                                        <CopyIcon/>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t("default.copy")}</p>
+                                    </TooltipContent>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <form action={handleClone}
@@ -185,8 +180,8 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                             </Field>
                                         </FieldGroup>
                                         <DialogFooter>
-                                            <DialogClose asChild>
-                                                <Button variant="outline">{t("default.cancel")}</Button>
+                                            <DialogClose render={<Button variant="outline"/>}>
+                                                {t("default.cancel")}
                                             </DialogClose>
                                             <Button type="submit">{t("default.copy")}</Button>
                                         </DialogFooter>
@@ -194,17 +189,16 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                 </DialogContent>
                             </Dialog>
                             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                                <AlertDialogTrigger asChild>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button size={'icon'}
-                                                    onClick={() => setDeleteOpen(true)}
-                                                    variant="destructive"><Trash2Icon/></Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{t("default.delete")}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
+                                <AlertDialogTrigger render={<Tooltip/>}>
+
+                                    <TooltipTrigger onClick={() => setDeleteOpen(true)}
+                                                    render={<Button size={'icon'}
+                                                                    variant="destructive"/>}>
+                                        <Trash2Icon/>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t("default.delete")}</p>
+                                    </TooltipContent>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
@@ -222,44 +216,41 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-                            <CollapsibleTrigger asChild>
-                                <Button size={"icon"} variant={"ghost"}>
-                                    {isOpen ? <ChevronsUpIcon/> : <ChevronsDownIcon/>}
-                                </Button>
+                            <CollapsibleTrigger render={<Button size={"icon"} variant={"ghost"}/>}>
+                                {isOpen ? <ChevronsUpIcon/> : <ChevronsDownIcon/>}
                             </CollapsibleTrigger>
                         </div>
                     </div>
-                    <CollapsibleContent asChild className={"p-1"}>
-                        <form action={handleUpdate} ref={formRef}>
-                            <FieldGroup>
-                                <FieldSet>
-                                    <FieldGroup>
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                            <Field>
-                                                <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
-                                                    {t("default.code")}
-                                                </FieldLabel>
-                                                <Input name="code"
-                                                       id={`${entryType}-code-${entry.id}`}
-                                                       defaultValue={entry.code}/>
-                                            </Field>
-                                            <Field>
-                                                <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
-                                                    {t("default.name")}
-                                                </FieldLabel>
-                                                <Input name="name"
-                                                       id={`${entryType}-name-${entry.id}`}
-                                                       defaultValue={entry.name}/>
-                                            </Field>
-                                        </div>
-                                        {updateContent(entry, formRef)}
-                                    </FieldGroup>
-                                </FieldSet>
-                                <Field orientation="horizontal">
-                                    <Button type="submit">{t("default.save")}</Button>
-                                </Field>
-                            </FieldGroup>
-                        </form>
+                    <CollapsibleContent render={<form action={handleUpdate} ref={formRef}/>}
+                                        className={"p-1"}>
+                        <FieldGroup>
+                            <FieldSet>
+                                <FieldGroup>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <Field>
+                                            <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
+                                                {t("default.code")}
+                                            </FieldLabel>
+                                            <Input name="code"
+                                                   id={`${entryType}-code-${entry.id}`}
+                                                   defaultValue={entry.code}/>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
+                                                {t("default.name")}
+                                            </FieldLabel>
+                                            <Input name="name"
+                                                   id={`${entryType}-name-${entry.id}`}
+                                                   defaultValue={entry.name}/>
+                                        </Field>
+                                    </div>
+                                    {updateContent(entry, formRef)}
+                                </FieldGroup>
+                            </FieldSet>
+                            <Field orientation="horizontal">
+                                <Button type="submit">{t("default.save")}</Button>
+                            </Field>
+                        </FieldGroup>
                     </CollapsibleContent>
                 </Collapsible>
             </CardContent>

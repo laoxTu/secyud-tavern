@@ -20,7 +20,7 @@ export function Editor() {
                                    id={`transformers-model`}>
                         <SelectValue/>
                     </SelectTrigger>
-                    <SelectContent position="popper">
+                    <SelectContent>
                         <SelectGroup>
                             {Object.keys(transformerModels).map((v) =>
                                 <SelectItem key={v} value={v}>
