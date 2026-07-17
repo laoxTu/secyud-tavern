@@ -61,6 +61,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /comfyuis/models/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/comfyuis/models/{id}/entries/{entryType}",
@@ -177,6 +192,21 @@
       "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
       "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}",
       "metadata": {
         "pathParams": [
           "id",
@@ -394,6 +424,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/llmapis/{id}/entries/{entryType}",
@@ -477,6 +522,21 @@
       "message": "Route /presets/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
       "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}",
       "metadata": {
         "pathParams": [
           "id",
@@ -670,6 +730,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/stories/{id}/entries/{entryType}",
@@ -762,34 +837,34 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.0764000000000351,
-    "loadCustomFragmentsMs": 0.0006000000000199179,
-    "prepareDocumentMs": 0.07700000000005502,
-    "scanRouteFilesMs": 2.9850999999999885,
-    "deriveRoutePathMs": 0.5992000000013604,
-    "filterRouteCandidatesMs": 0.04359999999974207,
-    "sourcePrecheckMs": 4.183399999999892,
-    "readRouteFilesMs": 1.9861999999990303,
-    "parseRouteFilesMs": 3.9408000000017864,
-    "analyzeRouteFilesMs": 11.46230000000071,
+    "prepareTemplateMs": 0.09299999999996089,
+    "loadCustomFragmentsMs": 0.0009000000000014552,
+    "prepareDocumentMs": 0.09389999999996235,
+    "scanRouteFilesMs": 3.263400000000047,
+    "deriveRoutePathMs": 0.748499999999467,
+    "filterRouteCandidatesMs": 0.04819999999949687,
+    "sourcePrecheckMs": 4.595499999998765,
+    "readRouteFilesMs": 2.257200000000239,
+    "parseRouteFilesMs": 4.393700000000081,
+    "analyzeRouteFilesMs": 14.340099999999893,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 16.585200000000327,
-    "registerRouteMs": 2694.8123000000032,
-    "getSchemaContentMs": 51.59120000000166,
-    "createRequestParamsMs": 0.819199999999455,
+    "processRouteFilesMs": 19.87049999999931,
+    "registerRouteMs": 2809.1640999999995,
+    "getSchemaContentMs": 28.418800000001283,
+    "createRequestParamsMs": 0.6511000000027707,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 233.3365000000017,
+    "processResponsesMs": 283.5802999999987,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2707.2734999999993,
-    "sortAndMergePathsMs": 1.1907000000001062,
-    "buildPathsMs": 1.1907000000001062,
-    "defaultComponentsAndErrorsMs": 0.1893000000000029,
-    "mergeSchemasMs": 0.29369999999971697,
-    "zodPreScanMs": 324.9622,
-    "zodPreprocessMs": 65.63780000000054,
-    "zodConvertMs": 274.141900000001,
-    "finalizeDocumentMs": 7.41190000000006,
-    "totalMs": 3146.1021,
-    "scanRoutesMs": 2726.8437999999996
+    "buildOperationsMs": 2826.7648000000004,
+    "sortAndMergePathsMs": 1.1532999999999447,
+    "buildPathsMs": 1.1532999999999447,
+    "defaultComponentsAndErrorsMs": 0.21259999999983847,
+    "mergeSchemasMs": 0.31380000000081054,
+    "zodPreScanMs": 367.7958000000001,
+    "zodPreprocessMs": 63.11539999999741,
+    "zodConvertMs": 299.5776000000001,
+    "finalizeDocumentMs": 12.358299999999872,
+    "totalMs": 3316.4293000000007,
+    "scanRoutesMs": 2849.8986999999997
   }
 }

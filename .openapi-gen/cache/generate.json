@@ -60,6 +60,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /comfyuis/models/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/comfyuis/models/{id}/entries/{entryType}",
@@ -176,6 +191,21 @@
       "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
       "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}",
       "metadata": {
         "pathParams": [
           "id",
@@ -393,6 +423,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /llmapis/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/llmapis/{id}/entries/{entryType}",
@@ -476,6 +521,21 @@
       "message": "Route /presets/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts",
       "routePath": "/presets/{id}/entries/{entryType}/{entryId}/disabled",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
+      "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/presets/{id}/entries/{entryType}/{entryId}",
       "metadata": {
         "pathParams": [
           "id",
@@ -669,6 +729,21 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+      "routePath": "/stories/{id}/entries/{entryType}/{entryId}",
+      "metadata": {
+        "pathParams": [
+          "id",
+          "entryType",
+          "entryId"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /stories/{id}/entries/{entryType} contains path parameters id, entryType but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts",
       "routePath": "/stories/{id}/entries/{entryType}",
@@ -760,107 +835,107 @@
       }
     }
   ],
-  "fingerprint": "026162a1202c9fb3b7bbf44d51cbace12fa55c19665ff0ae9d38ce60304a45b1",
-  "inputCount": 276,
+  "fingerprint": "505b5bd7f95e445f3ae9b29f0d29bdbb0a76e2fff70b3c812b9ce9438bb73b9a",
+  "inputCount": 288,
   "inputs": {
     "D:\\Projects\\ai\\secyud-tavern\\openapi-gen.config.ts": {
-      "hash": "1f9b9131986d344c01786da56d2eed529a6d3609410beac5aaf06cb7c6787412",
-      "mtimeMs": 1783996732934.5146,
-      "size": 3259
+      "hash": "2ef3bb982bef7edca1665f6409d98254020a5d459b205785f10766aaf1f1dad7",
+      "mtimeMs": 1783996759863.7017,
+      "size": 3233
     },
     "D:\\Projects\\ai\\secyud-tavern\\package.json": {
-      "hash": "83707cc128715831471b0a1becb4ac63524834f637f398ccf3d4f33eb396eb72",
-      "mtimeMs": 1783724623080.8062,
-      "size": 2044
+      "hash": "da6a695fa699f2f2ea0aaafca645b70d48da3c108db92c1f86793ba18190fbbd",
+      "mtimeMs": 1784266791732,
+      "size": 2005
     },
     "D:\\Projects\\ai\\secyud-tavern\\pnpm-lock.yaml": {
-      "hash": "12d7ffa83a2738a33f67de7ed6da5762f7124cb82bc1f90b689e6f806c4e9723",
-      "mtimeMs": 1783597958714.3445,
-      "size": 398861
+      "hash": "8e249e9cf473fae7ea97954bd78bb808663fd9dc3f47fb2c829edc3d78291a4e",
+      "mtimeMs": 1784266667200.494,
+      "size": 315718
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
       "hash": "4355e078279c9f6ed97b50b55ff591503d42f363cebb9d2db177abd9f1d2aa45",
-      "mtimeMs": 1782294928005.1338,
+      "mtimeMs": 1783996871015.5576,
       "size": 382
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
-      "hash": "981259d4c2d810832483e8a365708e7ea781bb9984dbcfe848e4b3c06678fe62",
-      "mtimeMs": 1782294908383.5366,
-      "size": 574
+      "hash": "84ccab68a7b273ed13ad24b5260bf869441d3a7a665b92fba069ebbaaed570f7",
+      "mtimeMs": 1784267807921,
+      "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts": {
       "hash": "b464931c850a299780dbfe372f56bc56940cdc517f8235471f911c47a70fd781",
-      "mtimeMs": 1782294891039.6802,
+      "mtimeMs": 1783996871015.5576,
       "size": 633
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\export\\route.ts": {
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
-      "mtimeMs": 1783996067102.6504,
+      "mtimeMs": 1783996871015.5576,
       "size": 318
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
-      "mtimeMs": 1783996067175.6145,
+      "mtimeMs": 1783996871016.5588,
       "size": 667
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts": {
       "hash": "c6e12dfad2cd648782ef60bdb369e5559437b3488aa353ff688f5f2e19dc33fc",
-      "mtimeMs": 1782296804070.7834,
+      "mtimeMs": 1783996871016.5588,
       "size": 317
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\models.ts": {
-      "hash": "79b396225e97861ea411ef01dd4f913e41ff1df574be704d6106403b7f8cc9ee",
-      "mtimeMs": 1783995701070.8767,
-      "size": 2471
+      "hash": "41a34a2d531f7c5bf74acaffa87979ae35d8072673ea4ae0e9933f35a09af1bf",
+      "mtimeMs": 1784185952449.1167,
+      "size": 3339
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\route.ts": {
       "hash": "938023c6ab831822887eff1f022f917da9c79bbe52f07593f4bf3db03cd83d00",
-      "mtimeMs": 1783996067160.0142,
+      "mtimeMs": 1783996871016.5588,
       "size": 505
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
       "hash": "4355e078279c9f6ed97b50b55ff591503d42f363cebb9d2db177abd9f1d2aa45",
-      "mtimeMs": 1782294928005.1338,
+      "mtimeMs": 1783996871017.5586,
       "size": 382
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
-      "hash": "981259d4c2d810832483e8a365708e7ea781bb9984dbcfe848e4b3c06678fe62",
-      "mtimeMs": 1782294908383.5366,
-      "size": 574
+      "hash": "2d3a37c7485900cf5bfdb3c85a4d70a0fab1c070dd40409833866c362bb4e070",
+      "mtimeMs": 1784267811878,
+      "size": 787
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\route.ts": {
       "hash": "b464931c850a299780dbfe372f56bc56940cdc517f8235471f911c47a70fd781",
-      "mtimeMs": 1782294891039.6802,
+      "mtimeMs": 1783996871017.5586,
       "size": 633
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\export\\route.ts": {
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
-      "mtimeMs": 1783996067140.2656,
+      "mtimeMs": 1783996871018.5586,
       "size": 318
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
-      "mtimeMs": 1783996067109.171,
+      "mtimeMs": 1783996871018.5586,
       "size": 667
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\import\\route.ts": {
       "hash": "c6e12dfad2cd648782ef60bdb369e5559437b3488aa353ff688f5f2e19dc33fc",
-      "mtimeMs": 1782296804070.7834,
+      "mtimeMs": 1783996871018.5586,
       "size": 317
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\models.ts": {
-      "hash": "b3eed8048b4e08426cfa8b3665730ef0b273fbb4115635a730e57b987c548fbf",
-      "mtimeMs": 1783995684466.4744,
-      "size": 2480
+      "hash": "1918a2f906540ccb11a21c5cd95cb7a24829ad6631b9f56a09cb1a886625ba15",
+      "mtimeMs": 1784185952449.1167,
+      "size": 1943
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\route.ts": {
       "hash": "938023c6ab831822887eff1f022f917da9c79bbe52f07593f4bf3db03cd83d00",
-      "mtimeMs": 1783996067144.5046,
+      "mtimeMs": 1783996871019.5586,
       "size": 505
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\images\\[id]\\route.ts": {
       "hash": "252d9c2b9b1cccdea30c623653ffcb3d6c18b172a5d1eff93a39f9e31cd15c82",
-      "mtimeMs": 1783996067120.6853,
+      "mtimeMs": 1784267188933.2834,
       "size": 1076
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\images\\route.ts": {
@@ -879,9 +954,9 @@
       "size": 382
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
-      "hash": "981259d4c2d810832483e8a365708e7ea781bb9984dbcfe848e4b3c06678fe62",
-      "mtimeMs": 1782294908383.5366,
-      "size": 574
+      "hash": "2d3a37c7485900cf5bfdb3c85a4d70a0fab1c070dd40409833866c362bb4e070",
+      "mtimeMs": 1784267811871,
+      "size": 787
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts": {
       "hash": "b464931c850a299780dbfe372f56bc56940cdc517f8235471f911c47a70fd781",
@@ -890,12 +965,12 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\export\\route.ts": {
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
-      "mtimeMs": 1783996067171.5242,
+      "mtimeMs": 1783996871019.5586,
       "size": 318
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
-      "mtimeMs": 1783996067135.2654,
+      "mtimeMs": 1783996871020.5588,
       "size": 667
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\import\\route.ts": {
@@ -904,13 +979,13 @@
       "size": 317
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\models.ts": {
-      "hash": "1332c6f007638e787f3fa28e8f157490967097c62462142ee560a505f7bcebaf",
-      "mtimeMs": 1783995644541.9707,
-      "size": 2666
+      "hash": "0871a2e7e08e979098114f47849dad1e6f3b6a693e844fdf0b1be9b9d992300b",
+      "mtimeMs": 1784185952449.1167,
+      "size": 2109
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\route.ts": {
       "hash": "938023c6ab831822887eff1f022f917da9c79bbe52f07593f4bf3db03cd83d00",
-      "mtimeMs": 1783996067163.5237,
+      "mtimeMs": 1783996871021.5586,
       "size": 505
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
@@ -919,9 +994,9 @@
       "size": 382
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
-      "hash": "981259d4c2d810832483e8a365708e7ea781bb9984dbcfe848e4b3c06678fe62",
-      "mtimeMs": 1782294908383.5366,
-      "size": 574
+      "hash": "72e8238b752548952f6a04da95ebbd8b64fc1f30cf2c1876f0395d39daad98dc",
+      "mtimeMs": 1784267811876,
+      "size": 789
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts": {
       "hash": "b464931c850a299780dbfe372f56bc56940cdc517f8235471f911c47a70fd781",
@@ -930,12 +1005,12 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\export\\route.ts": {
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
-      "mtimeMs": 1783996067150.5022,
+      "mtimeMs": 1783996871021.5586,
       "size": 318
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
-      "mtimeMs": 1783996067114.684,
+      "mtimeMs": 1783996871021.5586,
       "size": 667
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\import\\route.ts": {
@@ -944,18 +1019,18 @@
       "size": 317
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\models.ts": {
-      "hash": "7b4429b46763560c891b8d3e80d744d68d3f9a5c2cd4d53ffd9caa85042d6704",
-      "mtimeMs": 1783597958719.8518,
-      "size": 3726
+      "hash": "168fd5f17291e82d405140f2c29fa86f759b42fbb22902ca253d86636206e9d2",
+      "mtimeMs": 1784185952450.1162,
+      "size": 3189
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\route.ts": {
       "hash": "938023c6ab831822887eff1f022f917da9c79bbe52f07593f4bf3db03cd83d00",
-      "mtimeMs": 1783996067131.2012,
+      "mtimeMs": 1783996871021.5586,
       "size": 505
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\settings\\[id]\\route.ts": {
       "hash": "634d8b5af2f14a250cb4f3b98f415aa2da30c7d47d612234200b0d3151edc738",
-      "mtimeMs": 1783996067180.615,
+      "mtimeMs": 1783996871022.5583,
       "size": 920
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
@@ -964,9 +1039,9 @@
       "size": 382
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
-      "hash": "981259d4c2d810832483e8a365708e7ea781bb9984dbcfe848e4b3c06678fe62",
-      "mtimeMs": 1782294908383.5366,
-      "size": 574
+      "hash": "d887f966a867c6c2a28f59b7844947cc1b57dd429c3a8b9a66d56ddd8da9f110",
+      "mtimeMs": 1784267745556,
+      "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts": {
       "hash": "b464931c850a299780dbfe372f56bc56940cdc517f8235471f911c47a70fd781",
@@ -975,12 +1050,12 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\export\\route.ts": {
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
-      "mtimeMs": 1783996067155.0154,
+      "mtimeMs": 1783996871023.062,
       "size": 318
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
-      "mtimeMs": 1783996067125.2002,
+      "mtimeMs": 1783996871023.062,
       "size": 667
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\slot\\route.ts": {
@@ -994,19 +1069,19 @@
       "size": 317
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\models.ts": {
-      "hash": "b41edd523a081ac9d599eb8f9222c203e29ce96ab7cd46e8f073af6305cb8883",
-      "mtimeMs": 1783597958722.8518,
-      "size": 1251
+      "hash": "7dd3235034dd2e908bbf68841ed42cbe5aa4d37862457e20ddba464325769596",
+      "mtimeMs": 1784185952450.1162,
+      "size": 963
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\route.ts": {
       "hash": "938023c6ab831822887eff1f022f917da9c79bbe52f07593f4bf3db03cd83d00",
-      "mtimeMs": 1783995974577.2605,
+      "mtimeMs": 1783996871023.062,
       "size": 505
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\template.ts": {
-      "hash": "24bf00d4c4449743f68ebc35c35e485c0002906186b0324729cad24510f0b625",
-      "mtimeMs": 1782648887886.243,
-      "size": 7080
+      "hash": "d3ce9eff00f283f9c61c97f87f685a203a72e3503ad36eb94d256cdfc4388ea2",
+      "mtimeMs": 1784267705509,
+      "size": 7407
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\business\\layout.tsx": {
       "hash": "13797571485ae4040f311021165d5c74482c6a51fa74ece944633e279541369f",
@@ -1024,9 +1099,9 @@
       "size": 248
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\layout.tsx": {
-      "hash": "e5f10c87cddc9bbe283d267265d1feba411b21c9a7f989df1e8d359dd553a132",
-      "mtimeMs": 1783597958723.8518,
-      "size": 1211
+      "hash": "0f0016e82b6d3445c2d02fcd915ca0946f310b98d3773279f8bc53059fd94a61",
+      "mtimeMs": 1784255454849.1887,
+      "size": 1395
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\page.tsx": {
       "hash": "256cb5fd36cd97cf6ebde318b23203342d5c271ea74aeee7518f8f30cc412d4c",
@@ -1044,9 +1119,9 @@
       "size": 388
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\content.tsx": {
-      "hash": "922eddb01e0d1c379f7ab8cbad63bcc8fcec1a2dae2ebe6ac877a63e6ab06c70",
-      "mtimeMs": 1783597958725.8518,
-      "size": 4341
+      "hash": "71d9cb749bd964ef07ce2e09b896e0136e7748522bc076ec0b4658c1d8871e1a",
+      "mtimeMs": 1784258758655,
+      "size": 4315
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\index.ts": {
       "hash": "9ceec327bc4e770d4b93cd6ab00470b32b2368025929f4ae7f3d14a8317f23fb",
@@ -1054,9 +1129,9 @@
       "size": 1163
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\models.ts": {
-      "hash": "402db72fafc86808d4f1674de9957356de77c0bb27d62368728c7228e12a7a14",
-      "mtimeMs": 1782650312376.917,
-      "size": 2237
+      "hash": "3ae71be4e307ae4e316fcd5d316bc18fdd03910138720952c12fb6a328666497",
+      "mtimeMs": 1784185952451.1165,
+      "size": 2210
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\navigation.ts": {
       "hash": "3840574cdfef2e50a57e2b97563090e9cad46c66295ae5e227c3c759d8ebdaa5",
@@ -1069,9 +1144,9 @@
       "size": 502
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-create.tsx": {
-      "hash": "c910717853e9f3becb7dd4fe6b6c38781e603e5063e4747c5e42ba23dc47f3db",
-      "mtimeMs": 1782717760381.0417,
-      "size": 3709
+      "hash": "8fea1fac070ba772ae2b3d681b7339fad2dbe2a55d2a32451a94457475f4621e",
+      "mtimeMs": 1784258477932,
+      "size": 3605
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-list.tsx": {
       "hash": "7230f233b6d97dce5d8c51d84f0b670e028f9377bab221bda381901be26a2329",
@@ -1079,9 +1154,9 @@
       "size": 4765
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-update.tsx": {
-      "hash": "ee9cbc4f5d6e2c28549659ca85118d590d4a1a7481e65a155fb9c103dfd71551",
-      "mtimeMs": 1783818239731.038,
-      "size": 13624
+      "hash": "cbc1fddad1810a1adb5cb1878c958d07f050ed885be983e7a5b318bcf2ccd9d0",
+      "mtimeMs": 1784264565453,
+      "size": 13140
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\index.ts": {
       "hash": "a35f3202b9d3429af3030d0295f1d95161eb87c2c453fac9f4e7b2430e1cb848",
@@ -1089,24 +1164,24 @@
       "size": 205
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-content.tsx": {
-      "hash": "b6ec42a81588524fa82414ea0360aa061fed7cc6f9979bea84644ed079b6823c",
-      "mtimeMs": 1782969098545.8386,
-      "size": 10044
+      "hash": "e97ae21d85407fe2756c7d55d226f27d4cb430f4cd0e88d006a8b06ea49bbc17",
+      "mtimeMs": 1784259151296,
+      "size": 9749
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-create.tsx": {
-      "hash": "ff6f5a50336b2ef9e3746205c8341181025b4895c73d1ae9957738e2d5ced881",
-      "mtimeMs": 1782717442980.9011,
-      "size": 6714
+      "hash": "03f2f4f569c3e3feb57fa8d963f4339ea1d0373cc6f52312510efbcce65be969",
+      "mtimeMs": 1784259245817,
+      "size": 6449
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-list.tsx": {
-      "hash": "0c9a3b04fba78ea749d4280d2ca8809b3273dcee7ba102a90b68203acad5c44a",
-      "mtimeMs": 1783597958728.8518,
-      "size": 10044
+      "hash": "0c4d7d2d5ae3676366ec345fd525219db3eb138d5180d3693bc520d89d3025c0",
+      "mtimeMs": 1784259000854,
+      "size": 10028
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-update.tsx": {
-      "hash": "7d5ea7497248d7b75b67be4282147d1ba57c911df71139c19339fcf0f21d3850",
-      "mtimeMs": 1782650489674.3113,
-      "size": 2386
+      "hash": "7b465856cbffb3af3f945dc81d71a7ea1d826047fe7442a2ce7dbcd030d43ae0",
+      "mtimeMs": 1784185952452.1167,
+      "size": 2527
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\tab-header.tsx": {
       "hash": "08cc3f71b5957a10bc21c9365e9ea8e4298cb87d2525993f158de453434458d8",
@@ -1139,9 +1214,9 @@
       "size": 2282
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\server\\repository.ts": {
-      "hash": "92aef36bbda12264131e611f0a48e03a505f3966c5116a0d6e0a0cad022078ac",
-      "mtimeMs": 1783911301347.3945,
-      "size": 12447
+      "hash": "b854b8dbc2d29cccf0fb1f3d006234102c021556eda2218f10397974e810c562",
+      "mtimeMs": 1784267586523,
+      "size": 13224
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\server\\storage-models.ts": {
       "hash": "58af46a61cf318c3b078637355bc9691e850a279128caf537b4e4461b6aeeb7f",
@@ -1154,9 +1229,9 @@
       "size": 1139
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\client-registerer.ts": {
-      "hash": "396d8cb3f5c76ba0e807492128c21b379cec274e9fae1149660fb0303ff5afe1",
-      "mtimeMs": 1783678957475.6162,
-      "size": 2135
+      "hash": "de0e141977229485004bee6d2426731285e6d50986d8a6280e97e05f5d335aa2",
+      "mtimeMs": 1784185952453.1167,
+      "size": 2230
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\client.ts": {
       "hash": "440dba9d8946a61a0aca19f25c5dbaaf2da6c4c6d2f6643ca34801628b5abb03",
@@ -1184,9 +1259,9 @@
       "size": 61
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\image-uploader.tsx": {
-      "hash": "e88809d27582402d773c7b1cffeb075bebb61aabc73e6d298d6debcb9f46657f",
-      "mtimeMs": 1783991529208.5393,
-      "size": 5283
+      "hash": "7af41c879b421636c23f424a64e3d16ccf1db47edfe15af0859d5fe8f5596de5",
+      "mtimeMs": 1783996971253.5662,
+      "size": 5321
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\pager\\component.tsx": {
       "hash": "91d9d284d9c3e2330a2c7ba63ef2c71f45025f5671f5c38c237ccb6e4d931f45",
@@ -1214,59 +1289,69 @@
       "size": 400
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\accordion.tsx": {
-      "hash": "459d3afef03f241d4afbe3d0f1cec745427f6b718aa5ec5eb15866d8ef690c82",
-      "mtimeMs": 1777432002314.158,
-      "size": 2685
+      "hash": "38fec90a34d857fff15ca47b4fab0f12171dbb44cb55a37d1f65f63a4eaf0c20",
+      "mtimeMs": 1784255456386.6968,
+      "size": 2598
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\alert-dialog.tsx": {
-      "hash": "a52e1eb9d7e11d45327167cc42b74ad5a105c43531add089944b3b1b1860ea06",
-      "mtimeMs": 1777340660350.297,
-      "size": 5629
+      "hash": "c9ab3a06e387ea9b59d4f1084521678816cf6b5d697d787f45df64213b07b112",
+      "mtimeMs": 1784255461831.9377,
+      "size": 5272
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\aspect-ratio.tsx": {
-      "hash": "b1c157886236782cb92d8fbcd4749532aaf6d8aabefd6e157ca40358f902f407",
-      "mtimeMs": 1782785545678.7708,
-      "size": 274
+      "hash": "c6db82ab2401e402c7c6d178ff59eb570535c76db5953b3bb78be564c5b24669",
+      "mtimeMs": 1784255456632.7888,
+      "size": 403
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\badge.tsx": {
+      "hash": "968b0403af74a785c9408ca69a677235e49d0c80b2c27fb9858ad421a8778c7d",
+      "mtimeMs": 1784255456803.5417,
+      "size": 1925
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\button-group.tsx": {
-      "hash": "49d8ca68f086c57814c6532483d30a193ba901efa73bf66d4cd36ea93588c705",
-      "mtimeMs": 1782785359971.6914,
-      "size": 2386
+      "hash": "fe97631e1a07bc0add09503c5032002e37f4c71ef5dd3c7475b856a29848583d",
+      "mtimeMs": 1784255463062.604,
+      "size": 2480
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\button.tsx": {
-      "hash": "6f7d18705d50ab348f8d47fc040ed296503a6300fea6686c0acae42dbf20099a",
-      "mtimeMs": 1777085728732.7927,
-      "size": 3342
+      "hash": "d14549ab3ba7a9d5d1f424c2599233bffa0b317121abf3b6efa2fb902d5e2781",
+      "mtimeMs": 1784255456976.72,
+      "size": 3240
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\card.tsx": {
-      "hash": "a41b4d3d618416128d0093af2575048a2de8ef25c0926bcea4f19a24a59de476",
-      "mtimeMs": 1777083032272.4536,
-      "size": 2641
+      "hash": "d8113cbf964f8d1aadf2649d2944d8bbc6e3cfd49d36746f76868cbc4dde3cfe",
+      "mtimeMs": 1784255457190.147,
+      "size": 2630
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\checkbox.tsx": {
-      "hash": "fb1ee2e329aa400f44d8983e689d595f2fe5556d13844c6676be330cd71c02e3",
-      "mtimeMs": 1777431786945.8552,
-      "size": 1400
+      "hash": "3d2d0b3d87a19aad65821e4cdb1c4bb149209778bea271b1f98265383cddd6d5",
+      "mtimeMs": 1784255457393.6072,
+      "size": 1357
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\collapsible.tsx": {
-      "hash": "c6598e5584f4258b5d9fefadbc5ad6a66888ad58729f4b634a0bb2d9c513188b",
-      "mtimeMs": 1777456244546.8,
-      "size": 795
+      "hash": "ead4349ff7b01d696ef89294a81d18ee1d3f732321398896462c834ab9b9e065",
+      "mtimeMs": 1784255457592.835,
+      "size": 658
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\combobox.tsx": {
-      "hash": "1c07d2823fa2b489646b663c1f6797c290d74b13bb4f1aabba2cf6ed5696cd79",
-      "mtimeMs": 1777343290192.628,
-      "size": 9071
+      "hash": "f85f566d4d53d69d2b87a625a12bbfc36585d48fe8797fd7ce555808307ce0ac",
+      "mtimeMs": 1784255465396.2754,
+      "size": 9031
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\dialog.tsx": {
-      "hash": "13a5cddf294c6aa56391ebd5d474ee13e70cf9eebdd1ecf10c100c6555c8745a",
-      "mtimeMs": 1777272756089.4175,
-      "size": 4234
+      "hash": "ccabf6cc674a68b09d9168904bb46b7c1075a67312cf6f51f3e38b8eeacd2fdb",
+      "mtimeMs": 1784255462443.8816,
+      "size": 4075
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\drawer.tsx": {
+      "hash": "b33d7b911b1a78fb524ee68bf483c4a1f538743ff04b91da56b3dc9b48fa70a6",
+      "mtimeMs": 1784255457801.485,
+      "size": 11356
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\dropdown-menu.tsx": {
-      "hash": "47f754e1ab9e4e34a7ddbab035d7ed665dfac657ff5a2db4f3ab0923d340852b",
-      "mtimeMs": 1781922627844.1765,
-      "size": 8831
+      "hash": "1c1ae4ec02de9778286f84e0d15a1b74cc610c13c5b6a13c1ada2e6770eeb4e1",
+      "mtimeMs": 1784255458091.3064,
+      "size": 8736
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\empty.tsx": {
       "hash": "e65ee3ba54a21ed61e3c50041bb12a6a3fcb215c56611cda6795c23a7bd89f61",
@@ -1274,39 +1359,44 @@
       "size": 2397
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\field.tsx": {
-      "hash": "3ae2f332fcead38008387b377f1551cf5e6b0b4baeab867c12d83173954ad2b8",
-      "mtimeMs": 1777340660497.3667,
-      "size": 6012
+      "hash": "76e008459f847a96bb1140c11a38d247e69392432a1e690aa660fdb4844f5c74",
+      "mtimeMs": 1784255463435.1802,
+      "size": 6017
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\hover-card.tsx": {
+      "hash": "7e7880883ba91290133e61f8bf1df72547795b8d9f2c13d4a17a51c17540d712",
+      "mtimeMs": 1784255458455.7722,
+      "size": 1855
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\input-group.tsx": {
-      "hash": "e28122e46635bb664f38e3bb5331f40e5523791451d115f2e39dafd446f8b385",
-      "mtimeMs": 1777343303720.6038,
-      "size": 5206
+      "hash": "17e76f6e6093754756dd10182f833abf35f1020dc4a8a7ead8c0f9703576870b",
+      "mtimeMs": 1784255464641.5234,
+      "size": 5264
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\input.tsx": {
-      "hash": "c4902a8c4967875e30d9f1198175f4f5348a0cdd17e21b5e3d7c9e81d2996ed9",
-      "mtimeMs": 1777273303428.9226,
-      "size": 968
+      "hash": "f7d6ecff9a4d631feeaf401c02bb87e26ddb38131c55d15a43b9290747390847",
+      "mtimeMs": 1784255458592.0566,
+      "size": 1040
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\item.tsx": {
-      "hash": "421d292c65c58778758d509b9dfd230fcd2881c62b794dfd0a26505e9cceac40",
-      "mtimeMs": 1777340660473.0461,
-      "size": 4778
+      "hash": "3f5ec6eac0a7c2daea3f4403408974ff4bae1e949d328701bcf3a74a4554b6e0",
+      "mtimeMs": 1784255463949.618,
+      "size": 4860
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\label.tsx": {
-      "hash": "a476e41f08b9de5bd447de66a33d8bc2ad18f2fa6b96c064778bab4b6f439f4c",
-      "mtimeMs": 1777273068242.3672,
-      "size": 606
+      "hash": "7f19b8476658d25ff197c84030e58cd7395059d876a54630e025951e474ebdae",
+      "mtimeMs": 1784255458693.9734,
+      "size": 518
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\navigation-menu.tsx": {
-      "hash": "225cc9e37708e0fff443d5f420a29a0d964bc1cae247feb8c89a42218872c41d",
-      "mtimeMs": 1777340660364.3054,
-      "size": 6523
+      "hash": "076ba62c2d4292970470455ab9719badec7fedd74aaaaa40a7955cc366128e97",
+      "mtimeMs": 1784255458882.423,
+      "size": 7393
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\pagination.tsx": {
-      "hash": "b7aaaa2d0e3cdc9e3f77e2efddf8545d797ed9f52d8da710bd0c84d516583021",
-      "mtimeMs": 1777011198057.926,
-      "size": 2829
+      "hash": "0aba86a91ba0a8d99e92846f10b395d0ddc1a8901a4f54418e8802c12fad57c1",
+      "mtimeMs": 1784255462842.9685,
+      "size": 2864
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\resizable.tsx": {
       "hash": "379baf7a1de109a1ea14419c99b76fbec1cb4f10d6ee13605b0b2940d615afeb",
@@ -1314,14 +1404,14 @@
       "size": 1671
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\select.tsx": {
-      "hash": "c1295c1404b67895549b89225885eba08198a5d6224c733fbb8964eaaa2edff4",
-      "mtimeMs": 1777447822624.1848,
-      "size": 6679
+      "hash": "ca3bd1b370ea67b84632d435c22d8270752fa6013c06c365162af265e4a0e87e",
+      "mtimeMs": 1784255459292.1223,
+      "size": 6655
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\separator.tsx": {
-      "hash": "c924a82e99fda03684c17238d04eec857edc83977da2ee601795e94e52b4828f",
-      "mtimeMs": 1777273068303.8398,
-      "size": 644
+      "hash": "75085bd84ff6965e4a356c53a4689799cabf65caa93c0bba064d5a0c6fa78f13",
+      "mtimeMs": 1784255459737.6055,
+      "size": 545
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\skeleton.tsx": {
       "hash": "8110bba70d0cb9fe968c0b7bd092ad12258caef40b028b4a87f402bdab907faf",
@@ -1334,14 +1424,14 @@
       "size": 1226
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\switch.tsx": {
-      "hash": "f3a1ed75be07bda7e391e20631c123e066bcadaced2d6340d8e4531ecec63434",
-      "mtimeMs": 1777444885520.138,
-      "size": 1748
+      "hash": "c98e4b259d28463c34c65cdbfba447d5ccd4fed0a138b7acf8c796309e61e2d6",
+      "mtimeMs": 1784255460312.129,
+      "size": 1707
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\tabs.tsx": {
-      "hash": "808500a4170c8c3460aac00140d840e6625b1e8ad2392f476edc9a9f3a441471",
-      "mtimeMs": 1777011172569.7588,
-      "size": 3558
+      "hash": "8bf9ee3935ab86c268a2a71cb5b4b67d3d5587ca9f2e0bf25f37ffdb1980434c",
+      "mtimeMs": 1784255460530.0095,
+      "size": 3497
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\textarea.tsx": {
       "hash": "58b58d84fc54ba5f4ca46937870c619349fd9eccc4d494250ac7bc73a94e05e9",
@@ -1349,14 +1439,14 @@
       "size": 842
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\tooltip.tsx": {
-      "hash": "f26881e08ed65a973a15ac3bd509bca50c31da1d5b275bc3f9c48b5de1d1c966",
-      "mtimeMs": 1777452387599.533,
-      "size": 2111
+      "hash": "2cea2294d4947b88d815860f64e0b5e0eb47a59bde47cfd194aac2230c923865",
+      "mtimeMs": 1784255460999.682,
+      "size": 2846
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\deepseek\\client\\config.tsx": {
-      "hash": "8d5fb3c1ea7379efa5547d677b712998bc7dfe16d64a2bd072b54da3e330e237",
-      "mtimeMs": 1783597958730.8513,
-      "size": 8350
+      "hash": "cfbeb957993d607ff6a040b7e9479d7d63229d5b4786d1a3d8674ce4c0b48d12",
+      "mtimeMs": 1784265368030,
+      "size": 8305
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\deepseek\\client\\index.ts": {
       "hash": "3f7e330a24f8fa71af0470cee946202fca87c95f22a4c4956ed07e47ca1b9fe0",
@@ -1409,9 +1499,9 @@
       "size": 665
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\preset-tab.tsx": {
-      "hash": "e7b425a968ee4b6e2fc3e8273178d1141ba590229d7bd11d9ce7287d0676e480",
-      "mtimeMs": 1783724404453.8516,
-      "size": 11456
+      "hash": "7169a80f60eb3267ec0330be482794dabbacdead19913b8635d1e0d0bed043c9",
+      "mtimeMs": 1784260922475,
+      "size": 11248
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\match\\always\\client\\editor.tsx": {
       "hash": "61096cc7250a74c66df944e783ef8a6cd2ad3ef470bf150d290596fe594956df",
@@ -1574,14 +1664,14 @@
       "size": 1936
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\client\\setting-tab.tsx": {
-      "hash": "cf5d0718bc503e70faf8895ad976b79b263b53f76178fac2711372ee1736ed8b",
-      "mtimeMs": 1783597958750.852,
-      "size": 4517
+      "hash": "00924c234d1e56849e43c06d2330b651fab74665f510f367776a95d85da33e64",
+      "mtimeMs": 1784260922471,
+      "size": 4413
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\embedding\\transformers\\client\\editor.tsx": {
-      "hash": "2220026a477e5072736d95627125b19df1cb9c4d46af9da93eb1ffd4d1d15a2c",
-      "mtimeMs": 1783597958751.8518,
-      "size": 1554
+      "hash": "6f0e4013e0703eaf099ac7bc1e87233bda6f0f61b5ce84becd9df1f98d242f18",
+      "mtimeMs": 1784260533371,
+      "size": 1536
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\embedding\\transformers\\client\\index.ts": {
       "hash": "ddc04893b12c614e6382134b59bd9d7c77085e4742c63f497253b5c9cec2eddb",
@@ -1609,9 +1699,9 @@
       "size": 656
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\client\\preset-tab.tsx": {
-      "hash": "720d0907cddd95f1e9603365f25989a7ce04ad16b96b804e1ffc0428afbdf61e",
-      "mtimeMs": 1783597958755.8523,
-      "size": 6848
+      "hash": "f1356cde75ad1c45efb2e80823a9c7e6c86fd63592d3649b0ba093ad12772544",
+      "mtimeMs": 1784260922487,
+      "size": 6830
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\models.ts": {
       "hash": "749d060ffb652281ba227cbbb8e3f05c4402c4cbdb9e7589f5a901f8f32aa49e",
@@ -1644,9 +1734,9 @@
       "size": 659
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\scripts\\client\\preset-tab.tsx": {
-      "hash": "b45b86c8d53e69b4c8f34104bcb1582fefc20915c29653bdbf5ee71abcd02533",
-      "mtimeMs": 1783678957477.5696,
-      "size": 7532
+      "hash": "e84b9788398fd83bc94021ef42cd8cdf7c177226e7345b81d5eb6ffb343c3cb7",
+      "mtimeMs": 1784260922479,
+      "size": 7516
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\scripts\\models.ts": {
       "hash": "2db6acdf03886fbf4ee95dfc20c6708e001436d7bbc94ab534f2b6f563be024e",
@@ -1679,9 +1769,9 @@
       "size": 670
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\styles\\client\\preset-tab.tsx": {
-      "hash": "3c77e9f720b8237a5a53559d2cc2295ee5569a63fb05484d5e63084fbceeb8db",
-      "mtimeMs": 1783678957477.5696,
-      "size": 7437
+      "hash": "5da46f16e512af218fbae864d22f3415c9ef1b8e696f4678618fbe97503cf319",
+      "mtimeMs": 1784260675861,
+      "size": 7421
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\styles\\models.ts": {
       "hash": "7afa59c65c09c4b25055b47d8187f7775b19e00102d05f71082d8938392c3394",
@@ -1709,9 +1799,9 @@
       "size": 285
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\handler\\models.ts": {
-      "hash": "8deb9c8fcec38384fd977642b02d6470a771007329d5f2284287ff72f7513356",
-      "mtimeMs": 1777718793805.484,
-      "size": 323
+      "hash": "ce300dd8f3d9574ab7a3b5fa0deab3e1f014ef2cb8c6613182a6ab9583470771",
+      "mtimeMs": 1784264809330,
+      "size": 642
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\handler\\server\\error-interceptor.ts": {
       "hash": "60e93695268d480e8e8b3b9985ccd29123bdea29d620060ee384c819699644f0",
@@ -1748,35 +1838,80 @@
       "mtimeMs": 1782704118845.984,
       "size": 2489
     },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\combobox.tsx": {
+      "hash": "0ae4d3b473ef630fd0cc23a8a012ed0db7dc84840a235cb050102f9c94dac389",
+      "mtimeMs": 1784188750909.7727,
+      "size": 5133
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\impoter-models.ts": {
+      "hash": "e6fbaefd19525386b74543fe3cb3db8ce191bdbbba7f23bb1914ab902e024d00",
+      "mtimeMs": 1784185952456.3345,
+      "size": 319
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\impoter.ts": {
+      "hash": "4e9a8ae50fa1468ef3c3a9041585f3619b4678693698cb3d697cfe83eae1f149",
+      "mtimeMs": 1784185952456.3345,
+      "size": 422
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\index.ts": {
+      "hash": "c59cc528379a9500b8935e6ac1f933c643426795367fce859ff3a624098d5839",
+      "mtimeMs": 1784185952456.3345,
+      "size": 431
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\model-content.tsx": {
+      "hash": "81c33b7b2e976f3e21d3b3c0bb8f7404b0d87cf1381c608db17a4604e62fbcc9",
+      "mtimeMs": 1784260850410,
+      "size": 26228
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\models.ts": {
+      "hash": "87a995293c40aacae29bb6b46f56745e78aa692171857f5c1309fea7c815f89e",
+      "mtimeMs": 1784185952457.3384,
+      "size": 865
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\tabs.tsx": {
+      "hash": "1c6de6e79cf171b665cdce1a9f8033fa921ed7172c0ad5a44c812eb807f50cfe",
+      "mtimeMs": 1784185952457.3384,
+      "size": 3932
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\workflow-content.tsx": {
+      "hash": "130bb5531dcab394c15474ae38c31b4af38926db55cd9ac255aa1cbfadfd9903",
+      "mtimeMs": 1784188209331.0403,
+      "size": 4644
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\workflow-tabs.tsx": {
       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "mtimeMs": 1783995398722.0574,
+      "mtimeMs": 1784267221254.4739,
       "size": 0
     },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\importers\\client\\civital-importer.tsx": {
+      "hash": "e3536c2bd750a833811658628a91c175c7bc07db582d09c32822cee9cacb8daf",
+      "mtimeMs": 1784188623852.4172,
+      "size": 3595
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\models.ts": {
-      "hash": "0386f197f37ad115798b3c11d0420b8fd49af8be277be679658d3cbbca9460eb",
-      "mtimeMs": 1783991712626.537,
-      "size": 350
+      "hash": "c2b1260264f9c3f0f4c61ec341fc90653635c52f26e03118b199dd406fcdde01",
+      "mtimeMs": 1784185952459.3386,
+      "size": 445
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\db-entities.ts": {
       "hash": "48cf523b917adeb5f4c8d7e0529d86043cecbf9c2a51b1a301f7dfa07bd4a95e",
-      "mtimeMs": 1783994798647.6113,
+      "mtimeMs": 1783996871024.0664,
       "size": 988
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\repository.ts": {
       "hash": "0aceb7a9fab3cc75e504935c900df4d9e9ce3b8255483fd797af7170b91e9d36",
-      "mtimeMs": 1783992157844.5276,
+      "mtimeMs": 1783996871024.0664,
       "size": 1632
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\storage.ts": {
       "hash": "225fdf4b7664a59567c6608be4556ae63a167a755731255cf354abd1d7bbf91d",
-      "mtimeMs": 1783992153237.2068,
+      "mtimeMs": 1783996871025.0664,
       "size": 357
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\combobox.tsx": {
-      "hash": "c19dfb97d8c46b847f5d15557e091cededac52e4da129bb1b302f4381d9d8e9c",
-      "mtimeMs": 1783597958791.8523,
-      "size": 3319
+      "hash": "c3a70380222ff81fd0fc381e8cad6b111fd962893c7e9f267684be18fb2d19c0",
+      "mtimeMs": 1784185952459.3386,
+      "size": 3385
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\config-models.ts": {
       "hash": "f433e62b8cb68a2ff934b56cf85e9725552be8066f650d375410632b4405f005",
@@ -1784,9 +1919,9 @@
       "size": 229
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\config.ts": {
-      "hash": "1cd53c63bf86f9077e157635d91db5646f8a7a465be0c87f370e5c1ccf5393c0",
-      "mtimeMs": 1783597958792.855,
-      "size": 259
+      "hash": "0625af5d1325417b36f1cc04b384f94405b8dd482a12516f8038a65df94324f8",
+      "mtimeMs": 1784185952460.3423,
+      "size": 258
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\content.tsx": {
       "hash": "b57833e9e50b0d64ddb7dd145801d991dfefcb56dde4a42de5ba78d0f309274b",
@@ -1814,14 +1949,14 @@
       "size": 588
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\models.ts": {
-      "hash": "63409484f858124e975223b3a4e71dadf7d60c5066fde7eb3d962e8ac18dd1b0",
-      "mtimeMs": 1783597958793.8533,
-      "size": 611
+      "hash": "2b58a5a9aed0ad5b60290f74bfb72573bf385a479c4ce059570f1516c712baa8",
+      "mtimeMs": 1784185952460.3423,
+      "size": 583
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\tabs.tsx": {
-      "hash": "5ed5469ded834496cbde8d6c57cba7dfbb0e6092b1f4b3ab6871afc69b683397",
-      "mtimeMs": 1783597958794.8533,
-      "size": 6612
+      "hash": "a627c047dea698d7baee4cedd91bc8b7e76b37a807716a257d2f7049cc850a42",
+      "mtimeMs": 1784260922483,
+      "size": 6432
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\models.ts": {
       "hash": "1478e6e5e89c84139130c4fda9164f9e518585ae71ab28ad758ca5046609ab7a",
@@ -1854,14 +1989,14 @@
       "size": 195
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\client\\combobox.tsx": {
-      "hash": "5b17865f2c506d9053ad7964a320f04d3f6fabde9f531150d1de48ba967f0e5a",
-      "mtimeMs": 1783597958798.8542,
-      "size": 3660
+      "hash": "8af6b49cf853cd527cf4d965af2a51298e251bfb181d082c5ed951d84c3be80f",
+      "mtimeMs": 1784185952461.339,
+      "size": 3792
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\client\\content.tsx": {
-      "hash": "23278fdbedfc2e629b04dbb88a7f905800a8c7e104e4e51dcf42a1fd30e20b45",
-      "mtimeMs": 1783991529208.5393,
-      "size": 5966
+      "hash": "66297f8aea62e8148f13727f630dc85e81d515803f632185305a7caf5681ebf6",
+      "mtimeMs": 1783996971253.5662,
+      "size": 5968
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\client\\index.ts": {
       "hash": "e906934d9998b86f46467b217f86cf1f0a0ed7bbe778babe36f645026ce4e1b8",
@@ -1869,9 +2004,9 @@
       "size": 252
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\client\\models.ts": {
-      "hash": "aa77532d101d42e60d9bc41142eb28a09c8427fd8f7b444aec3e24ac8907215d",
-      "mtimeMs": 1783597958799.854,
-      "size": 666
+      "hash": "3a3f40df739a4ec0f2a6ae12acf81532521d88371cb144cdfb2e7b3f2a506316",
+      "mtimeMs": 1784185952461.339,
+      "size": 638
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\client\\tabs.tsx": {
       "hash": "698c5586545db8f14819b6450b0028c8210e44df216651757f44e041dfd6d233",
@@ -1914,9 +2049,9 @@
       "size": 1333
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\settings\\client\\tabs.tsx": {
-      "hash": "a58018e520c3a99dba7f0a711378ac3afd3101a6171f3ed892a7dbc5bf3adf5b",
-      "mtimeMs": 1783597958801.854,
-      "size": 3651
+      "hash": "392e9ff475ecbe0f3d475897ce240525186cb4eafa16eeee90007ba6cd1e467f",
+      "mtimeMs": 1784260946918,
+      "size": 3633
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\settings\\models.ts": {
       "hash": "bff74c4a97d36bfecfe9fefa7e32c386a7e89e7e7d8ce0365c0b9b15fc9b2d74",
@@ -1954,29 +2089,29 @@
       "size": 202
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\history-deleter.tsx": {
-      "hash": "d3ec71884d8707e2e6467cee7e7bf411f4e63598429c96a257cae3601d76fa5b",
-      "mtimeMs": 1783597958805.856,
-      "size": 6303
+      "hash": "8c731221ad9fe06c91e37ab8337bd735827adcece4f4af4551c2dbf2fefe3ebd",
+      "mtimeMs": 1784260054677,
+      "size": 6077
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\history-editor.tsx": {
-      "hash": "88425ece955835f2931060376e6673be8ccf3f482bb848f2c8f741d983cc28b6",
-      "mtimeMs": 1783678957478.5444,
-      "size": 7669
+      "hash": "401601ec20c843c5d038bf16b1306e6dd691197b6f08f15ec2b01d3ca34b7965",
+      "mtimeMs": 1784260114465,
+      "size": 7502
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\input-viewer.tsx": {
-      "hash": "c20b0a3851108e39a1f4d0b27fe06c90e1fadd46eab4ecba8aae03d75593e50a",
-      "mtimeMs": 1783597958805.856,
-      "size": 6243
+      "hash": "9c441588b6092c5e2a03adcdaaf03bc9b4a12d59473c1c82e9049aa2b07493e8",
+      "mtimeMs": 1784260206847,
+      "size": 6087
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\navigate-to-business.tsx": {
-      "hash": "376f6a7bb0f08f4e350a41b5a76dd86c21f9f2ad097475a9816a7f3ac9c07d50",
-      "mtimeMs": 1783597958806.856,
-      "size": 829
+      "hash": "9145301cc7adcd51771aefbc627a3a2022778e648b7494d718ec66652c7c1571",
+      "mtimeMs": 1784260234285,
+      "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\regenerator.tsx": {
-      "hash": "a66c562741e4ffb99aadfdffb4995d34939652ef876bbee61b5025b9978869e3",
-      "mtimeMs": 1783597958806.856,
-      "size": 1058
+      "hash": "5f47c7b19bebde81a3febaaf55f39674454707e07b6b26cccd358110b3b4c9af",
+      "mtimeMs": 1784260259347,
+      "size": 1016
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\feeature-models.ts": {
       "hash": "2092ba5e245d25eff94119e8d74dd68ee37b188f53d5d6c62b7b8e759a5a1e8e",
@@ -2019,9 +2154,9 @@
       "size": 612
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\content.tsx": {
-      "hash": "724d7f7be68f8a84862ef61025bce9d9f2ada88a54e8247d2a28ae92709e7317",
-      "mtimeMs": 1783818239732.038,
-      "size": 4829
+      "hash": "1d2297e255c2795dda9a2955f5ac7b9e3092b2efc077c6bd15ff9acf34806f98",
+      "mtimeMs": 1784260283898,
+      "size": 4771
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\index.ts": {
       "hash": "8bf974f103b0a0d28fa99cd12c3150939425cbd726b0695dc09c1d75924962b7",
@@ -2029,9 +2164,9 @@
       "size": 253
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\models.ts": {
-      "hash": "89a0bb0c7e32c0847450f2d69dd06612da2c304b980675dbb4bb4f6f20fe7b8c",
-      "mtimeMs": 1783597958812.8533,
-      "size": 609
+      "hash": "901c522b694e48040086271e45cde588ffd9e39193ceaaa41c64a37bff610c52",
+      "mtimeMs": 1784185952462.3384,
+      "size": 581
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\tabs.tsx": {
       "hash": "998998bcb91966760c7bb9c2b837b08c81637ac66f96de72052e9809183d0817",
@@ -2104,9 +2239,9 @@
       "size": 217
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\schema.d.ts": {
-      "hash": "10a351c0a9839d53649335f3ba5ff7d961173a48da8d67230b58006a4dffbd44",
-      "mtimeMs": 1783996604087.621,
-      "size": 88975
+      "hash": "f52af7e9b18db926c059d5e966ad8fbb51f2b9118b85f70fc806bc9f2a5b0067",
+      "mtimeMs": 1783996871025.0664,
+      "size": 92105
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\server-registerer.ts": {
       "hash": "deca70ba0ca5fb0306c5b75188e0a126e1e7bc57b9fe73642fd0b3ae7f22e544",
@@ -2146,35 +2281,35 @@
   },
   "outputFile": "D:\\Projects\\ai\\secyud-tavern\\public\\openapi.json",
   "performance": {
-    "prepareTemplateMs": 0.0764000000000351,
-    "loadCustomFragmentsMs": 0.0006000000000199179,
-    "prepareDocumentMs": 0.07700000000005502,
-    "scanRouteFilesMs": 2.9850999999999885,
-    "deriveRoutePathMs": 0.5992000000013604,
-    "filterRouteCandidatesMs": 0.04359999999974207,
-    "sourcePrecheckMs": 4.183399999999892,
-    "readRouteFilesMs": 1.9861999999990303,
-    "parseRouteFilesMs": 3.9408000000017864,
-    "analyzeRouteFilesMs": 11.46230000000071,
+    "prepareTemplateMs": 0.09299999999996089,
+    "loadCustomFragmentsMs": 0.0009000000000014552,
+    "prepareDocumentMs": 0.09389999999996235,
+    "scanRouteFilesMs": 3.263400000000047,
+    "deriveRoutePathMs": 0.748499999999467,
+    "filterRouteCandidatesMs": 0.04819999999949687,
+    "sourcePrecheckMs": 4.595499999998765,
+    "readRouteFilesMs": 2.257200000000239,
+    "parseRouteFilesMs": 4.393700000000081,
+    "analyzeRouteFilesMs": 14.340099999999893,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 16.585200000000327,
-    "registerRouteMs": 2694.8123000000032,
-    "getSchemaContentMs": 51.59120000000166,
-    "createRequestParamsMs": 0.819199999999455,
+    "processRouteFilesMs": 19.87049999999931,
+    "registerRouteMs": 2809.1640999999995,
+    "getSchemaContentMs": 28.418800000001283,
+    "createRequestParamsMs": 0.6511000000027707,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 233.3365000000017,
+    "processResponsesMs": 283.5802999999987,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2707.2734999999993,
-    "sortAndMergePathsMs": 1.1907000000001062,
-    "buildPathsMs": 1.1907000000001062,
-    "defaultComponentsAndErrorsMs": 0.1893000000000029,
-    "mergeSchemasMs": 0.29369999999971697,
-    "zodPreScanMs": 324.9622,
-    "zodPreprocessMs": 65.63780000000054,
-    "zodConvertMs": 274.141900000001,
-    "finalizeDocumentMs": 7.41190000000006,
-    "totalMs": 3146.1021,
-    "scanRoutesMs": 2726.8437999999996
+    "buildOperationsMs": 2826.7648000000004,
+    "sortAndMergePathsMs": 1.1532999999999447,
+    "buildPathsMs": 1.1532999999999447,
+    "defaultComponentsAndErrorsMs": 0.21259999999983847,
+    "mergeSchemasMs": 0.31380000000081054,
+    "zodPreScanMs": 367.7958000000001,
+    "zodPreprocessMs": 63.11539999999741,
+    "zodConvertMs": 299.5776000000001,
+    "finalizeDocumentMs": 12.358299999999872,
+    "totalMs": 3316.4293000000007,
+    "scanRoutesMs": 2849.8986999999997
   },
   "routeFragments": {
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
@@ -2197,7 +2332,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294928005.1338,
+      "mtimeMs": 1783996871015.5576,
       "paths": {
         "/comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled": {
           "put": {
@@ -2302,12 +2437,85 @@
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
           }
+        },
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+          "routePath": "/comfyuis/models/{id}/entries/{entryType}/{entryId}",
+          "metadata": {
+            "pathParams": [
+              "id",
+              "entryType",
+              "entryId"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294908383.5366,
+      "mtimeMs": 1784267807921,
       "paths": {
         "/comfyuis/models/{id}/entries/{entryType}/{entryId}": {
+          "get": {
+            "operationId": "get-comfyuis-models-{id}-entries-{entryType}-{entryId}",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Comfyuis"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              },
+              {
+                "name": "entryType",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "example",
+                "description": "Path parameter: entryType"
+              },
+              {
+                "name": "entryId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: entryId"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/any"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          },
           "put": {
             "operationId": "put-comfyuis-models-{id}-entries-{entryType}-{entryId}",
             "summary": "更新条目",
@@ -2418,7 +2626,7 @@
       "schemas": {
         "any": {}
       },
-      "size": 574,
+      "size": 785,
       "tags": {},
       "webhooks": {}
     },
@@ -2477,7 +2685,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294891039.6802,
+      "mtimeMs": 1783996871015.5576,
       "paths": {
         "/comfyuis/models/{id}/entries/{entryType}": {
           "get": {
@@ -2711,7 +2919,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067102.6504,
+      "mtimeMs": 1783996871015.5576,
       "paths": {
         "/comfyuis/models/{id}/export": {
           "get": {
@@ -2805,7 +3013,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067175.6145,
+      "mtimeMs": 1783996871016.5588,
       "paths": {
         "/comfyuis/models/{id}": {
           "get": {
@@ -2922,7 +3130,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/models/import\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1782296804070.7834,
+      "mtimeMs": 1783996871016.5588,
       "paths": {
         "/comfyuis/models/import": {
           "post": {
@@ -2980,7 +3188,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/models\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1783996067160.0142,
+      "mtimeMs": 1783996871016.5588,
       "paths": {
         "/comfyuis/models": {
           "get": {
@@ -3115,7 +3323,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294928005.1338,
+      "mtimeMs": 1783996871017.5586,
       "paths": {
         "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled": {
           "put": {
@@ -3205,12 +3413,85 @@
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
           }
+        },
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /comfyuis/workflows/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+          "routePath": "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}",
+          "metadata": {
+            "pathParams": [
+              "id",
+              "entryType",
+              "entryId"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294908383.5366,
+      "mtimeMs": 1784267811878,
       "paths": {
         "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}": {
+          "get": {
+            "operationId": "get-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Comfyuis"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              },
+              {
+                "name": "entryType",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "example",
+                "description": "Path parameter: entryType"
+              },
+              {
+                "name": "entryId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: entryId"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/any"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          },
           "put": {
             "operationId": "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
             "summary": "更新条目",
@@ -3319,7 +3600,7 @@
         }
       },
       "schemas": {},
-      "size": 574,
+      "size": 787,
       "tags": {},
       "webhooks": {}
     },
@@ -3356,7 +3637,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294891039.6802,
+      "mtimeMs": 1783996871017.5586,
       "paths": {
         "/comfyuis/workflows/{id}/entries/{entryType}": {
           "get": {
@@ -3530,7 +3811,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067140.2656,
+      "mtimeMs": 1783996871018.5586,
       "paths": {
         "/comfyuis/workflows/{id}/export": {
           "get": {
@@ -3622,7 +3903,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067109.171,
+      "mtimeMs": 1783996871018.5586,
       "paths": {
         "/comfyuis/workflows/{id}": {
           "get": {
@@ -3739,7 +4020,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/workflows/import\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1782296804070.7834,
+      "mtimeMs": 1783996871018.5586,
       "paths": {
         "/comfyuis/workflows/import": {
           "post": {
@@ -3797,7 +4078,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/workflows\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1783996067144.5046,
+      "mtimeMs": 1783996871019.5586,
       "paths": {
         "/comfyuis/workflows": {
           "get": {
@@ -3943,7 +4224,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067120.6853,
+      "mtimeMs": 1784267188933.2834,
       "paths": {
         "/images/{id}": {
           "get": {
@@ -4274,12 +4555,85 @@
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
           }
+        },
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /llmapis/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+          "routePath": "/llmapis/{id}/entries/{entryType}/{entryId}",
+          "metadata": {
+            "pathParams": [
+              "id",
+              "entryType",
+              "entryId"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294908383.5366,
+      "mtimeMs": 1784267811871,
       "paths": {
         "/llmapis/{id}/entries/{entryType}/{entryId}": {
+          "get": {
+            "operationId": "get-llmapis-{id}-entries-{entryType}-{entryId}",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Llmapis"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              },
+              {
+                "name": "entryType",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "example",
+                "description": "Path parameter: entryType"
+              },
+              {
+                "name": "entryId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: entryId"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/any"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          },
           "put": {
             "operationId": "put-llmapis-{id}-entries-{entryType}-{entryId}",
             "summary": "更新条目",
@@ -4388,7 +4742,7 @@
         }
       },
       "schemas": {},
-      "size": 574,
+      "size": 787,
       "tags": {},
       "webhooks": {}
     },
@@ -4599,7 +4953,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067171.5242,
+      "mtimeMs": 1783996871019.5586,
       "paths": {
         "/llmapis/{id}/export": {
           "get": {
@@ -4691,7 +5045,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067135.2654,
+      "mtimeMs": 1783996871020.5588,
       "paths": {
         "/llmapis/{id}": {
           "get": {
@@ -4866,7 +5220,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/llmapis\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1783996067163.5237,
+      "mtimeMs": 1783996871021.5586,
       "paths": {
         "/llmapis": {
           "get": {
@@ -5095,12 +5449,85 @@
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
           }
+        },
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /presets/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+          "routePath": "/presets/{id}/entries/{entryType}/{entryId}",
+          "metadata": {
+            "pathParams": [
+              "id",
+              "entryType",
+              "entryId"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294908383.5366,
+      "mtimeMs": 1784267811876,
       "paths": {
         "/presets/{id}/entries/{entryType}/{entryId}": {
+          "get": {
+            "operationId": "get-presets-{id}-entries-{entryType}-{entryId}",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Presets"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              },
+              {
+                "name": "entryType",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "example",
+                "description": "Path parameter: entryType"
+              },
+              {
+                "name": "entryId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: entryId"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/any"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          },
           "put": {
             "operationId": "put-presets-{id}-entries-{entryType}-{entryId}",
             "summary": "更新条目",
@@ -5209,7 +5636,7 @@
         }
       },
       "schemas": {},
-      "size": 574,
+      "size": 789,
       "tags": {},
       "webhooks": {}
     },
@@ -5420,7 +5847,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067150.5022,
+      "mtimeMs": 1783996871021.5586,
       "paths": {
         "/presets/{id}/export": {
           "get": {
@@ -5512,7 +5939,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067114.684,
+      "mtimeMs": 1783996871021.5586,
       "paths": {
         "/presets/{id}": {
           "get": {
@@ -5687,7 +6114,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/presets\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1783996067131.2012,
+      "mtimeMs": 1783996871021.5586,
       "paths": {
         "/presets": {
           "get": {
@@ -5833,7 +6260,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067180.615,
+      "mtimeMs": 1783996871022.5583,
       "paths": {
         "/settings/{id}": {
           "get": {
@@ -6041,12 +6468,85 @@
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
           }
+        },
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /stories/{id}/entries/{entryType}/{entryId} contains path parameters id, entryType, entryId but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts",
+          "routePath": "/stories/{id}/entries/{entryType}/{entryId}",
+          "metadata": {
+            "pathParams": [
+              "id",
+              "entryType",
+              "entryId"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1782294908383.5366,
+      "mtimeMs": 1784267745556,
       "paths": {
         "/stories/{id}/entries/{entryType}/{entryId}": {
+          "get": {
+            "operationId": "get-stories-{id}-entries-{entryType}-{entryId}",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Stories"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              },
+              {
+                "name": "entryType",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "example",
+                "description": "Path parameter: entryType"
+              },
+              {
+                "name": "entryId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: entryId"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/any"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          },
           "put": {
             "operationId": "put-stories-{id}-entries-{entryType}-{entryId}",
             "summary": "更新条目",
@@ -6155,7 +6655,7 @@
         }
       },
       "schemas": {},
-      "size": 574,
+      "size": 785,
       "tags": {},
       "webhooks": {}
     },
@@ -6366,7 +6866,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067155.0154,
+      "mtimeMs": 1783996871023.062,
       "paths": {
         "/stories/{id}/export": {
           "get": {
@@ -6458,7 +6958,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1783996067125.2002,
+      "mtimeMs": 1783996871023.062,
       "paths": {
         "/stories/{id}": {
           "get": {
@@ -7607,7 +8107,7 @@
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/stories\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [],
       "internalSchemas": {},
-      "mtimeMs": 1783995974577.2605,
+      "mtimeMs": 1783996871023.062,
       "paths": {
         "/stories": {
           "get": {
@@ -7723,5 +8223,5 @@
       "webhooks": {}
     }
   },
-  "updatedAt": "2026-07-14T02:39:03.032Z"
+  "updatedAt": "2026-07-17T05:56:59.170Z"
 }

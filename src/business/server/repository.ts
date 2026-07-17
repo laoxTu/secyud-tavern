@@ -19,6 +19,7 @@ export interface Repository<TModel> {
     exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
     entry: {
         getList: (masterId: string, type: string, options?: PageOptions) => Promise<PagedResult<any>>,
+        get: (masterId: string, type: string, entryId: string) => Promise<any>,
         batchCreate: (masterId: string, type: string, entryList: any[]) => Promise<void>,
         create: (masterId: string, type: string, entry: any) => Promise<number>,
         setDisabled: (masterId: string, type: string, entryId: number, disabled: boolean) => Promise<void>,
@@ -138,7 +139,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             if (model.name !== undefined)
                 updateData.name = model.name;
             if (model.content !== undefined)
-                updateData.content = JSON.stringify(mergeObjects(exist.content, model.content)) ;
+                updateData.content = JSON.stringify(mergeObjects(exist.content, model.content));
 
             const result = await db
                 .update(masters)
@@ -223,6 +224,24 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 );
 
                 return {data, totalCount};
+            },
+
+            get: async (masterId: string, type: string, entryId: string): Promise<any> => {
+
+                let item: any = db
+                    .select()
+                    .from(entries)
+                    .where(and(
+                        eq(entries.masterId, masterId),
+                        eq(entries.entryType, type),
+                        eq(entries.entryId, entryId),))
+                    .get();
+
+                return {
+                    ...JSON.parse(item.content),
+                    id: item.entryId,
+                    disabled: item.disabled
+                };
             },
 
             batchCreate: async (masterId: string, type: string, entryList: any[]) => {

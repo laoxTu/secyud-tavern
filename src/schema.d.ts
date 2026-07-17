@@ -177,7 +177,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 更新条目 */
+        get: operations["get-comfyuis-models-{id}-entries-{entryType}-{entryId}"];
         /** 更新条目 */
         put: operations["put-comfyuis-models-{id}-entries-{entryType}-{entryId}"];
         post?: never;
@@ -195,7 +196,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 更新条目 */
+        get: operations["get-comfyuis-workflows-{id}-entries-{entryType}-{entryId}"];
         /** 更新条目 */
         put: operations["put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}"];
         post?: never;
@@ -380,7 +382,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 更新条目 */
+        get: operations["get-llmapis-{id}-entries-{entryType}-{entryId}"];
         /** 更新条目 */
         put: operations["put-llmapis-{id}-entries-{entryType}-{entryId}"];
         post?: never;
@@ -498,7 +501,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 更新条目 */
+        get: operations["get-presets-{id}-entries-{entryType}-{entryId}"];
         /** 更新条目 */
         put: operations["put-presets-{id}-entries-{entryType}-{entryId}"];
         post?: never;
@@ -649,7 +653,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 更新条目 */
+        get: operations["get-stories-{id}-entries-{entryType}-{entryId}"];
         /** 更新条目 */
         put: operations["put-stories-{id}-entries-{entryType}-{entryId}"];
         post?: never;
@@ -1651,6 +1656,44 @@ export interface operations {
             500: components["responses"]["500"];
         };
     };
+    "get-comfyuis-models-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "put-comfyuis-models-{id}-entries-{entryType}-{entryId}": {
         parameters: {
             query?: never;
@@ -1709,6 +1752,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-comfyuis-workflows-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
@@ -2216,6 +2297,44 @@ export interface operations {
             500: components["responses"]["500"];
         };
     };
+    "get-llmapis-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
     "put-llmapis-{id}-entries-{entryType}-{entryId}": {
         parameters: {
             query?: never;
@@ -2581,6 +2700,44 @@ export interface operations {
                     "application/json": {
                         id: number;
                     };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-presets-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];
@@ -3030,6 +3187,44 @@ export interface operations {
                     "application/json": {
                         id: number;
                     };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-stories-{id}-entries-{entryType}-{entryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+                /**
+                 * @description Path parameter: entryType
+                 * @example example
+                 */
+                entryType: string;
+                /**
+                 * @description Path parameter: entryId
+                 * @example 123
+                 */
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];

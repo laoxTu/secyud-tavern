@@ -149,6 +149,14 @@ export function apiCreateEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
     }
 }
 
+export function apiGetEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+    return async (_, records) => {
+        const {id, entryType, entryId} = await records.context.params;
+        const entry = await repository.entry.get(id, entryType, entryId);
+        return NextResponse.json(entry);
+    }
+}
+
 export function apiUpdateEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType, entryId} = await records.context.params;

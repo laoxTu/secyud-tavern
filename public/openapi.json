@@ -1996,6 +1996,64 @@
       }
     },
     "/comfyuis/models/{id}/entries/{entryType}/{entryId}": {
+      "get": {
+        "operationId": "get-comfyuis-models-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "put": {
         "operationId": "put-comfyuis-models-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
@@ -2103,6 +2161,64 @@
       }
     },
     "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}": {
+      "get": {
+        "operationId": "get-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "put": {
         "operationId": "put-comfyuis-workflows-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
@@ -2910,6 +3026,64 @@
       }
     },
     "/llmapis/{id}/entries/{entryType}/{entryId}": {
+      "get": {
+        "operationId": "get-llmapis-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Llmapis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "put": {
         "operationId": "put-llmapis-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
@@ -3513,6 +3687,64 @@
       }
     },
     "/presets/{id}/entries/{entryType}/{entryId}": {
+      "get": {
+        "operationId": "get-presets-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Presets"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "put": {
         "operationId": "put-presets-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
@@ -4238,6 +4470,64 @@
       }
     },
     "/stories/{id}/entries/{entryType}/{entryId}": {
+      "get": {
+        "operationId": "get-stories-{id}-entries-{entryType}-{entryId}",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Stories"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          },
+          {
+            "name": "entryType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "example",
+            "description": "Path parameter: entryType"
+          },
+          {
+            "name": "entryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: entryId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "put": {
         "operationId": "put-stories-{id}-entries-{entryType}-{entryId}",
         "summary": "更新条目",
