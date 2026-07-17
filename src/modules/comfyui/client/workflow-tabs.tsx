@@ -1,27 +1,27 @@
-﻿'use client';
+'use client';
 import React, {RefObject, useRef, useState} from "react";
-import {FileIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
+import {FileIcon} from "lucide-react";
+import {put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
-import {put} from "@/client";
-import {ModelUpdate} from "@/business/client/template/model-update";
-import {ComfyUIWorkflowModel, moduleName} from "../models";
+import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {modelState} from "@/modules/comfyui/client/models";
-import MonacoEditor, {OnMount} from "@monaco-editor/react";
-import {editorClassName} from "@/components/consts";
-import {defaultEditorOptions} from "@/components";
-import {useTheme} from "next-themes";
+import {moduleName, ComfyUIWorkflowModel} from "../models";
+import {modelState} from "./models";
 import {submitFormOnKey} from "@/business/client";
+import MonacoEditor, {OnMount} from "@monaco-editor/react";
+import {useTheme} from "next-themes";
 import {editor} from "monaco-editor";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
+import {editorClassName} from "@/components/consts";
+import {defaultEditorOptions} from "@/components";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [content, setContent] = useState<string | undefined>(model.content?.workflow);
+    const [content, setContent] = useState<string | undefined>(model.content?.workflow_content);
     const {theme} = useTheme();
     const t = useTranslations();
     const handleEditorDidMount: OnMount = (editor) => {
@@ -34,7 +34,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
     return (<>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
-                <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                <FieldLabel htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</FieldLabel>
                 <Input id={`${moduleName}-code`} name="code"
                        defaultValue={model.code} disabled/>
             </Field>
@@ -51,7 +51,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
             <FieldLabel htmlFor={`${moduleName}-workflow-content`}>
                 {t("default.content")}
             </FieldLabel>
-            <input type={'hidden'} name={'workflow-content'} value={content}/>
+            <input type={'hidden'} name={'workflow-content'} value={content ?? ""}/>
             <MonacoEditor className={editorClassName} height={'30rem'}
                           theme={theme === 'dark' ? 'vs-dark' : 'light'}
                           language={'json'}
@@ -60,32 +60,44 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
                           onMount={handleEditorDidMount}
             />
         </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-description`}>
+                {t("default.description")}
+            </FieldLabel>
+            <Textarea name={'description'}
+                      id={`${moduleName}-description`}
+                      defaultValue={model.content.description}/>
+        </Field>
     </>);
 }
 
-function DefaultTab() {
-    return <ModelUpdate<ComfyUIWorkflowModel>
+export function DefaultTab() {
+    return <TemplateModelUpdate<ComfyUIWorkflowModel>
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-                return await put("/llmapis/{id}",
+
+                return await put("/comfyuis/workflows/{id}",
                     {
                         content: {
                             workflow_content: data.get("workflow-content"),
+                            description: data.get("description") as string,
                         },
                         name: data.get("name") as string,
                         code: model.code,
-                    } as Partial<ComfyUIWorkflowModel>,
+                    },
                     {
                         params: {"id": model.id,}
                     });
             },
             updateContent: (model, formRef) =>
                 (<UpdateContent model={model} formRef={formRef}/>)
-        }}/>
+        }}
+
+    />
 }
 
-export const comfyuiWorkflowTabManager = new TabManager(moduleName, {
+export const comfyuiWorkflowTabManager = new TabManager(moduleName + "Workflow", {
     id: 'default',
     label: () => <EntryTabHeader space="default" value="property" icon={FileIcon}/>,
     component: DefaultTab

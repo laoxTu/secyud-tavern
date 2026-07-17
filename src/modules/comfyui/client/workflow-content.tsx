@@ -8,7 +8,7 @@ import {ItemContent, ItemDescription, ItemTitle} from "@/components/ui/item";
 import {del, get, open, post} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
 import {ComfyUIWorkflowModel, moduleName} from "../models";
-import {comfyuiWorkflowTabManager} from "./tabs";
+import {comfyuiWorkflowTabManager} from "./workflow-tabs";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {TemplateModelList} from "@/business/client/template";
 import {modelState} from "./models";
