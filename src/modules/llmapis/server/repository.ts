@@ -5,11 +5,7 @@ import {createRepository} from "@/business/server/repository";
 
 export const llmapiRepository =
     createRepository<LlmapiModel, typeof llmapis.$inferSelect>(
-        llmapis, llmapiEntries,
-        llmapiStorage.loadModel.bind(llmapiStorage),
-        llmapiStorage.saveModel.bind(llmapiStorage),
-        llmapiStorage.bindSearch.bind(llmapiStorage),
-        llmapiStorage.bindSorter.bind(llmapiStorage),
+        llmapis, llmapiEntries, llmapiStorage,
         (model) => ({
             code: model.code,
             version: model.version,

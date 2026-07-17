@@ -4,17 +4,27 @@ import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {ComfyUIModelModel, ComfyUIWorkflowModel, moduleName} from "../models";
 
+/**
+ * comfyui 我们主要关注的是工作流的联动
+ * 借助工作流和llm生成提示词，从而增加生图效率
+ * 所以主item设置为 workflow
+ */
 export const useItemState = createUseItemState<ComfyUIWorkflowModel>()
 export const usePagedItemsState = createUsePagedItemsState<ComfyUIWorkflowModel>(
     async options => {
         return await get('/comfyuis/workflows', {params: options})
     }, 10);
 
-export const useModelPagedItemsState = createUsePagedItemsState<ComfyUIModelModel>(
-    async options => {
-        return await get('/comfyuis/models', {params: options})
-    }, 8);
 
 export const modelState: ModelState<ComfyUIWorkflowModel> = {
     moduleName: `${moduleName}_workflow`, useItemState, usePagedItemsState
 };
+
+/**
+ * 模型管理是一个很好的东西，但是它在tavern中不是主要关注对象，
+ * 这里用Model词缀标识。
+ */
+export const useModelPagedItemsState = createUsePagedItemsState<ComfyUIModelModel>(
+    async options => {
+        return await get('/comfyuis/models', {params: options})
+    }, 8);

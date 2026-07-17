@@ -10,11 +10,7 @@ import {comfyuiModelStorage, comfyuiWorkflowStorage} from "@/modules/comfyui/ser
 
 export const comfyuiModelRepository =
     createRepository<ComfyUIModelModel, typeof comfyuiModels.$inferSelect>(
-        comfyuiModels, comfyuiModelEntries,
-        comfyuiModelStorage.loadModel.bind(comfyuiModelStorage),
-        comfyuiModelStorage.saveModel.bind(comfyuiModelStorage),
-        comfyuiModelStorage.bindSearch.bind(comfyuiModelStorage),
-        comfyuiModelStorage.bindSorter.bind(comfyuiModelStorage),
+        comfyuiModels, comfyuiModelEntries, comfyuiModelStorage,
         (model) => ({
             code: model.code,
             type: model.type,
@@ -26,11 +22,7 @@ export const comfyuiModelRepository =
 
 export const comfyuiWorkflowRepository =
     createRepository<ComfyUIWorkflowModel, typeof comfyuiWorkflows.$inferSelect>(
-        comfyuiWorkflows, comfyuiWorkflowEntries,
-        comfyuiWorkflowStorage.loadModel.bind(comfyuiWorkflowStorage),
-        comfyuiWorkflowStorage.saveModel.bind(comfyuiWorkflowStorage),
-        comfyuiWorkflowStorage.bindSearch.bind(comfyuiWorkflowStorage),
-        comfyuiWorkflowStorage.bindSorter.bind(comfyuiWorkflowStorage),
+        comfyuiWorkflows, comfyuiWorkflowEntries, comfyuiWorkflowStorage,
         (model) => ({
             code: model.code,
         }),

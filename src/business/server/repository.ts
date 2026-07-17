@@ -7,6 +7,7 @@ import {BaseModel} from "@/business/models";
 import {BusinessError} from "@/handler/models";
 import {databaseManager} from "@/business/server/database";
 import {mergeObjects} from "@/utils";
+import {ModelStorage} from "@/business/server/storage";
 
 export type ConditionFunc = (table: any) => SQL;
 
@@ -31,158 +32,155 @@ export interface Repository<TModel> {
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
     entries: SQLiteTableWithColumns<any>,
-    loadModel: (model: TModel) => Promise<void>,
-    saveModel: (model: TModel) => Promise<void>,
-    bindSearch: (type: string, entry: any) => string,
-    bindSorter: (type: string, entry: any) => string,
+    modelStorage: ModelStorage<TModel>,
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 
     const db = databaseManager.db;
-    const repository: Repository<TModel> = {
+    const get = async (id: string, withDetails: boolean = false, conditionFunc?: ConditionFunc): Promise<TModel | null> => {
+        const condition = conditionFunc?.(masters) ?? eq(masters.id, id);
+        const entity =
+            await db.select().from(masters)
+                .where(condition).get();
+        if (!entity) return null;
 
-        get: async (id: string, withDetails: boolean = false, conditionFunc?: ConditionFunc): Promise<TModel | null> => {
+        const model = {
+            id: entity.id,
+            name: entity.name,
+            content: JSON.parse(entity.content),
+            ...(mapToModel?.(entity) ?? {})
+        } as TModel;
 
-            const condition = conditionFunc?.(masters) ?? eq(masters.id, id);
-            const entity =
-                await db.select().from(masters)
-                    .where(condition).get();
-            if (!entity) return null;
+        if (withDetails) {
+            model.entries = {};
+            await modelStorage.loadModel(model);
+        }
 
-            const model = {
+        return model;
+    };
+    const getList = async (options: PageOptions, conditionFunc?: ConditionFunc): Promise<PagedResult<TModel>> => {
+        const {page = 0, pageSize = 20} = options;
+        const offset = page * pageSize;
+
+        const condition = conditionFunc?.(masters);
+
+        const [countResult] = await db
+            .select({count: sql<number>`count(*)`})
+            .from(masters)
+            .where(condition);
+        const totalCount = Number(countResult.count);
+
+        const entities = await db
+            .select()
+            .from(masters)
+            .where(condition)
+            .orderBy(masters.id)
+            .offset(offset)
+            .limit(pageSize);
+
+        const models =
+            entities.map(entity => ({
+                ...(mapToModel?.(entity) ?? {}),
                 id: entity.id,
                 name: entity.name,
                 content: JSON.parse(entity.content),
-                ...(mapToModel?.(entity) ?? {})
-            } as TModel;
+            } as TModel));
 
+        return {data: models, totalCount};
+    };
+    const create = async (model: TModel) => {
+        const entity = {
+            id: validate(model.id) ? model.id : uuidv4(),
+            name: model.name,
+            content: JSON.stringify(model.content),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            ...(mapToEntity?.(model) ?? {})
+        }
 
-            if (withDetails) {
-                model.entries = {};
-                await loadModel(model);
-            }
+        const result = await db
+            .insert(masters)
+            .values(entity)
+            .returning();
 
-            return model;
-        },
+        if (model.entries) {
+            model.id = entity.id;
+            await modelStorage.saveModel(model);
+        }
 
-        getList: async (options: PageOptions, conditionFunc?: ConditionFunc): Promise<PagedResult<TModel>> => {
-            const {page = 0, pageSize = 20} = options;
-            const offset = page * pageSize;
+        const res = result[0];
+        return {
+            id: res.id,
+            name: res.name,
+            content: JSON.parse(res.content),
+            ...(mapToModel?.(res as Partial<TMaster>) ?? {})
+        } as TModel;
+    };
 
-            const condition = conditionFunc?.(masters);
+    const update = async (id: string, model: Partial<TModel>) => {
+        const exist = await get(id);
+        if (!exist)
+            throw new BusinessError('update entity not found', "default.entity_not_found")
+                .withValue("id", id);
 
-            const [countResult] = await db
-                .select({count: sql<number>`count(*)`})
-                .from(masters)
-                .where(condition);
-            const totalCount = Number(countResult.count);
+        const updateData: Record<string, unknown> = {
+            updatedAt: new Date().toISOString(),
+            ...(mapToEntity?.(model) ?? {})
+        };
 
-            const entities = await db
-                .select()
-                .from(masters)
-                .where(condition)
-                .orderBy(masters.id)
-                .offset(offset)
-                .limit(pageSize);
+        if (model.name !== undefined)
+            updateData.name = model.name;
+        if (model.content !== undefined)
+            updateData.content = JSON.stringify(mergeObjects(exist.content, model.content));
 
-            const models =
-                entities.map(entity => ({
-                    ...(mapToModel?.(entity) ?? {}),
-                    id: entity.id,
-                    name: entity.name,
-                    content: JSON.parse(entity.content),
-                } as TModel));
+        const result = await db
+            .update(masters)
+            .set(updateData)
+            .where(eq(masters.id, id))
+            .returning();
 
-            return {data: models, totalCount};
-        },
+        const res = result[0];
+        return {
+            id: res.id,
+            name: res.name,
+            content: JSON.parse(res.content),
+            ...(mapToModel?.(res as Partial<TMaster>) ?? {})
+        } as TModel;
+    };
 
-        create: async (model: TModel) => {
-            const entity = {
-                id: validate(model.id) ? model.id : uuidv4(),
-                name: model.name,
-                content: JSON.stringify(model.content),
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                ...(mapToEntity?.(model) ?? {})
-            }
+    const _delete = async (id: string) => {
+        await db
+            .delete(masters)
+            .where(eq(masters.id, id));
+    };
 
-            const result = await db
-                .insert(masters)
-                .values(entity)
-                .returning();
+    /**
+     * 检查记录是否存在（使用 lambda 构建条件）
+     * @param conditionFunc Lambda 函数，传入表对象，返回 SQL 条件
+     * @example
+     * await repository.exist((t) => eq(t.name, 'test'))
+     * await repository.exist((t) => and(eq(t.name, 'test'), eq(t.status, 'active')))
+     */
+    const exist = async (conditionFunc: ConditionFunc): Promise<boolean> => {
+        const condition = conditionFunc(masters);
 
-            if (model.entries) {
-                model.id = entity.id;
-                await saveModel(model);
-            }
+        const result = await db
+            .select({count: sql<number>`count(*)`})
+            .from(masters)
+            .where(condition)
+            .get();
 
-            const res = result[0];
-            return {
-                id: res.id,
-                name: res.name,
-                content: JSON.parse(res.content),
-                ...(mapToModel?.(res as Partial<TMaster>) ?? {})
-            } as TModel;
-        },
+        return Number(result?.count ?? 0) > 0;
+    };
 
-        update: async (id: string, model: Partial<TModel>) => {
-            const exist = await repository.get(id);
-            if (!exist)
-                throw new BusinessError('update entity not found', "default.entity_not_found")
-                    .withValue("id", id);
-
-            const updateData: Record<string, unknown> = {
-                updatedAt: new Date().toISOString(),
-                ...(mapToEntity?.(model) ?? {})
-            };
-
-            if (model.name !== undefined)
-                updateData.name = model.name;
-            if (model.content !== undefined)
-                updateData.content = JSON.stringify(mergeObjects(exist.content, model.content));
-
-            const result = await db
-                .update(masters)
-                .set(updateData)
-                .where(eq(masters.id, id))
-                .returning();
-
-            const res = result[0];
-            return {
-                id: res.id,
-                name: res.name,
-                content: JSON.parse(res.content),
-                ...(mapToModel?.(res as Partial<TMaster>) ?? {})
-            } as TModel;
-        },
-
-        delete: async (id: string) => {
-            await db
-                .delete(masters)
-                .where(eq(masters.id, id));
-        },
-
-        /**
-         * 检查记录是否存在（使用 lambda 构建条件）
-         * @param conditionFunc Lambda 函数，传入表对象，返回 SQL 条件
-         * @example
-         * await repository.exist((t) => eq(t.name, 'test'))
-         * await repository.exist((t) => and(eq(t.name, 'test'), eq(t.status, 'active')))
-         */
-        exist: async (conditionFunc: ConditionFunc): Promise<boolean> => {
-            const condition = conditionFunc(masters);
-
-            const result = await db
-                .select({count: sql<number>`count(*)`})
-                .from(masters)
-                .where(condition)
-                .get();
-
-            return Number(result?.count ?? 0) > 0;
-        },
-
+    return {
+        get,
+        getList,
+        create,
+        update,
+        delete: _delete,
+        exist,
         entry: {
-
             getList: async (masterId: string, type: string, options?: PageOptions): Promise<PagedResult<any>> => {
                 const {page, pageSize, search} = options ?? {};
 
@@ -194,8 +192,6 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 if (search && search != '') {
                     condition.push(like(entries.search, `%${search}%`))
                 }
-
-
                 const [countResult] = await db
                     .select({count: sql<number>`count(*)`})
                     .from(entries)
@@ -252,8 +248,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         entryType: type,
                         entryId: e.id,
                         disabled: e.disabled,
-                        search: bindSearch(type, e),
-                        sorter: bindSorter(type, e),
+                        search: modelStorage.bindSearch(type, e),
+                        sorter: modelStorage.bindSorter(type, e),
                         content: JSON.stringify({
                             ...e,
                             id: undefined,
@@ -281,8 +277,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         entryType: type,
                         entryId: entryId,
                         disabled: false,
-                        search: bindSearch(type, entry),
-                        sorter: bindSorter(type, entry),
+                        search: modelStorage.bindSearch(type, entry),
+                        sorter: modelStorage.bindSorter(type, entry),
                         content: JSON.stringify({
                             ...entry,
                             id: undefined
@@ -311,8 +307,8 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
                 const updateData: Record<string, unknown> = {
                     updatedAt: new Date().toISOString(),
-                    search: bindSearch(type, entry),
-                    sorter: bindSorter(type, entry),
+                    search: modelStorage.bindSearch(type, entry),
+                    sorter: modelStorage.bindSorter(type, entry),
                     content: JSON.stringify({
                         ...entry,
                         id: undefined,
@@ -341,6 +337,4 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             },
         },
     };
-
-    return repository;
 }

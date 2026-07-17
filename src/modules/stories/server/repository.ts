@@ -5,11 +5,7 @@ import {storyStorage} from "@/modules/stories/server/storage";
 
 export const storyRepository =
     createRepository<StoryModel, typeof stories.$inferSelect>(
-        stories, storyEntries,
-        storyStorage.loadModel.bind(storyStorage),
-        storyStorage.saveModel.bind(storyStorage),
-        storyStorage.bindSearch.bind(storyStorage),
-        storyStorage.bindSorter.bind(storyStorage),
+        stories, storyEntries, storyStorage,
         (model) => ({
             requires: model.requires,
             llmapi: model.llmapi,

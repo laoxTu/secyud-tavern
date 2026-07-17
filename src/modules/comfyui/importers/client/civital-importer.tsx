@@ -40,6 +40,18 @@ function Content() {
 export const civitaiModelImporter: ComfyUIModelImporter = {
     id: "civitai",
     component: Content,
+    /**
+     * civitai 的api有两种
+     * 一种是model，另一种是model-version
+     * 分别用于获取模型或模型版本
+     * 模型下会有多个版本，我们针对版本进行解析
+     * 每个版本中可能有多个文件，我们把它们作为
+     * 多个模型进行存储。
+     * code 就存储文件名作为逻辑主键
+     * 我不清楚是否有相同文件名的情况
+     * 不过应该够用了。
+     * @param data
+     */
     async generate(data: FormData) {
         const modelVersionId = data.get("modelVersionId");
         const modelId = data.get("modelId");

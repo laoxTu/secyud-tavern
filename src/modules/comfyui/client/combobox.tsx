@@ -24,6 +24,15 @@ interface ComboboxProps {
     id?: string,
 }
 
+/**
+ * comfyui 的模型选择
+ * 为了配合需要选择模型的情况
+ * 懒加载 + 搜索 一般用于生图时切换模型
+ * 没有加BaseModel类型限制，
+ * 一是不同BaseModel可能公用
+ * 二是我没有加这个字段，不好筛选
+ * 如果有必要，先加字段，然后再加参数
+ */
 export function ComfyUIModelCombobox({type, defaultValue, name, id}: ComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();

@@ -5,11 +5,7 @@ import {presetStorage} from "@/modules/presets/server/storage";
 
 export const presetRepository =
     createRepository<PresetModel, typeof presets.$inferSelect>(
-        presets, presetEntries,
-        presetStorage.loadModel.bind(presetStorage),
-        presetStorage.saveModel.bind(presetStorage),
-        presetStorage.bindSearch.bind(presetStorage),
-        presetStorage.bindSorter.bind(presetStorage),
+        presets, presetEntries, presetStorage,
         (model) => ({
             code: model.code,
             version: model.version,
