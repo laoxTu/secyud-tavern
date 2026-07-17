@@ -1,7 +1,7 @@
 import {ComfyUIParameter} from "@/modules/comfyui/client/parameter-model";
 import {Config, EditorComponent, InputComponent} from "./editor";
 
-export const textEditor: ComfyUIParameter =
+export const llmTextEditor: ComfyUIParameter =
     {
         id: "text_editor",
         editorComponent: EditorComponent,

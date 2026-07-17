@@ -14,7 +14,7 @@ export interface Config {
     defaultValue: string;
 }
 
-export function EditorComponent({entry, formRef, workflow}: ComfyUIParameterProps) {
+export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as Config;
     const [type, setType] = React.useState<string | null>(config?.type ?? null);
@@ -55,7 +55,7 @@ export function EditorComponent({entry, formRef, workflow}: ComfyUIParameterProp
                     </SelectContent>
                 </Select>
             </Field>
-            <InputComponent entry={entry} formRef={formRef} workflow={workflow}/>
+            <InputComponent entry={entry} formRef={formRef}/>
         </div>
     </>;
 }

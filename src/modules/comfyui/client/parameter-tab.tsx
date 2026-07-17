@@ -20,7 +20,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
 
-function EditorContent({entry, formRef, workflow}: ComfyUIParameterProps) {
+function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
     const editors = comfyUIParameterRegistry.records;
     const [editor, setEditor] = useState<ComfyUIParameter | null>(editors[entry.type] ?? null);
@@ -63,7 +63,7 @@ function EditorContent({entry, formRef, workflow}: ComfyUIParameterProps) {
             {editor && (
                 () => {
                     const EditorComponent = editor.editorComponent;
-                    return <EditorComponent formRef={formRef} entry={entry} workflow={workflow}/>;
+                    return <EditorComponent formRef={formRef} entry={entry}/>;
                 }
             )()}
         </>
@@ -145,7 +145,7 @@ function Tab() {
                     return result;
                 },
                 updateContent: (entry, formRef) =>
-                    (<EditorContent entry={entry} formRef={formRef} workflow={model?.content?.workflow}/>)
+                    (<EditorContent entry={entry} formRef={formRef}/>)
             }}/>
     );
 }

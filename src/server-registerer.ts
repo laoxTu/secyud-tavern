@@ -9,6 +9,7 @@ import {registerLorebooksServer} from "@/engines/lorebooks/server";
 import {registerMacrosServer} from "@/engines/macros/server";
 import {registerOpenAIServer} from "@/engines/openai/server";
 import {registerServerPlugin} from "@/plugins/server/registerer";
+import {registerComfyUIServer} from "@/modules/comfyui/server";
 
 export async function registerServerPlugins() {
     const global = globalThis as { __initialized?: boolean };
@@ -18,6 +19,8 @@ export async function registerServerPlugins() {
         errorInterceptor,
         paramInterceptor
     );
+    registerComfyUIServer();
+
     registerDeepseekServer();
     registerOpenAIServer();
 

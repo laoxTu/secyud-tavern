@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/combobox";
 import {useTranslations} from "next-intl";
 import {PagedResult} from "@/business/models";
-import {ComfyUIModelModel} from "@/modules/comfyui/models";
+import {ComfyUIModelModel, ComfyUIWorkflowModel} from "@/modules/comfyui/models";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 
-interface ComboboxProps {
+interface ModelComboboxProps {
     defaultValue?: string,
     name?: string,
     type?: string,
@@ -32,7 +32,7 @@ interface ComboboxProps {
  * 二是我没有加这个字段，不好筛选
  * 如果有必要，先加字段，然后再加参数
  */
-export function ComfyUIModelCombobox({type, defaultValue, name, id}: ComboboxProps) {
+export function ComfyUIModelCombobox({type, defaultValue, name, id}: ModelComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();
     const {handleError} = useErrorHandler();
@@ -113,6 +113,78 @@ export function ComfyUIModelCombobox({type, defaultValue, name, id}: ComboboxPro
                             </ComboboxItem>
                         );
                     }}
+                </ComboboxList>
+            </ComboboxContent>
+        </Combobox>
+    );
+}
+
+
+interface WorkflowComboboxProps {
+    defaultValue?: string,
+    name?: string,
+    id?: string,
+    value?: string | null,
+    onValueChange?: (value: string | null) => void,
+}
+
+export function ComfyUIWorkflowCombobox({defaultValue, name, id, value, onValueChange}: WorkflowComboboxProps) {
+    const t = useTranslations();
+    const anchor = useComboboxAnchor();
+    const {handleError} = useErrorHandler();
+    const [searchRequires, setSearchItems] = useState<ComfyUIWorkflowModel[]>([]);
+    const [needSearch, setNeedSearch] = useState(true);
+    const [searchValue, setSearchValue] = useState<string | undefined>();
+    const handleSearchRequires = async (search: string | undefined) => {
+        setSearchValue(search);
+        setNeedSearch(true);
+    };
+
+    useEffect(() => {
+        if (!needSearch) return;
+        const timer = setTimeout(async () => {
+            try {
+                const res = await get("/comfyuis/workflows", {
+                    params: {
+                        search: {
+                            fuzzy: searchValue,
+                        },
+                    }
+                }) as PagedResult<ComfyUIWorkflowModel>;
+                setSearchItems(res.data);
+            } catch (err) {
+                handleError(err);
+            }
+            setNeedSearch(false);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [handleError, needSearch, searchValue]);
+
+    return (
+        <Combobox autoHighlight
+                  name={name}
+                  id={id}
+                  defaultValue={defaultValue}
+                  value={value}
+                  onValueChange={onValueChange}
+                  onInputValueChange={e => handleSearchRequires(e)}
+                  items={searchRequires}>
+            <ComboboxChips ref={anchor} className="w-full">
+                <ComboboxValue>
+                    {(_) => (
+                        <ComboboxChipsInput/>
+                    )}
+                </ComboboxValue>
+            </ComboboxChips>
+            <ComboboxContent anchor={anchor}>
+                <ComboboxEmpty>{t("default.empty_items")}</ComboboxEmpty>
+                <ComboboxList>
+                    {(item: ComfyUIWorkflowModel) =>
+                        (
+                            <ComboboxItem key={item.id} value={item.id}>
+                                {`${item.code}-${item.name}`}
+                            </ComboboxItem>
+                        )}
                 </ComboboxList>
             </ComboboxContent>
         </Combobox>

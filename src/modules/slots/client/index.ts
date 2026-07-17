@@ -7,5 +7,5 @@ import {historyDefaultFeature} from "@/modules/slots/client/history-feature";
 export function registerSlotClient() {
     slotFeatureManager.register(
         historyDefaultFeature
-    )
+    );
 }

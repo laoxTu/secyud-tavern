@@ -36,3 +36,4 @@ export const moduleName = 'comfyui';
 export const modulePlural = 'comfyuis';
 
 export const parameterEntryName = 'parameter';
+export const parameterEntryPlural = 'parameters';

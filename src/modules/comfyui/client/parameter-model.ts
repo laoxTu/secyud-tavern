@@ -4,10 +4,6 @@ import {ComfyUIParameterModel, ComfyUIWorkflowInput} from "@/modules/comfyui/mod
 
 export interface ComfyUIParameterProps {
     entry: ComfyUIParameterModel;
-    /**
-     * editor状态下是字符串, input模式下是json, 如果json parse失败, 则会提示
-     */
-    workflow: ComfyUIWorkflowInput | string;
     formRef: RefObject<HTMLFormElement | null>;
 }
 

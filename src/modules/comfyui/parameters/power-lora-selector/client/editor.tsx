@@ -19,7 +19,7 @@ export interface Config {
 }
 
 
-export function EditorComponent({entry, formRef, workflow}: ComfyUIParameterProps) {
+export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as Config;
     return <>
@@ -32,7 +32,7 @@ export function EditorComponent({entry, formRef, workflow}: ComfyUIParameterProp
                        id={`${engineName}-node_id-${entry.id}`}/>
             </Field>
         </div>
-        <InputComponent entry={entry} formRef={formRef} workflow={workflow}/>
+        <InputComponent entry={entry} formRef={formRef}/>
     </>;
 }
 

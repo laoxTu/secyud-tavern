@@ -10,6 +10,9 @@ import {
     parameterEntryName
 } from "../models";
 import {modulePlural} from "@/modules/presets/models";
+import {create} from "zustand";
+import {createJSONStorage, persist} from "zustand/middleware";
+import {remoteStorage} from "@/modules/settings/client/models";
 
 /**
  * comfyui 我们主要关注的是工作流的联动
@@ -43,5 +46,27 @@ export const useParameterPagedItemsState = createUsePagedItemsState<ComfyUIParam
     });
 
 export const parameterEntryState: EntryState<ComfyUIParameterModel> = {
-    moduleName, modulePlural, usePagedItemsState:useParameterPagedItemsState, entryType: parameterEntryName
+    moduleName, modulePlural, usePagedItemsState: useParameterPagedItemsState, entryType: parameterEntryName
 };
+
+
+export interface ComfyUISettingState {
+    baseUrl: string;
+    clientId: string;
+}
+
+export const useComfyUISettingState = create<ComfyUISettingState>()(
+    persist<ComfyUISettingState>(() => ({
+            baseUrl: "http://localhost:8188",
+            clientId: "secyud-tavern",
+        }),
+        {
+            name: "comfyuiSettingState",
+            storage: createJSONStorage(() => remoteStorage),
+            partialize: (state) => ({
+                baseUrl: state.baseUrl,
+                clientId: state.clientId,
+            }),
+        }
+    )
+);
