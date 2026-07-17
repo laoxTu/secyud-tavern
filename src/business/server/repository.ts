@@ -7,7 +7,7 @@ import {BaseModel} from "@/business/models";
 import {BusinessError} from "@/handler/models";
 import {databaseManager} from "@/business/server/database";
 import {mergeObjects} from "@/utils";
-import {ModelStorage} from "@/business/server/storage";
+import {IModelStorage} from "@/business/server/storage";
 
 export type ConditionFunc = (table: any) => SQL;
 
@@ -32,7 +32,7 @@ export interface Repository<TModel> {
 export function createRepository<TModel extends BaseModel, TMaster extends BaseEntity>(
     masters: SQLiteTableWithColumns<any>,
     entries: SQLiteTableWithColumns<any>,
-    modelStorage: ModelStorage<TModel>,
+    modelStorage: IModelStorage<TModel>,
     mapToEntity: ((entity: Partial<TModel>) => Partial<TMaster>) | undefined = undefined,
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 

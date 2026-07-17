@@ -1,8 +1,17 @@
 ﻿import {getInstance, ServerRegistry} from "@/plugins/server";
 import {ModelStorageProvider} from "./storage-models";
 
+export interface IModelStorage<TModel> {
+    loadModel(model: TModel): Promise<void>;
 
-export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> {
+    saveModel(model: TModel): Promise<void>;
+
+    bindSearch(type: string, entry: any): string;
+
+    bindSorter(type: string, entry: any): string;
+}
+
+export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> implements IModelStorage<T> {
 
     async loadModel(model: T): Promise<void> {
         await this.use(async provider => {
