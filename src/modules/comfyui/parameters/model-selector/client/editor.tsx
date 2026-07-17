@@ -69,7 +69,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 {t("comfyui.model_type")}
             </FieldLabel>
             <ComfyUIModelCombobox id={`${engineName}-model-${entry.id}`}
-                                  name={`model-${entry.id}`} type={config?.type}
+                                  name={`model_${entry.id}`} type={config?.type}
                                   defaultValue={config?.defaultValue}/>
         </Field>
     </>;

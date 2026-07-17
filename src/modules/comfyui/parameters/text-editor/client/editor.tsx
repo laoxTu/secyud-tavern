@@ -45,7 +45,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 {t("comfyui.text")}
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}
-                      name={`text-${entry.id}`}
+                      name={`text_${entry.id}`}
                       defaultValue={config?.defaultValue}/>
         </Field>
     </>;
