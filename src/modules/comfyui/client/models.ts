@@ -1,8 +1,15 @@
 ﻿'use client';
-import {createUseItemState, ModelState} from "@/business/client/models";
+import {createUseItemState, EntryState, ModelState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
-import {ComfyUIModelModel, ComfyUIWorkflowModel, moduleName} from "../models";
+import {
+    ComfyUIModelModel,
+    ComfyUIParameterModel,
+    ComfyUIWorkflowModel,
+    moduleName,
+    parameterEntryName
+} from "../models";
+import {modulePlural} from "@/modules/presets/models";
 
 /**
  * comfyui 我们主要关注的是工作流的联动
@@ -28,3 +35,13 @@ export const useModelPagedItemsState = createUsePagedItemsState<ComfyUIModelMode
     async options => {
         return await get('/comfyuis/models', {params: options})
     }, 8);
+
+
+export const useParameterPagedItemsState = createUsePagedItemsState<ComfyUIParameterModel>(
+    async options => {
+        return await get('/comfyuis/workflows/{id}/entries/{entryType}', {params: options})
+    });
+
+export const parameterEntryState: EntryState<ComfyUIParameterModel> = {
+    moduleName, modulePlural, usePagedItemsState:useParameterPagedItemsState, entryType: parameterEntryName
+};

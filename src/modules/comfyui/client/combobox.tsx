@@ -4,7 +4,6 @@ import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {
     Combobox,
-    ComboboxChip,
     ComboboxChips,
     ComboboxChipsInput,
     ComboboxContent, ComboboxEmpty, ComboboxItem, ComboboxList,
@@ -75,13 +74,8 @@ export function ComfyUIModelCombobox({type, defaultValue, name, id}: ComboboxPro
                   items={searchRequires}>
             <ComboboxChips ref={anchor} className="w-full">
                 <ComboboxValue>
-                    {(values) => (
-                        <>
-                            {values.map((value: string) => (
-                                <ComboboxChip key={value}>{`${value}`}</ComboboxChip>
-                            ))}
-                            <ComboboxChipsInput/>
-                        </>
+                    {(_) => (
+                        <ComboboxChipsInput/>
                     )}
                 </ComboboxValue>
             </ComboboxChips>

@@ -21,7 +21,7 @@ import {defaultEditorOptions} from "@/components";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [content, setContent] = useState<string | undefined>(model.content?.workflow_content);
+    const [content, setContent] = useState<string | undefined>(model.content?.workflow);
     const {theme} = useTheme();
     const t = useTranslations();
     const handleEditorDidMount: OnMount = (editor) => {
@@ -80,7 +80,7 @@ export function DefaultTab() {
                 return await put("/comfyuis/workflows/{id}",
                     {
                         content: {
-                            workflow_content: data.get("workflow-content"),
+                            workflow: data.get("workflow-content"),
                             description: data.get("description") as string,
                         },
                         name: data.get("name") as string,
