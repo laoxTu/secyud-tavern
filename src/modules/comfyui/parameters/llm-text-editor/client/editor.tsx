@@ -208,7 +208,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 }
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}
-                      name={`text-${entry.id}`}
+                      name={`text_${entry.id}`}
                       value={text}
                       onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setText(e.target.value)}/>

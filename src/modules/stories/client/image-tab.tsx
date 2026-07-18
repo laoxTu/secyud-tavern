@@ -242,10 +242,7 @@ export function Content() {
 
     const applySearch = async (data: FormData) => {
         try {
-            const search = {
-                fuzzy: data.get("search") as string,
-            }
-            console.debug("search", search);
+            const search = data.get("search") as string;
             await fetch({search});
         } catch (err) {
             handleError(err);
