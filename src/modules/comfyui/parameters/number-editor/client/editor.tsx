@@ -6,16 +6,12 @@ import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {DicesIcon} from "lucide-react";
+import {NumberEditorConfig} from "../model";
 
-export interface Config {
-    nodeId: string;
-    nodeName: string;
-    defaultValue: number;
-}
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as NumberEditorConfig;
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -39,7 +35,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as NumberEditorConfig;
     const [value, setValue] = React.useState(config?.defaultValue ?? 0);
     return <>
         <Field>

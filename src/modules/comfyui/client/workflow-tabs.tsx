@@ -2,7 +2,7 @@
 import React, {RefObject} from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon, TriangleIcon} from "lucide-react";
-import {put} from "@/client";
+import {post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
@@ -14,12 +14,22 @@ import {modelState} from "./models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {useErrorHandler} from "@/handler/client/error";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
 
+    const {handleError, handleSuccess} = useErrorHandler();
     const generateParameter = async () => {
-        // TODO
+        try {
+
+            await post('/comfyuis/workflows/{id}/generate-parameters', {}, {
+                params: {id: model.id}
+            });
+            handleSuccess(t("comfyui.generate_parameter_successfully"));
+        } catch (err) {
+            handleError(err);
+        }
     };
 
     return (<>

@@ -19,16 +19,12 @@ import {LlmapiInputModel} from "@/modules/slots/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
+import {LlmTextEditorConfig} from "../model";
 
-export interface Config {
-    nodeId: string;
-    nodeName: string;
-    textPrompt: string;
-}
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as LlmTextEditorConfig;
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -73,7 +69,7 @@ export function setReplyAbortController(ctx: RefObject<SlotDataModel>) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as LlmTextEditorConfig;
     const {handleError} = useErrorHandler();
 
     const ctx = useSlotContext();

@@ -134,6 +134,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/comfyuis/workflows/{id}/generate-parameters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post-comfyuis-workflows-{id}-generate-parameters"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/comfyuis/models/{id}/entries/{entryType}": {
         parameters: {
             query?: never;
@@ -605,6 +621,23 @@ export interface paths {
         get: operations["get-stories-{id}-export"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/stories/{id}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 更新条目 */
+        post: operations["post-stories-{id}-images"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1476,6 +1509,29 @@ export interface operations {
                     "application/json": components["schemas"]["ReadableStream"];
                 };
             };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-workflows-{id}-generate-parameters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };
@@ -3073,6 +3129,29 @@ export interface operations {
                     "application/json": components["schemas"]["ReadableStream"];
                 };
             };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-stories-{id}-images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["any"];
+            };
+        };
+        responses: {
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };

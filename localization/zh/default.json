@@ -21,6 +21,7 @@
     "parameter_type_model_selector": "模型选择",
     "parameter_type_number_editor": "数字编辑",
     "parameter_type_power_lora_selector": "Power Lora 选择",
+    "generate_parameter_successfully": "成功生成参数",
     "parameter_type_text_editor": "文字编辑",
     "prompt_sent": "已发送生图: {target}",
     "source_id": "源ID",

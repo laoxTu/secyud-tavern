@@ -1,11 +1,12 @@
 import {ComfyUIParameter} from "@/modules/comfyui/client/parameter-model";
-import {Config, EditorComponent, InputComponent} from "./editor";
+import { EditorComponent, InputComponent} from "./editor";
+import {PowerLoraSelectorConfig} from "../model";
 
 export const powerLoraSelector: ComfyUIParameter =
     {
         id: "power_lora_selector",
         editorComponent: EditorComponent,
-        getEditorValue(data, entry): Config {
+        getEditorValue({data, entry}): PowerLoraSelectorConfig {
             return {
                 nodeId: data.get('node_id') as string,
                 defaultValue: Array.from({length: parseInt(data.get(`count_${entry.id}`) as string)},
@@ -17,8 +18,8 @@ export const powerLoraSelector: ComfyUIParameter =
             };
         },
         inputComponent: InputComponent,
-        setInputData(data, entry, input): void {
-            const config = entry.config as Config;
+        setInputData({data, entry}, input): void {
+            const config = entry.config as PowerLoraSelectorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (!inputs) return;
             const count = parseInt(data.get(`count_${entry.id}`) as string);

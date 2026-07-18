@@ -130,7 +130,7 @@ function Tab() {
                     const result: ComfyUIParameterModel = {
                         ...entry,
                         type: type,
-                        config: editors[type].getEditorValue(data, entry),
+                        config: editors[type].getEditorValue({data, entry, model: model!}),
                         priority: parseInt(data.get("priority") as string),
                         code: data.get('code') as string,
                         name: data.get('name') as string,

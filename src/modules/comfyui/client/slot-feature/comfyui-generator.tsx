@@ -76,7 +76,7 @@ export function ComfyUIGenerator() {
                 if (!editor) {
                     continue;
                 }
-                editor.setInputData(data, parameter, input);
+                editor.setInputData({data, entry: parameter, model: workflow}, input);
             }
 
             const {baseUrl, clientId} = useComfyUISettingState.getState();

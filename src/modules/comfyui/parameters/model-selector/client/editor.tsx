@@ -6,17 +6,12 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {useTranslations} from "next-intl";
 import {ComfyUIModelCombobox} from "@/modules/comfyui/client/combobox";
 import {Input} from "@/components/ui/input";
+import {ModelSelectorConfig} from "../model";
 
-export interface Config {
-    type: string;
-    nodeId: string;
-    nodeName: string;
-    defaultValue: string;
-}
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as ModelSelectorConfig;
     const [type, setType] = React.useState<string | null>(config?.type ?? null);
     return <>
         <div className="grid md:grid-cols-2 gap-4">
@@ -62,7 +57,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as ModelSelectorConfig;
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-model-${entry.id}`}>

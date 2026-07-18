@@ -5,16 +5,12 @@ import {parameterEntryName as engineName} from "@/modules/comfyui/models";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
+import {TextEditorConfig} from "../model";
 
-export interface Config {
-    nodeId: string;
-    nodeName: string;
-    defaultValue: string;
-}
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as TextEditorConfig;
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -38,7 +34,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as TextEditorConfig;
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>

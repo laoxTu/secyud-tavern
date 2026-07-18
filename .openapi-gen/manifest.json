@@ -290,6 +290,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/generate-parameters contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/generate-parameters",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
       "routePath": "/comfyuis/workflows/{id}",
@@ -786,6 +799,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /stories/{id}/images contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts",
+      "routePath": "/stories/{id}/images",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
       "routePath": "/stories/{id}",
@@ -837,34 +863,34 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.09299999999996089,
-    "loadCustomFragmentsMs": 0.0009000000000014552,
-    "prepareDocumentMs": 0.09389999999996235,
-    "scanRouteFilesMs": 3.263400000000047,
-    "deriveRoutePathMs": 0.748499999999467,
-    "filterRouteCandidatesMs": 0.04819999999949687,
-    "sourcePrecheckMs": 4.595499999998765,
-    "readRouteFilesMs": 2.257200000000239,
-    "parseRouteFilesMs": 4.393700000000081,
-    "analyzeRouteFilesMs": 14.340099999999893,
+    "prepareTemplateMs": 0.0885000000000673,
+    "loadCustomFragmentsMs": 0.0008000000000265572,
+    "prepareDocumentMs": 0.08930000000009386,
+    "scanRouteFilesMs": 3.0072999999999865,
+    "deriveRoutePathMs": 0.6385000000052514,
+    "filterRouteCandidatesMs": 0.049900000001116496,
+    "sourcePrecheckMs": 4.763800000007677,
+    "readRouteFilesMs": 2.643599999998287,
+    "parseRouteFilesMs": 4.6162000000012995,
+    "analyzeRouteFilesMs": 12.806800000014164,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 19.87049999999931,
-    "registerRouteMs": 2809.1640999999995,
-    "getSchemaContentMs": 28.418800000001283,
-    "createRequestParamsMs": 0.6511000000027707,
+    "processRouteFilesMs": 18.655299999993076,
+    "registerRouteMs": 7902.145099999998,
+    "getSchemaContentMs": 31.015800000002855,
+    "createRequestParamsMs": 0.6633999999958178,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 283.5802999999987,
+    "processResponsesMs": 304.61579999999594,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2826.7648000000004,
-    "sortAndMergePathsMs": 1.1532999999999447,
-    "buildPathsMs": 1.1532999999999447,
-    "defaultComponentsAndErrorsMs": 0.21259999999983847,
-    "mergeSchemasMs": 0.31380000000081054,
-    "zodPreScanMs": 367.7958000000001,
-    "zodPreprocessMs": 63.11539999999741,
-    "zodConvertMs": 299.5776000000001,
-    "finalizeDocumentMs": 12.358299999999872,
-    "totalMs": 3316.4293000000007,
-    "scanRoutesMs": 2849.8986999999997
+    "buildOperationsMs": 7917.008699999993,
+    "sortAndMergePathsMs": 1.1867999999994936,
+    "buildPathsMs": 1.1867999999994936,
+    "defaultComponentsAndErrorsMs": 0.3364000000001397,
+    "mergeSchemasMs": 0.3603000000002794,
+    "zodPreScanMs": 380.5521,
+    "zodPreprocessMs": 97.99049999999852,
+    "zodConvertMs": 325.2415999999994,
+    "finalizeDocumentMs": 7.634099999999307,
+    "totalMs": 8449.0978,
+    "scanRoutesMs": 7938.671299999986
   }
 }

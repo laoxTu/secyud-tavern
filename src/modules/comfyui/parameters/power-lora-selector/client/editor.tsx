@@ -6,22 +6,12 @@ import {useTranslations} from "next-intl";
 import {ComfyUIModelCombobox} from "@/modules/comfyui/client/combobox";
 import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
-
-interface LoraConfig {
-    on: boolean;
-    lora: string;
-    strength: number;
-}
-
-export interface Config {
-    nodeId: string;
-    defaultValue: LoraConfig[];
-}
+import {PowerLoraSelectorConfig} from "../model";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as PowerLoraSelectorConfig;
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -38,7 +28,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as PowerLoraSelectorConfig;
     const [count, setCount] = React.useState(config?.defaultValue.length ?? 0);
 
     return <>
@@ -62,7 +52,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                         <FieldLabel htmlFor={`${engineName}-lora-${entry.id}-${index}`}>
                             {t("comfyui.lora")}
                             <Checkbox name={`lora_on_${entry.id}_${index}`}
-                                      defaultChecked={lora?.on ?? true} />
+                                      defaultChecked={lora?.on ?? true}/>
                         </FieldLabel>
                         <ComfyUIModelCombobox id={`${engineName}-lora-${entry.id}-${index}`}
                                               name={`lora_${entry.id}_${index}`} type={'lora'}
