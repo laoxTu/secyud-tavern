@@ -151,10 +151,12 @@ export function HistoryEditor() {
                         </FieldGroup>
                     </FieldSet>
                     <DialogFooter>
+                        <Button type="submit">
+                            {t('default.save')}
+                        </Button>
                         <DialogClose render={<Button variant="outline"/>}>
                             {t('default.cancel')}
                         </DialogClose>
-                        <Button type="submit">{t('default.save')}</Button>
                     </DialogFooter>
                 </form>)}
         </DialogContent>

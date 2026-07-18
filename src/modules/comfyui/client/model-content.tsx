@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button, buttonVariants} from "@/components/ui/button";
-import {FileDownIcon, FilePlusIcon, LinkIcon, SearchIcon, SquarePenIcon, Trash2Icon, XIcon} from "lucide-react";
+import {FileDownIcon, FilePlusIcon, LinkIcon, SearchIcon, SquarePenIcon, XIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {del, post, put} from "@/client";
@@ -27,21 +27,6 @@ import {Label} from "@/components/ui/label";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
-import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
-} from "@/components/ui/alert-dialog";
-import {
-    Drawer, DrawerClose,
-    DrawerContent,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
@@ -50,6 +35,7 @@ import Link from "next/link";
 import {Badge} from "@/components/ui/badge";
 import {CustomCombobox} from "@/components/custom/combobox";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
+import {DeleteDialog} from "@/components/custom/delete-dialog";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -75,7 +61,6 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
 
     const t = useTranslations();
     const [key, setKey] = useState(0);
-    const [deleteOpen, setDeleteOpen] = useState(false);
     const [updateOpen, setUpdateOpen] = useState(false);
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const {handleError, handleSuccess} = useErrorHandler();
@@ -179,39 +164,12 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                         </TooltipContent>
                     </Tooltip>
                 }
-                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                    <AlertDialogTrigger render={<Tooltip/>}>
-                        <TooltipTrigger onClick={() => setDeleteOpen(true)}
-                                        render={<Button size={'icon'}
-                                                        variant="destructive"/>}>
-                            <Trash2Icon/>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{t("default.delete")}</p>
-                        </TooltipContent>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                {t("default.delete_title", {target: t(`${moduleName}.model`)})}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t("default.delete_description", {target: t(`${moduleName}.model`)})}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
-                            <AlertDialogAction variant={"destructive"}
-                                               onClick={handleDelete}>
-                                {t("default.delete")}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
 
-                <Drawer open={updateOpen} onOpenChange={setUpdateOpen}
-                        swipeDirection={'right'}>
-                    <DrawerTrigger render={<Tooltip/>}>
+                <DeleteDialog handleDelete={handleDelete}
+                              itemName={`${moduleName}.model`}/>
+
+                <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
+                    <DialogTrigger render={<Tooltip/>}>
 
                         <TooltipTrigger onClick={() => setUpdateOpen(true)}
                                         render={<Button size={'icon'}
@@ -221,14 +179,14 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                         <TooltipContent>
                             <p>{t("default.update")}</p>
                         </TooltipContent>
-                    </DrawerTrigger>
-                    <DrawerContent>
+                    </DialogTrigger>
+                    <DialogContent>
                         <form className={'h-full flex flex-col'} action={handleUpdate}>
-                            <DrawerHeader>
-                                <DrawerTitle>
+                            <DialogHeader>
+                                <DialogTitle>
                                     {t("default.update_title", {target: t(`${moduleName}.model`)})}
-                                </DrawerTitle>
-                            </DrawerHeader>
+                                </DialogTitle>
+                            </DialogHeader>
                             <FieldGroup className="p-4 overflow-auto flex-1">
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-cover-${model.id}`}>
@@ -302,17 +260,17 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                            name="url"/>
                                 </Field>
                             </FieldGroup>
-                            <DrawerFooter>
+                            <DialogFooter>
                                 <Button type={'submit'}>
                                     {t("default.save")}
                                 </Button>
-                                <DrawerClose render={<Button variant="outline"/>}>
+                                <DialogClose render={<Button variant="outline"/>}>
                                     {t("default.cancel")}
-                                </DrawerClose>
-                            </DrawerFooter>
+                                </DialogClose>
+                            </DialogFooter>
                         </form>
-                    </DrawerContent>
-                </Drawer>
+                    </DialogContent>
+                </Dialog>
             </ItemActions>
         </Item>
     </div>);
@@ -433,10 +391,12 @@ function Content() {
                                 </Field>
                             </FieldGroup>
                             <DialogFooter>
+                                <Button type="submit">
+                                    {t("default.create")}
+                                </Button>
                                 <DialogClose render={<Button variant="outline"/>}>
                                     {t("default.cancel")}
                                 </DialogClose>
-                                <Button type="submit">{t("default.create")}</Button>
                             </DialogFooter>
                         </form>
                     </DialogContent>
@@ -488,12 +448,12 @@ function Content() {
                                 <ImporterComponent/>
                             </FieldGroup>
                             <DialogFooter>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
                                 <Button type="submit">
                                     {t("default.import")}
                                 </Button>
+                                <DialogClose render={<Button variant="outline"/>}>
+                                    {t("default.cancel")}
+                                </DialogClose>
                             </DialogFooter>
                         </form>
                     </DialogContent>

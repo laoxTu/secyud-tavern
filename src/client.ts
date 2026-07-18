@@ -54,6 +54,15 @@ const buildUrl = (url: string, params?: Record<string, any>) => {
         `${result}?${queryString}` : result;
 }
 
+interface RequestOptions{
+    params?: Record<string, any>;
+    body?: any;
+    headers?: HeadersInit;
+    next?: any;
+    cache?: RequestCache;
+    signal?: AbortSignal;
+}
+
 /**
  * 统一的 API 请求函数
  * @example
@@ -79,15 +88,7 @@ export async function api<
 >(
     url: P,
     method: M,
-    options?: {
-        params?: Record<string, any>;
-        body?: any;
-        headers?: HeadersInit;
-        next?: any;
-        cache?: RequestCache;
-        signal?: AbortSignal;
-
-    }
+    options?: RequestOptions
 ): Promise<any> {
     const fullUrl = buildUrl("/api" + url as string, options?.params);
 
@@ -117,8 +118,8 @@ export async function api<
     return await handleResponse(response);
 }
 
-export const get = (url: keyof Paths, options?: any) => api(url, 'get', options);
-export const post = (url: keyof Paths, body?: any, options?: any) => api(url, 'post', {...options, body});
-export const put = (url: keyof Paths, body?: any, options?: any) => api(url, 'put', {...options, body});
-export const del = (url: keyof Paths, options?: any) => api(url, 'delete', options);
-export const open = (url: keyof Paths, options?: any) => api(url, 'open', options);
+export const get = (url: keyof Paths, options?: RequestOptions) => api(url, 'get', options);
+export const post = (url: keyof Paths, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
+export const put = (url: keyof Paths, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
+export const del = (url: keyof Paths, options?: RequestOptions) => api(url, 'delete', options);
+export const open = (url: keyof Paths, options?: RequestOptions) => api(url, 'open', options);

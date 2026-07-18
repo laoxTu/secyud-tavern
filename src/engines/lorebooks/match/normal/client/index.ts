@@ -1,7 +1,7 @@
 ﻿import {matchName, NormalMatchModel} from "../models";
 import {MatchEditor} from "./editor";
 import {Matcher, MatcherMatchContext} from "@/engines/lorebooks/client/match-models";
-import {StoryHistoryMessage} from "@/modules/stories/models";
+import {StoryHistoryMessage} from "@/modules/slots/models";
 
 export function getNormalModel(data: FormData): NormalMatchModel {
     const keywordsLength = parseInt(data.get('keywordsLength') as string);

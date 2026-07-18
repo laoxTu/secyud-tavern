@@ -17,10 +17,11 @@ import {
     generateInputBuildContext
 } from "@/modules/slots/client/conversation";
 import {tryGetLastItem} from "@/utils";
-import {extractVariableChanges, StoryHistory} from "@/modules/stories/models";
+import {StoryHistory} from "@/modules/stories/models";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
+import {extractVariableChanges} from "@/modules/slots/models";
 
 
 export function InputViewer() {

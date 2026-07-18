@@ -86,10 +86,12 @@ export function EntryCreate<TEntry>(
                         </Field>
                     </FieldGroup>
                     <DialogFooter>
+                        <Button type="submit">
+                            {t("default.create")}
+                        </Button>
                         <DialogClose render={<Button variant="outline"/>}>
                             {t("default.cancel")}
                         </DialogClose>
-                        <Button type="submit">{t("default.create")}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

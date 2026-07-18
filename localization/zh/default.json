@@ -183,7 +183,9 @@
   },
   "story": {
     "opening_remarks": "开场白",
-    "enter": "进入"
+    "enter": "进入",
+    "images": "图库",
+    "image": "图片"
   },
   "regex": {
     "pattern": "表达式",

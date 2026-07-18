@@ -15,18 +15,11 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import {
-    AlertDialog, AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader, AlertDialogTitle,
-    AlertDialogTrigger
-} from "@/components/ui/alert-dialog";
 import {FieldGroup} from "@/components/ui/field";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon, Trash2Icon} from "lucide-react";
+import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {DeleteDialog} from "@/components/custom/delete-dialog";
 
 export interface ModelContentProps<TModel> {
     // 克隆 FieldGroup 的内部内容
@@ -67,7 +60,6 @@ export function ModelContent<TModel>(
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
     const [cloneOpen, setCloneOpen] = useState(false);
-    const [deleteOpen, setDeleteOpen] = useState(false);
     const {model, setModel} = useItemState();
     const {fetch} = usePagedItemsState();
     const {tabId, setTabId} = useTabState();
@@ -154,34 +146,8 @@ export function ModelContent<TModel>(
                 </TabsList>
             </div>
             <div className="flex flex-row-reverse gap-2">
-                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                    <AlertDialogTrigger render={<Tooltip/>}>
-                        <TooltipTrigger onClick={() => setDeleteOpen(true)}
-                                        render={<Button variant={'destructive'}/>}>
-
-                            <Trash2Icon/>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{t('default.delete')}</p>
-                        </TooltipContent>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                {t("default.delete_title", {target: t(`default.${moduleName}`)})}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t("default.delete_description", {target: t(`default.${moduleName}`)})}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
-                            <AlertDialogAction variant={"destructive"} onClick={handleDelete}>
-                                {t("default.delete")}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <DeleteDialog handleDelete={handleDelete}
+                              itemName={`default.${moduleName}`}/>
                 <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
                     <DialogTrigger render={<Tooltip/>}>
                         <TooltipTrigger onClick={() => setCloneOpen(true)}
@@ -207,10 +173,12 @@ export function ModelContent<TModel>(
                                 {cloneContent(model)}
                             </FieldGroup>
                             <DialogFooter>
+                                <Button type="submit">
+                                    {t("default.copy")}
+                                </Button>
                                 <DialogClose render={<Button variant="outline"/>}>
                                     {t("default.cancel")}
                                 </DialogClose>
-                                <Button type="submit">{t("default.copy")}</Button>
                             </DialogFooter>
                         </form>
                     </DialogContent>

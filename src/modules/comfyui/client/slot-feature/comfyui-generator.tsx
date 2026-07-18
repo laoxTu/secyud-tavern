@@ -132,10 +132,10 @@ export function ComfyUIGenerator() {
 
                     </FieldSet>
                     <DialogFooter>
+                        <Button type="submit">{t('comfyui.generate')}</Button>
                         <DialogClose render={<Button variant="outline"/>}>
                             {t('default.cancel')}
                         </DialogClose>
-                        <Button type="submit">{t('comfyui.generate')}</Button>
                     </DialogFooter>
                 </form>)}
         </DialogContent>

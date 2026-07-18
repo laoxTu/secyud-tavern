@@ -10,13 +10,14 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
 import React, {RefObject, useEffect, useState} from "react";
-import {getCurrentOutput, StoryHistory} from "@/modules/stories/models";
+import {StoryHistory} from "@/modules/stories/models";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/modules/slots/client/conversation";
 import {renderData, RenderContext} from "@/modules/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Input} from "@/components/ui/input";
+import {getCurrentOutput} from "@/modules/slots/models";
 
 export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
     await invokeCallback(ctx, "handleOutputPageChange", curPage);

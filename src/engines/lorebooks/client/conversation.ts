@@ -12,8 +12,8 @@ import {
     LlmapiOutputProcesser,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
-import {getCurrentOutput, StoryHistoryMessage} from "@/modules/stories/models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
+import {getCurrentOutput, StoryHistoryMessage} from "@/modules/slots/models";
 
 
 export interface LorebookConversationCache {

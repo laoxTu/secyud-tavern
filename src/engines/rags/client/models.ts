@@ -1,5 +1,5 @@
 import {Orama, Vector} from "@orama/orama";
-import {StoryHistoryMessage} from "@/modules/stories/models";
+import {StoryHistoryMessage} from "@/modules/slots/models";
 import {Registerable} from "@/utils/register";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";

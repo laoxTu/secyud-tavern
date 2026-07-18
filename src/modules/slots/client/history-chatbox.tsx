@@ -21,8 +21,8 @@ import {
     updateStoryHistory,
     useSlotContext
 } from "@/modules/slots/client/models";
-import {extractVariableChanges, StoryOutputMessage} from "@/modules/stories/models";
-import {LlmapiInputModel} from "@/modules/slots/models";
+import { StoryOutputMessage} from "@/modules/stories/models";
+import {extractVariableChanges, LlmapiInputModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
     conversationManager,

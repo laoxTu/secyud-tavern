@@ -110,10 +110,12 @@ export function ModelCreate<TModel>(
                             {createContent()}
                         </FieldGroup>
                         <DialogFooter>
+                            <Button type="submit">
+                                {t("default.create")}
+                            </Button>
                             <DialogClose render={<Button variant="outline"/>}>
                                 {t("default.cancel")}
                             </DialogClose>
-                            <Button type="submit">{t("default.create")}</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
@@ -147,12 +149,12 @@ export function ModelCreate<TModel>(
                             </Field>
                         </FieldGroup>
                         <DialogFooter>
-                            <DialogClose render={<Button variant="outline"/>}>
-                                {t("default.cancel")}
-                            </DialogClose>
                             <Button type="submit">
                                 {t("default.import")}
                             </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
                         </DialogFooter>
                     </form>
                 </DialogContent>

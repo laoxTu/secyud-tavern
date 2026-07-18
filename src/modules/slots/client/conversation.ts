@@ -1,12 +1,9 @@
 'use client';
 import {
-    applyPatch,
-    extractVariableChanges,
-    getCurrentOutput,
     StoryHistory,
     StoryInputMessage
 } from "@/modules/stories/models";
-import {SlotModel} from "@/modules/slots/models";
+import {applyPatch, extractVariableChanges, getCurrentOutput, SlotModel} from "@/modules/slots/models";
 import {
     LlmapiHistory,
     LlmapiInputContext,

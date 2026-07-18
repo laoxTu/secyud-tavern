@@ -5,7 +5,7 @@
     SlotStreamRenderer
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
-import {getCurrentOutput} from "@/modules/stories/models";
+import {getCurrentOutput} from "@/modules/slots/models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 
 export interface RegexConversationCache {

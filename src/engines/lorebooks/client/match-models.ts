@@ -1,7 +1,8 @@
 ﻿import {Registerable} from "@/utils/register";
-import {StoryHistory, StoryHistoryMessage} from "@/modules/stories/models";
+import {StoryHistory} from "@/modules/stories/models";
 import {PresetLorebookModel} from "@/engines/lorebooks/models";
 import {ComponentType} from "react";
+import {StoryHistoryMessage} from "@/modules/slots/models";
 
 export interface MatcherProps {
     defaultValue: any,

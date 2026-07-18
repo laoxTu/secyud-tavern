@@ -6,14 +6,6 @@ import {Card, CardContent} from "@/components/ui/card";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {EntryModel} from "@/business/models";
 import {
-    AlertDialog, AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
     Dialog,
     DialogTrigger,
     DialogContent,
@@ -24,10 +16,11 @@ import {
     DialogClose
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {ChevronsDownIcon, ChevronsUpIcon, CopyIcon, PlayIcon, PlayOffIcon, Trash2Icon} from "lucide-react";
+import {ChevronsDownIcon, ChevronsUpIcon, CopyIcon, PlayIcon, PlayOffIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {DeleteDialog} from "@/components/custom/delete-dialog";
 
 export interface EntryUpdateProps<TEntry> {
     disableHandler: (entry: TEntry, disabled: boolean) => Promise<TEntry>;
@@ -66,7 +59,6 @@ export function EntryUpdate<TEntry extends EntryModel>(
     const [isOpen, setIsOpen] = useState(true);
     const [disabled, setDisabled] = useState(entry.disabled);
     const [cloneOpen, setCloneOpen] = useState(false);
-    const [deleteOpen, setDeleteOpen] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
     const {fetch} = usePagedItemsState();
     const handleUpdate = async (data: FormData) => {
@@ -180,42 +172,18 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                             </Field>
                                         </FieldGroup>
                                         <DialogFooter>
+                                            <Button type="submit">
+                                                {t("default.copy")}
+                                            </Button>
                                             <DialogClose render={<Button variant="outline"/>}>
                                                 {t("default.cancel")}
                                             </DialogClose>
-                                            <Button type="submit">{t("default.copy")}</Button>
                                         </DialogFooter>
                                     </form>
                                 </DialogContent>
                             </Dialog>
-                            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                                <AlertDialogTrigger render={<Tooltip/>}>
-
-                                    <TooltipTrigger onClick={() => setDeleteOpen(true)}
-                                                    render={<Button size={'icon'}
-                                                                    variant="destructive"/>}>
-                                        <Trash2Icon/>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{t("default.delete")}</p>
-                                    </TooltipContent>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>{t("default.delete_title", {target: t(`${moduleName}.${entryType}`)})}</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {t("default.delete_description", {target: t(`${moduleName}.${entryType}`)})}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>{t("default.cancel")}</AlertDialogCancel>
-                                        <AlertDialogAction variant={"destructive"}
-                                                           onClick={handleDelete}>
-                                            {t("default.delete")}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            <DeleteDialog handleDelete={handleDelete}
+                                          itemName={`${moduleName}.${entryType}`}/>
                             <CollapsibleTrigger render={<Button size={"icon"} variant={"ghost"}/>}>
                                 {isOpen ? <ChevronsUpIcon/> : <ChevronsDownIcon/>}
                             </CollapsibleTrigger>
