@@ -56,7 +56,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
                 <FieldLabel htmlFor={`${engineName}-value-${entry.id}-default`}>
                     {t("comfyui.default_value")}
                 </FieldLabel>
-                <Input name={`value_default`} defaultValue={config.defaultValue ?? ""}
+                <Input name={`value_default`} defaultValue={config?.defaultValue ?? ""}
                        id={`${engineName}-value-${entry.id}-default`}/>
             </Field>
         </div>
