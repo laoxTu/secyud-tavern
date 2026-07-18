@@ -34,12 +34,11 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 }
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
-    const t = useTranslations();
     const config = entry.config as TextEditorConfig;
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
-                {t("comfyui.text")}
+                {entry.name}
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}
                       name={`text_${entry.id}`}

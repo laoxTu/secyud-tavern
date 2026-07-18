@@ -182,7 +182,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
-                {t("comfyui.text_prompt")}
+                {`${entry.name} ${t("comfyui.text_prompt")}`}
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}
                       name={`text_prompt`}
@@ -192,7 +192,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
         </Field>
         <Field>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
-                {t("comfyui.text")}
+                {entry.name}
                 {
                     output ?
                         <Button disabled={false}

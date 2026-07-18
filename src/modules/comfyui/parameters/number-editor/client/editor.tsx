@@ -34,17 +34,16 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 }
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
-    const t = useTranslations();
     const config = entry.config as NumberEditorConfig;
     const [value, setValue] = React.useState(config?.defaultValue ?? 0);
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-number-${entry.id}`}>
-                {t("comfyui.number")}
+                {entry.name}
                 <Button variant={"ghost"} size={'icon'}
                         onClick={() => {
-                    setValue(Math.floor(Math.random() * 4294967296));
-                }}>
+                            setValue(Math.floor(Math.random() * 4294967296));
+                        }}>
                     <DicesIcon/>
                 </Button>
             </FieldLabel>

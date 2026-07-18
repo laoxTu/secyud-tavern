@@ -56,12 +56,11 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 }
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
-    const t = useTranslations();
     const config = entry.config as ModelSelectorConfig;
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-model-${entry.id}`}>
-                {t("comfyui.model_type")}
+                {entry.name}
             </FieldLabel>
             <ComfyUIModelCombobox id={`${engineName}-model-${entry.id}`}
                                   name={`model_${entry.id}`} type={config?.type}

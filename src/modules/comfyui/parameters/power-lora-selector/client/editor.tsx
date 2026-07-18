@@ -50,7 +50,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 <div key={index} className="grid md:grid-cols-2 gap-4">
                     <Field key={`${index}-lora`}>
                         <FieldLabel htmlFor={`${engineName}-lora-${entry.id}-${index}`}>
-                            {t("comfyui.lora")}
+                            {`${entry.name} ${t("comfyui.lora")} ${index + 1}`}
                             <Checkbox name={`lora_on_${entry.id}_${index}`}
                                       defaultChecked={lora?.on ?? true}/>
                         </FieldLabel>
@@ -60,7 +60,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     </Field>
                     <Field key={`${index}-strength`}>
                         <FieldLabel htmlFor={`${engineName}-lora_strength-${entry.id}-${index}`}>
-                            {t("comfyui.strength")}
+                            {`${t("comfyui.strength")} ${index + 1}`}
                         </FieldLabel>
                         <Input name={`lora_strength_${entry.id}_${index}`} type={"number"}
                                defaultValue={lora?.strength ?? 1}
