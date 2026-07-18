@@ -8,7 +8,7 @@ import {imageEntryName, StoryImageModel} from "@/modules/stories/models";
 /**
  * 更新条目
  * @pathParams { id:string }
- * @params {disabled:boolean}
+ * @params {code: string, name: string}
  * @body any
  * @openapi
  */

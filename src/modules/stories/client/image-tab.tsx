@@ -107,7 +107,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
         }
     };
 
-    return (<div className={'p-2'}>
+    return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
         <Item key={key}
               className={'relative'}
               variant={"outline"}>
@@ -115,13 +115,15 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                 <Image
                     src={`/api/images/${entry.imageId}`}
                     alt={`${entry.code ?? ""}-${entry.name ?? ""}`}
-                    fill
-                    unoptimized
-                    className="rounded-sm"
+                    width={100}
+                    height={100}
+                    className="w-full h-auto rounded-sm"
                 />
             </ItemHeader>
             <ItemContent>
-                <ItemTitle>{entry.code}</ItemTitle>
+                <ItemTitle>
+                    {entry.code}
+                </ItemTitle>
                 <ItemDescription className={'wrap-break-word break-all'}>
                     {entry.name}
                 </ItemDescription>
