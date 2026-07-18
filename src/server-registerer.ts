@@ -10,6 +10,7 @@ import {registerMacrosServer} from "@/engines/macros/server";
 import {registerOpenAIServer} from "@/engines/openai/server";
 import {registerServerPlugin} from "@/plugins/server/registerer";
 import {registerComfyUIServer} from "@/modules/comfyui/server";
+import {registerStoryServer} from "@/modules/stories/server";
 
 export async function registerServerPlugins() {
     const global = globalThis as { __initialized?: boolean };
@@ -19,6 +20,7 @@ export async function registerServerPlugins() {
         errorInterceptor,
         paramInterceptor
     );
+    registerStoryServer();
     registerComfyUIServer();
 
     registerDeepseekServer();

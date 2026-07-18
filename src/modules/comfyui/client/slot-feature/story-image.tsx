@@ -25,7 +25,7 @@ export function StoryImage() {
                     <p>{t('story.image')}</p>
                 </TooltipContent>
             </DialogTrigger>
-            <DialogContent className={'max-w-11/12'}>
+            <DialogContent style={{maxWidth: '86%', height: '86%'}}>
                 <Content/>
             </DialogContent>
         </Dialog>

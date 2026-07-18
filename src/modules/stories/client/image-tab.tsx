@@ -116,7 +116,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
             <ItemHeader>
                 <Image
                     src={`/api/images/${entry.imageId}`}
-                    alt={entry.name}
+                    alt={`${entry.code}-${entry.name}`}
                     fill
                     unoptimized
                     className="object-cover rounded-sm"
@@ -292,7 +292,7 @@ export function Content() {
                                     {t("default.create_description", {target: t(`${moduleName}.image`)})}
                                 </DialogDescription>
                             </DialogHeader>
-                            <FieldGroup>
+                            <FieldGroup className={'overflow-auto'}>
                                 <Field>
                                     <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
                                     <Input id={`${moduleName}-code`} name="code" required/>

@@ -23,7 +23,7 @@ export const POST = interceptor.createRoute(
             const buffer = Buffer.from(bytes);
             const imageId = await imageRepository.create(buffer, mimeType);
             const imageModel: StoryImageModel = {
-                code, disabled: false, id: 0, imageId, name
+                code, disabled: false, id: 0, imageId, name,
             };
             await storyRepository.entry.create(id, imageEntryName, imageModel)
         }

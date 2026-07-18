@@ -90,13 +90,14 @@ export function HistoryEditor() {
                 <p>{t('slot.edit_history_tip')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent style={{maxWidth: '86%', height: '86%'}}>
             {history && (
-                <form action={handleHistoryUpdate} ref={formRef}>
+                <form className={'flex flex-col overflow-hidden'}
+                      action={handleHistoryUpdate} ref={formRef}>
                     <DialogHeader>
                         <DialogTitle>{t('slot.edit_history')}</DialogTitle>
                     </DialogHeader>
-                    <FieldSet>
+                    <FieldSet className={'overflow-auto p-2 flex-1'}>
                         <FieldGroup className={'p-1'}>
                             <Field>
                                 <FieldLabel>
@@ -107,7 +108,7 @@ export function HistoryEditor() {
                                               language={'json'} formRef={formRef}/>
                             </Field>
                         </FieldGroup>
-                        <FieldGroup className={'max-h-[50vh] overflow-y-auto p-1'}>
+                        <FieldGroup className={'p-1'}>
                             {history.inputs.map((u, i) => (
                                 <Field key={i}>
                                     <FieldLabel htmlFor={`history_input-${i}`}>

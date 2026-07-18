@@ -97,13 +97,14 @@ export function ComfyUIGenerator() {
                 <p>{t('comfyui.generate_img')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent className={'overflow-auto'} style={{maxWidth: '86%', height: '86%'}}>
+        <DialogContent style={{maxWidth: '86%', height: '86%'}}>
             {history && (
-                <form action={handleImageGenerate} ref={formRef}>
+                <form className={'flex flex-col overflow-hidden'}
+                      action={handleImageGenerate} ref={formRef}>
                     <DialogHeader>
                         <DialogTitle>{t('comfyui.generate_img')}</DialogTitle>
                     </DialogHeader>
-                    <FieldSet>
+                    <FieldSet className={'overflow-auto p-2 flex-1'}>
                         <FieldGroup>
                             <FieldLabel>
                                 {t("comfyui.workflow")}
