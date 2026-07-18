@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
-import {EditIcon} from "lucide-react";
+import {ImagesIcon} from "lucide-react";
 import {useState} from "react";
 import {useTranslations} from "next-intl";
 
@@ -19,7 +19,7 @@ export function StoryImage() {
             <DialogTrigger render={<Tooltip/>}>
                 <TooltipTrigger onClick={() => setOpen(true)}
                                 render={<Button variant="outline"/>}>
-                    <EditIcon/>
+                    <ImagesIcon/>
                 </TooltipTrigger>
                 <TooltipContent>
                     <p>{t('story.image')}</p>

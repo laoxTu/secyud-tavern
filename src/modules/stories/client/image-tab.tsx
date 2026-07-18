@@ -20,9 +20,8 @@ import {
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button, buttonVariants} from "@/components/ui/button";
 import {
-    FilePlusIcon,
+    FilePlusIcon, ImagesIcon,
     LinkIcon,
-    PaletteIcon,
     SearchIcon,
     SquarePenIcon,
     XIcon
@@ -342,6 +341,6 @@ export function Content() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    label: () => <EntryTabHeader space={moduleName} value={imageEntryName} icon={PaletteIcon}/>,
+    label: () => <EntryTabHeader space={moduleName} value={imageEntryName} icon={ImagesIcon}/>,
     component: Content
 }
