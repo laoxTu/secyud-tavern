@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {getSlotAndHistories, SlotDataModel, useSlotContext} from "@/modules/slots/client/models";
-import {readStream, tryGetLastItem} from "@/utils";
+import {readStream} from "@/utils";
 import {
     LlmapiInputContext,
 } from "@/modules/slots/client/conversation-models";
@@ -22,6 +22,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {StoryHistory} from "@/modules/stories/models";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -87,45 +88,49 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             const page = useHistoryPageState.getState().page;
-            const history = histories.length > page.cur && page.cur >= 0 ?
-                histories[page.cur] : tryGetLastItem(histories);
-            if (!iframe || !history) {
+            if (!iframe) {
                 console.debug('[HistoryChatbox] failed to get history or iframe');
                 return;
             }
 
+            const historiesAdd = [];
+            if (histories.length > page.cur && page.cur >= 0) {
+                historiesAdd.push(histories[page.cur]);
+            }
+
             setOutput(true);
+
+            const input: StoryHistory = {
+                inputs: [{
+                    id: 0,
+                    content: prompt,
+                    variables: [],
+                    properties: {}
+                }],
+                outputs: [],
+                outputId: 0,
+                summary: false,
+                variables: [],
+                id: 0,
+                disabled: false,
+                code: "",
+                name: ""
+            };
+
+            historiesAdd.push(input);
+
             const inputContext: LlmapiInputContext = {
                 slot,
                 content: {},
-                history,
-                histories: [
-                    {
-                        ...history,
-                        inputs: history.inputs
-                            .map(u => ({...u})),
-                        outputs: history.outputs
-                            .map(u => ({...u})),
-                        properties: {}
-                    },
-                    {
-                        inputs: [{
-                            id: 0,
-                            content: prompt,
-                            variables: [],
-                            properties: {}
-                        }],
-                        outputs: [],
-                        properties: {},
-                        outputId: 0,
-                        summary: false,
-                        variables: [],
-                        id: 0,
-                        disabled: false,
-                        code: "",
-                        name: ""
-                    }
-                ],
+                history: input,
+                histories: historiesAdd.map(u => ({
+                    ...u,
+                    inputs: u.inputs
+                        .map(v => ({...v})),
+                    outputs: u.outputs
+                        .map(v => ({...v})),
+                    properties: {}
+                })),
                 messages: [],
             };
 

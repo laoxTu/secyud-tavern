@@ -12,7 +12,6 @@ import {Button} from "@/components/ui/button";
 import {EditIcon} from "lucide-react";
 import {FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {useRef, useState} from "react";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {useTranslations} from "next-intl";
 import {ComfyUIWorkflowCombobox} from "@/modules/comfyui/client/combobox";
 import {
@@ -28,7 +27,6 @@ import {BusinessError} from "@/handler/models";
 
 export function ComfyUIGenerator() {
     const t = useTranslations();
-    const {page} = useHistoryPageState();
     const {handleError, handleSuccess} = useErrorHandler();
     const [open, setOpen] = useState<boolean>(false);
     const [workflow, setWorkflow] = useState<ComfyUIWorkflowModel | null>(null);
@@ -89,8 +87,7 @@ export function ComfyUIGenerator() {
     return (<Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger render={<Tooltip/>}>
             <TooltipTrigger onClick={() => setOpen(true)}
-                            render={<Button variant="outline"
-                                            disabled={page.cur === 0}/>}>
+                            render={<Button variant="outline"/>}>
                 <EditIcon/>
             </TooltipTrigger>
             <TooltipContent>
