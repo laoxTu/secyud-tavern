@@ -1,39 +1,24 @@
 ﻿import {PaletteIcon} from "lucide-react";
-import React, {RefObject, useRef, useState} from "react";
+import React, {RefObject, useState} from "react";
 import {useTranslations} from "next-intl";
 import {del, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
-import {editorClassName} from "@/components/consts";
 import {TemplateEntryList} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
-import MonacoEditor, {OnMount} from "@monaco-editor/react";
-import {editor} from "monaco-editor";
-import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {submitFormOnKey} from "@/business/client";
-import {useTheme} from "next-themes";
-import {defaultEditorOptions} from "@/components";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
 function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
-    const editorRef = useRef<IStandaloneCodeEditor>(null);
     const [type, setType] = useState(entry.type ?? null);
-    const [content, setContent] = useState<string | undefined>(entry.content);
-    const {theme} = useTheme();
-    const handleEditorDidMount: OnMount = (editor) => {
-        // here is the editor instance
-        // you can store it in `useRef` for further usage
-        editorRef.current = editor;
-        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
-    }
 
     const language = (() => {
         switch (type) {
@@ -79,17 +64,12 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
             </Field>
         </div>
         <Field>
-            <FieldLabel onClick={() => editorRef.current?.focus()}>
+            <FieldLabel>
                 {t("default.content")}
             </FieldLabel>
-            <input type={'hidden'} name={'content'} value={content}/>
-            <MonacoEditor className={editorClassName} height={'30rem'}
-                          theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                          options={defaultEditorOptions}
-                          language={language}
-                          value={content} onChange={setContent}
-                          onMount={handleEditorDidMount}
-            />
+            <MonacoEditor name={'content'}
+                          defaultValue={entry.content}
+                          language={language} formRef={formRef}/>
         </Field>
     </>);
 }

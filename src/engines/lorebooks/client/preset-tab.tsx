@@ -1,4 +1,4 @@
-﻿import React, {RefObject, useRef, useState} from "react";
+﻿import React, {RefObject, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {
@@ -21,13 +21,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
-import {submitFormOnKey} from "@/business/client";
-import {editor} from "monaco-editor";
-import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
-import MonacoEditor, {OnMount} from "@monaco-editor/react";
-import {editorClassName} from "@/components/consts";
-import {useTheme} from "next-themes";
-import {defaultEditorOptions} from "@/components";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 const roles = ["system", "user", "assistant"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -37,18 +31,9 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
     const matchEditors = lorebookMatcherRegistry.records;
     const [editor, setEditor] = useState(matchEditors[entry.matchType]);
     const [type, setType] = useState(entry.type ?? null);
-    const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [content, setContent] = useState<string | undefined>(entry.content);
-    const {theme} = useTheme();
-    const handleEditorDidMount: OnMount = (editor) => {
-        // here is the editor instance
-        // you can store it in `useRef` for further usage
-        editorRef.current = editor;
-        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
-    }
 
     const language = (() => {
-        if(type) return type;
+        if (type) return type;
         return "plaintext";
     })();
 
@@ -119,7 +104,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                     </FieldLabel>
                     <Select name="matchType"
                             defaultValue={entry.matchType}
-                            onValueChange={t => t &&  setEditor(matchEditors[t])}>
+                            onValueChange={t => t && setEditor(matchEditors[t])}>
                         <SelectTrigger className="w-full"
                                        id={`lorebook-match_type-${entry.id}`}>
                             <SelectValue/>
@@ -143,17 +128,12 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                 }
             )()}
             <Field>
-                <FieldLabel htmlFor={`${engineName}-content-${entry.id}`}>
+                <FieldLabel>
                     {t("default.content")}
                 </FieldLabel>
-                <input type={'hidden'} name={'content'} value={content}/>
-                <MonacoEditor className={editorClassName} height={'30rem'}
-                              theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                              language={language}
-                              options={defaultEditorOptions}
-                              value={content} onChange={setContent}
-                              onMount={handleEditorDidMount}
-                />
+                <MonacoEditor name={'content'}
+                              defaultValue={entry.content}
+                              language={language} formRef={formRef}/>
             </Field>
         </>
     );

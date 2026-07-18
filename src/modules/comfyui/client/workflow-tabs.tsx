@@ -1,7 +1,7 @@
 'use client';
-import React, {RefObject, useRef, useState} from "react";
+import React, {RefObject} from "react";
 import {useTranslations} from "next-intl";
-import {FileIcon} from "lucide-react";
+import {FileIcon, TriangleIcon} from "lucide-react";
 import {put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -11,30 +11,23 @@ import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, ComfyUIWorkflowModel} from "../models";
 import {modelState} from "./models";
-import {submitFormOnKey} from "@/business/client";
-import MonacoEditor, {OnMount} from "@monaco-editor/react";
-import {useTheme} from "next-themes";
-import {editor} from "monaco-editor";
-import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
-import {editorClassName} from "@/components/consts";
-import {defaultEditorOptions} from "@/components";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
-    const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [content, setContent] = useState<string | undefined>(model.content?.workflow);
-    const {theme} = useTheme();
     const t = useTranslations();
-    const handleEditorDidMount: OnMount = (editor) => {
-        // here is the editor instance
-        // you can store it in `useRef` for further usage
-        editorRef.current = editor;
-        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
-    }
+
+    const generateParameter = async () => {
+        // TODO
+    };
 
     return (<>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
-                <FieldLabel htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</FieldLabel>
+                <FieldLabel htmlFor={`${moduleName}-code`}>
+                    {t("default.code") + "*"}
+                </FieldLabel>
                 <Input id={`${moduleName}-code`} name="code"
                        defaultValue={model.code} disabled/>
             </Field>
@@ -43,22 +36,25 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
                     {t("default.name")}
                 </FieldLabel>
                 <Input name="name" id={`${moduleName}-name`}
-                       defaultValue={model.name}
-                />
+                       defaultValue={model.name}/>
             </Field>
         </div>
         <Field>
-            <FieldLabel htmlFor={`${moduleName}-workflow-content`}>
+            <FieldLabel htmlFor={`${moduleName}-workflow_content`}>
                 {t("default.content")}
+                <Tooltip>
+                    <TooltipTrigger onClick={generateParameter}
+                                    render={<Button variant={"ghost"} size={'icon'}/>}>
+                        <TriangleIcon/>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {t("comfyui.generate_parameter")}
+                    </TooltipContent>
+                </Tooltip>
             </FieldLabel>
-            <input type={'hidden'} name={'workflow-content'} value={content ?? ""}/>
-            <MonacoEditor className={editorClassName} height={'30rem'}
-                          theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                          language={'json'}
-                          options={defaultEditorOptions}
-                          value={content} onChange={setContent}
-                          onMount={handleEditorDidMount}
-            />
+            <MonacoEditor name={'workflow_content'}
+                          defaultValue={model?.content?.workflow}
+                          language={'json'} formRef={formRef}/>
         </Field>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-description`}>
@@ -80,7 +76,7 @@ export function DefaultTab() {
                 return await put("/comfyuis/workflows/{id}",
                     {
                         content: {
-                            workflow: data.get("workflow-content"),
+                            workflow: data.get("workflow_content"),
                             description: data.get("description") as string,
                         },
                         name: data.get("name") as string,

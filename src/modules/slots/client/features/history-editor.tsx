@@ -14,18 +14,13 @@ import {
 import {Button} from "@/components/ui/button";
 import {EditIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {StoryHistory} from "@/modules/stories/models";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Textarea} from "@/components/ui/textarea";
-import Editor, {OnMount} from '@monaco-editor/react';
-import {editor} from "monaco-editor";
-import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import {toast} from "sonner";
-import {editorClassName} from "@/components/consts";
-import {submitFormOnKey, submitTargetFormOnKey} from "@/business/client";
-import {useTheme} from "next-themes";
-import {defaultEditorOptions} from "@/components";
+import {submitTargetFormOnKey} from "@/business/client";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -33,17 +28,9 @@ export function HistoryEditor() {
     const ctx = useSlotContext();
     const {page} = useHistoryPageState();
     const [history, setHistory] = useState<StoryHistory | undefined>(undefined);
-    const {theme} = useTheme();
     const [open, setOpen] = useState<boolean>(false);
-    const editorRef = useRef<IStandaloneCodeEditor>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const handleEditorDidMount: OnMount = (editor) => {
-        // here is the editor instance
-        // you can store it in `useRef` for further usage
-        editorRef.current = editor;
-        editor.onKeyDown((e) => submitFormOnKey(e, formRef));
-    }
 
     const handleDialogOpen = (open: boolean) => {
         try {
@@ -62,14 +49,10 @@ export function HistoryEditor() {
         try {
             console.debug('[HistoryEditor] open edit dialog')
 
-            if (!editorRef.current) {
-                return;
-            }
-
             const {histories, slot} = getSlotAndHistories(ctx);
             const index = useHistoryPageState.getState().page.cur - 1;
             const history = histories[index];
-            const variablesText = editorRef.current.getValue();
+            const variablesText = data.get('variables') as string;
             try {
                 history.variables = JSON.parse(variablesText);
             } catch (error) {
@@ -116,14 +99,12 @@ export function HistoryEditor() {
                     <FieldSet>
                         <FieldGroup className={'p-1'}>
                             <Field>
-                                <FieldLabel onClick={() => editorRef.current?.focus()}>
+                                <FieldLabel>
                                     {t('slot.variable')}
                                 </FieldLabel>
-                                <Editor className={editorClassName} defaultLanguage={'json'} height={'10rem'}
-                                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                                        defaultValue={JSON.stringify(history.variables)}
-                                        options={defaultEditorOptions}
-                                        onMount={handleEditorDidMount}/>
+                                <MonacoEditor name={'variables'}
+                                              defaultValue={JSON.stringify(history.variables)}
+                                              language={'json'} formRef={formRef}/>
                             </Field>
                         </FieldGroup>
                         <FieldGroup className={'max-h-[50vh] overflow-y-auto p-1'}>
