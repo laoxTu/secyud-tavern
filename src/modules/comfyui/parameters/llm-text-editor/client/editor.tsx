@@ -21,6 +21,7 @@ import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -85,7 +86,9 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
-            const history = tryGetLastItem(histories);
+            const page = useHistoryPageState.getState().page;
+            const history = histories.length > page.cur && page.cur >= 0 ?
+                histories[page.cur] : tryGetLastItem(histories);
             if (!iframe || !history) {
                 console.debug('[HistoryChatbox] failed to get history or iframe');
                 return;
