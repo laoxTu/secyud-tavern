@@ -266,7 +266,7 @@ export function Content() {
         }
     }, []);
 
-    return (<div className={'h-full flex flex-col gap-2 p-4'}>
+    return (<div className={'h-full overflow-hidden flex flex-col gap-2 p-4'}>
         <div className={'flex flex-col gap-2'}>
             <div className={'overflow-x-auto flex flex-row-reverse scrollbar-none gap-1 justify-normal'}>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
