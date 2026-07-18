@@ -1,6 +1,7 @@
 import {interceptor} from "@/handler/server/interceptor";
 import {NextResponse} from "next/server";
 import {settingRepository} from "@/modules/settings/server/repository";
+import {BusinessError} from "@/handler/models";
 
 /**
  * @body any
@@ -29,7 +30,8 @@ export const POST = interceptor.createRoute(
         const res = await response.json();
 
         if (res.error) {
-            throw res.error;
+            throw new BusinessError(res.error?.message, "comfyui.request_error")
+                .withValue("message", res.error?.message);
         }
 
         return NextResponse.json(res);

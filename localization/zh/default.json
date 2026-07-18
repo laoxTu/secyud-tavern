@@ -13,6 +13,7 @@
     "lora": "Lora",
     "model": "模型",
     "model_path": "模型子路径",
+    "request_error": "请求错误：{message}",
     "model_type": "模型类型",
     "node_id": "节点ID",
     "lora_count": "Lora数量",
