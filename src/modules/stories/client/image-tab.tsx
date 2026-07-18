@@ -5,7 +5,6 @@ import {TabConfig} from "@/components/custom/tab";
 import {imageEntryName, moduleName, StoryImageModel} from "../models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {PaginationWrapper} from "@/components/custom/pager";
-import {useModelPagedItemsState} from "@/modules/comfyui/client/models";
 import {Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemHeader, ItemTitle} from "@/components/ui/item";
 import Image from "next/image";
 import {useErrorHandler} from "@/handler/client/error";
@@ -108,20 +107,20 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
         }
     };
 
-    return (<div className={'min-w-1/4 w-64 p-2'}>
+    return (<div className={'p-2'}>
         <Item key={key}
-              className={'overflow-hidden relative'}
+              className={'relative'}
               variant={"outline"}>
             <ItemHeader>
                 <Image
                     src={`/api/images/${entry.imageId}`}
-                    alt={`${entry.code}-${entry.name}`}
+                    alt={`${entry.code ?? ""}-${entry.name ?? ""}`}
                     fill
                     unoptimized
-                    className="object-cover rounded-sm"
+                    className="rounded-sm"
                 />
             </ItemHeader>
-            <ItemContent className={'h-24'}>
+            <ItemContent>
                 <ItemTitle>{entry.code}</ItemTitle>
                 <ItemDescription className={'wrap-break-word break-all'}>
                     {entry.name}
@@ -334,7 +333,7 @@ export function Content() {
                 </ItemGroup>
             </div>
 
-            <PaginationWrapper usePagedItemsState={useModelPagedItemsState}/>
+            <PaginationWrapper usePagedItemsState={useImagePagedItemsState}/>
         </div>
     </div>)
 }
