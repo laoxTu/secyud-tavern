@@ -60,11 +60,11 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     </Field>
                     <Field key={`${index}-strength`}>
                         <FieldLabel htmlFor={`${engineName}-lora_strength-${entry.id}-${index}`}>
-                            {t("comfyui.default_value")}
+                            {t("comfyui.strength")}
                         </FieldLabel>
                         <Input name={`lora_strength_${entry.id}_${index}`} type={"number"}
                                defaultValue={lora?.strength ?? 1}
-                               min={-10} max={10} step={0.5}
+                               min={-10} max={10} step={0.05}
                                id={`${engineName}-lora_strength-${entry.id}-${index}`}/>
                     </Field>
                 </div>
