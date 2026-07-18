@@ -12,7 +12,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as SelectorConfig;
 
-    const [count, setCount] = React.useState(config?.defaultValue.length ?? 1);
+    const [count, setCount] = React.useState(config?.items?.length ?? 1);
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -31,7 +31,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
             </Field>
             <Field>
                 <FieldLabel htmlFor={`${engineName}-count-${entry.id}`}>
-                    {t("comfyui.lora_count")}
+                    {t("comfyui.value_count")}
                 </FieldLabel>
                 <Input name={`value_count`} type={"number"}
                        value={count}
@@ -40,7 +40,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
                        id={`${engineName}-count-${entry.id}`}/>
             </Field>
             {Array.from({length: count}, (_, index) => {
-                const value = (config?.items.length ?? 0) > index ?
+                const value = (config?.items?.length ?? 0) > index ?
                     config.items[index] : null;
                 return (
                     <Field key={index}>

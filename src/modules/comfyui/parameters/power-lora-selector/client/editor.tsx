@@ -34,7 +34,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     return <>
         <Field>
             <FieldLabel htmlFor={`${engineName}-count-${entry.id}`}>
-                {t("comfyui.lora_count")}
+                {`${entry.name} ${t("comfyui.lora_count")}`}
             </FieldLabel>
             <Input name={`count_${entry.id}`} type={"number"}
                    value={count}
