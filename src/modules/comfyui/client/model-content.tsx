@@ -39,6 +39,7 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
+    console.debug("cover id", model.content.coverId);
     if (model.content.coverId)
         src = `/api/images/${model.content.coverId}`;
     else if (model.content.coverSrc)
@@ -180,14 +181,15 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                             <p>{t("default.update")}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent>
-                        <form className={'h-full flex flex-col'} action={handleUpdate}>
+                    <DialogContent style={{maxWidth: '86%', height: '86%'}}>
+                        <form className={'flex flex-col overflow-hidden'}
+                              action={handleUpdate}>
                             <DialogHeader>
                                 <DialogTitle>
                                     {t("default.update_title", {target: t(`${moduleName}.model`)})}
                                 </DialogTitle>
                             </DialogHeader>
-                            <FieldGroup className="p-4 overflow-auto flex-1">
+                            <FieldGroup className={'overflow-auto p-2 flex-1'}>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-cover-${model.id}`}>
                                         {t("default.cover")}
@@ -207,7 +209,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                         {t("default.cover_src")}
                                     </FieldLabel>
                                     <Input id={`${moduleName}-cover_src-${model.id}`}
-                                           defaultValue={model.content.url}
+                                           defaultValue={model.content.coverSrc}
                                            name="cover_src"/>
                                 </Field>
                                 <Field>
