@@ -25,7 +25,8 @@ export function StoryImage() {
                     <p>{t('story.image')}</p>
                 </TooltipContent>
             </DialogTrigger>
-            <DialogContent style={{maxWidth: '86%', height: '86%'}}>
+            <DialogContent className={'overflow-hidden'}
+                           style={{maxWidth: '86%', height: '86%'}}>
                 <Content/>
             </DialogContent>
         </Dialog>
