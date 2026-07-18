@@ -121,18 +121,17 @@ export function ComfyUIModelCombobox({type, defaultValue, name, id}: ModelCombob
 
 
 interface WorkflowComboboxProps {
-    defaultValue?: string,
     name?: string,
     id?: string,
-    value?: string | null,
-    onValueChange?: (value: string | null) => void,
+    value?: ComfyUIWorkflowModel | null,
+    onValueChange?: (value: ComfyUIWorkflowModel | null) => void,
 }
 
-export function ComfyUIWorkflowCombobox({defaultValue, name, id, value, onValueChange}: WorkflowComboboxProps) {
+export function ComfyUIWorkflowCombobox({ name, id, value, onValueChange}: WorkflowComboboxProps) {
     const t = useTranslations();
     const anchor = useComboboxAnchor();
     const {handleError} = useErrorHandler();
-    const [searchRequires, setSearchItems] = useState<ComfyUIWorkflowModel[]>([]);
+    const [items, setItems] = useState<ComfyUIWorkflowModel[]>([]);
     const [needSearch, setNeedSearch] = useState(true);
     const [searchValue, setSearchValue] = useState<string | undefined>();
     const handleSearchRequires = async (search: string | undefined) => {
@@ -151,7 +150,7 @@ export function ComfyUIWorkflowCombobox({defaultValue, name, id, value, onValueC
                         },
                     }
                 }) as PagedResult<ComfyUIWorkflowModel>;
-                setSearchItems(res.data);
+                setItems(res.data);
             } catch (err) {
                 handleError(err);
             }
@@ -160,15 +159,16 @@ export function ComfyUIWorkflowCombobox({defaultValue, name, id, value, onValueC
         return () => clearTimeout(timer);
     }, [handleError, needSearch, searchValue]);
 
-    return (
+    return (<>
         <Combobox autoHighlight
                   name={name}
                   id={id}
-                  defaultValue={defaultValue}
                   value={value}
+                  itemToStringLabel={item => `${item.code}-${item.name}`}
+                  itemToStringValue={item => item.id}
                   onValueChange={onValueChange}
                   onInputValueChange={e => handleSearchRequires(e)}
-                  items={searchRequires}>
+                  items={items}>
             <ComboboxChips ref={anchor} className="w-full">
                 <ComboboxValue>
                     {(_) => (
@@ -181,12 +181,12 @@ export function ComfyUIWorkflowCombobox({defaultValue, name, id, value, onValueC
                 <ComboboxList>
                     {(item: ComfyUIWorkflowModel) =>
                         (
-                            <ComboboxItem key={item.id} value={item.id}>
+                            <ComboboxItem key={item.id} value={item}>
                                 {`${item.code}-${item.name}`}
                             </ComboboxItem>
                         )}
                 </ComboboxList>
             </ComboboxContent>
         </Combobox>
-    );
+    </>);
 }

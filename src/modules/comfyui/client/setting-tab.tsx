@@ -7,7 +7,7 @@ import {PaletteIcon} from "lucide-react";
 import {useErrorHandler} from "@/handler/client/error";
 import {useComfyUISettingState} from "@/modules/comfyui/client/models";
 import {moduleName} from "@/modules/comfyui/models";
-import {Input} from "@base-ui/react";
+import {Input} from "@/components/ui/input";
 
 function Tab() {
     const t = useTranslations();
@@ -36,14 +36,14 @@ function Tab() {
                                     {t("default.base_url")}
                                 </FieldLabel>
                                 <Input id="setting-comfyui-base_url" name={'base_url'}
-                                       defaultValue={baseUrl}/>
+                                       defaultValue={baseUrl ?? "http://localhost:8188"}/>
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="setting-comfyui-client_id">
                                     {t("comfyui.client_id")}
                                 </FieldLabel>
                                 <Input id="setting-comfyui-client_id" name={'client_id'}
-                                       defaultValue={clientId}/>
+                                       defaultValue={clientId ?? "secyud-tavern"}/>
                             </Field>
                         </div>
                     </FieldGroup>

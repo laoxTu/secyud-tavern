@@ -1103,6 +1103,34 @@
     }
   },
   "paths": {
+    "/comfyuis/generate": {
+      "post": {
+        "operationId": "post-comfyuis-generate",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/comfyuis/models": {
       "get": {
         "operationId": "get-comfyuis-models",
@@ -1690,6 +1718,45 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comfyuis/workflows/{id}/generate-parameters": {
+      "post": {
+        "operationId": "post-comfyuis-workflows-{id}-generate-parameters",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -4272,6 +4339,45 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{id}/images": {
+      "post": {
+        "operationId": "post-stories-{id}-images",
+        "summary": "更新条目",
+        "description": "",
+        "tags": [
+          "Stories"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
+              }
+            }
+          }
+        },
+        "responses": {
           "400": {
             "$ref": "#/components/responses/400"
           },

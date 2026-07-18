@@ -2,6 +2,17 @@
   "configPath": "D:\\Projects\\ai\\secyud-tavern\\openapi-gen.config.ts",
   "diagnostics": [
     {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
+      "metadata": {
+        "typeName": "any",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
@@ -29,17 +40,6 @@
           "entryId"
         ],
         "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
-      }
-    },
-    {
-      "code": "schema-not-found",
-      "severity": "warning",
-      "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
-      "metadata": {
-        "typeName": "any",
-        "contextFile": null,
-        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
       }
     },
     {
@@ -90,7 +90,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "T",
         "contextFile": null,
@@ -101,7 +101,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "T",
         "contextFile": null,
@@ -139,7 +139,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"ReadableStream\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "ReadableStream",
         "contextFile": null,
@@ -289,6 +289,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/generate-parameters contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/generate-parameters",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
       "routePath": "/comfyuis/workflows/{id}",
@@ -368,7 +381,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"LlmInputModel\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "LlmInputModel",
         "contextFile": null,
@@ -785,6 +798,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /stories/{id}/images contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts",
+      "routePath": "/stories/{id}/images",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
       "routePath": "/stories/{id}",
@@ -835,8 +861,8 @@
       }
     }
   ],
-  "fingerprint": "505b5bd7f95e445f3ae9b29f0d29bdbb0a76e2fff70b3c812b9ce9438bb73b9a",
-  "inputCount": 288,
+  "fingerprint": "414bf9000b88711f83e57d73a144201595280ca3a40002ce8c7dbdfcd0936495",
+  "inputCount": 318,
   "inputs": {
     "D:\\Projects\\ai\\secyud-tavern\\openapi-gen.config.ts": {
       "hash": "2ef3bb982bef7edca1665f6409d98254020a5d459b205785f10766aaf1f1dad7",
@@ -844,14 +870,19 @@
       "size": 3233
     },
     "D:\\Projects\\ai\\secyud-tavern\\package.json": {
-      "hash": "da6a695fa699f2f2ea0aaafca645b70d48da3c108db92c1f86793ba18190fbbd",
-      "mtimeMs": 1784266791732,
-      "size": 2005
+      "hash": "2db123d194f5efeeacf05e9fe49a8bb1ee14546cbc5eee797bfbffcc015f55ad",
+      "mtimeMs": 1784295736421.8762,
+      "size": 2072
     },
     "D:\\Projects\\ai\\secyud-tavern\\pnpm-lock.yaml": {
-      "hash": "8e249e9cf473fae7ea97954bd78bb808663fd9dc3f47fb2c829edc3d78291a4e",
-      "mtimeMs": 1784266667200.494,
-      "size": 315718
+      "hash": "17aa6f60eefc0cd302ce8e61268c2d8405a9ae16c678abddd87c725f02943a80",
+      "mtimeMs": 1784295736423.877,
+      "size": 325216
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts": {
+      "hash": "bf25fc8f2f9bb54b94a9f4a4b3d0079d4566b686b2bb5eeefabeadd3aebdc203",
+      "mtimeMs": 1784353783672,
+      "size": 1071
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
       "hash": "4355e078279c9f6ed97b50b55ff591503d42f363cebb9d2db177abd9f1d2aa45",
@@ -860,7 +891,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
       "hash": "84ccab68a7b273ed13ad24b5260bf869441d3a7a665b92fba069ebbaaed570f7",
-      "mtimeMs": 1784267807921,
+      "mtimeMs": 1784295736424.8767,
       "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\route.ts": {
@@ -900,7 +931,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
       "hash": "2d3a37c7485900cf5bfdb3c85a4d70a0fab1c070dd40409833866c362bb4e070",
-      "mtimeMs": 1784267811878,
+      "mtimeMs": 1784295736425.8767,
       "size": 787
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\entries\\[entryType]\\route.ts": {
@@ -912,6 +943,11 @@
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
       "mtimeMs": 1783996871018.5586,
       "size": 318
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts": {
+      "hash": "ce0c4d6c95b7c434096c626a0082e2ed3bf9c1e30bc52040b1d856af7308d951",
+      "mtimeMs": 1784350680133,
+      "size": 4557
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
@@ -955,7 +991,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
       "hash": "2d3a37c7485900cf5bfdb3c85a4d70a0fab1c070dd40409833866c362bb4e070",
-      "mtimeMs": 1784267811871,
+      "mtimeMs": 1784295736425.8767,
       "size": 787
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\llmapis\\[id]\\entries\\[entryType]\\route.ts": {
@@ -995,7 +1031,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
       "hash": "72e8238b752548952f6a04da95ebbd8b64fc1f30cf2c1876f0395d39daad98dc",
-      "mtimeMs": 1784267811876,
+      "mtimeMs": 1784295736426.876,
       "size": 789
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\presets\\[id]\\entries\\[entryType]\\route.ts": {
@@ -1040,7 +1076,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
       "hash": "d887f966a867c6c2a28f59b7844947cc1b57dd429c3a8b9a66d56ddd8da9f110",
-      "mtimeMs": 1784267745556,
+      "mtimeMs": 1784295736427.8765,
       "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\entries\\[entryType]\\route.ts": {
@@ -1052,6 +1088,11 @@
       "hash": "fbe3d17e8882f56589ce90bee79255004145dc1f6a55a2eab59f8d2e0b9cc816",
       "mtimeMs": 1783996871023.062,
       "size": 318
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts": {
+      "hash": "57d23a2ddad1334da6bcc9bec2e7f7cfef741fb00a09671dafb5d84e13c57dd1",
+      "mtimeMs": 1784349575803.1592,
+      "size": 1223
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts": {
       "hash": "68faf8ecfb4ac5078a6784d34c0dee99527c340bc41ada497308005cce3233a2",
@@ -1080,7 +1121,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\template.ts": {
       "hash": "d3ce9eff00f283f9c61c97f87f685a203a72e3503ad36eb94d256cdfc4388ea2",
-      "mtimeMs": 1784267705509,
+      "mtimeMs": 1784295736427.8765,
       "size": 7407
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\business\\layout.tsx": {
@@ -1099,9 +1140,9 @@
       "size": 248
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\layout.tsx": {
-      "hash": "0f0016e82b6d3445c2d02fcd915ca0946f310b98d3773279f8bc53059fd94a61",
-      "mtimeMs": 1784255454849.1887,
-      "size": 1395
+      "hash": "03c9540940d859415d95d052640035179a3699dc98ee32e8725492c59c09fa19",
+      "mtimeMs": 1784295736427.8765,
+      "size": 1401
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\page.tsx": {
       "hash": "256cb5fd36cd97cf6ebde318b23203342d5c271ea74aeee7518f8f30cc412d4c",
@@ -1120,7 +1161,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\content.tsx": {
       "hash": "71d9cb749bd964ef07ce2e09b896e0136e7748522bc076ec0b4658c1d8871e1a",
-      "mtimeMs": 1784258758655,
+      "mtimeMs": 1784295736428.8762,
       "size": 4315
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\index.ts": {
@@ -1144,9 +1185,9 @@
       "size": 502
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-create.tsx": {
-      "hash": "8fea1fac070ba772ae2b3d681b7339fad2dbe2a55d2a32451a94457475f4621e",
-      "mtimeMs": 1784258477932,
-      "size": 3605
+      "hash": "07c419e0abb810611f94b6b7f48cf34ba731e005d683d96d6373ea7a025bf792",
+      "mtimeMs": 1784349575803.1592,
+      "size": 3661
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-list.tsx": {
       "hash": "7230f233b6d97dce5d8c51d84f0b670e028f9377bab221bda381901be26a2329",
@@ -1154,9 +1195,9 @@
       "size": 4765
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\entry-update.tsx": {
-      "hash": "cbc1fddad1810a1adb5cb1878c958d07f050ed885be983e7a5b318bcf2ccd9d0",
-      "mtimeMs": 1784264565453,
-      "size": 13140
+      "hash": "955e264ae5039cc8d7f1ce1d7435225804a94363e09e61cde0ee6491bd9bd4c6",
+      "mtimeMs": 1784349575803.1592,
+      "size": 11173
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\index.ts": {
       "hash": "a35f3202b9d3429af3030d0295f1d95161eb87c2c453fac9f4e7b2430e1cb848",
@@ -1164,18 +1205,18 @@
       "size": 205
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-content.tsx": {
-      "hash": "e97ae21d85407fe2756c7d55d226f27d4cb430f4cd0e88d006a8b06ea49bbc17",
-      "mtimeMs": 1784259151296,
-      "size": 9749
+      "hash": "503967df354d043eb7fd5f4e1eb1650375059ff1162217c223adc17de9a43fef",
+      "mtimeMs": 1784349575804.1592,
+      "size": 8117
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-create.tsx": {
-      "hash": "03f2f4f569c3e3feb57fa8d963f4339ea1d0373cc6f52312510efbcce65be969",
-      "mtimeMs": 1784259245817,
-      "size": 6449
+      "hash": "ca26f56a8413daea697d00e0200b7835d789cd0536ae09ef57f05b57539f7438",
+      "mtimeMs": 1784349575804.1592,
+      "size": 6513
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-list.tsx": {
       "hash": "0c4d7d2d5ae3676366ec345fd525219db3eb138d5180d3693bc520d89d3025c0",
-      "mtimeMs": 1784259000854,
+      "mtimeMs": 1784295736431.8765,
       "size": 10028
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\client\\template\\model-update.tsx": {
@@ -1214,9 +1255,9 @@
       "size": 2282
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\server\\repository.ts": {
-      "hash": "b854b8dbc2d29cccf0fb1f3d006234102c021556eda2218f10397974e810c562",
-      "mtimeMs": 1784267586523,
-      "size": 13224
+      "hash": "ded873f0fb0f674c4663c25c8ca425fcb961bde54afd8e69b65d32d055973226",
+      "mtimeMs": 1784295736431.8765,
+      "size": 12824
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\server\\storage-models.ts": {
       "hash": "58af46a61cf318c3b078637355bc9691e850a279128caf537b4e4461b6aeeb7f",
@@ -1224,9 +1265,9 @@
       "size": 1835
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\business\\server\\storage.ts": {
-      "hash": "687c2aac430e861b453196e041c1d6c6b145d3d01e27c31d42b2bbfea69f5a19",
-      "mtimeMs": 1783911025517.979,
-      "size": 1139
+      "hash": "cee6994c8132388d326b6134a7feaa7134d5a9ca4de623489bc2b40733eeccc4",
+      "mtimeMs": 1784295736432.8762,
+      "size": 1412
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\client-registerer.ts": {
       "hash": "de0e141977229485004bee6d2426731285e6d50986d8a6280e97e05f5d335aa2",
@@ -1234,14 +1275,9 @@
       "size": 2230
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\client.ts": {
-      "hash": "440dba9d8946a61a0aca19f25c5dbaaf2da6c4c6d2f6643ca34801628b5abb03",
-      "mtimeMs": 1782900266507.6533,
-      "size": 3740
-    },
-    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\consts.ts": {
-      "hash": "691772a421d3acb22ed892a37486f022092c6cb616b47dcb0bc4b8b80e8779c0",
-      "mtimeMs": 1781934980651.3804,
-      "size": 638
+      "hash": "6fbe510e6ed7da6d4ec323f717252915f21e1d631e74d98d36bdce4cc9c3612d",
+      "mtimeMs": 1784349575804.1592,
+      "size": 3789
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\accessible.tsx": {
       "hash": "b8b94b0ec9fde4b4af642b578e802c632f83aee06a6dc6c68a69a3997a2359b8",
@@ -1258,10 +1294,20 @@
       "mtimeMs": 1782278913356.1184,
       "size": 61
     },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\delete-dialog.tsx": {
+      "hash": "3898a201272e2fca2b6e7e824170acd9dee4db5e5705e510d8a869a270973018",
+      "mtimeMs": 1784349575805.1592,
+      "size": 2190
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\image-uploader.tsx": {
       "hash": "7af41c879b421636c23f424a64e3d16ccf1db47edfe15af0859d5fe8f5596de5",
       "mtimeMs": 1783996971253.5662,
       "size": 5321
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\monaco-editor.tsx": {
+      "hash": "38c51632b332f4fa4cc9ff84f05cff04c5d1d584fc07b7ab5e2d883df825d2ba",
+      "mtimeMs": 1784349575805.1592,
+      "size": 2092
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\custom\\pager\\component.tsx": {
       "hash": "91d9d284d9c3e2330a2c7ba63ef2c71f45025f5671f5c38c237ccb6e4d931f45",
@@ -1278,80 +1324,75 @@
       "mtimeMs": 1780982096800.777,
       "size": 630
     },
-    "D:\\Projects\\ai\\secyud-tavern\\src\\components\\index.ts": {
-      "hash": "d4ae2f80cddce41ccd1edab71f8edcc49915823d571e609948a7add854e5b0a5",
-      "mtimeMs": 1783678957475.6162,
-      "size": 162
-    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\theme-provider.tsx": {
       "hash": "8517d59f9aebbdf6a6053683c4101c840768157f0a0661f6e68f8d31f8aea74c",
       "mtimeMs": 1783597958730.8513,
       "size": 400
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\accordion.tsx": {
-      "hash": "38fec90a34d857fff15ca47b4fab0f12171dbb44cb55a37d1f65f63a4eaf0c20",
-      "mtimeMs": 1784255456386.6968,
-      "size": 2598
+      "hash": "2b08115404543a2708786152ca81f7842b99e1d90c406e30ee9fd0f34b685a9c",
+      "mtimeMs": 1784295736432.8762,
+      "size": 2670
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\alert-dialog.tsx": {
-      "hash": "c9ab3a06e387ea9b59d4f1084521678816cf6b5d697d787f45df64213b07b112",
-      "mtimeMs": 1784255461831.9377,
-      "size": 5272
+      "hash": "04f780fd3f8a6359c56095e0c75415ba3b8ed9b7988e658e4020731d94e029d2",
+      "mtimeMs": 1784295736433.8767,
+      "size": 5459
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\aspect-ratio.tsx": {
-      "hash": "c6db82ab2401e402c7c6d178ff59eb570535c76db5953b3bb78be564c5b24669",
-      "mtimeMs": 1784255456632.7888,
-      "size": 403
+      "hash": "3ab288623ef5db558143788469927ad7f34792e47e991cf88983eee4efc354d7",
+      "mtimeMs": 1784295736433.8767,
+      "size": 425
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\badge.tsx": {
-      "hash": "968b0403af74a785c9408ca69a677235e49d0c80b2c27fb9858ad421a8778c7d",
-      "mtimeMs": 1784255456803.5417,
-      "size": 1925
+      "hash": "d28c229c3f41ad0e17c90b25bc7c409dd960c3d6b077c39be72b6854aee07e48",
+      "mtimeMs": 1784295736434.8752,
+      "size": 1977
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\button-group.tsx": {
-      "hash": "fe97631e1a07bc0add09503c5032002e37f4c71ef5dd3c7475b856a29848583d",
-      "mtimeMs": 1784255463062.604,
-      "size": 2480
+      "hash": "6cdc123ef9a5ea6ef3fa1bfe91b7875151b5b925f3a0ed9abf983678f363adea",
+      "mtimeMs": 1784295736434.8752,
+      "size": 2567
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\button.tsx": {
-      "hash": "d14549ab3ba7a9d5d1f424c2599233bffa0b317121abf3b6efa2fb902d5e2781",
-      "mtimeMs": 1784255456976.72,
-      "size": 3240
+      "hash": "77229b46b4446b55fd24a101743ceced0f41487889682e0ee5d8086930fe86e7",
+      "mtimeMs": 1784295736435.8748,
+      "size": 3298
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\card.tsx": {
-      "hash": "d8113cbf964f8d1aadf2649d2944d8bbc6e3cfd49d36746f76868cbc4dde3cfe",
-      "mtimeMs": 1784255457190.147,
-      "size": 2630
+      "hash": "4bf8c82ad7deda4e625105647c40c3a27f5d69ea81cd4ad0a3837e198f98bfe2",
+      "mtimeMs": 1784295736435.8748,
+      "size": 2733
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\checkbox.tsx": {
-      "hash": "3d2d0b3d87a19aad65821e4cdb1c4bb149209778bea271b1f98265383cddd6d5",
-      "mtimeMs": 1784255457393.6072,
-      "size": 1357
+      "hash": "ddc7e32d5c81cdf4d3b172fde2df15a080d462985eafe5f737a87cff5cbdf4d4",
+      "mtimeMs": 1784295736436.8752,
+      "size": 1386
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\collapsible.tsx": {
-      "hash": "ead4349ff7b01d696ef89294a81d18ee1d3f732321398896462c834ab9b9e065",
-      "mtimeMs": 1784255457592.835,
-      "size": 658
+      "hash": "457c783423ecbe4dd9f43ab32836d1e9d41bba4e66d7f7f71b6b1c3a2cd94178",
+      "mtimeMs": 1784295736437.8752,
+      "size": 679
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\combobox.tsx": {
-      "hash": "f85f566d4d53d69d2b87a625a12bbfc36585d48fe8797fd7ce555808307ce0ac",
-      "mtimeMs": 1784255465396.2754,
-      "size": 9031
+      "hash": "5d86f6f0508fe6cfe456b549b6ef9b9a94ad509d6fa547f2d55b49419b53fa9a",
+      "mtimeMs": 1784295736437.8752,
+      "size": 9328
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\dialog.tsx": {
-      "hash": "ccabf6cc674a68b09d9168904bb46b7c1075a67312cf6f51f3e38b8eeacd2fdb",
-      "mtimeMs": 1784255462443.8816,
-      "size": 4075
+      "hash": "6d35473f3a2824051b3cdf4b168a706d9101d81ef42495bde6149781a6be3d42",
+      "mtimeMs": 1784295736438.875,
+      "size": 4235
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\drawer.tsx": {
-      "hash": "b33d7b911b1a78fb524ee68bf483c4a1f538743ff04b91da56b3dc9b48fa70a6",
-      "mtimeMs": 1784255457801.485,
-      "size": 11356
+      "hash": "683380cd30e4a3a23a9fba3755ec708e1a64ce6e59d575705d4437c7d34a4bdf",
+      "mtimeMs": 1784295736438.875,
+      "size": 11584
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\dropdown-menu.tsx": {
-      "hash": "1c1ae4ec02de9778286f84e0d15a1b74cc610c13c5b6a13c1ada2e6770eeb4e1",
-      "mtimeMs": 1784255458091.3064,
-      "size": 8736
+      "hash": "895952cd7e5c1c912be4883c6d17dc53be6cf05c1e10dad0dad7a5836b154960",
+      "mtimeMs": 1784295736439.8755,
+      "size": 9004
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\empty.tsx": {
       "hash": "e65ee3ba54a21ed61e3c50041bb12a6a3fcb215c56611cda6795c23a7bd89f61",
@@ -1359,44 +1400,44 @@
       "size": 2397
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\field.tsx": {
-      "hash": "76e008459f847a96bb1140c11a38d247e69392432a1e690aa660fdb4844f5c74",
-      "mtimeMs": 1784255463435.1802,
-      "size": 6017
+      "hash": "3353585d8bda70db3443616e28295f4ce94147283b16e89e6efcb2d96ac5dec1",
+      "mtimeMs": 1784295736440.8752,
+      "size": 6255
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\hover-card.tsx": {
-      "hash": "7e7880883ba91290133e61f8bf1df72547795b8d9f2c13d4a17a51c17540d712",
-      "mtimeMs": 1784255458455.7722,
-      "size": 1855
+      "hash": "e3c7c4d3a9505e6de929a3a98cd256a03cfcb22e5446db1fcc9cea0e9857da07",
+      "mtimeMs": 1784295736440.8752,
+      "size": 1906
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\input-group.tsx": {
-      "hash": "17e76f6e6093754756dd10182f833abf35f1020dc4a8a7ead8c0f9703576870b",
-      "mtimeMs": 1784255464641.5234,
-      "size": 5264
+      "hash": "858e490bef9912af6024f269b9219e0750d9db5d7359316358f8d180a2ebc0f6",
+      "mtimeMs": 1784295736441.8755,
+      "size": 5422
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\input.tsx": {
-      "hash": "f7d6ecff9a4d631feeaf401c02bb87e26ddb38131c55d15a43b9290747390847",
-      "mtimeMs": 1784255458592.0566,
-      "size": 1040
+      "hash": "aa7d45bfb5cff98663124a091a5fcd86735b9b037e8e84d9bfd3a54aba2a6f77",
+      "mtimeMs": 1784295736441.8755,
+      "size": 1060
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\item.tsx": {
-      "hash": "3f5ec6eac0a7c2daea3f4403408974ff4bae1e949d328701bcf3a74a4554b6e0",
-      "mtimeMs": 1784255463949.618,
-      "size": 4860
+      "hash": "3b95dd62cdcf6b80e87b8f1a50cc6a62b5b30cc322c1510a36ebfa1d9f0d3ad7",
+      "mtimeMs": 1784295736442.8762,
+      "size": 5061
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\label.tsx": {
-      "hash": "7f19b8476658d25ff197c84030e58cd7395059d876a54630e025951e474ebdae",
-      "mtimeMs": 1784255458693.9734,
-      "size": 518
+      "hash": "9662973c34f20f4a1e13103ae3d558e6a63a33593c98b2821b2fbe8de25b5099",
+      "mtimeMs": 1784295736442.8762,
+      "size": 538
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\navigation-menu.tsx": {
-      "hash": "076ba62c2d4292970470455ab9719badec7fedd74aaaaa40a7955cc366128e97",
-      "mtimeMs": 1784255458882.423,
-      "size": 7393
+      "hash": "946679b9762955037e95c11684b2035d583d3839609b4ad57e85e19d43d4655c",
+      "mtimeMs": 1784295736443.8755,
+      "size": 7561
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\pagination.tsx": {
-      "hash": "0aba86a91ba0a8d99e92846f10b395d0ddc1a8901a4f54418e8802c12fad57c1",
-      "mtimeMs": 1784255462842.9685,
-      "size": 2864
+      "hash": "3414c3d30de3756546d888b46eb33ea3e0e88b123b3b85317654a33d252445f7",
+      "mtimeMs": 1784295736443.8755,
+      "size": 2994
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\resizable.tsx": {
       "hash": "379baf7a1de109a1ea14419c99b76fbec1cb4f10d6ee13605b0b2940d615afeb",
@@ -1404,14 +1445,14 @@
       "size": 1671
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\select.tsx": {
-      "hash": "ca3bd1b370ea67b84632d435c22d8270752fa6013c06c365162af265e4a0e87e",
-      "mtimeMs": 1784255459292.1223,
-      "size": 6655
+      "hash": "63be1491cc58534c41f224d6ff0a3c0fb4a75fb1950cb9ff59fbdcce3f6a94c5",
+      "mtimeMs": 1784295736444.876,
+      "size": 6856
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\separator.tsx": {
-      "hash": "75085bd84ff6965e4a356c53a4689799cabf65caa93c0bba064d5a0c6fa78f13",
-      "mtimeMs": 1784255459737.6055,
-      "size": 545
+      "hash": "6f584fe7ab840824d05da0216f5b2c151c52026515b0bd6b6c2fdd5f95a96dbe",
+      "mtimeMs": 1784295736444.876,
+      "size": 570
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\skeleton.tsx": {
       "hash": "8110bba70d0cb9fe968c0b7bd092ad12258caef40b028b4a87f402bdab907faf",
@@ -1424,14 +1465,14 @@
       "size": 1226
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\switch.tsx": {
-      "hash": "c98e4b259d28463c34c65cdbfba447d5ccd4fed0a138b7acf8c796309e61e2d6",
-      "mtimeMs": 1784255460312.129,
-      "size": 1707
+      "hash": "a867d2818164ce182396b20fc3d3266447e54b4505b258a3ed5352484bd2a82f",
+      "mtimeMs": 1784295736444.876,
+      "size": 1739
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\tabs.tsx": {
-      "hash": "8bf9ee3935ab86c268a2a71cb5b4b67d3d5587ca9f2e0bf25f37ffdb1980434c",
-      "mtimeMs": 1784255460530.0095,
-      "size": 3497
+      "hash": "01e03ff649de3a406f63aeebc3ef3b10cf8a14e9a416ef30722b74b0cc516a57",
+      "mtimeMs": 1784295736445.8752,
+      "size": 3579
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\textarea.tsx": {
       "hash": "58b58d84fc54ba5f4ca46937870c619349fd9eccc4d494250ac7bc73a94e05e9",
@@ -1439,13 +1480,13 @@
       "size": 842
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\components\\ui\\tooltip.tsx": {
-      "hash": "2cea2294d4947b88d815860f64e0b5e0eb47a59bde47cfd194aac2230c923865",
-      "mtimeMs": 1784255460999.682,
-      "size": 2846
+      "hash": "7fa132aa8be94a3cf05823fb40bbe0f762785f9a9e9a5917c0ea8a14a478da13",
+      "mtimeMs": 1784295736445.8752,
+      "size": 2912
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\deepseek\\client\\config.tsx": {
       "hash": "cfbeb957993d607ff6a040b7e9479d7d63229d5b4786d1a3d8674ce4c0b48d12",
-      "mtimeMs": 1784265368030,
+      "mtimeMs": 1784295736446.8757,
       "size": 8305
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\deepseek\\client\\index.ts": {
@@ -1469,9 +1510,9 @@
       "size": 261
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\conversation.ts": {
-      "hash": "0cd52186a4019017c76a40da597d5fbf73435a38083c0dc46e6c41f7bc639364",
-      "mtimeMs": 1783597958733.8518,
-      "size": 4108
+      "hash": "24f3a5d45bd2508fa966fbb9840594b65a6117adc3810248726d9df9d83ba22f",
+      "mtimeMs": 1784349575805.1592,
+      "size": 4106
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\index.ts": {
       "hash": "3768b7b0075b24973bad8798bb99c5ecb38493f3d9cdd6ec62d1187064705eef",
@@ -1479,14 +1520,14 @@
       "size": 574
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\input-builder.tsx": {
-      "hash": "c6beedd803d4a78e9d44fcc873713a20e9d3df0e39809f9c232be1d28d7af3ce",
-      "mtimeMs": 1783597958735.8518,
-      "size": 5530
+      "hash": "94c0a24d9c812ef3f6b4af5cd8c2b8190de3e782e717dac7d9e829ee60acb0b4",
+      "mtimeMs": 1784349575805.1592,
+      "size": 5488
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\match-models.ts": {
-      "hash": "a5f2a41be5f708a426b177733c5f4702a4fabd74401ac7a0482171cf325a9d1e",
-      "mtimeMs": 1783597958735.8518,
-      "size": 689
+      "hash": "093f1cd0a7194d1e864b8a18d21cd554ba81df003f336a830561727541cfb502",
+      "mtimeMs": 1784349575806.1592,
+      "size": 729
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\match.ts": {
       "hash": "0e699166fb26fccf5bbfec933b335b7b30138663360c4d8ec0a5e03e97344be0",
@@ -1499,9 +1540,9 @@
       "size": 665
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\client\\preset-tab.tsx": {
-      "hash": "7169a80f60eb3267ec0330be482794dabbacdead19913b8635d1e0d0bed043c9",
-      "mtimeMs": 1784260922475,
-      "size": 11248
+      "hash": "8c536c4cc514eb5ccb0d3d4e4719c9ba6462fb319b3873e2c86c165c95d4a3d3",
+      "mtimeMs": 1784349575806.1592,
+      "size": 10150
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\match\\always\\client\\editor.tsx": {
       "hash": "61096cc7250a74c66df944e783ef8a6cd2ad3ef470bf150d290596fe594956df",
@@ -1544,9 +1585,9 @@
       "size": 2862
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\match\\normal\\client\\index.ts": {
-      "hash": "d498124139ec962a09f1c5f1bfe51a6fffee8647adf1183ee48d0ecd54c7f473",
-      "mtimeMs": 1783597958737.8513,
-      "size": 1528
+      "hash": "c0d5c4e050ee34782660be70123130dd55b27541a6b14f15f34233ffb2bc2c64",
+      "mtimeMs": 1784349575806.1592,
+      "size": 1526
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\lorebooks\\match\\normal\\models.ts": {
       "hash": "fd219ecbe20527d021af8f6426fe8bf77625464f3c4b7f3c4f06d48c1f93f292",
@@ -1644,9 +1685,9 @@
       "size": 253
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\client\\conversation.ts": {
-      "hash": "215ee68c5cb3156fbe213c7e220dcd3d2ec0ae32c8d966a7278e7deeeeb65787",
-      "mtimeMs": 1783597958748.8523,
-      "size": 5203
+      "hash": "e1bba1ede5ea8d05401a04c7be74cbb8b81d7e562a32b8a28b4fcbc8c99ece46",
+      "mtimeMs": 1784349575807.1592,
+      "size": 5201
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\client\\embedding.ts": {
       "hash": "44769bd02cb7aae9f6049d36b0c7d046fda31408369f0e913587383d1a5d1d84",
@@ -1659,18 +1700,18 @@
       "size": 571
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\client\\models.ts": {
-      "hash": "bb202831a69ad4baa56e06fc4efe6cb1f84c2e037ccde24ac19b5a52fb332af0",
-      "mtimeMs": 1783597958749.8523,
-      "size": 1936
+      "hash": "1cfb344207aec12075a474b43f95c9e330a08f4ae051a86f0e332793b1c9fb8b",
+      "mtimeMs": 1784349575807.1592,
+      "size": 1934
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\client\\setting-tab.tsx": {
       "hash": "00924c234d1e56849e43c06d2330b651fab74665f510f367776a95d85da33e64",
-      "mtimeMs": 1784260922471,
+      "mtimeMs": 1784295736447.8755,
       "size": 4413
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\embedding\\transformers\\client\\editor.tsx": {
       "hash": "6f0e4013e0703eaf099ac7bc1e87233bda6f0f61b5ce84becd9df1f98d242f18",
-      "mtimeMs": 1784260533371,
+      "mtimeMs": 1784295736447.8755,
       "size": 1536
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\rags\\embedding\\transformers\\client\\index.ts": {
@@ -1684,9 +1725,9 @@
       "size": 73
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\client\\conversation.ts": {
-      "hash": "fa7a561e78c0df6380c28fb98d73f060e0945bb4a248888489a77d3fb26cf350",
-      "mtimeMs": 1783597958753.851,
-      "size": 2998
+      "hash": "6573dfbf35cc62bb2c14583c766a87f3aaf520f532cb04efa3a774e87afe0fb8",
+      "mtimeMs": 1784349575807.1592,
+      "size": 2996
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\client\\index.ts": {
       "hash": "dd80aadc172158f8d59ea4396acc564a2036f532ce68f133b954acf5f35b7567",
@@ -1700,7 +1741,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\client\\preset-tab.tsx": {
       "hash": "f1356cde75ad1c45efb2e80823a9c7e6c86fd63592d3649b0ba093ad12772544",
-      "mtimeMs": 1784260922487,
+      "mtimeMs": 1784295736448.876,
       "size": 6830
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\regexes\\models.ts": {
@@ -1734,9 +1775,9 @@
       "size": 659
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\scripts\\client\\preset-tab.tsx": {
-      "hash": "e84b9788398fd83bc94021ef42cd8cdf7c177226e7345b81d5eb6ffb343c3cb7",
-      "mtimeMs": 1784260922479,
-      "size": 7516
+      "hash": "a5b72197ad535fc6e0db1e7e7277e7698dfa597cdb178206660d0d43437f2e93",
+      "mtimeMs": 1784349575808.1592,
+      "size": 6441
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\scripts\\models.ts": {
       "hash": "2db6acdf03886fbf4ee95dfc20c6708e001436d7bbc94ab534f2b6f563be024e",
@@ -1769,9 +1810,9 @@
       "size": 670
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\styles\\client\\preset-tab.tsx": {
-      "hash": "5da46f16e512af218fbae864d22f3415c9ef1b8e696f4678618fbe97503cf319",
-      "mtimeMs": 1784260675861,
-      "size": 7421
+      "hash": "da5bc0b614e4d4ee88d22ec98783bae1d3228d1ad4eabc0e666a7767a29a7791",
+      "mtimeMs": 1784349575808.1592,
+      "size": 6360
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\engines\\styles\\models.ts": {
       "hash": "7afa59c65c09c4b25055b47d8187f7775b19e00102d05f71082d8938392c3394",
@@ -1800,7 +1841,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\handler\\models.ts": {
       "hash": "ce300dd8f3d9574ab7a3b5fa0deab3e1f014ef2cb8c6613182a6ab9583470771",
-      "mtimeMs": 1784264809330,
+      "mtimeMs": 1784295736449.875,
       "size": 642
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\handler\\server\\error-interceptor.ts": {
@@ -1839,14 +1880,14 @@
       "size": 2489
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\combobox.tsx": {
-      "hash": "0ae4d3b473ef630fd0cc23a8a012ed0db7dc84840a235cb050102f9c94dac389",
-      "mtimeMs": 1784188750909.7727,
-      "size": 5133
+      "hash": "a80eb08c50ca6e795dfbbe60a7e49bce9c6af7ea388b0ada852a5274a845df1a",
+      "mtimeMs": 1784352965572,
+      "size": 7879
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\impoter-models.ts": {
-      "hash": "e6fbaefd19525386b74543fe3cb3db8ce191bdbbba7f23bb1914ab902e024d00",
-      "mtimeMs": 1784185952456.3345,
-      "size": 319
+      "hash": "4ca490470c2acb7800aa52deba476ca5662fab8df44ed78455389b2d8cc3aacd",
+      "mtimeMs": 1784295736450.876,
+      "size": 529
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\impoter.ts": {
       "hash": "4e9a8ae50fa1468ef3c3a9041585f3619b4678693698cb3d697cfe83eae1f149",
@@ -1854,54 +1895,184 @@
       "size": 422
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\index.ts": {
-      "hash": "c59cc528379a9500b8935e6ac1f933c643426795367fce859ff3a624098d5839",
-      "mtimeMs": 1784185952456.3345,
-      "size": 431
+      "hash": "2d7a88c6af1ac2b2f0a1d8a8be3f77a24b3a5b4717fdef35067eb4547608b014",
+      "mtimeMs": 1784295736451.8752,
+      "size": 1083
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\model-content.tsx": {
-      "hash": "81c33b7b2e976f3e21d3b3c0bb8f7404b0d87cf1381c608db17a4604e62fbcc9",
-      "mtimeMs": 1784260850410,
-      "size": 26228
+      "hash": "ccc14a2cc9f3f16cdd1f45a1d8fcab987a8d8bdd1a8e1633cffad0f0debfaae0",
+      "mtimeMs": 1784349575808.1592,
+      "size": 24275
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\models.ts": {
-      "hash": "87a995293c40aacae29bb6b46f56745e78aa692171857f5c1309fea7c815f89e",
-      "mtimeMs": 1784185952457.3384,
-      "size": 865
+      "hash": "0712364828d7bf1c29cbbac233ed6826712ed00021734cc9729383cc87489a80",
+      "mtimeMs": 1784353682207,
+      "size": 2404
     },
-    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\tabs.tsx": {
-      "hash": "1c6de6e79cf171b665cdce1a9f8033fa921ed7172c0ad5a44c812eb807f50cfe",
-      "mtimeMs": 1784185952457.3384,
-      "size": 3932
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\parameter-model.ts": {
+      "hash": "a9ef6bb7355f1114a0cf2d4e5e472b60a6f978361f3ce94f895179736a1f67fb",
+      "mtimeMs": 1784349575809.1587,
+      "size": 1253
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\parameter-tab.tsx": {
+      "hash": "624ef01995536e9d2f2d71f8f70220464625cbfecf859b1ae81e93c68f6398e0",
+      "mtimeMs": 1784349575809.1587,
+      "size": 6751
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\parameter.ts": {
+      "hash": "75c625192c81c7d3fc791dc6e51ec550ce5427ec0d4e3b3029e071082c63c224",
+      "mtimeMs": 1784349575809.1587,
+      "size": 899
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\setting-tab.tsx": {
+      "hash": "7223d84932c87de08bd4ecfe824f9eec7574d4f94597d2d524b841ce822b4b33",
+      "mtimeMs": 1784350953779,
+      "size": 2749
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\slot-feature\\comfyui-feature.tsx": {
+      "hash": "977f99ceb5b2425efbd31c29cf95c25c6823d2ea5211fa4b7539ed8f1319833d",
+      "mtimeMs": 1784349575810.1592,
+      "size": 604
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\slot-feature\\comfyui-generator.tsx": {
+      "hash": "7caddc322670ea2f8ecac18f3a22f9546dbef3117c3170ed50824f29d153a5d0",
+      "mtimeMs": 1784353796372,
+      "size": 5584
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\slot-feature\\story-image.tsx": {
+      "hash": "55c8a06b05173792b511beec3a6e93f1df98ab1d9e53f298c000bb2807e17515",
+      "mtimeMs": 1784349575810.1592,
+      "size": 1136
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\workflow-content.tsx": {
-      "hash": "130bb5531dcab394c15474ae38c31b4af38926db55cd9ac255aa1cbfadfd9903",
-      "mtimeMs": 1784188209331.0403,
-      "size": 4644
+      "hash": "00963fc544fc932784c1eaf8314aceaf7bee2548e5fe18283685d7ef59c3dc2f",
+      "mtimeMs": 1784295736454.8757,
+      "size": 4653
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\client\\workflow-tabs.tsx": {
-      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "mtimeMs": 1784267221254.4739,
-      "size": 0
+      "hash": "3990810e6f357c86facca5f8441388c0ec1182f51ea49853e260cb3dc90ee7eb",
+      "mtimeMs": 1784351152159,
+      "size": 4452
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\importers\\client\\civital-importer.tsx": {
-      "hash": "e3536c2bd750a833811658628a91c175c7bc07db582d09c32822cee9cacb8daf",
-      "mtimeMs": 1784188623852.4172,
-      "size": 3595
+      "hash": "0f7142d9d1afe9c088e46778f573661e5f0d2cb8814a5219ed5f1d0c1ae1af64",
+      "mtimeMs": 1784295736455.8752,
+      "size": 4075
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\models.ts": {
-      "hash": "c2b1260264f9c3f0f4c61ec341fc90653635c52f26e03118b199dd406fcdde01",
-      "mtimeMs": 1784185952459.3386,
-      "size": 445
+      "hash": "10ce48d1b6da2b2fb03781bccfbd605907e0a250efac37f533269fa1eaaef9ef",
+      "mtimeMs": 1784353675750,
+      "size": 1021
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\image-callback\\client\\editor.tsx": {
+      "hash": "29daabd8f694afd920695bf0160eb2eac31243114de73cf35256c7dc50549416",
+      "mtimeMs": 1784349575811.1592,
+      "size": 1060
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\image-callback\\client\\index.ts": {
+      "hash": "c654b08ed1638f3dd5e4f694b87f6abca1a969cb2849db4dc3756e2e184ed6dd",
+      "mtimeMs": 1784349575811.1592,
+      "size": 981
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\image-callback\\model.ts": {
+      "hash": "f6ba06137462b196e73a7fbf020dcd1cb468b35ab31d525a2f71a36dc559a4f9",
+      "mtimeMs": 1784349575811.1592,
+      "size": 62
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\llm-text-editor\\client\\editor.tsx": {
+      "hash": "8378757cf482ae913bfb98271f605b347c15e05c3cee203d28ef80525c6823ac",
+      "mtimeMs": 1784351190840,
+      "size": 8452
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\llm-text-editor\\client\\index.ts": {
+      "hash": "4c98f9694d647cf3c3a5a3d1ed58562336686da52b5953d17dc73ff4159f7fdd",
+      "mtimeMs": 1784349575812.16,
+      "size": 957
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\llm-text-editor\\model.ts": {
+      "hash": "2d3bef2d9d2d170b8e253d54fea1f992763facdcef7fc486ab0e6c1648338fcd",
+      "mtimeMs": 1784349575812.16,
+      "size": 110
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\model-selector\\client\\editor.tsx": {
+      "hash": "96ad13720fb98e0b478458b7d6c8b4f478ff16f7b57d2450cdb12884b2a7adf4",
+      "mtimeMs": 1784349575812.16,
+      "size": 3194
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\model-selector\\client\\index.ts": {
+      "hash": "8475f98d988efb66ff56261c73963071b131014a839543088b0ac52b1615d2cc",
+      "mtimeMs": 1784349575813.159,
+      "size": 1029
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\model-selector\\model.ts": {
+      "hash": "516c280d357d6730866ddab0a2f43d56580ac7f4551c8d0fe05a586b5d0ae784",
+      "mtimeMs": 1784349575813.159,
+      "size": 133
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\number-editor\\client\\editor.tsx": {
+      "hash": "5f105fc8d613ca00b4d4fc067ce9e8883e53e59763f9a3a8b1ae63ca8dfe1aa9",
+      "mtimeMs": 1784349575813.8625,
+      "size": 2454
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\number-editor\\client\\index.ts": {
+      "hash": "e881c407536cf1ed04c03d9b945471838a05333a4f966f1f41945f7f04a14bbd",
+      "mtimeMs": 1784349575814.3662,
+      "size": 999
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\number-editor\\model.ts": {
+      "hash": "126f3715143f41e2128653b93aab8d8f73da29549315dfa0ab0d0ee9e5917367",
+      "mtimeMs": 1784349575814.3662,
+      "size": 113
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\power-lora-selector\\client\\editor.tsx": {
+      "hash": "d975cec2c9851f76803d1de9b03de40096ca1ab2d61440e3acc9cd522deba705",
+      "mtimeMs": 1784351834429,
+      "size": 3489
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\power-lora-selector\\client\\index.ts": {
+      "hash": "676d6239c9704967c302ce3aeb56a260daa94a780ce3b95045eb7267bfe564e8",
+      "mtimeMs": 1784349575815.3706,
+      "size": 1788
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\power-lora-selector\\model.ts": {
+      "hash": "f4d5c11e4cf1723a14304ac22f1c33bca298ba54471a68e950f3facc945c5a05",
+      "mtimeMs": 1784349575815.3706,
+      "size": 197
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\text-editor\\client\\editor.tsx": {
+      "hash": "dddd4a38b447eb6713eadc7a4b1dab9c534ee6414d831792bf4e2a490bfeeee8",
+      "mtimeMs": 1784351227201,
+      "size": 2067
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\text-editor\\client\\index.ts": {
+      "hash": "0733c84708c8621a3ac246af69f5a1d427b3baea8cec4b4276fb2e23ba680642",
+      "mtimeMs": 1784349575815.3706,
+      "size": 954
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\parameters\\text-editor\\model.ts": {
+      "hash": "5d55d33f339f093de31e07cd239dcf09890af49d2530c256a1de078e6b4b5570",
+      "mtimeMs": 1784349575816.3706,
+      "size": 111
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\db-entities.ts": {
       "hash": "48cf523b917adeb5f4c8d7e0529d86043cecbf9c2a51b1a301f7dfa07bd4a95e",
       "mtimeMs": 1783996871024.0664,
       "size": 988
     },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\index.ts": {
+      "hash": "e4e13d1fe22c7f91f77ce82e3cddd7b1daada127082b4343b2c96747f2749386",
+      "mtimeMs": 1784295736460.8757,
+      "size": 253
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\parameter-storage.ts": {
+      "hash": "4bb2815661dff0eee894ea0021ede6bfb1ca974c60566de040788cb9fddbec6b",
+      "mtimeMs": 1784295736461.8752,
+      "size": 617
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\repository.ts": {
-      "hash": "0aceb7a9fab3cc75e504935c900df4d9e9ce3b8255483fd797af7170b91e9d36",
-      "mtimeMs": 1783996871024.0664,
-      "size": 1632
+      "hash": "49299cf407bb1c34a4f5946ed751c2da046746be1ef3b95d979881bb9f69c002",
+      "mtimeMs": 1784295736461.8752,
+      "size": 1121
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\comfyui\\server\\storage.ts": {
       "hash": "225fdf4b7664a59567c6608be4556ae63a167a755731255cf354abd1d7bbf91d",
@@ -1955,7 +2126,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\client\\tabs.tsx": {
       "hash": "a627c047dea698d7baee4cedd91bc8b7e76b37a807716a257d2f7049cc850a42",
-      "mtimeMs": 1784260922483,
+      "mtimeMs": 1784295736462.876,
       "size": 6432
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\models.ts": {
@@ -1979,9 +2150,9 @@
       "size": 368
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\server\\repository.ts": {
-      "hash": "86234d7faac0eb43a031ca64538e63afc2260300e533d69abb29d295e717c9b4",
-      "mtimeMs": 1783911247239.9182,
-      "size": 1009
+      "hash": "16c7d22cd3e225870ba398b540af66ababc48e9e0756db713e0affd5a4b9f502",
+      "mtimeMs": 1784295736462.876,
+      "size": 806
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\llmapis\\server\\storage.ts": {
       "hash": "05f215795fc36b5e331ed42cdf6da2caa47d355d61c5f24e92497d851aec1ded",
@@ -2024,9 +2195,9 @@
       "size": 685
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\server\\repository.ts": {
-      "hash": "3d9a99ae07e66e90584681a1df654ed7b0ecb6e7169f85cea4f6c350548034a0",
-      "mtimeMs": 1783913055576.4055,
-      "size": 991
+      "hash": "83233e4281c28a29608e0bc7f56c2c6fea43898386081f828e39a0c9895fd0c5",
+      "mtimeMs": 1784295736462.876,
+      "size": 788
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\presets\\server\\storage.ts": {
       "hash": "cf179d0628642269c266e56a0b1ad4fa0b24104110114793c7b384bc5ceb0708",
@@ -2050,7 +2221,7 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\settings\\client\\tabs.tsx": {
       "hash": "392e9ff475ecbe0f3d475897ce240525186cb4eafa16eeee90007ba6cd1e467f",
-      "mtimeMs": 1784260946918,
+      "mtimeMs": 1784295736463.8755,
       "size": 3633
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\settings\\models.ts": {
@@ -2079,9 +2250,9 @@
       "size": 2224
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\conversation.ts": {
-      "hash": "0c94d0e74627268ffecb0456be33eec9bbb0fc545c074cf5897f314815bcb2fb",
-      "mtimeMs": 1783678957478.5444,
-      "size": 3733
+      "hash": "6a871ca96456b7c611971ca18ef3f22e10b00419d966056ce40b8ae7826f7cd6",
+      "mtimeMs": 1784349575816.3706,
+      "size": 3718
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\feature.ts": {
       "hash": "75efa2b32aa4efd6b1822fba0657b32258913bcb298e18b3916f66ac6bd32b70",
@@ -2090,27 +2261,27 @@
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\history-deleter.tsx": {
       "hash": "8c731221ad9fe06c91e37ab8337bd735827adcece4f4af4551c2dbf2fefe3ebd",
-      "mtimeMs": 1784260054677,
+      "mtimeMs": 1784295736464.8757,
       "size": 6077
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\history-editor.tsx": {
-      "hash": "401601ec20c843c5d038bf16b1306e6dd691197b6f08f15ec2b01d3ca34b7965",
-      "mtimeMs": 1784260114465,
-      "size": 7502
+      "hash": "b0579e29125f30cfe69286974283c734196e613afc4f949b19d9888e8adf1403",
+      "mtimeMs": 1784349575816.3706,
+      "size": 6647
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\input-viewer.tsx": {
-      "hash": "9c441588b6092c5e2a03adcdaaf03bc9b4a12d59473c1c82e9049aa2b07493e8",
-      "mtimeMs": 1784260206847,
-      "size": 6087
+      "hash": "4f0a677f9709ac3911cc862c7d5414aa845e495faac12b7e1fabd3ac49dee4bc",
+      "mtimeMs": 1784349575817.3694,
+      "size": 6127
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\navigate-to-business.tsx": {
       "hash": "9145301cc7adcd51771aefbc627a3a2022778e648b7494d718ec66652c7c1571",
-      "mtimeMs": 1784260234285,
+      "mtimeMs": 1784295736466.8762,
       "size": 785
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\features\\regenerator.tsx": {
       "hash": "5f47c7b19bebde81a3febaaf55f39674454707e07b6b26cccd358110b3b4c9af",
-      "mtimeMs": 1784260259347,
+      "mtimeMs": 1784295736466.8762,
       "size": 1016
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\feeature-models.ts": {
@@ -2119,9 +2290,9 @@
       "size": 172
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\history-chatbox.tsx": {
-      "hash": "744448c006b231ef4c701acc744936450588448c9021f26320c2efcc63d32adb",
-      "mtimeMs": 1783597958807.855,
-      "size": 12074
+      "hash": "578bb7baafc4394438ae663bdfd1ca183666a05da91793679c8da9ee615a0187",
+      "mtimeMs": 1784349575817.3694,
+      "size": 12075
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\history-feature.tsx": {
       "hash": "96b2557b54e8b539f89f1ed163f8889d1467a4a60040e2d08dc932f56d5a0bf6",
@@ -2134,9 +2305,9 @@
       "size": 3508
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\index.ts": {
-      "hash": "8588ea89c272b93cda908661145151559a693bf0b1846bca3adc4db8d816244b",
-      "mtimeMs": 1783597958809.8533,
-      "size": 271
+      "hash": "55d9097d3ff57874fb83f3d1ee37e513405baef71f2f5dce318a2a5247730425",
+      "mtimeMs": 1784295736467.876,
+      "size": 272
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\models.ts": {
       "hash": "03d0267c0b13414506749c81cc413d5755aef7ac9f0ada3bacbe6f9c5e68023c",
@@ -2144,29 +2315,34 @@
       "size": 1803
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\client\\output-pager.tsx": {
-      "hash": "58fed4ad3d9208975166310188baa4f28c3fa547205755eeda9975ed255488c1",
-      "mtimeMs": 1783597958810.855,
-      "size": 5475
+      "hash": "35ccb70f2ed4918003d0459a1fe5bb517e20d797f269cd252d2aa65c1b1e1b3c",
+      "mtimeMs": 1784349575818.3713,
+      "size": 5515
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\slots\\models.ts": {
-      "hash": "bdd997f35a84b25d8ce32e657f1ac2bdd8b4b581b9f5c388b8aa403b875e3a42",
-      "mtimeMs": 1783597958810.855,
-      "size": 612
+      "hash": "867403171de12b3a7080bb082eda115ffea265c28e8a7db91626d69a8193d638",
+      "mtimeMs": 1784349575818.3713,
+      "size": 3800
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\content.tsx": {
       "hash": "1d2297e255c2795dda9a2955f5ac7b9e3092b2efc077c6bd15ff9acf34806f98",
-      "mtimeMs": 1784260283898,
+      "mtimeMs": 1784295736467.876,
       "size": 4771
     },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\image-tab.tsx": {
+      "hash": "ce389d0b05c46c8a2221c35febe0438e20ae32649490ce7800c30626d232a121",
+      "mtimeMs": 1784349575818.3713,
+      "size": 15379
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\index.ts": {
-      "hash": "8bf974f103b0a0d28fa99cd12c3150939425cbd726b0695dc09c1d75924962b7",
-      "mtimeMs": 1783597958812.8533,
-      "size": 253
+      "hash": "84e9ec509678d774ac828a9d8e351f9ccbe563cee449b95b793d2999bf0b29df",
+      "mtimeMs": 1784349575819.3699,
+      "size": 439
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\models.ts": {
-      "hash": "901c522b694e48040086271e45cde588ffd9e39193ceaaa41c64a37bff610c52",
-      "mtimeMs": 1784185952462.3384,
-      "size": 581
+      "hash": "86d4fc88e25527acf52b8636f37321d327e51a8cd30142e7717dbb3524a1ebc3",
+      "mtimeMs": 1784349575819.3699,
+      "size": 1074
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\client\\tabs.tsx": {
       "hash": "998998bcb91966760c7bb9c2b837b08c81637ac66f96de72052e9809183d0817",
@@ -2174,9 +2350,9 @@
       "size": 3588
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\models.ts": {
-      "hash": "688ac0614243465d8819d6d98ee4a04512517aadddbc741a64eefce13bc74319",
-      "mtimeMs": 1783597958814.8545,
-      "size": 3936
+      "hash": "58d5389874b253e68de25c919b19f14aaecbe405cc7c0b57d62b40e6512b0c73",
+      "mtimeMs": 1784349575819.3699,
+      "size": 990
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\server\\db-entities.ts": {
       "hash": "8a2c0699e865271e1c47b9b8c2ea83d820e3b67127496571508b26edf23547c5",
@@ -2184,9 +2360,9 @@
       "size": 641
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\server\\repository.ts": {
-      "hash": "23ca298178fc2151593a6444049ab575d056033644d70c18738f263d4e7f462d",
-      "mtimeMs": 1783913020378.618,
-      "size": 854
+      "hash": "2b915da153a10d37e11b6639b5ac2a95f3fbdfa53f1f699501c0e3702d44cb12",
+      "mtimeMs": 1784295736468.8757,
+      "size": 658
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\modules\\stories\\server\\storage.ts": {
       "hash": "9beb12d6ec7bd0a9a04fd7e53f2aeedfedbdff4b69c75bf7674ba9eddb611b27",
@@ -2239,14 +2415,14 @@
       "size": 217
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\schema.d.ts": {
-      "hash": "f52af7e9b18db926c059d5e966ad8fbb51f2b9118b85f70fc806bc9f2a5b0067",
-      "mtimeMs": 1783996871025.0664,
-      "size": 92105
+      "hash": "d4b0ec34b0e111c5a67413b56ea02f57983ed6749a6e472fef3c175be99bd7df",
+      "mtimeMs": 1784349575820.3706,
+      "size": 100670
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\server-registerer.ts": {
-      "hash": "deca70ba0ca5fb0306c5b75188e0a126e1e7bc57b9fe73642fd0b3ae7f22e544",
-      "mtimeMs": 1782810570011.3281,
-      "size": 1507
+      "hash": "533377bfaf4ca1f88da8baeab2c137d321cd6c7b0f5bd882779a2015ef66a73c",
+      "mtimeMs": 1784295736469.8757,
+      "size": 1604
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\utils\\index.ts": {
       "hash": "8258f6dee1566dc8012b991e73970a21b5f191bd271822aea2be359a260893b8",
@@ -2281,37 +2457,95 @@
   },
   "outputFile": "D:\\Projects\\ai\\secyud-tavern\\public\\openapi.json",
   "performance": {
-    "prepareTemplateMs": 0.09299999999996089,
-    "loadCustomFragmentsMs": 0.0009000000000014552,
-    "prepareDocumentMs": 0.09389999999996235,
-    "scanRouteFilesMs": 3.263400000000047,
-    "deriveRoutePathMs": 0.748499999999467,
-    "filterRouteCandidatesMs": 0.04819999999949687,
-    "sourcePrecheckMs": 4.595499999998765,
-    "readRouteFilesMs": 2.257200000000239,
-    "parseRouteFilesMs": 4.393700000000081,
-    "analyzeRouteFilesMs": 14.340099999999893,
+    "prepareTemplateMs": 0.07130000000000791,
+    "loadCustomFragmentsMs": 0.0004999999999881766,
+    "prepareDocumentMs": 0.07179999999999609,
+    "scanRouteFilesMs": 3.0521999999999707,
+    "deriveRoutePathMs": 0.609199999999646,
+    "filterRouteCandidatesMs": 0.04459999999949105,
+    "sourcePrecheckMs": 4.242599999999811,
+    "readRouteFilesMs": 2.2741000000015674,
+    "parseRouteFilesMs": 8.757299999999873,
+    "analyzeRouteFilesMs": 13.169300000000817,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 19.87049999999931,
-    "registerRouteMs": 2809.1640999999995,
-    "getSchemaContentMs": 28.418800000001283,
-    "createRequestParamsMs": 0.6511000000027707,
+    "processRouteFilesMs": 23.016900000001215,
+    "registerRouteMs": 2631.4984000000004,
+    "getSchemaContentMs": 2389.3353000000016,
+    "createRequestParamsMs": 0.6720999999984087,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 283.5802999999987,
+    "processResponsesMs": 237.9956999999995,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2826.7648000000004,
-    "sortAndMergePathsMs": 1.1532999999999447,
-    "buildPathsMs": 1.1532999999999447,
-    "defaultComponentsAndErrorsMs": 0.21259999999983847,
-    "mergeSchemasMs": 0.31380000000081054,
-    "zodPreScanMs": 367.7958000000001,
-    "zodPreprocessMs": 63.11539999999741,
-    "zodConvertMs": 299.5776000000001,
-    "finalizeDocumentMs": 12.358299999999872,
-    "totalMs": 3316.4293000000007,
-    "scanRoutesMs": 2849.8986999999997
+    "buildOperationsMs": 2648.8040000000015,
+    "sortAndMergePathsMs": 1.2863000000002103,
+    "buildPathsMs": 1.2863000000002103,
+    "defaultComponentsAndErrorsMs": 0.23289999999997235,
+    "mergeSchemasMs": 0.38220000000001164,
+    "zodPreScanMs": 370.61210000000005,
+    "zodPreprocessMs": 75.87399999999923,
+    "zodConvertMs": 291.8986999999995,
+    "finalizeDocumentMs": 7.259799999999814,
+    "totalMs": 3151.4730999999997,
+    "scanRoutesMs": 2674.8731000000025
   },
   "routeFragments": {
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts": {
+      "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/generate\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
+      "diagnostics": [
+        {
+          "code": "schema-not-found",
+          "severity": "warning",
+          "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
+          "metadata": {
+            "typeName": "any",
+            "contextFile": null,
+            "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+          }
+        }
+      ],
+      "internalSchemas": {},
+      "mtimeMs": 1784353783672,
+      "paths": {
+        "/comfyuis/generate": {
+          "post": {
+            "operationId": "post-comfyuis-generate",
+            "summary": "",
+            "description": "",
+            "tags": [
+              "Comfyuis"
+            ],
+            "parameters": [],
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/any"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          }
+        }
+      },
+      "schemas": {
+        "any": {}
+      },
+      "size": 1071,
+      "tags": {
+        "Comfyuis": {
+          "name": "Comfyuis"
+        }
+      },
+      "webhooks": {}
+    },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\disabled\\route.ts": {
       "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
       "diagnostics": [
@@ -2387,11 +2621,7 @@
       },
       "schemas": {},
       "size": 382,
-      "tags": {
-        "Comfyuis": {
-          "name": "Comfyuis"
-        }
-      },
+      "tags": {},
       "webhooks": {}
     },
     "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\[id]\\entries\\[entryType]\\[entryId]\\route.ts": {
@@ -2410,17 +2640,6 @@
               "entryId"
             ],
             "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
-          }
-        },
-        {
-          "code": "schema-not-found",
-          "severity": "warning",
-          "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
-          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
-          "metadata": {
-            "typeName": "any",
-            "contextFile": null,
-            "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
           }
         },
         {
@@ -2455,7 +2674,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1784267807921,
+      "mtimeMs": 1784295736424.8767,
       "paths": {
         "/comfyuis/models/{id}/entries/{entryType}/{entryId}": {
           "get": {
@@ -2623,9 +2842,7 @@
           }
         }
       },
-      "schemas": {
-        "any": {}
-      },
+      "schemas": {},
       "size": 785,
       "tags": {},
       "webhooks": {}
@@ -2651,7 +2868,7 @@
           "code": "schema-not-found",
           "severity": "warning",
           "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
           "metadata": {
             "typeName": "T",
             "contextFile": null,
@@ -2662,7 +2879,7 @@
           "code": "schema-not-found",
           "severity": "warning",
           "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
           "metadata": {
             "typeName": "T",
             "contextFile": null,
@@ -2910,7 +3127,7 @@
           "code": "schema-not-found",
           "severity": "warning",
           "message": "No TypeScript or Zod schema definition found for \"ReadableStream\"; emitting an empty schema.",
-          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
           "metadata": {
             "typeName": "ReadableStream",
             "contextFile": null,
@@ -3431,7 +3648,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1784267811878,
+      "mtimeMs": 1784295736425.8767,
       "paths": {
         "/comfyuis/workflows/{id}/entries/{entryType}/{entryId}": {
           "get": {
@@ -3856,6 +4073,71 @@
       },
       "schemas": {},
       "size": 318,
+      "tags": {},
+      "webhooks": {}
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts": {
+      "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/comfyuis/workflows/{id}/generate-parameters\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
+      "diagnostics": [
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /comfyuis/workflows/{id}/generate-parameters contains path parameters id but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts",
+          "routePath": "/comfyuis/workflows/{id}/generate-parameters",
+          "metadata": {
+            "pathParams": [
+              "id"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
+        }
+      ],
+      "internalSchemas": {},
+      "mtimeMs": 1784350680133,
+      "paths": {
+        "/comfyuis/workflows/{id}/generate-parameters": {
+          "post": {
+            "operationId": "post-comfyuis-workflows-{id}-generate-parameters",
+            "summary": "",
+            "description": "",
+            "tags": [
+              "Comfyuis"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              }
+            ],
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/any"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          }
+        }
+      },
+      "schemas": {},
+      "size": 4557,
       "tags": {},
       "webhooks": {}
     },
@@ -4373,7 +4655,7 @@
           "code": "schema-not-found",
           "severity": "warning",
           "message": "No TypeScript or Zod schema definition found for \"LlmInputModel\"; emitting an empty schema.",
-          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
           "metadata": {
             "typeName": "LlmInputModel",
             "contextFile": null,
@@ -4573,7 +4855,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1784267811871,
+      "mtimeMs": 1784295736425.8767,
       "paths": {
         "/llmapis/{id}/entries/{entryType}/{entryId}": {
           "get": {
@@ -5467,7 +5749,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1784267811876,
+      "mtimeMs": 1784295736426.876,
       "paths": {
         "/presets/{id}/entries/{entryType}/{entryId}": {
           "get": {
@@ -6486,7 +6768,7 @@
         }
       ],
       "internalSchemas": {},
-      "mtimeMs": 1784267745556,
+      "mtimeMs": 1784295736427.8765,
       "paths": {
         "/stories/{id}/entries/{entryType}/{entryId}": {
           "get": {
@@ -6911,6 +7193,71 @@
       },
       "schemas": {},
       "size": 318,
+      "tags": {},
+      "webhooks": {}
+    },
+    "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts": {
+      "cacheKey": "{\"authPresets\":{\"bearer\":\"BearerAuth\",\"basic\":\"BasicAuth\",\"apikey\":\"ApiKeyAuth\"},\"defaultResponseSet\":\"common\",\"errorConfig\":{\"template\":{\"type\":\"object\",\"properties\":{\"error\":{\"type\":\"string\",\"example\":\"{{ERROR_MESSAGE}}\"},\"code\":{\"type\":\"string\",\"example\":\"{{ERROR_CODE}}\"}}},\"codes\":{\"400\":{\"description\":\"Bad Request\",\"variables\":{\"ERROR_MESSAGE\":\"Invalid request parameters\",\"ERROR_CODE\":\"BAD_REQUEST\"}},\"401\":{\"description\":\"Unauthorized\",\"variables\":{\"ERROR_MESSAGE\":\"Authentication required\",\"ERROR_CODE\":\"UNAUTHORIZED\"}},\"403\":{\"description\":\"Forbidden\",\"variables\":{\"ERROR_MESSAGE\":\"Access denied\",\"ERROR_CODE\":\"FORBIDDEN\"}},\"404\":{\"description\":\"Not Found\",\"variables\":{\"ERROR_MESSAGE\":\"Resource not found\",\"ERROR_CODE\":\"NOT_FOUND\"}},\"409\":{\"description\":\"Conflict\",\"variables\":{\"ERROR_MESSAGE\":\"Resource already exists\",\"ERROR_CODE\":\"CONFLICT\"}},\"500\":{\"description\":\"Internal Server Error\",\"variables\":{\"ERROR_MESSAGE\":\"An unexpected errors occurred\",\"ERROR_CODE\":\"INTERNAL_ERROR\"}}}},\"excludeSchemas\":[],\"framework\":{\"kind\":\"nextjs\",\"router\":\"app\"},\"ignoreRoutes\":[],\"includeOpenApiRoutes\":false,\"openapiVersion\":\"3.0\",\"responseSets\":{\"common\":[\"400\",\"500\"],\"auth\":[\"400\",\"401\",\"403\",\"500\"],\"public\":[\"400\",\"500\"]},\"routePath\":\"/stories/{id}/images\",\"schemaBackends\":[\"zod\"],\"schemaFiles\":[]}",
+      "diagnostics": [
+        {
+          "code": "missing-path-params-type",
+          "severity": "warning",
+          "message": "Route /stories/{id}/images contains path parameters id but no @pathParams type is defined.",
+          "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts",
+          "routePath": "/stories/{id}/images",
+          "metadata": {
+            "pathParams": [
+              "id"
+            ],
+            "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+          }
+        }
+      ],
+      "internalSchemas": {},
+      "mtimeMs": 1784349575803.1592,
+      "paths": {
+        "/stories/{id}/images": {
+          "post": {
+            "operationId": "post-stories-{id}-images",
+            "summary": "更新条目",
+            "description": "",
+            "tags": [
+              "Stories"
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                },
+                "example": "123",
+                "description": "Path parameter: id"
+              }
+            ],
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/any"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "400": {
+                "$ref": "#/components/responses/400"
+              },
+              "500": {
+                "$ref": "#/components/responses/500"
+              }
+            }
+          }
+        }
+      },
+      "schemas": {},
+      "size": 1223,
       "tags": {},
       "webhooks": {}
     },
@@ -8223,5 +8570,5 @@
       "webhooks": {}
     }
   },
-  "updatedAt": "2026-07-17T05:56:59.170Z"
+  "updatedAt": "2026-07-18T05:50:03.018Z"
 }

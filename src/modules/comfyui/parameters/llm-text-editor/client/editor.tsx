@@ -19,16 +19,13 @@ import {LlmapiInputModel} from "@/modules/slots/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
+import {LlmTextEditorConfig} from "../model";
+import {submitTargetFormOnKey} from "@/business/client";
 
-export interface Config {
-    nodeId: string;
-    nodeName: string;
-    textPrompt: string;
-}
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as LlmTextEditorConfig;
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -52,7 +49,8 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}
                       name={`text_prompt`}
-                      defaultValue={config?.textPrompt}/>
+                      defaultValue={config?.textPrompt}
+                      onKeyDown={submitTargetFormOnKey}/>
         </Field>
     </>;
 }
@@ -73,7 +71,7 @@ export function setReplyAbortController(ctx: RefObject<SlotDataModel>) {
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const config = entry.config as Config;
+    const config = entry.config as LlmTextEditorConfig;
     const {handleError} = useErrorHandler();
 
     const ctx = useSlotContext();
@@ -186,6 +184,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             <Textarea id={`${engineName}-text-${entry.id}`}
                       name={`text_prompt`}
                       value={prompt}
+                      onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setPrompt(e.target.value)}/>
         </Field>
         <Field>
@@ -211,6 +210,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             <Textarea id={`${engineName}-text-${entry.id}`}
                       name={`text-${entry.id}`}
                       value={text}
+                      onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setText(e.target.value)}/>
         </Field>
     </>;

@@ -22,10 +22,9 @@ import {
     parameterEntryPlural
 } from "@/modules/comfyui/models";
 import {useErrorHandler} from "@/handler/client/error";
-import {get} from "@/client";
+import {get, post} from "@/client";
 import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {BusinessError} from "@/handler/models";
-import {useComfyUISettingState} from "@/modules/comfyui/client/models";
 
 export function ComfyUIGenerator() {
     const t = useTranslations();
@@ -36,12 +35,12 @@ export function ComfyUIGenerator() {
     const [parameters, setParameters] = useState<ComfyUIParameterModel[]>([]);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const handleWorkflowChange = async (id: string | null) => {
+    const handleWorkflowChange = async (workflow: ComfyUIWorkflowModel | null) => {
         try {
-            if (!id) return;
-            const workflow = await get('/comfyuis/workflows/{id}', {
+            if (!workflow) return;
+            workflow = await get('/comfyuis/workflows/{id}', {
                 params: {
-                    id, withDetails: true
+                    id: workflow.id, withDetails: true
                 },
             }) as ComfyUIWorkflowModel;
             if (workflow && workflow.entries && workflow.entries[parameterEntryPlural]) {
@@ -76,18 +75,9 @@ export function ComfyUIGenerator() {
                 if (!editor) {
                     continue;
                 }
-                editor.setInputData(data, parameter, input);
+                editor.setInputData({data, entry: parameter, model: workflow}, input);
             }
-
-            const {baseUrl, clientId} = useComfyUISettingState.getState();
-
-            const response = await fetch(`${baseUrl}/prompt`, {
-                body: JSON.stringify({
-                    client_id: clientId,
-                    prompt: input
-                }),
-            })
-            const {prompt_id} = await response.json();
+            const {prompt_id} = await post('/comfyuis/generate', input);
             console.log(t("comfyui.prompt_sent", {target: prompt_id}));
             handleSuccess(t("comfyui.prompt_sent", {target: prompt_id}));
             setOpen(false)
@@ -107,11 +97,11 @@ export function ComfyUIGenerator() {
                 <p>{t('comfyui.generate_img')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className={'overflow-auto'} style={{maxWidth: '86%', height: '86%'}}>
             {history && (
                 <form action={handleImageGenerate} ref={formRef}>
                     <DialogHeader>
-                        <DialogTitle>{t('slot.edit_history')}</DialogTitle>
+                        <DialogTitle>{t('comfyui.generate_img')}</DialogTitle>
                     </DialogHeader>
                     <FieldSet>
                         <FieldGroup>
@@ -120,13 +110,13 @@ export function ComfyUIGenerator() {
                             </FieldLabel>
                             <ComfyUIWorkflowCombobox
                                 name={'workflow'} id={'workflow-select'}
-                                value={workflow?.id} onValueChange={handleWorkflowChange}/>
+                                onValueChange={handleWorkflowChange}/>
                         </FieldGroup>
                         {
                             parameters.map(u => {
                                 const editor = comfyUIParameterRegistry.records[u.type];
                                 const Component = editor.inputComponent;
-                                return Component ? <Component formRef={formRef} entry={u}/> : null;
+                                return Component ? <Component key={u.id} formRef={formRef} entry={u}/> : null;
                             })
                         }
 

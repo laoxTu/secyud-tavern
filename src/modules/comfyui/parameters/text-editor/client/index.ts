@@ -1,11 +1,12 @@
 import {ComfyUIParameter} from "@/modules/comfyui/client/parameter-model";
-import {Config, EditorComponent, InputComponent} from "./editor";
+import {EditorComponent, InputComponent} from "./editor";
+import {TextEditorConfig} from "../model";
 
 export const textEditor: ComfyUIParameter =
     {
         id: "text_editor",
         editorComponent: EditorComponent,
-        getEditorValue(data, entry): Config {
+        getEditorValue({data, entry}): TextEditorConfig {
             return {
                 nodeId: data.get('node_id') as string,
                 nodeName: data.get('node_name') as string,
@@ -13,8 +14,8 @@ export const textEditor: ComfyUIParameter =
             };
         },
         inputComponent: InputComponent,
-        setInputData(data, entry, input): void {
-            const config = entry.config as Config;
+        setInputData({data, entry}, input): void {
+            const config = entry.config as TextEditorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
                 inputs[config.nodeName] = data.get(`text_${entry.id}`);

@@ -3,6 +3,17 @@
   "outputFile": "D:\\Projects\\ai\\secyud-tavern\\public\\openapi.json",
   "diagnostics": [
     {
+      "code": "schema-not-found",
+      "severity": "warning",
+      "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
+      "metadata": {
+        "typeName": "any",
+        "contextFile": null,
+        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
+      }
+    },
+    {
       "code": "missing-path-params-type",
       "severity": "warning",
       "message": "Route /comfyuis/models/{id}/entries/{entryType}/{entryId}/disabled contains path parameters id, entryType, entryId but no @pathParams type is defined.",
@@ -30,17 +41,6 @@
           "entryId"
         ],
         "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
-      }
-    },
-    {
-      "code": "schema-not-found",
-      "severity": "warning",
-      "message": "No TypeScript or Zod schema definition found for \"any\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
-      "metadata": {
-        "typeName": "any",
-        "contextFile": null,
-        "suggestedFix": "Add the type to schemaDir, export it from an indexed schema file, or reference an explicit @response/@body/@params schema."
       }
     },
     {
@@ -91,7 +91,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "T",
         "contextFile": null,
@@ -102,7 +102,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"T\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "T",
         "contextFile": null,
@@ -140,7 +140,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"ReadableStream\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "ReadableStream",
         "contextFile": null,
@@ -290,6 +290,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /comfyuis/workflows/{id}/generate-parameters contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\generate-parameters\\route.ts",
+      "routePath": "/comfyuis/workflows/{id}/generate-parameters",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /comfyuis/workflows/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\workflows\\[id]\\route.ts",
       "routePath": "/comfyuis/workflows/{id}",
@@ -369,7 +382,7 @@
       "code": "schema-not-found",
       "severity": "warning",
       "message": "No TypeScript or Zod schema definition found for \"LlmInputModel\"; emitting an empty schema.",
-      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\models\\import\\route.ts",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\comfyuis\\generate\\route.ts",
       "metadata": {
         "typeName": "LlmInputModel",
         "contextFile": null,
@@ -786,6 +799,19 @@
     {
       "code": "missing-path-params-type",
       "severity": "warning",
+      "message": "Route /stories/{id}/images contains path parameters id but no @pathParams type is defined.",
+      "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\images\\route.ts",
+      "routePath": "/stories/{id}/images",
+      "metadata": {
+        "pathParams": [
+          "id"
+        ],
+        "suggestedFix": "Add @pathParams <SchemaName>, validate context.params in the handler, or export matching <paramName>Schema helpers."
+      }
+    },
+    {
+      "code": "missing-path-params-type",
+      "severity": "warning",
       "message": "Route /stories/{id} contains path parameters id but no @pathParams type is defined.",
       "filePath": "D:\\Projects\\ai\\secyud-tavern\\src\\app\\api\\stories\\[id]\\route.ts",
       "routePath": "/stories/{id}",
@@ -837,34 +863,34 @@
     }
   ],
   "performance": {
-    "prepareTemplateMs": 0.09299999999996089,
-    "loadCustomFragmentsMs": 0.0009000000000014552,
-    "prepareDocumentMs": 0.09389999999996235,
-    "scanRouteFilesMs": 3.263400000000047,
-    "deriveRoutePathMs": 0.748499999999467,
-    "filterRouteCandidatesMs": 0.04819999999949687,
-    "sourcePrecheckMs": 4.595499999998765,
-    "readRouteFilesMs": 2.257200000000239,
-    "parseRouteFilesMs": 4.393700000000081,
-    "analyzeRouteFilesMs": 14.340099999999893,
+    "prepareTemplateMs": 0.07130000000000791,
+    "loadCustomFragmentsMs": 0.0004999999999881766,
+    "prepareDocumentMs": 0.07179999999999609,
+    "scanRouteFilesMs": 3.0521999999999707,
+    "deriveRoutePathMs": 0.609199999999646,
+    "filterRouteCandidatesMs": 0.04459999999949105,
+    "sourcePrecheckMs": 4.242599999999811,
+    "readRouteFilesMs": 2.2741000000015674,
+    "parseRouteFilesMs": 8.757299999999873,
+    "analyzeRouteFilesMs": 13.169300000000817,
     "typescriptResponseInferenceMs": 0,
-    "processRouteFilesMs": 19.87049999999931,
-    "registerRouteMs": 2809.1640999999995,
-    "getSchemaContentMs": 28.418800000001283,
-    "createRequestParamsMs": 0.6511000000027707,
+    "processRouteFilesMs": 23.016900000001215,
+    "registerRouteMs": 2631.4984000000004,
+    "getSchemaContentMs": 2389.3353000000016,
+    "createRequestParamsMs": 0.6720999999984087,
     "createRequestBodyMs": 0,
-    "processResponsesMs": 283.5802999999987,
+    "processResponsesMs": 237.9956999999995,
     "createResponseSchemaMs": 0,
-    "buildOperationsMs": 2826.7648000000004,
-    "sortAndMergePathsMs": 1.1532999999999447,
-    "buildPathsMs": 1.1532999999999447,
-    "defaultComponentsAndErrorsMs": 0.21259999999983847,
-    "mergeSchemasMs": 0.31380000000081054,
-    "zodPreScanMs": 367.7958000000001,
-    "zodPreprocessMs": 63.11539999999741,
-    "zodConvertMs": 299.5776000000001,
-    "finalizeDocumentMs": 12.358299999999872,
-    "totalMs": 3316.4293000000007,
-    "scanRoutesMs": 2849.8986999999997
+    "buildOperationsMs": 2648.8040000000015,
+    "sortAndMergePathsMs": 1.2863000000002103,
+    "buildPathsMs": 1.2863000000002103,
+    "defaultComponentsAndErrorsMs": 0.23289999999997235,
+    "mergeSchemasMs": 0.38220000000001164,
+    "zodPreScanMs": 370.61210000000005,
+    "zodPreprocessMs": 75.87399999999923,
+    "zodConvertMs": 291.8986999999995,
+    "finalizeDocumentMs": 7.259799999999814,
+    "totalMs": 3151.4730999999997,
+    "scanRoutesMs": 2674.8731000000025
   }
 }

@@ -1,5 +1,10 @@
 import {BaseModel, EntryModel} from "@/business/models";
 
+export interface ComfyUISettingState {
+    baseUrl: string;
+    clientId: string;
+}
+
 // ComfyUI 模型
 export interface ComfyUIModelModel extends BaseModel {
     code: string;
@@ -13,9 +18,7 @@ export interface ComfyUIWorkflowModel extends BaseModel {
 
 export interface ComfyUIWorkflowInput {
     [key: string]: {
-        inputs: {
-            [key: string]: number | string | boolean | [string, number] | any;
-        }
+        inputs: Record<string, number | string | boolean | [string, number] | any>;
         class_type: string;
         _meta: {
             title: string;

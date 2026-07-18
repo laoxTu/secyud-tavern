@@ -7,7 +7,7 @@ import {ApiError} from "@/handler/client/models";
 
 type Paths = paths;
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'open';
-const getBaseUrl = () => {
+export const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin
     }
@@ -38,13 +38,10 @@ const buildUrl = (url: string, params?: Record<string, any>) => {
         const value = params[key];
         if (value === undefined) {
             delete params[key];
-        }
-        else if (result.includes(`{${key}}`))
-        {
+        } else if (result.includes(`{${key}}`)) {
             result = result.replace(`{${key}}`, String(value));
             delete params[key];
-        }
-        else if (typeof value === 'object'){
+        } else if (typeof value === 'object') {
             params[key] = JSON.stringify(value);
         }
     }
@@ -54,7 +51,7 @@ const buildUrl = (url: string, params?: Record<string, any>) => {
         `${result}?${queryString}` : result;
 }
 
-interface RequestOptions{
+interface RequestOptions {
     params?: Record<string, any>;
     body?: any;
     headers?: HeadersInit;
