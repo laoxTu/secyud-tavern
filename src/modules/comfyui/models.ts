@@ -3,12 +3,24 @@ import {BaseModel, EntryModel} from "@/business/models";
 export interface ComfyUISettingState {
     baseUrl: string;
     clientId: string;
+    modelDir: string;
 }
 
 // ComfyUI 模型
 export interface ComfyUIModelModel extends BaseModel {
     code: string;
     type: string;
+}
+
+export interface ComfyUIModelContentModel {
+    coverId?: string,
+    coverSrc?: string,
+    description?: string,
+    path?: string,
+    url?: string,
+    html?: string,
+    baseModel?: string,
+    downloadUrl?: string,
 }
 
 // ComfyUI 工作流

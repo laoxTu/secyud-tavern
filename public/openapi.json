@@ -1647,6 +1647,46 @@
         }
       }
     },
+    "/comfyuis/models/{id}/download": {
+      "post": {
+        "operationId": "post-comfyuis-models-{id}-download",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Comfyuis"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123",
+            "description": "Path parameter: id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/any"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/comfyuis/models/{id}/export": {
       "get": {
         "operationId": "get-comfyuis-models-{id}-export",

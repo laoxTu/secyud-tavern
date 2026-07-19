@@ -1,6 +1,6 @@
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
 import {Field, FieldLabel} from "@/components/ui/field";
-import {ComfyUIModelModel, moduleName} from "@/modules/comfyui/models";
+import {ComfyUIModelContentModel, ComfyUIModelModel, moduleName} from "@/modules/comfyui/models";
 import {Input} from "@/components/ui/input";
 import React from "react";
 import {useTranslations} from "next-intl";
@@ -80,21 +80,21 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
                 const {name: fileName} = fileInfo;
                 const type = typeMap[fileInfo.type === "Model" ? modelMeta.type : fileInfo.type];
                 if (!type) continue;
+                const content: ComfyUIModelContentModel = {
+                    url: `${civitaiUrl}/model-versions/${modelVersionId}`,
+                    path: fileName,
+                    description: `${meta.name} - ${fileName}`,
+                    html: meta.description,
+                    downloadUrl: meta.downloadUrl,
+                    coverSrc: imageSrc,
+                    baseModel: meta.baseModel,
+                };
                 const model: ComfyUIModelModel = {
                     id: "",
                     code: fileName,
                     name: modelMeta.name,
                     type,
-                    content: {
-                        url: `${civitaiUrl}/model-versions/${modelVersionId}`,
-                        path: fileName,
-                        description: `${meta.name} - ${fileName}`,
-                        html: meta.description,
-                        downloadUrl: meta.downloadUrl,
-                        coverSrc: imageSrc,
-                        baseModel: meta.baseModel,
-                    },
-
+                    content
                 };
                 res.push(model);
             }

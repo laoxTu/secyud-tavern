@@ -11,7 +11,7 @@ import {Input} from "@/components/ui/input";
 
 function Tab() {
     const t = useTranslations();
-    const {baseUrl, clientId} = useComfyUISettingState();
+    const {baseUrl, clientId, modelDir} = useComfyUISettingState();
     const {handleError, handleSuccess} = useErrorHandler();
 
     const handleSubmit = async (data: FormData) => {
@@ -19,6 +19,7 @@ function Tab() {
             useComfyUISettingState.setState({
                 baseUrl: data.get("base_url") as string,
                 clientId: data.get("client_id") as string,
+                modelDir: data.get("model_dir") as string,
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
@@ -44,6 +45,13 @@ function Tab() {
                                 </FieldLabel>
                                 <Input id="setting-comfyui-client_id" name={'client_id'}
                                        defaultValue={clientId ?? "secyud-tavern"}/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="setting-comfyui-model_dir">
+                                    {t("comfyui.model_dir")}
+                                </FieldLabel>
+                                <Input id="setting-comfyui-model_dir" name={'model_dir'}
+                                       defaultValue={modelDir ?? "/data"}/>
                             </Field>
                         </div>
                     </FieldGroup>

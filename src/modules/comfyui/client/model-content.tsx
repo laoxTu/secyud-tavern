@@ -2,7 +2,12 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {TabConfig} from "@/components/custom/tab";
-import {ComfyUIModelModel, modelTypes, moduleName} from "../models";
+import {
+    ComfyUIModelContentModel,
+    ComfyUIModelModel,
+    modelTypes,
+    moduleName,
+} from "../models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {PaginationWrapper} from "@/components/custom/pager";
 import {useModelPagedItemsState} from "@/modules/comfyui/client/models";
@@ -19,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button, buttonVariants} from "@/components/ui/button";
-import {FileDownIcon, FilePlusIcon, LinkIcon, SearchIcon, SquarePenIcon, XIcon} from "lucide-react";
+import {DownloadIcon, FileDownIcon, FilePlusIcon, LinkIcon, SearchIcon, SquarePenIcon, XIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {del, post, put} from "@/client";
@@ -36,14 +41,16 @@ import {Badge} from "@/components/ui/badge";
 import {CustomCombobox} from "@/components/custom/combobox";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
-    console.debug("cover id", model.content.coverId);
-    if (model.content.coverId)
-        src = `/api/images/${model.content.coverId}`;
-    else if (model.content.coverSrc)
-        src = model.content.coverSrc;
+    const content = model.content as ComfyUIModelContentModel;
+    console.debug("cover id", content.coverId);
+    if (content.coverId)
+        src = `/api/images/${content.coverId}`;
+    else if (content.coverSrc)
+        src = content.coverSrc;
     return (<AspectRatio ratio={1}>
         {src.endsWith('mp4') ?
             <video src={src} controls preload="metadata"
@@ -67,12 +74,14 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
     const {fetch} = useModelPagedItemsState();
+    const content = model.content as ComfyUIModelContentModel;
+    const formRef = useRef<HTMLFormElement>(null);
 
     const handleUpdate = async (data: FormData) => {
         try {
-            let coverId: string | null = null;
+            let coverId: string | undefined = undefined;
             if (!changed.current) {
-                coverId = model.content.coverId
+                coverId = content.coverId;
             } else if (coverFile) {
                 if (coverFile.type !== "image/png") {
                     handleError(new BusinessError("Only png file supported."));
@@ -87,17 +96,22 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 coverId = id;
             }
 
+            const newContent: ComfyUIModelContentModel = {
+                description: data.get("description") as string,
+                path: data.get("path") as string,
+                url: data.get("url") as string,
+                html: data.get("html") as string,
+                downloadUrl: data.get("download_url") as string,
+                baseModel: data.get("base_model") as string,
+                coverSrc: data.get("cover_src") as string,
+                coverId
+            };
+
             await put("/comfyuis/models/{id}",
                 {
                     code: model.code,
                     name: data.get("name"),
-                    content: {
-                        description: data.get("description"),
-                        path: data.get("path"),
-                        url: data.get("url"),
-                        coverSrc: data.get("cover_src"),
-                        coverId
-                    }
+                    content: newContent
                 } as Partial<LlmapiModel>,
                 {
                     params: {"id": model.id,}
@@ -125,6 +139,20 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
         }
     };
 
+    const handleDownload = async () => {
+        try {
+            await post('/comfyuis/models/{id}/download', {}, {
+                params: {
+                    id: model.id,
+                }
+            });
+            handleSuccess(t("comfyui.download_started"));
+            await fetch();
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
     return (<div className={'min-w-1/4 w-64 p-2'}>
         <Item key={key}
               className={'overflow-hidden relative'}
@@ -136,8 +164,8 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     </HoverCardTrigger>
                     <HoverCardContent className={'bg-card overflow-auto w-full max-w-lvw max-h-96'}
                                       render={
-                                          model.content.html ?
-                                              <div dangerouslySetInnerHTML={{__html: model.content.html}}/> :
+                                          content.html ?
+                                              <div dangerouslySetInnerHTML={{__html: content.html}}/> :
                                               <div></div>
                                       }>
                     </HoverCardContent>
@@ -146,22 +174,34 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
             <ItemContent className={'h-24'}>
                 <ItemTitle>{model.name}</ItemTitle>
                 <ItemDescription className={'wrap-break-word break-all'}>
-                    {model.content.description}
+                    {content.description}
                 </ItemDescription>
             </ItemContent>
             <div className={'absolute top-4 left-4 flex flex-col gap-2'}>
                 <Badge variant="secondary">{model.type}</Badge>
-                <Badge variant="secondary">{model.content.baseModel}</Badge>
+                <Badge variant="secondary">{content.baseModel}</Badge>
             </div>
             <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
                 {
-                    model.content.url && <Tooltip>
+                    content.url && <Tooltip>
                         <TooltipTrigger className={buttonVariants({variant: 'link'})}
-                                        render={<Link href={model.content.url} target="_blank"/>}>
+                                        render={<Link href={content.url} target="_blank"/>}>
                             <LinkIcon/>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>{t("default.link")}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                }
+
+                {
+                    content.downloadUrl && <Tooltip>
+                        <TooltipTrigger render={<Button variant={"ghost"}/>}
+                                        onClick={handleDownload}>
+                            <DownloadIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t("comfyui.download_server")}</p>
                         </TooltipContent>
                     </Tooltip>
                 }
@@ -183,7 +223,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                     </DialogTrigger>
                     <DialogContent style={{maxWidth: '86%', height: '86%'}}>
                         <form className={'flex flex-col overflow-hidden'}
-                              action={handleUpdate}>
+                              action={handleUpdate} ref={formRef}>
                             <DialogHeader>
                                 <DialogTitle>
                                     {t("default.update_title", {target: t(`${moduleName}.model`)})}
@@ -197,7 +237,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                     <ImageUploader name="cover`" id={`${moduleName}-cover-${model.id}`}
                                                    className={'max-w-52'}
                                                    accept={"image/png"}
-                                                   defaultValue={model.content.coverId ? `/api/images/${model.content.coverId}` : undefined}
+                                                   defaultValue={content.coverId ? `/api/images/${content.coverId}` : undefined}
                                                    onChange={file => {
                                                        console.debug("file", file);
                                                        setCoverFile(file);
@@ -209,7 +249,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                         {t("default.cover_src")}
                                     </FieldLabel>
                                     <Input id={`${moduleName}-cover_src-${model.id}`}
-                                           defaultValue={model.content.coverSrc}
+                                           defaultValue={content.coverSrc}
                                            name="cover_src"/>
                                 </Field>
                                 <Field>
@@ -233,33 +273,70 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                     <FieldLabel htmlFor={`${moduleName}-type-${model.id}`}>
                                         {t("default.type")}
                                     </FieldLabel>
-                                    <Input id={`${moduleName}-type-${model.id}`}
-                                           defaultValue={model.type}
-                                           name="type"/>
+                                    <Select name="type" defaultValue={model.type}>
+                                        <SelectTrigger className="w-full"
+                                                       id={`${moduleName}-type-${model.id}`}>
+                                            <SelectValue/>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {modelTypes.map((e) =>
+                                                    <SelectItem key={e} value={e}>
+                                                        {e}
+                                                    </SelectItem>
+                                                )}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
                                         {t("comfyui.model_path")}
                                     </FieldLabel>
                                     <Input id={`${moduleName}-path-${model.id}`}
-                                           defaultValue={model.content.path}
+                                           defaultValue={content.path}
                                            name="path"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-description-${model.id}`}>
-                                        {t("default.description")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-description-${model.id}`}
-                                           defaultValue={model.content.description}
-                                           name="description"/>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-url-${model.id}`}>
                                         {t("default.url")}
                                     </FieldLabel>
                                     <Input id={`${moduleName}-url-${model.id}`}
-                                           defaultValue={model.content.url}
+                                           defaultValue={content.url}
                                            name="url"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-download_url-${model.id}`}>
+                                        {t("comfyui.download_url")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-download_url-${model.id}`}
+                                           defaultValue={content.downloadUrl}
+                                           name="download_url"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-base_model-${model.id}`}>
+                                        {t("comfyui.base_model")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-base_model-${model.id}`}
+                                           defaultValue={content.baseModel}
+                                           name="base_model"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-description-${model.id}`}>
+                                        {t("default.description")}
+                                    </FieldLabel>
+                                    <Input id={`${moduleName}-description-${model.id}`}
+                                           defaultValue={content.description}
+                                           name="description"/>
+                                </Field>
+                                <Field>
+                                    <FieldLabel>
+                                        {t("default.html")}
+                                    </FieldLabel>
+                                    <MonacoEditor name={"html"}
+                                                  defaultValue={content.html ?? ""}
+                                                  language={"html"}
+                                                  formRef={formRef}/>
                                 </Field>
                             </FieldGroup>
                             <DialogFooter>

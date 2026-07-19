@@ -118,6 +118,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/comfyuis/models/{id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["post-comfyuis-models-{id}-download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/comfyuis/models/{id}/export": {
         parameters: {
             query?: never;
@@ -1484,6 +1500,34 @@ export interface operations {
                     "application/json": {
                         id: string;
                     };
+                };
+            };
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "post-comfyuis-models-{id}-download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Path parameter: id
+                 * @example 123
+                 */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["any"];
                 };
             };
             400: components["responses"]["400"];

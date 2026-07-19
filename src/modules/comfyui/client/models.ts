@@ -55,6 +55,7 @@ export const useComfyUISettingState = create<ComfyUISettingState>()(
     persist<ComfyUISettingState>(() => ({
             baseUrl: "http://localhost:8188",
             clientId: "secyud-tavern",
+            modelDir: "",
         }),
         {
             name: "comfyuiSettingState",
@@ -62,6 +63,7 @@ export const useComfyUISettingState = create<ComfyUISettingState>()(
             partialize: (state) => ({
                 baseUrl: state.baseUrl,
                 clientId: state.clientId,
+                modelDir: state.modelDir,
             }),
         }
     )
