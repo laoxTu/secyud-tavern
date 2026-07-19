@@ -1,8 +1,11 @@
 ﻿'use client'
 
 import {RefObject} from "react";
+import {businessNavigationManager} from "@/business/client/navigation";
+import {tabConfig} from "@/business/client/image-tab";
 
 export function registerBusinessClient() {
+    businessNavigationManager.register(tabConfig);
 }
 
 

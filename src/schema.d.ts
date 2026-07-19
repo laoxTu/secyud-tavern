@@ -281,7 +281,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["get-images"];
         put?: never;
         /** 创建预设 */
         post: operations["post-images"];
@@ -1999,6 +1999,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            400: components["responses"]["400"];
+            500: components["responses"]["500"];
+        };
+    };
+    "get-images": {
+        parameters: {
+            query?: {
+                /**
+                 * @description 页码，默认0
+                 * @example 1
+                 */
+                page?: number;
+                /**
+                 * @description 每页条数，默认20
+                 * @example 1
+                 */
+                pageSize?: number;
+                /**
+                 * @description 可选搜索项
+                 * @example example
+                 */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResult<any>"];
+                };
+            };
             400: components["responses"]["400"];
             500: components["responses"]["500"];
         };

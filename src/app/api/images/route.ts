@@ -1,7 +1,21 @@
 ﻿import {interceptor} from "@/handler/server/interceptor";
 import {NextResponse} from "next/server";
 import {imageRepository} from "@/business/server/image-repository";
+import {PageOptions} from "@/business/models";
 
+
+/**
+ * @params PageOptions
+ * @response PagedResult<any>
+ * @openapi
+ */
+export const GET = interceptor.createRoute(
+    async (request, records) => {
+        const options = records.searchParams as PageOptions;
+        const models = await imageRepository.getList(options);
+        return NextResponse.json(models);
+    }
+)
 
 /**
  * 创建预设

@@ -84,6 +84,7 @@ export class Registry<T extends Registerable> {
         const recordList = Object.values(records)
             .sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
         console.debug(`[${this.name}] sort ${recordList.length} items`);
+        console.debug(`[${this.name}] sorted`, recordList);
         const sorted: T[] = [];
         const visited = new Set<string>();
 
@@ -114,9 +115,9 @@ export class Registry<T extends Registerable> {
 
         // 2. 找出所有入度为 0 的节点作为起始队列
         const queue: string[] = [];
-        for (const id in records) {
-            if (inDegree[id] === 0) {
-                queue.push(id);
+        for (const record of recordList) {
+            if (inDegree[record.id] === 0) {
+                queue.push(record.id);
             }
         }
 

@@ -19,7 +19,6 @@ export const GET = interceptor.createRoute(
                 'Cache-Control': 'public, max-age=31536000, immutable', // 缓存一年
             },
         });
-
     }
 )
 

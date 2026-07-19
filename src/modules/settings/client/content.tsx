@@ -42,6 +42,7 @@ function Content() {
 
 export const settingNavigationContent: TabConfig = {
     id: moduleName,
+    sequence: 1000,
     label: () => <ModelTabHeader modelType={moduleName}/>,
     component: Content
 } as const;

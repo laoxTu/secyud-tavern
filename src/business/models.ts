@@ -30,3 +30,8 @@ export interface EntryModel {
     // 名称
     name: string;
 }
+
+export interface ImageFile{
+    id: string,
+    type: string,
+}

@@ -63,6 +63,7 @@
     "copy_title": "复制{target}",
     "cover": "封面",
     "cover_src": "封面地址",
+    "image": "图片",
     "create": "创建",
     "create_description": "请创建一个新的{target}",
     "create_title": "创建{target}",

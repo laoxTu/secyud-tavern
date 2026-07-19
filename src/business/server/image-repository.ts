@@ -1,11 +1,12 @@
 import {imageFiles} from "@/business/server/db-entities";
 import {databaseManager} from "@/business/server/database";
-import {eq} from "drizzle-orm";
+import {eq, sql} from "drizzle-orm";
 import crypto from 'crypto';
 import {v4 as uuidv4, validate} from 'uuid';
 import {mkdir, writeFile} from 'fs/promises';
 import path from "path";
 import {readFile, unlink} from "node:fs/promises";
+import {ImageFile, PageOptions} from "@/business/models";
 
 const UPLOAD_DIR = path.join(process.cwd(), 'database/images');
 
@@ -71,5 +72,29 @@ export const imageRepository = {
         await db
             .delete(imageFiles)
             .where(eq(imageFiles.id, id));
+    },
+    async getList(options: PageOptions) {
+        const {page = 0, pageSize = 20} = options;
+        const offset = page * pageSize;
+
+        const [countResult] = await db
+            .select({count: sql<number>`count(*)`})
+            .from(imageFiles);
+        const totalCount = Number(countResult.count);
+
+        const entities = await db
+            .select()
+            .from(imageFiles)
+            .orderBy(imageFiles.id)
+            .offset(offset)
+            .limit(pageSize);
+
+        const models =
+            entities.map(entity => ({
+                id: entity.id,
+                type: entity.type,
+            } as ImageFile));
+
+        return {data: models, totalCount};
     }
 };

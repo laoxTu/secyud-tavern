@@ -1,8 +1,10 @@
 'use client'
 import {create, StoreApi, UseBoundStore} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
-import {PagedItemsState} from "@/components/custom/pager";
+import {createUsePagedItemsState, PagedItemsState} from "@/components/custom/pager";
 import {TabManager} from "@/components/custom/tab";
+import {get} from "@/client";
+import {ImageFile} from "@/business/models";
 
 export type UseStoreState<T> = UseBoundStore<StoreApi<T>>;
 
@@ -24,6 +26,12 @@ export interface ItemState<T> {
     render: number;
     setModel: (model?: T) => void;
 }
+
+export const useImagePagedItemsState = createUsePagedItemsState<ImageFile>(
+    async options => {
+        return await get('/images', {params: options})
+    }, 8);
+
 
 export function createUseItemState<T>(name?: string) {
     const func =

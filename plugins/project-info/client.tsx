@@ -64,6 +64,7 @@ export default function register() {
 
     businessNavigationManager.register({
         id: "info",
+        sequence: 10000,
         label: () => <ModelTabHeader modelType={'about'}/>,
         component: Content,
     });

@@ -2493,6 +2493,67 @@
       }
     },
     "/images": {
+      "get": {
+        "operationId": "get-images",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Images"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "页码，默认0"
+            },
+            "description": "页码，默认0",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "每页条数，默认20"
+            },
+            "description": "每页条数，默认20",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "description": "可选搜索项",
+              "type": "string"
+            },
+            "description": "可选搜索项",
+            "example": "example"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResult<any>"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
       "post": {
         "operationId": "post-images",
         "summary": "创建预设",
