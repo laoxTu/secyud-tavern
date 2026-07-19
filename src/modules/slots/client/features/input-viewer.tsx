@@ -101,7 +101,8 @@ export function InputViewer() {
                 <p>{t('slot.input_viewer_tip')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className={'flex flex-col overflow-hidden'}
+                       style={{maxWidth: '86%', height: '86%'}}>
             <DialogHeader>
                 <DialogTitle>{t('slot.input_viewer')}</DialogTitle>
             </DialogHeader>
@@ -115,7 +116,7 @@ export function InputViewer() {
                             <Skeleton className="aspect-video w-full"/>
                         </CardContent>
                     </Card> :
-                    <div className={'overflow-y-auto scrollbar-thin max-h-96'}>
+                    <div className={'overflow-auto p-2 flex-1'}>
                         <p>{`${t('default.total_chars')}: ${inputContext?.messages?.reduce(
                             (acc, cur) => acc + cur.content.length, 0) ?? 0}`}</p>
                         <Accordion multiple>

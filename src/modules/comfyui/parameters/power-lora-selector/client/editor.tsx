@@ -29,7 +29,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as PowerLoraSelectorConfig;
-    const [count, setCount] = React.useState(config?.defaultValue.length ?? 0);
+    const [count, setCount] = React.useState(config?.defaultValue?.length ?? 0);
 
     return <>
         <Field>
@@ -44,7 +44,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
         </Field>
 
         {Array.from({length: count}, (_, index) => {
-            const lora = (config?.defaultValue.length ?? 0) > index ?
+            const lora = (config?.defaultValue?.length ?? 0) > index ?
                 config.defaultValue[index] : null;
             return (
                 <div key={index} className="grid md:grid-cols-2 gap-4">
