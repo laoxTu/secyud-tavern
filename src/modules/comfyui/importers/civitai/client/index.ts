@@ -1,11 +1,9 @@
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
-import {Field, FieldLabel} from "@/components/ui/field";
-import {ComfyUIModelContentModel, ComfyUIModelModel, moduleName} from "@/modules/comfyui/models";
-import {Input} from "@/components/ui/input";
-import React from "react";
-import {useTranslations} from "next-intl";
+import {ComfyUIModelContentModel, ComfyUIModelModel} from "@/modules/comfyui/models";
+
 import {BusinessError} from "@/handler/models";
 import {importerName} from "../models";
+import {Component} from "@/modules/comfyui/importers/civitai/client/component";
 
 const civitaiUrl = 'https://civitai.com';
 const typeMap: Record<string, string> = {
@@ -17,30 +15,9 @@ const typeMap: Record<string, string> = {
     "VAE": "vae",
 }
 
-function Content() {
-    const t = useTranslations();
-    return <>
-        <Field>
-            <FieldLabel htmlFor={`${moduleName}-import-modelId`}>
-                {t("comfyui.civitai.model_id")}
-            </FieldLabel>
-            <Input id={`${moduleName}-import-modelId`}
-                   name="modelId" type={"number"}/>
-        </Field>
-        <Field>
-            <FieldLabel htmlFor={`${moduleName}-import-modelVersionId`}>
-                {t("comfyui.civitai.model_version_id")}
-            </FieldLabel>
-            <Input id={`${moduleName}-import-modelVersionId`}
-                   name="modelVersionId" type={"number"}/>
-        </Field>
-    </>;
-}
-
-
 export const civitaiModelImporter: ComfyUIModelImporter = {
     id: importerName,
-    component: Content,
+    component: Component,
     /**
      * civitai 的api有两种
      * 一种是model，另一种是model-version

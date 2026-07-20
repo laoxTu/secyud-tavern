@@ -16,7 +16,7 @@ import {llmTextEditor} from "../parameters/llm-text-editor/client";
 import {imageCallback} from "../parameters/image-callback/client";
 import {selector} from "@/modules/comfyui/parameters/selector/client";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
-import {civitaiModelImporter} from "@/modules/comfyui/importers/client/civital-importer";
+import {civitaiModelImporter} from "@/modules/comfyui/importers/civitai/client";
 
 export function registerComfyUIClient() {
     businessNavigationManager.register(

@@ -5,7 +5,6 @@ import {BusinessError} from "@/handler/models";
 import {settingRepository} from "@/modules/settings/server/repository";
 import {ComfyUIModelContentModel} from "@/modules/comfyui/models";
 import fs from "fs/promises";
-import path from "path";
 import {downloadFile} from "@/utils/download";
 import {task} from "@/utils/server/task";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/server/impoter";
@@ -70,7 +69,7 @@ export const POST = interceptor.createRoute(
 
         const importer = content.importer ? comfyUIModelImporterRegistry.records[content.importer] : undefined;
 
-        await task.create(`comfyui_model_download "${path}"`, async () => {
+        await task.create(`comfyui_model_download ${downloadPath}`, async () => {
             if (importer) {
                 await importer.download(model, downloadPath);
             } else {
