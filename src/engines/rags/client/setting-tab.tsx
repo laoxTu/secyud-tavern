@@ -22,8 +22,8 @@ function Tab() {
         try {
             useRagSettingState.setState({
                 disabled: Boolean(data.get("disabled") as string),
-                embeddingGenerator: editor.id,
-                embeddingGeneratorConfig: editor.getEditorValue(data),
+                embeddingGenerator: editor?.id ?? "",
+                embeddingGeneratorConfig: editor?.getEditorValue(data) ?? {},
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
