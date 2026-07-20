@@ -5,6 +5,7 @@ import {Input} from "@/components/ui/input";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {BusinessError} from "@/handler/models";
+import {importerName} from "../models";
 
 const civitaiUrl = 'https://civitai.com';
 const typeMap: Record<string, string> = {
@@ -38,7 +39,7 @@ function Content() {
 
 
 export const civitaiModelImporter: ComfyUIModelImporter = {
-    id: "civitai",
+    id: importerName,
     component: Content,
     /**
      * civitai 的api有两种
@@ -88,6 +89,7 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
                     downloadUrl: meta.downloadUrl,
                     coverSrc: imageSrc,
                     baseModel: meta.baseModel,
+                    importer: importerName,
                 };
                 const model: ComfyUIModelModel = {
                     id: "",

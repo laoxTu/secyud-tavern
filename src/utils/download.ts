@@ -12,16 +12,17 @@ export async function ensureDir(dir: string) {
     }
 }
 
-export async function downloadFile(url: string, dest: string) {
+export async function downloadFile(url: string, dest: string, init?: any) {
     if (await fileExists(dest)) return;
     await ensureDir(path.dirname(dest));
     console.log(`⬇️ download: ${url} to ${dest}`);
+    const response = await fetch(url, init);
 
-    const response = await fetch(url);
     if (!response.ok) {
         console.error(`download failed: ${response.status} ${response.statusText}`);
         return;
     }
+
     const totalBytes = parseInt(response.headers.get('content-length') as string, 10);
     let downloadedBytes = 0;
     // 创建可写流

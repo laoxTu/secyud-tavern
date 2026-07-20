@@ -21,6 +21,7 @@ export interface ComfyUIModelContentModel {
     html?: string,
     baseModel?: string,
     downloadUrl?: string,
+    importer?: string,
 }
 
 // ComfyUI 工作流

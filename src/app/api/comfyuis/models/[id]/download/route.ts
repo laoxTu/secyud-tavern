@@ -5,9 +5,10 @@ import {BusinessError} from "@/handler/models";
 import {settingRepository} from "@/modules/settings/server/repository";
 import {ComfyUIModelContentModel} from "@/modules/comfyui/models";
 import fs from "fs/promises";
-import {exec, spawn} from "node:child_process";
 import path from "path";
-import {ensureDir} from "@/utils/download";
+import {downloadFile} from "@/utils/download";
+import {task} from "@/utils/server/task";
+import {comfyUIModelImporterRegistry} from "@/modules/comfyui/server/impoter";
 
 /**
  * @pathParams { id:string }
@@ -23,6 +24,7 @@ export const POST = interceptor.createRoute(
             throw new BusinessError('entity not found.',
                 "default.entity_not_found")
                 .withValue("id", id);
+
 
         const setting = await settingRepository.get("comfyuiSettingState");
         const {state: {modelDir}} = setting?.data ? JSON.parse(setting.data) : {
@@ -66,13 +68,15 @@ export const POST = interceptor.createRoute(
             throw new BusinessError('file is exists.', "comfyui.file_exists");
         }
 
-        await ensureDir(path.dirname(downloadPath));
+        const importer = content.importer ? comfyUIModelImporterRegistry.records[content.importer] : undefined;
 
-        spawn(`curl -o "${downloadPath}" "${downloadUrl}"`, {
-            shell: true,        // 使用 shell 执行
-            detached: true,
-            stdio: 'ignore'
-        }).unref();
+        await task.create(`comfyui_model_download "${path}"`, async () => {
+            if (importer) {
+                await importer.download(model, downloadPath);
+            } else {
+                await downloadFile(downloadUrl, downloadPath);
+            }
+        });
 
         return NextResponse.json(null);
     }
