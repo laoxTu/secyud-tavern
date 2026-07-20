@@ -13,7 +13,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 
 function Tab() {
     const t = useTranslations();
-    const {embeddingGenerator} = useRagSettingState();
+    const {disabled, embeddingGenerator} = useRagSettingState();
     const {handleError, handleSuccess} = useErrorHandler();
     const generators = embeddingGeneratorManager.records;
     const [editor, setEditor] = useState(generators[embeddingGenerator]);
@@ -42,7 +42,8 @@ function Tab() {
                                 </FieldLabel>
                                 <FieldContent>
                                     <Checkbox id={"setting-rag-disabled"}
-                                              name="disabled"/>
+                                              name="disabled"
+                                              defaultChecked={disabled}/>
                                 </FieldContent>
                             </Field>
                             <Field>
