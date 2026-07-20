@@ -6,20 +6,16 @@ import {createJSONStorage, persist} from "zustand/middleware";
 import {remoteStorage} from "@/modules/settings/client/models";
 import {ComponentType} from "react";
 
-
 export const ragVectorSchema = {
     name: 'string',
 } as const;
 
 export type RagVectorSchema = typeof ragVectorSchema & { embedding: Vector };
 
-
 export interface RagConversationCache {
     lorebookDb: Orama<RagVectorSchema>;
     generator: RagEmbeddingGenerator;
 }
-
-
 
 export interface RagSearchContext extends RagConversationCache {
     message: StoryHistoryMessage;
@@ -48,7 +44,7 @@ export interface RagSettingState {
 
 export const useRagSettingState = create<RagSettingState>()(
     persist<RagSettingState>(() => ({
-            embeddingGenerator: "",
+            embeddingGenerator: "transformers",
             embeddingGeneratorConfig: {},
             disabled: false,
         }),
