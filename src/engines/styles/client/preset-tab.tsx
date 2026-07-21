@@ -11,9 +11,9 @@ import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
 import {PresetStyleModel, engineName} from "../models";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {PresetScriptModel} from "@/engines/scripts/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {Selector} from "@/components/custom/editor-selector";
 
 const styleTypes = ["", "link", "text/css"];
 
@@ -44,21 +44,10 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                 <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
                     {t("default.type")}
                 </FieldLabel>
-                <Select name={'type'} value={type} onValueChange={setType}>
-                    <SelectTrigger className="w-full"
-                                   id={`${engineName}-type-${entry.id}`}>
-                        <SelectValue/>
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            {styleTypes.map((e) =>
-                                <SelectItem key={e} value={e}>
-                                    {e}
-                                </SelectItem>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
+                          value={type} onValueChange={setType}
+                          items={styleTypes}
+                          nameAccessor={e => e}/>
             </Field>
         </div>
         <Field>

@@ -5,7 +5,7 @@ import {TextEditorConfig} from "../model";
 export const textEditor: ComfyUIParameter =
     {
         id: "text_editor",
-        editorComponent: EditorComponent,
+        component: EditorComponent,
         getEditorValue({data, entry}): TextEditorConfig {
             return {
                 nodeId: data.get('node_id') as string,

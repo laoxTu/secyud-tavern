@@ -1,9 +1,9 @@
 import {Field, FieldLabel} from "@/components/ui/field";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {useRagSettingState} from "@/engines/rags/client/models";
 import {transformerModels} from "@/engines/rags/embedding/transformers/client/index";
+import {Selector} from "@/components/custom/editor-selector";
 
 export function Editor() {
     const t = useTranslations();
@@ -15,21 +15,11 @@ export function Editor() {
                 <FieldLabel htmlFor="transformers-model">
                     {t("rag.embedding_generator_model")}
                 </FieldLabel>
-                <Select name="model" defaultValue={embeddingGeneratorConfig["model"]}>
-                    <SelectTrigger className="w-full"
-                                   id={`transformers-model`}>
-                        <SelectValue/>
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            {Object.keys(transformerModels).map((v) =>
-                                <SelectItem key={v} value={v}>
-                                    {v}
-                                </SelectItem>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+
+                <Selector name={'model'} id={`transformers-model`}
+                          defaultValue={embeddingGeneratorConfig["model"] ?? null}
+                          items={Object.keys(transformerModels)}
+                          nameAccessor={e => e}/>
             </Field>
         </div>
     </>);

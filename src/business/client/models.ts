@@ -5,6 +5,12 @@ import {createUsePagedItemsState, PagedItemsState} from "@/components/custom/pag
 import {TabManager} from "@/components/custom/tab";
 import {get} from "@/client";
 import {ImageFile} from "@/business/models";
+import {Registerable} from "@/utils/register";
+import React from "react";
+
+export interface EditorRegisterable extends Registerable {
+    component: React.ComponentType<any>,
+}
 
 export type UseStoreState<T> = UseBoundStore<StoreApi<T>>;
 

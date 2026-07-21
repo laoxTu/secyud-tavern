@@ -11,8 +11,8 @@ export function getDateNumber(date: EventDate) {
 export const eventMatcher: Matcher =
     {
         id: matchName,
-        editor: MatchEditor,
-        getEditorValue: (data): EventMatchModel => {
+        component: MatchEditor,
+        getValue: (data): EventMatchModel => {
             return {
                 ...getNormalModel(data),
                 maxDate: getDate(data, 'max-date'),

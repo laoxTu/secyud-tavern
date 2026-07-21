@@ -1,8 +1,7 @@
 import {useTranslations} from "next-intl";
 import {Field, FieldContent, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import React, {useState} from "react";
+import React from "react";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {BookIcon} from "lucide-react";
 import {engineName} from "@/engines/rags/models";
@@ -10,20 +9,21 @@ import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
 import {useRagSettingState} from "@/engines/rags/client/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {Checkbox} from "@/components/ui/checkbox";
+import {EditorSelectorField} from "@/components/custom/editor-selector";
 
 function Tab() {
     const t = useTranslations();
     const {disabled, embeddingGenerator} = useRagSettingState();
     const {handleError, handleSuccess} = useErrorHandler();
-    const generators = embeddingGeneratorManager.records;
-    const [editor, setEditor] = useState(generators[embeddingGenerator]);
 
     const handleSubmit = async (data: FormData) => {
         try {
+            const editorName = data.get('generator') as string;
+            const editor = embeddingGeneratorManager.records[editorName];
             useRagSettingState.setState({
                 disabled: Boolean(data.get("disabled") as string),
                 embeddingGenerator: editor?.id ?? "",
-                embeddingGeneratorConfig: editor?.getEditorValue(data) ?? {},
+                embeddingGeneratorConfig: editor?.getValue(data) ?? {},
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
@@ -46,35 +46,14 @@ function Tab() {
                                               defaultChecked={disabled}/>
                                 </FieldContent>
                             </Field>
-                            <Field>
-                                <FieldLabel htmlFor="setting-generator">
-                                    {t("rag.embedding_generator")}
-                                </FieldLabel>
-                                <Select name="generator" defaultValue={embeddingGenerator}
-                                        onValueChange={t => t && setEditor(generators[t])}>
-                                    <SelectTrigger className="w-full"
-                                                   id={`setting-generator`}>
-                                        <SelectValue/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {embeddingGeneratorManager.getSorted().map((v) =>
-                                                <SelectItem key={v.id} value={v.id}>
-                                                    {v.id}
-                                                </SelectItem>
-                                            )}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </Field>
                         </div>
-                        {editor && (
-                            () => {
-                                console.debug(editor.id);
-                                const EditorComponent = editor.editor;
-                                return <EditorComponent/>;
-                            }
-                        )()}
+                        <EditorSelectorField id={`setting-generator`}
+                                             name="generator"
+                                             defaultValue={embeddingGenerator}
+                                             fieldLabel={t("rag.embedding_generator")}
+                                             registry={embeddingGeneratorManager}
+                                             nameAccessor={e => e.id}
+                                             valueAccessor={e => e.id}/>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

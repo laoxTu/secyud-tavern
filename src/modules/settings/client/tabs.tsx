@@ -6,11 +6,11 @@ import {TabManager} from "@/components/custom/tab";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useTheme} from "next-themes";
 import {useDefaultSettingState} from "@/modules/settings/client/models";
 import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
+import {Selector} from "@/components/custom/editor-selector";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -46,21 +46,11 @@ function Tab() {
                                 <FieldLabel htmlFor="setting-theme">
                                     {t("setting.theme")}
                                 </FieldLabel>
-                                <Select name="theme" defaultValue={theme}>
-                                    <SelectTrigger className="w-full"
-                                                   id={`setting-theme`}>
-                                        <SelectValue/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            {themes.map((v) =>
-                                                <SelectItem key={v} value={v}>
-                                                    {v}
-                                                </SelectItem>
-                                            )}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                <Selector name={`theme`}
+                                          id={`setting-theme`}
+                                          defaultValue={theme ?? null}
+                                          items={themes}
+                                          nameAccessor={e => e}/>
                             </Field>
                         </div>
                     </FieldGroup>

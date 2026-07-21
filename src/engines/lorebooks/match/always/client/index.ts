@@ -6,8 +6,8 @@ import {Matcher} from "@/engines/lorebooks/client/match-models";
 export const alwaysMatcher: Matcher =
     {
         id: matchName,
-        editor: MatchEditor,
-        getEditorValue: (data): AlwaysMatchModel => {
+        component: MatchEditor,
+        getValue: (data): AlwaysMatchModel => {
             return {
                 lastMessage: Boolean(data.get("lastMessage") as string)
             };

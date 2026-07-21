@@ -3,16 +3,16 @@ import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {moduleName} from "@/modules/llmapis/models";
 import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
 import {DeepseekConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useItemState} from "@/modules/llmapis/client/models";
+import {Selector} from "@/components/custom/editor-selector";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
-const reasoningEffort = ["high", "max"];
+const reasoningEfforts = ["high", "max"];
 
 const defaultConfig: DeepseekConfigModel = {
     parameters: {
@@ -56,20 +56,9 @@ function Content() {
                     <FieldLabel htmlFor={`${moduleName}-model`}>
                         {t(`${moduleName}.model`)}
                     </FieldLabel>
-                    <Select name={'model'} defaultValue={config.parameters.model}>
-                        <SelectTrigger className="w-full" id={`${moduleName}-model`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {models.map((e) =>
-                                    <SelectItem key={e} value={e}>
-                                        {t(`deepseek.${e}`)}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Selector name={'model'} id={`${moduleName}-model`}
+                              defaultValue={config.parameters.model} items={models}
+                              nameAccessor={e => t(`deepseek.${e}`)}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-thinking`}>
@@ -120,22 +109,9 @@ function Content() {
                     <FieldLabel htmlFor={`${moduleName}-reasoning_effort`}>
                         {t(`${moduleName}.reasoning_effort`)}
                     </FieldLabel>
-                    <Select name={'reasoning_effort'}
-                            defaultValue={config.parameters.reasoning_effort}>
-                        <SelectTrigger className="w-full"
-                                       id={`${moduleName}-reasoning_effort`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {reasoningEffort.map((e) =>
-                                    <SelectItem key={e} value={e}>
-                                        {e}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Selector name={'reasoning_effort'} id={`${moduleName}-reasoning_effort`}
+                              defaultValue={config.parameters.reasoning_effort} items={reasoningEfforts}
+                              nameAccessor={e => e}/>
                 </Field>
                 <Field className={thinking ? "hidden" : ""}>
                     <FieldLabel htmlFor={`${moduleName}-temperature`}>

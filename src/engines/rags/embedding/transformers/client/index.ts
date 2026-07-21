@@ -46,8 +46,8 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
             }
         };
     },
-    editor: Editor,
-    getEditorValue(data: FormData): Record<string, any> {
+    component: Editor,
+    getValue(data: FormData): Record<string, any> {
         return {
             model: data.get("model"),
         };

@@ -5,7 +5,7 @@ import {SelectorConfig} from "../model";
 export const selector: ComfyUIParameter =
     {
         id: "selector",
-        editorComponent: EditorComponent,
+        component: EditorComponent,
         getEditorValue({data}): SelectorConfig {
             return {
                 nodeId: data.get('node_id') as string,

@@ -1,11 +1,11 @@
 import React from "react";
 import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {Field, FieldLabel} from "@/components/ui/field";
-import {parameterEntryName as engineName} from "@/modules/comfyui/models";
+import {modelTypes, parameterEntryName as engineName} from "@/modules/comfyui/models";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {SelectorConfig} from "../model";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Selector} from "@/components/custom/editor-selector";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -70,20 +70,11 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
                 {entry.name}
             </FieldLabel>
-            <Select name={`value_${entry.id}`} defaultValue={config.defaultValue}>
-                <SelectTrigger className="w-full" id={`${engineName}-value-${entry.id}`}>
-                    <SelectValue/>
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        {config.items.map((item, index) => (
-                            <SelectItem key={index} value={item}>
-                                {item}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
+            <Selector name={`value_${entry.id}`}
+                      id={`${engineName}-value-${entry.id}`}
+                      defaultValue={config.defaultValue ?? null}
+                      items={modelTypes}
+                      nameAccessor={e => e}/>
         </Field>
     </>;
 }

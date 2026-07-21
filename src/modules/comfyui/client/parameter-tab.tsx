@@ -1,14 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
@@ -17,13 +9,12 @@ import {del, post, put} from "@/client";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {ComfyUIParameterModel, moduleName, parameterEntryName as engineName} from "@/modules/comfyui/models";
 import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
-import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
+import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
+import {EditorSelectorField} from "@/components/custom/editor-selector";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
-    const editors = comfyUIParameterRegistry.records;
-    const [editor, setEditor] = useState<ComfyUIParameter | null>(editors[entry.type] ?? null);
 
     return (
         <>
@@ -36,36 +27,15 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
                            id={`${engineName}-priority-${entry.id}`}
                            defaultValue={entry.priority}/>
                 </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                        {t("comfyui.parameter_type")}
-                    </FieldLabel>
-                    <Select name="type"
-                            defaultValue={entry.type}
-                            itemToStringLabel={u => t(`comfyui.parameter_type_${u}`)}
-                            onValueChange={t => t && setEditor(editors[t])}>
-                        <SelectTrigger className="w-full"
-                                       id={`${engineName}-type-${entry.id}`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {comfyUIParameterRegistry.getSorted().map((e) =>
-                                    <SelectItem key={e.id} value={e.id}>
-                                        {t(`comfyui.parameter_type_${e.id}`)}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </Field>
             </div>
-            {editor && (
-                () => {
-                    const EditorComponent = editor.editorComponent;
-                    return <EditorComponent formRef={formRef} entry={entry}/>;
-                }
-            )()}
+            <EditorSelectorField id={`${engineName}-type-${entry.id}`}
+                                 name="type"
+                                 defaultValue={entry.type}
+                                 fieldLabel={t("comfyui.parameter_type")}
+                                 registry={comfyUIParameterRegistry}
+                                 nameAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
+                                 valueAccessor={e => e.id}
+                                 editorProps={{formRef, entry}}/>
         </>
     );
 }

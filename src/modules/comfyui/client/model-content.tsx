@@ -30,7 +30,6 @@ import {Input} from "@/components/ui/input";
 import {del, post, put} from "@/client";
 import {Label} from "@/components/ui/label";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {ImageUploader} from "@/components/custom/image-uploader";
@@ -42,6 +41,7 @@ import {CustomCombobox} from "@/components/custom/combobox";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {EditorSelectorField, Selector} from "@/components/custom/editor-selector";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -273,21 +273,10 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                     <FieldLabel htmlFor={`${moduleName}-type-${model.id}`}>
                                         {t("default.type")}
                                     </FieldLabel>
-                                    <Select name="type" defaultValue={model.type}>
-                                        <SelectTrigger className="w-full"
-                                                       id={`${moduleName}-type-${model.id}`}>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {modelTypes.map((e) =>
-                                                    <SelectItem key={e} value={e}>
-                                                        {e}
-                                                    </SelectItem>
-                                                )}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    <Selector name={'type'} id={`${moduleName}-type-${model.id}`}
+                                              defaultValue={model.type}
+                                              items={modelTypes}
+                                              nameAccessor={e => e}/>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
@@ -364,11 +353,6 @@ function Content() {
     // 受控组件，解决搜索刷新后光标位置问题
     const [searchInput, setSearchInput] = useState(search?.fuzzy ?? "");
 
-    const importers = comfyUIModelImporterRegistry.records;
-    const defaultImporter = Object.values(importers)[0].id;
-    const [importer, setImporter] = useState(importers[defaultImporter]);
-    const ImporterComponent = importer.component;
-
     const handleCreate = async (data: FormData) => {
         try {
             await post("/comfyuis/models", {
@@ -388,6 +372,8 @@ function Content() {
 
     const handleImport = async (data: FormData) => {
         try {
+            const importerName = data.get('importer') as string;
+            const importer = comfyUIModelImporterRegistry.records[importerName];
             const models = await importer.generate(data);
             const encoder = new TextEncoder();
             for (const model of models) {
@@ -502,29 +488,13 @@ function Content() {
                                 </DialogDescription>
                             </DialogHeader>
                             <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-importer`}>
-                                        {t(`${moduleName}.importer`)}
-                                    </FieldLabel>
-                                    <Select name="importer"
-                                            defaultValue={defaultImporter}
-                                            onValueChange={t => t && setImporter(importers[t])}>
-                                        <SelectTrigger className="w-full"
-                                                       id={`${moduleName}-importer`}>
-                                            <SelectValue/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {comfyUIModelImporterRegistry.getSorted().map((e) =>
-                                                    <SelectItem key={e.id} value={e.id}>
-                                                        {t(`${moduleName}.importer_${e.id}`)}
-                                                    </SelectItem>
-                                                )}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </Field>
-                                <ImporterComponent/>
+                                <EditorSelectorField id={`${moduleName}-importer`}
+                                                     name="importer"
+                                                     defaultValue={"civitai"}
+                                                     fieldLabel={t(`${moduleName}.importer`)}
+                                                     registry={comfyUIModelImporterRegistry}
+                                                     nameAccessor={e => t(`${moduleName}.importer_${e.id}`)}
+                                                     valueAccessor={e => e.id}/>
                             </FieldGroup>
                             <DialogFooter>
                                 <Button type="submit">

@@ -1,14 +1,6 @@
 ﻿import React, {RefObject, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
@@ -22,14 +14,13 @@ import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {EditorSelectorField, Selector} from "@/components/custom/editor-selector";
 
 const roles = ["system", "user", "assistant"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
 
 function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
-    const matchEditors = lorebookMatcherRegistry.records;
-    const [editor, setEditor] = useState(matchEditors[entry.matchType]);
     const [type, setType] = useState(entry.type ?? null);
 
     const language = (() => {
@@ -61,72 +52,31 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                     <FieldLabel htmlFor={`lorebook-role-${entry.id}`}>
                         {t("lorebook.role")}
                     </FieldLabel>
-                    <Select name="role" defaultValue={entry.role}>
-                        <SelectTrigger className="w-full"
-                                       id={`lorebook-role-${entry.id}`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {roles.map((v) =>
-                                    <SelectItem key={v} value={v}>
-                                        {v}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Selector name={'role'} id={`lorebook-role-${entry.id}`}
+                              defaultValue={entry.role} items={roles}
+                              nameAccessor={e => e}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
                         {t("default.type")}
                     </FieldLabel>
-                    <Select name={'type'}
-                            value={type} onValueChange={setType}>
-                        <SelectTrigger className="w-full"
-                                       id={`${engineName}-type-${entry.id}`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {contentTypes.map((e) =>
-                                    <SelectItem key={e} value={e}>
-                                        {e}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`lorebook-match_type-${entry.id}`}>
-                        {t("lorebook.match_type")}
-                    </FieldLabel>
-                    <Select name="matchType"
-                            defaultValue={entry.matchType}
-                            onValueChange={t => t && setEditor(matchEditors[t])}>
-                        <SelectTrigger className="w-full"
-                                       id={`lorebook-match_type-${entry.id}`}>
-                            <SelectValue/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {lorebookMatcherRegistry.getSorted().map((e) =>
-                                    <SelectItem key={e.id} value={e.id}>
-                                        {t(`lorebook.match_type_${e.id}`)}
-                                    </SelectItem>
-                                )}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Selector name={'type'}
+                              id={`${engineName}-type-${entry.id}`}
+                              value={type}
+                              onValueChange={setType}
+                              items={contentTypes}
+                              nameAccessor={e => e}/>
                 </Field>
             </div>
-            {editor && (
-                () => {
-                    const EditorComponent = editor.editor;
-                    return <EditorComponent defaultValue={entry.matchExpression} entry={entry}/>;
-                }
-            )()}
+
+            <EditorSelectorField registry={lorebookMatcherRegistry}
+                                 fieldLabel={t(`lorebook.match_type`)}
+                                 id={`lorebook-match_type-${entry.id}`}
+                                 name={'matchType'}
+                                 defaultValue={entry.matchType}
+                                 editorProps={{defaultValue: entry.matchExpression, entry}}
+                                 valueAccessor={u => u.id}
+                                 nameAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
             <Field>
                 <FieldLabel>
                     {t("default.content")}
@@ -204,7 +154,7 @@ function Tab() {
                     const result = {
                         ...entry,
                         matchType: matchType,
-                        matchExpression: matchEditors[matchType].getEditorValue(data),
+                        matchExpression: matchEditors[matchType]?.getValue(data),
                         content: data.get("content") as string,
                         type: data.get("type") as string,
                         priority: parseInt(data.get("priority") as string),

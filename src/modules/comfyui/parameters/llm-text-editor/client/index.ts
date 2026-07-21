@@ -5,7 +5,7 @@ import {LlmTextEditorConfig} from "../model";
 export const llmTextEditor: ComfyUIParameter =
     {
         id: "llm_text_editor",
-        editorComponent: EditorComponent,
+        component: EditorComponent,
         getEditorValue({data}): LlmTextEditorConfig {
             return {
                 nodeId: data.get('node_id') as string,

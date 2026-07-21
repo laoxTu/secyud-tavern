@@ -7,8 +7,8 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
-              <option name="sessionId" value="d857dbab-de49-4ce8-bbca-ccb940cfc941" />
-              <option name="cwd" value="$PROJECT_DIR$" />
+              <option name="sessionId" value="d7932032-9133-46f3-a5a1-799aa7f41b97" />
+              <option name="cwd" value="D:\Projects\ai\secyud-tavern" />
               <option name="model" value="claude-sonnet-4-6[1m]" />
               <option name="permissionMode" value="bypassPermissions" />
             </TabSessionState>

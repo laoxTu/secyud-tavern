@@ -2,11 +2,11 @@ import React from "react";
 import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {modelTypes, parameterEntryName as engineName} from "@/modules/comfyui/models";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useTranslations} from "next-intl";
 import {ComfyUIModelCombobox} from "@/modules/comfyui/client/combobox";
 import {Input} from "@/components/ui/input";
 import {ModelSelectorConfig} from "../model";
+import {Selector} from "@/components/custom/editor-selector";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
@@ -33,22 +33,11 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
                 <FieldLabel htmlFor={`${engineName}-model_type-${entry.id}`}>
                     {t("comfyui.model_type")}
                 </FieldLabel>
-                <Select name="model_type"
-                        value={type} onValueChange={setType}>
-                    <SelectTrigger className="w-full"
-                                   id={`${engineName}-model_type-${entry.id}`}>
-                        <SelectValue/>
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            {modelTypes.map((e) =>
-                                <SelectItem key={e} value={e}>
-                                    {e}
-                                </SelectItem>
-                            )}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                <Selector name={'model_type'}
+                          id={`${engineName}-model_type-${entry.id}`}
+                          value={type} onValueChange={setType}
+                          items={modelTypes}
+                          nameAccessor={e => e}/>
             </Field>
             <InputComponent entry={entry} formRef={formRef}/>
         </div>

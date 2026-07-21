@@ -32,8 +32,8 @@ export function normalMatch(message: StoryHistoryMessage, expression?: NormalMat
 export const normalMatcher: Matcher =
     {
         id: matchName,
-        editor: MatchEditor,
-        getEditorValue: (data): NormalMatchModel => {
+        component: MatchEditor,
+        getValue: (data): NormalMatchModel => {
             return getNormalModel(data);
         },
         match: (ctx: MatcherMatchContext, expression?: NormalMatchModel) => {

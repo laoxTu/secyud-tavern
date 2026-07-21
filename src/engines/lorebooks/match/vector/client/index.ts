@@ -6,8 +6,8 @@ import {Matcher} from "@/engines/lorebooks/client/match-models";
 export const vectorMatcher: Matcher =
     {
         id: matchName,
-        editor: MatchEditor,
-        getEditorValue: () => {
+        component: MatchEditor,
+        getValue: () => {
             return {};
         },
         match: () => {

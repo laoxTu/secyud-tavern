@@ -12,8 +12,10 @@ import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
 import {PresetRegexModel, engineName} from "../models";
 import {Textarea} from "@/components/ui/textarea";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {submitTargetFormOnKey} from "@/business/client";
+import {Selector} from "@/components/custom/editor-selector";
+
+const regexTargets = ["both", "input", "output"]
 
 function Tab() {
     const t = useTranslations();
@@ -97,24 +99,10 @@ function Tab() {
                                 <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
                                     {t("regex.target")}
                                 </FieldLabel>
-                                <Select name="target" defaultValue={entry.target}>
-                                    <SelectTrigger className="w-full" id={`${engineName}-target-${entry.id}`}>
-                                        <SelectValue/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value={"both"}>
-                                                {t(`regex.target_both`)}
-                                            </SelectItem>
-                                            <SelectItem value={"input"}>
-                                                {t(`regex.target_input`)}
-                                            </SelectItem>
-                                            <SelectItem value={"output"}>
-                                                {t(`regex.target_output`)}
-                                            </SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                <Selector name={'target'} id={`${engineName}-target-${entry.id}`}
+                                          defaultValue={entry.target ?? null}
+                                          items={regexTargets}
+                                          nameAccessor={e => t(`regex.target_${e}`)}/>
                             </Field>
                         </div>
                         <Field>

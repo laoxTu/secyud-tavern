@@ -7,7 +7,7 @@ import {useItemState} from "@/modules/stories/client/models";
 export const imageCallback: ComfyUIParameter =
     {
         id: "image_callback",
-        editorComponent: EditorComponent,
+        component: EditorComponent,
         getEditorValue({data}): ImageCallbackConfig {
             return {
                 nodeId: data.get('node_id') as string,

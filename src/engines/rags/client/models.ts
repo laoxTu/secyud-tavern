@@ -1,10 +1,9 @@
 import {Orama, Vector} from "@orama/orama";
 import {StoryHistoryMessage} from "@/modules/slots/models";
-import {Registerable} from "@/utils/register";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {remoteStorage} from "@/modules/settings/client/models";
-import {ComponentType} from "react";
+import {EditorRegisterable} from "@/business/client/models";
 
 export const ragVectorSchema = {
     name: 'string',
@@ -30,9 +29,8 @@ export interface RagEmbeddingGenerator {
     generateEmbedding: (ctx: RagEmbeddingContext) => Promise<number[]>;
 }
 
-export interface RagEmbeddingGeneratorProvider extends Registerable {
-    editor: ComponentType,
-    getEditorValue: (data: FormData) => Record<string, any>,
+export interface RagEmbeddingGeneratorProvider extends EditorRegisterable {
+    getValue: (data: FormData) => Record<string, any>,
     getGenerator: () => Promise<RagEmbeddingGenerator>;
 }
 

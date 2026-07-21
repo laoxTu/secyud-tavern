@@ -1,6 +1,6 @@
-import {Registerable} from "@/utils/register";
 import React, {RefObject} from "react";
 import {ComfyUIParameterModel, ComfyUIWorkflowInput, ComfyUIWorkflowModel} from "@/modules/comfyui/models";
+import {EditorRegisterable} from "@/business/client/models";
 
 export interface ComfyUIParameterProps {
     entry: ComfyUIParameterModel;
@@ -14,15 +14,11 @@ export interface ComfyUIParameterParams {
 }
 
 
-export interface ComfyUIParameter extends Registerable {
+export interface ComfyUIParameter extends EditorRegisterable {
     /**
      * 从EditorComponentForm里获取设置参数 config
      */
     getEditorValue: (data: ComfyUIParameterParams) => any;
-    /**
-     * 编辑页面组件，预定义编辑器参数
-     */
-    editorComponent: React.ComponentType<ComfyUIParameterProps>;
     /**
      * 从InputComponentForm和config对input进行更改
      * input是comfyui的workflow内容。
