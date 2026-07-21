@@ -1,6 +1,6 @@
 ﻿'use client';
 import {MatcherProps} from "@/engines/lorebooks/client/match-models";
-import {CustomCombobox} from "@/components/custom/combobox/component";
+import {TagBox} from "@/components/custom/combobox";
 import {Field, FieldLabel} from "@/components/ui/field";
 import React, {useState} from "react";
 import {useTranslations} from "next-intl";
@@ -48,9 +48,9 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
                         <FieldLabel htmlFor={`${engineName}-keywords-${entry.id}-${index}`}>
                             {`${t("lorebook.include_any_word")} ${index + 1}`}
                         </FieldLabel>
-                        <CustomCombobox id={`${engineName}-keywords-${entry.id}-${index}`}
-                                        name={`keywords-${index}`}
-                                        defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
+                        <TagBox id={`${engineName}-keywords-${entry.id}-${index}`}
+                                name={`keywords-${index}`}
+                                defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
                     </Field>
                 ))}
             </div>

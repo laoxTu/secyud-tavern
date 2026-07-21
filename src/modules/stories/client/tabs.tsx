@@ -2,23 +2,27 @@
 import React from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
-import {put} from "@/client";
+import {get, put} from "@/client";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
-import {PresetCombobox} from "@/modules/presets/client/combobox";
-import {LlmapiCombobox} from "@/modules/llmapis/client/combobox";
 import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
 import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {submitTargetFormOnKey} from "@/business/client";
+import {RemoteSearchCombobox} from "@/components/custom/combobox";
+import {PagedResult} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
+import {useErrorHandler} from "@/handler/client/error";
+import {LlmapiModel} from "@/modules/llmapis/models";
 
 
 function Tab() {
     const t = useTranslations();
+    const {handleError} = useErrorHandler();
     return <ModelUpdate<StoryModel>
         modelState={modelState}
         props={{
@@ -50,15 +54,58 @@ function Tab() {
                         <FieldLabel htmlFor={`${moduleName}-llmapi`}>
                             {t("default.llmapi")}
                         </FieldLabel>
-                        <LlmapiCombobox name={"llmapi"} id={`${moduleName}-llmapi`}
-                                        defaultValue={model.llmapi}/>
+
+                        <RemoteSearchCombobox
+                            name={`llmapi`} id={`${moduleName}-llmapi`}
+                            defaultValue={model.llmapi ?? null}
+                            comparer={(u, v) => u.code === v.code}
+                            labelAccessor={e => `${e.code}-${e.version}`}
+                            valueAccessor={e => `${e.code}-${e.version}`}
+                            searchHandler={async (search: string | null) => {
+                                try {
+                                    const res = await get("/llmapis", {
+                                        params: {
+                                            search: {
+                                                fuzzy: search,
+                                            },
+                                        }
+                                    }) as PagedResult<LlmapiModel>;
+                                    return res.data.map(u => ({
+                                        code: u.code,
+                                        version: u.version,
+                                    }));
+                                } catch (e) {
+                                    handleError(e);
+                                }
+                            }}/>
                     </Field>
                     <Field>
                         <FieldLabel htmlFor={`${moduleName}-requires`}>
                             {t("default.requires")}
                         </FieldLabel>
-                        <PresetCombobox name={"require"} id={`${moduleName}-requires`}
-                                        defaultValue={model.requires}/>
+                        <RemoteSearchCombobox
+                            multiple name={`require`} id={`${moduleName}-requires`}
+                            defaultValue={model.requires ?? []}
+                            comparer={(u, v) => u.code === v.code}
+                            labelAccessor={e => `${e.code}-${e.version}`}
+                            valueAccessor={e => `${e.code}-${e.version}`}
+                            searchHandler={async (search: string | null) => {
+                                try {
+                                    const res = await get("/presets", {
+                                        params: {
+                                            search: {
+                                                fuzzy: search
+                                            },
+                                        }
+                                    }) as PagedResult<PresetModel>;
+                                    return res.data.map(u => ({
+                                        code: u.code,
+                                        version: u.version,
+                                    }));
+                                } catch (e) {
+                                    handleError(e);
+                                }
+                            }}/>
                     </Field>
                 </div>
                 <Field>

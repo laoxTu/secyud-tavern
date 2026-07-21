@@ -3,7 +3,7 @@ import {StoryHistoryMessage} from "@/modules/slots/models";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {remoteStorage} from "@/modules/settings/client/models";
-import {EditorRegisterable} from "@/business/client/models";
+import {Registerable} from "@/utils/register";
 
 export const ragVectorSchema = {
     name: 'string',
@@ -29,7 +29,8 @@ export interface RagEmbeddingGenerator {
     generateEmbedding: (ctx: RagEmbeddingContext) => Promise<number[]>;
 }
 
-export interface RagEmbeddingGeneratorProvider extends EditorRegisterable {
+export interface RagEmbeddingGeneratorProvider extends Registerable {
+    component: React.ComponentType,
     getValue: (data: FormData) => Record<string, any>,
     getGenerator: () => Promise<RagEmbeddingGenerator>;
 }

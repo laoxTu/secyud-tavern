@@ -5,7 +5,7 @@ import {modelTypes, parameterEntryName as engineName} from "@/modules/comfyui/mo
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {SelectorConfig} from "../model";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -73,8 +73,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             <Selector name={`value_${entry.id}`}
                       id={`${engineName}-value-${entry.id}`}
                       defaultValue={config.defaultValue ?? null}
-                      items={modelTypes}
-                      nameAccessor={e => e}/>
+                      items={modelTypes}/>
         </Field>
     </>;
 }

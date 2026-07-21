@@ -12,7 +12,7 @@ import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -48,8 +48,7 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
 
                 <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
                           value={type} onValueChange={setType}
-                          items={scriptTypes}
-                          nameAccessor={e => e}/>
+                          items={scriptTypes}/>
             </Field>
         </div>
         <Field>

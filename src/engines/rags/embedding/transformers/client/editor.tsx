@@ -3,7 +3,7 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {useRagSettingState} from "@/engines/rags/client/models";
 import {transformerModels} from "@/engines/rags/embedding/transformers/client/index";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 export function Editor() {
     const t = useTranslations();
@@ -18,8 +18,7 @@ export function Editor() {
 
                 <Selector name={'model'} id={`transformers-model`}
                           defaultValue={embeddingGeneratorConfig["model"] ?? null}
-                          items={Object.keys(transformerModels)}
-                          nameAccessor={e => e}/>
+                          items={Object.keys(transformerModels)}/>
             </Field>
         </div>
     </>);

@@ -1,12 +1,16 @@
 import React from "react";
 import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {Field, FieldLabel} from "@/components/ui/field";
-import {parameterEntryName as engineName} from "@/modules/comfyui/models";
+import {ComfyUIModelModel, parameterEntryName as engineName} from "@/modules/comfyui/models";
 import {useTranslations} from "next-intl";
-import {ComfyUIModelCombobox} from "@/modules/comfyui/client/combobox";
 import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
 import {PowerLoraSelectorConfig} from "../model";
+import {RemoteSearchCombobox} from "@/components/custom/combobox";
+import {ComfyUIHoverableItem} from "@/modules/comfyui/client/components";
+import {get} from "@/client";
+import {PagedResult} from "@/business/models";
+import {useErrorHandler} from "@/handler/client/error";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
@@ -30,6 +34,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as PowerLoraSelectorConfig;
     const [count, setCount] = React.useState(config?.defaultValue?.length ?? 0);
+    const {handleError} = useErrorHandler();
 
     return <>
         <Field>
@@ -46,6 +51,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
         {Array.from({length: count}, (_, index) => {
             const lora = (config?.defaultValue?.length ?? 0) > index ?
                 config.defaultValue[index] : null;
+            const path = lora?.lora;
             return (
                 <div key={index} className="grid md:grid-cols-2 gap-4">
                     <Field key={`${index}-lora`}>
@@ -54,9 +60,37 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                             <Checkbox name={`lora_on_${entry.id}_${index}`}
                                       defaultChecked={lora?.on ?? true}/>
                         </FieldLabel>
-                        <ComfyUIModelCombobox id={`${engineName}-lora-${entry.id}-${index}`}
-                                              name={`lora_${entry.id}_${index}`} type={'lora'}
-                                              defaultValue={lora?.lora}/>
+
+                        <RemoteSearchCombobox
+                            name={`lora_${entry.id}_${index}`} id={`${engineName}-lora-${entry.id}-${index}`}
+                            defaultValue={path ? {
+                                id: "",
+                                type: "",
+                                entries: [],
+                                code: path, name: path,
+                                content: {
+                                    path: path,
+                                },
+                            } : null}
+                            comparer={(u, v) => u.content?.path === v.content?.path}
+                            labelAccessor={e => `${e.content.baseModel}-${e.code}`}
+                            valueAccessor={e => e.content.path}
+                            customItemRender={u => (<ComfyUIHoverableItem item={u}/>)}
+                            searchHandler={async (search: string | null) => {
+                                try {
+                                    const res = await get("/comfyuis/models", {
+                                        params: {
+                                            search: {
+                                                fuzzy: search,
+                                                types: ['lora'],
+                                            },
+                                        }
+                                    }) as PagedResult<ComfyUIModelModel>;
+                                    return res.data;
+                                } catch (e) {
+                                    handleError(e);
+                                }
+                            }}/>
                     </Field>
                     <Field key={`${index}-strength`}>
                         <FieldLabel htmlFor={`${engineName}-lora_strength-${entry.id}-${index}`}>

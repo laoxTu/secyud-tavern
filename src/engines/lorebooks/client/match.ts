@@ -2,13 +2,7 @@
 import {ClientRegistry} from "@/plugins/client";
 import {Matcher, MatcherMatchContext} from "./match-models";
 
-export class MatcherRegistry extends ClientRegistry<Matcher> {
-    constructor(name: string) {
-        super(name + "Matcher");
-    }
-}
-
-export const lorebookMatcherRegistry = new MatcherRegistry(engineName);
+export const lorebookMatcherRegistry = new ClientRegistry<Matcher>(engineName + "Matcher");
 
 export function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookModel>,
                                        context: MatcherMatchContext) {

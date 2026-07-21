@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
@@ -9,12 +9,14 @@ import {del, post, put} from "@/client";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {ComfyUIParameterModel, moduleName, parameterEntryName as engineName} from "@/modules/comfyui/models";
 import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
-import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
+import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
-import {EditorSelectorField} from "@/components/custom/editor-selector";
+import { Selector} from "@/components/custom/selector";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
+    const [editor, setEditor] = useState<ComfyUIParameter | null>(
+        comfyUIParameterRegistry.records[entry.type] ?? null);
 
     return (
         <>
@@ -27,15 +29,23 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
                            id={`${engineName}-priority-${entry.id}`}
                            defaultValue={entry.priority}/>
                 </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                        {t("comfyui.parameter_type")}
+                    </FieldLabel>
+                    <Selector id={`${engineName}-type-${entry.id}`}
+                              items={comfyUIParameterRegistry.getSorted()}
+                              name={'type'}
+                              value={editor}
+                              onValueChange={setEditor}
+                              labelAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
+                              valueAccessor={e => e.id}/>
+                </Field>
             </div>
-            <EditorSelectorField id={`${engineName}-type-${entry.id}`}
-                                 name="type"
-                                 defaultValue={entry.type}
-                                 fieldLabel={t("comfyui.parameter_type")}
-                                 registry={comfyUIParameterRegistry}
-                                 nameAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
-                                 valueAccessor={e => e.id}
-                                 editorProps={{formRef, entry}}/>
+            {editor?.editorComponent && (() => {
+                const Component = editor.editorComponent;
+                return <Component formRef={formRef} entry={entry}/>
+            })()}
         </>
     );
 }

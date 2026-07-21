@@ -10,7 +10,7 @@ import {useTheme} from "next-themes";
 import {useDefaultSettingState} from "@/modules/settings/client/models";
 import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -49,8 +49,7 @@ function Tab() {
                                 <Selector name={`theme`}
                                           id={`setting-theme`}
                                           defaultValue={theme ?? null}
-                                          items={themes}
-                                          nameAccessor={e => e}/>
+                                          items={themes}/>
                             </Field>
                         </div>
                     </FieldGroup>

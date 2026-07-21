@@ -9,7 +9,7 @@ import {DeepseekConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useItemState} from "@/modules/llmapis/client/models";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 const reasoningEfforts = ["high", "max"];
@@ -58,7 +58,7 @@ function Content() {
                     </FieldLabel>
                     <Selector name={'model'} id={`${moduleName}-model`}
                               defaultValue={config.parameters.model} items={models}
-                              nameAccessor={e => t(`deepseek.${e}`)}/>
+                              labelAccessor={e => t(`deepseek.${e}`)}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-thinking`}>
@@ -109,9 +109,10 @@ function Content() {
                     <FieldLabel htmlFor={`${moduleName}-reasoning_effort`}>
                         {t(`${moduleName}.reasoning_effort`)}
                     </FieldLabel>
-                    <Selector name={'reasoning_effort'} id={`${moduleName}-reasoning_effort`}
-                              defaultValue={config.parameters.reasoning_effort} items={reasoningEfforts}
-                              nameAccessor={e => e}/>
+                    <Selector name={'reasoning_effort'}
+                              id={`${moduleName}-reasoning_effort`}
+                              defaultValue={config.parameters.reasoning_effort}
+                              items={reasoningEfforts}/>
                 </Field>
                 <Field className={thinking ? "hidden" : ""}>
                     <FieldLabel htmlFor={`${moduleName}-temperature`}>

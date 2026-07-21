@@ -1,5 +1,5 @@
 ﻿'use client';
-import React from "react";
+import React, {useState} from "react";
 import {FileIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
@@ -13,11 +13,17 @@ import {LlmapiModel, moduleName} from "../models";
 import {llmapiConfigRegistry} from "./config";
 import {modelState} from './models';
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {EditorSelectorField} from "@/components/custom/editor-selector";
+import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
+import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
+import {Selector} from "@/components/custom/selector";
 
 
 function UpdateContent({model}: { model: LlmapiModel }) {
     const t = useTranslations();
+    const [configEditor, setConfigEditor] = useState<LlmapiConfig | null>(
+        llmapiConfigRegistry.records[model.provider ?? ""] ?? null);
+    const [builderEditor, setBuilderEditor] = useState<LlmapiInputBuilder | null>(
+        llmapiInputBuilderManager.records[model.builder ?? ""] ?? null);
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -43,21 +49,38 @@ function UpdateContent({model}: { model: LlmapiModel }) {
                 />
             </Field>
         </div>
-        <EditorSelectorField registry={llmapiConfigRegistry}
-                             fieldLabel={t(`${moduleName}.provider`)}
-                             id={`${moduleName}-provider`}
-                             name={'provider'}
-                             defaultValue={model.provider}
-                             valueAccessor={u => u.id}
-                             nameAccessor={(u) => t(`${moduleName}.provider_${u.id}`)}/>
-
-        <EditorSelectorField registry={llmapiInputBuilderManager}
-                             fieldLabel={t(`${moduleName}.builder`)}
-                             id={`${moduleName}-builder`}
-                             name={'builder'}
-                             defaultValue={model.builder}
-                             valueAccessor={u => u.id}
-                             nameAccessor={(u) => t(`${moduleName}.builder_${u.id}`)}/>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-provider`}>
+                {t(`${moduleName}.provider`)}
+            </FieldLabel>
+            <Selector id={`${moduleName}-provider`}
+                      items={llmapiConfigRegistry.getSorted()}
+                      name={'provider'}
+                      value={configEditor}
+                      onValueChange={setConfigEditor}
+                      valueAccessor={u => u.id}
+                      labelAccessor={(u) => t(`${moduleName}.provider_${u.id}`)}/>
+        </Field>
+        {configEditor?.component && (() => {
+            const Component = configEditor.component;
+            return <Component/>
+        })()}
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-builder`}>
+                {t(`${moduleName}.builder`)}
+            </FieldLabel>
+            <Selector id={`${moduleName}-builder`}
+                      items={llmapiInputBuilderManager.getSorted()}
+                      name={'builder'}
+                      value={builderEditor}
+                      onValueChange={setBuilderEditor}
+                      valueAccessor={u => u.id}
+                      labelAccessor={(u) => t(`${moduleName}.builder_${u.id}`)}/>
+        </Field>
+        {builderEditor?.component && (() => {
+            const Component = builderEditor.component;
+            return <Component/>
+        })()}
     </>;
 }
 

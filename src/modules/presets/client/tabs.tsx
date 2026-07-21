@@ -2,13 +2,12 @@
 import React, {useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
-import {post, put} from "@/client";
+import {get, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
-import {CustomCombobox} from "@/components/custom/combobox/component";
-import {PresetCombobox} from "./combobox";
+import {RemoteSearchCombobox, TagBox} from "@/components/custom/combobox";
 import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import {TemplateModelUpdate} from "@/business/client/template";
@@ -16,12 +15,15 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, PresetModel} from "../models";
 import {defaultTags, modelState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
+import {PagedResult} from "@/business/models";
+import {useErrorHandler} from "@/handler/client/error";
 
 
 export function DefaultTab() {
     const t = useTranslations();
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const changed = useRef(false);
+    const {handleError} = useErrorHandler();
     return <TemplateModelUpdate<PresetModel>
         modelState={modelState}
         props={{
@@ -107,16 +109,36 @@ export function DefaultTab() {
                         <FieldLabel htmlFor={`${moduleName}-tags`}>
                             {t("default.tags")}
                         </FieldLabel>
-                        <CustomCombobox defaultValue={model.tags} name={"tag"}
-                                        id={`${moduleName}-tags`} extraValue={defaultTags}/>
+                        <TagBox defaultValue={model.tags} name={"tag"}
+                                id={`${moduleName}-tags`} items={defaultTags}/>
                     </Field>
                     <Field>
                         <FieldLabel htmlFor={`${moduleName}-requires`}>
                             {t("default.requires")}
                         </FieldLabel>
-                        <PresetCombobox
-                            id={`${moduleName}-requires`} name={"require"}
-                            defaultValue={model.requires}/>
+                        <RemoteSearchCombobox
+                            multiple name={`require`} id={`${moduleName}-requires`}
+                            defaultValue={model.requires ?? []}
+                            comparer={(u, v) => u.code === v.code}
+                            labelAccessor={e => `${e.code}-${e.version}`}
+                            valueAccessor={e => `${e.code}-${e.version}`}
+                            searchHandler={async (search: string | null) => {
+                                try {
+                                    const res = await get("/presets", {
+                                        params: {
+                                            search: {
+                                                fuzzy: search
+                                            },
+                                        }
+                                    }) as PagedResult<PresetModel>;
+                                    return res.data.map(u => ({
+                                        code: u.code,
+                                        version: u.version,
+                                    }));
+                                } catch (e) {
+                                    handleError(e);
+                                }
+                            }}/>
                     </Field>
                 </div>
                 <Field>

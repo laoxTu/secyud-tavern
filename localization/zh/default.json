@@ -7,6 +7,7 @@
     "client_id": "客户端标识",
     "count": "数量",
     "default_value": "默认值",
+    "importer_invalid": "导入方式不可为空",
     "generate": "生成",
     "generate_img": "生成图片",
     "generate_parameter": "生成参数",

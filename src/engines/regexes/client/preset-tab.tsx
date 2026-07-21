@@ -13,7 +13,7 @@ import {entryState} from "./models";
 import {PresetRegexModel, engineName} from "../models";
 import {Textarea} from "@/components/ui/textarea";
 import {submitTargetFormOnKey} from "@/business/client";
-import {Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 const regexTargets = ["both", "input", "output"]
 
@@ -102,7 +102,7 @@ function Tab() {
                                 <Selector name={'target'} id={`${engineName}-target-${entry.id}`}
                                           defaultValue={entry.target ?? null}
                                           items={regexTargets}
-                                          nameAccessor={e => t(`regex.target_${e}`)}/>
+                                          labelAccessor={e => t(`regex.target_${e}`)}/>
                             </Field>
                         </div>
                         <Field>

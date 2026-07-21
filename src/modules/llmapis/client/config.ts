@@ -1,7 +1,4 @@
 ﻿import {ClientRegistry} from "@/plugins/client";
 import {LlmapiConfig} from "./config-models";
 
-export class LlmapiConfigRegistry extends ClientRegistry<LlmapiConfig> {
-}
-
-export const llmapiConfigRegistry = new LlmapiConfigRegistry("llmapiConfig");
+export const llmapiConfigRegistry = new ClientRegistry<LlmapiConfig>("llmapiConfig");

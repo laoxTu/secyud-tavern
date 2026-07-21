@@ -15,7 +15,7 @@ import {TemplateModelList} from "@/business/client/template";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {defaultTags, modelState} from "@/modules/presets/client/models";
 import {createUseTabState} from "@/business/client/models";
-import {CustomCombobox} from "@/components/custom/combobox";
+import {TagBox} from "@/components/custom/combobox";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
 
@@ -28,10 +28,10 @@ function Content() {
         })}
         searchContent={() => {
             return (<>
-                <CustomCombobox defaultValue={[]}
-                                name={"tag"}
-                                placeholder={t("default.tags")}
-                                extraValue={defaultTags}/>
+                <TagBox defaultValue={[]}
+                        name={"tag"}
+                        placeholder={t("default.tags")}
+                        items={defaultTags}/>
             </>);
         }}
         itemContent={(model) =>

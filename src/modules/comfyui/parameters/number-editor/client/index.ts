@@ -5,7 +5,7 @@ import {NumberEditorConfig} from "../model";
 export const numberEditor: ComfyUIParameter =
     {
         id: "number_editor",
-        component: EditorComponent,
+        editorComponent: EditorComponent,
         getEditorValue({data, entry}): NumberEditorConfig {
             return {
                 nodeId: data.get('node_id') as string,

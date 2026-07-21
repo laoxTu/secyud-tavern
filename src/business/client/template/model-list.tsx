@@ -164,12 +164,15 @@ export function ModelList<TModel extends BaseModel>(
                             }}>
                                 <FoldHorizontalIcon/>
                             </Button>
-                            <ModelCreate modelState={modelState} props={createProps}/>
+                            <div className={'flex flex-col gap-2'}>
+                                <ModelCreate modelState={modelState} props={createProps}/>
+                            </div>
                             <div className="flex-1 flex overflow-x-auto scrollbar-none gap-2">
-                                <form action={applySearch} className={"flex-1 p-2 space-y-1"}>
+                                <form action={applySearch} className={"w-full flex-1 p-2 space-y-1"}>
                                     {searchContent?.()}
-                                    <InputGroup>
-                                        <InputGroupInput name="search" id={`${modelState.moduleName}-list-search`}
+                                    <InputGroup className={'overflow-hidden'}>
+                                        <InputGroupInput name="search"
+                                                         id={`${modelState.moduleName}-list-search`}
                                                          placeholder={t("default.search")}
                                                          value={searchInput}
                                                          onChange={(e) => setSearchInput(e.target.value)}/>

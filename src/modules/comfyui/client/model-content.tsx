@@ -37,11 +37,12 @@ import {BusinessError} from "@/handler/models";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import Link from "next/link";
 import {Badge} from "@/components/ui/badge";
-import {CustomCombobox} from "@/components/custom/combobox";
+import {TagBox} from "@/components/custom/combobox";
 import {comfyUIModelImporterRegistry} from "@/modules/comfyui/client/impoter";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
-import {EditorSelectorField, Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
+import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -275,8 +276,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                     </FieldLabel>
                                     <Selector name={'type'} id={`${moduleName}-type-${model.id}`}
                                               defaultValue={model.type}
-                                              items={modelTypes}
-                                              nameAccessor={e => e}/>
+                                              items={modelTypes}/>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
@@ -352,6 +352,8 @@ function Content() {
     const [importOpen, setImportOpen] = useState(false);
     // 受控组件，解决搜索刷新后光标位置问题
     const [searchInput, setSearchInput] = useState(search?.fuzzy ?? "");
+    const [editor, setEditor] = useState<ComfyUIModelImporter | null>(
+        comfyUIModelImporterRegistry.records["civitai"] ?? null);
 
     const handleCreate = async (data: FormData) => {
         try {
@@ -372,9 +374,11 @@ function Content() {
 
     const handleImport = async (data: FormData) => {
         try {
-            const importerName = data.get('importer') as string;
-            const importer = comfyUIModelImporterRegistry.records[importerName];
-            const models = await importer.generate(data);
+            if (!editor) {
+                handleError(new BusinessError("importer is required.", "comfyui.importer_invalid"));
+                return;
+            }
+            const models = await editor.generate(data);
             const encoder = new TextEncoder();
             for (const model of models) {
                 const data = encoder.encode(JSON.stringify(model));
@@ -488,13 +492,22 @@ function Content() {
                                 </DialogDescription>
                             </DialogHeader>
                             <FieldGroup>
-                                <EditorSelectorField id={`${moduleName}-importer`}
-                                                     name="importer"
-                                                     defaultValue={"civitai"}
-                                                     fieldLabel={t(`${moduleName}.importer`)}
-                                                     registry={comfyUIModelImporterRegistry}
-                                                     nameAccessor={e => t(`${moduleName}.importer_${e.id}`)}
-                                                     valueAccessor={e => e.id}/>
+                                <Field>
+                                    <FieldLabel htmlFor={`${moduleName}-importer`}>
+                                        {t(`${moduleName}.importer`)}
+                                    </FieldLabel>
+                                    <Selector id={`${moduleName}-importer`}
+                                              items={comfyUIModelImporterRegistry.getSorted()}
+                                              name="importer"
+                                              value={editor}
+                                              onValueChange={setEditor}
+                                              labelAccessor={e => t(`${moduleName}.importer_${e.id}`)}
+                                              valueAccessor={e => e.id}/>
+                                </Field>
+                                {editor?.component && (() => {
+                                    const Component = editor.component;
+                                    return <Component/>
+                                })()}
                             </FieldGroup>
                             <DialogFooter>
                                 <Button type="submit">
@@ -510,10 +523,10 @@ function Content() {
             </div>
             <form action={applySearch}>
                 <div className="grid md:grid-cols-2 gap-4">
-                    <CustomCombobox defaultValue={[]}
-                                    name={"type"}
-                                    placeholder={t("default.types")}
-                                    extraValue={modelTypes}/>
+                    <TagBox defaultValue={[]}
+                            name={"type"}
+                            placeholder={t("default.types")}
+                            items={modelTypes}/>
                     <InputGroup>
                         <InputGroupInput name="search" id={`comfyui-model-list-search`}
                                          placeholder={t("default.search")}

@@ -1,7 +1,7 @@
 ﻿'use client'
-import {EditorRegisterable} from "@/business/client/models";
+import {Registerable} from "@/utils/register";
 
-
-export interface LlmapiConfig extends EditorRegisterable {
+export interface LlmapiConfig extends Registerable {
+    component: React.ComponentType;
     getValue: (data: FormData) => any,
 }

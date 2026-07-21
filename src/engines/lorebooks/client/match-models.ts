@@ -1,7 +1,7 @@
 ﻿import {StoryHistory} from "@/modules/stories/models";
 import {PresetLorebookModel} from "@/engines/lorebooks/models";
 import {StoryHistoryMessage} from "@/modules/slots/models";
-import {EditorRegisterable} from "@/business/client/models";
+import {Registerable} from "@/utils/register";
 
 export interface MatcherProps {
     defaultValue: any,
@@ -15,7 +15,8 @@ export interface MatcherMatchContext {
     variables: any;
 }
 
-export interface Matcher extends EditorRegisterable {
+export interface Matcher extends Registerable {
+    component: React.ComponentType<MatcherProps>;
     getValue: (data: FormData) => any,
     match: (ctx: MatcherMatchContext, expression: any) => boolean,
 }

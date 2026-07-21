@@ -1,25 +1,25 @@
 import {useTranslations} from "next-intl";
 import {Field, FieldContent, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
-import React from "react";
+import React, {useState} from "react";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {BookIcon} from "lucide-react";
 import {engineName} from "@/engines/rags/models";
 import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
-import {useRagSettingState} from "@/engines/rags/client/models";
+import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/client/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {Checkbox} from "@/components/ui/checkbox";
-import {EditorSelectorField} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
 
 function Tab() {
     const t = useTranslations();
     const {disabled, embeddingGenerator} = useRagSettingState();
     const {handleError, handleSuccess} = useErrorHandler();
+    const [editor, setEditor] = useState<RagEmbeddingGeneratorProvider | null>(
+        embeddingGeneratorManager.records[embeddingGenerator] ?? null);
 
     const handleSubmit = async (data: FormData) => {
         try {
-            const editorName = data.get('generator') as string;
-            const editor = embeddingGeneratorManager.records[editorName];
             useRagSettingState.setState({
                 disabled: Boolean(data.get("disabled") as string),
                 embeddingGenerator: editor?.id ?? "",
@@ -46,14 +46,23 @@ function Tab() {
                                               defaultChecked={disabled}/>
                                 </FieldContent>
                             </Field>
+                            <Field>
+                                <FieldLabel htmlFor="setting-generator">
+                                    {t("rag.embedding_generator")}
+                                </FieldLabel>
+                                <Selector id={`setting-generator`}
+                                          items={embeddingGeneratorManager.getSorted()}
+                                          name="generator"
+                                          value={editor}
+                                          onValueChange={setEditor}
+                                          labelAccessor={e => e.id}
+                                          valueAccessor={e => e.id}/>
+                            </Field>
                         </div>
-                        <EditorSelectorField id={`setting-generator`}
-                                             name="generator"
-                                             defaultValue={embeddingGenerator}
-                                             fieldLabel={t("rag.embedding_generator")}
-                                             registry={embeddingGeneratorManager}
-                                             nameAccessor={e => e.id}
-                                             valueAccessor={e => e.id}/>
+                        {editor?.component && (() => {
+                            const Component = editor.component;
+                            return <Component/>
+                        })()}
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

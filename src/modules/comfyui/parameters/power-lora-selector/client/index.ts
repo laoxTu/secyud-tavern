@@ -5,7 +5,7 @@ import {PowerLoraSelectorConfig} from "../model";
 export const powerLoraSelector: ComfyUIParameter =
     {
         id: "power_lora_selector",
-        component: EditorComponent,
+        editorComponent: EditorComponent,
         getEditorValue({data, entry}): PowerLoraSelectorConfig {
             return {
                 nodeId: data.get('node_id') as string,

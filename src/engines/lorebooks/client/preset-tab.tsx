@@ -14,7 +14,8 @@ import {lorebookMatcherRegistry} from "./match";
 import {engineName, PresetLorebookModel} from "../models";
 import {entryState} from "@/engines/lorebooks/client/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
-import {EditorSelectorField, Selector} from "@/components/custom/editor-selector";
+import {Selector} from "@/components/custom/selector";
+import {Matcher} from "@/engines/lorebooks/client/match-models";
 
 const roles = ["system", "user", "assistant"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -22,6 +23,8 @@ const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
 function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
     const [type, setType] = useState(entry.type ?? null);
+    const [editor, setEditor] = useState<Matcher | null>(
+        lorebookMatcherRegistry.records[entry.matchType] ?? null);
 
     const language = (() => {
         if (type) return type;
@@ -52,9 +55,10 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                     <FieldLabel htmlFor={`lorebook-role-${entry.id}`}>
                         {t("lorebook.role")}
                     </FieldLabel>
-                    <Selector name={'role'} id={`lorebook-role-${entry.id}`}
-                              defaultValue={entry.role} items={roles}
-                              nameAccessor={e => e}/>
+                    <Selector name={'role'}
+                              id={`lorebook-role-${entry.id}`}
+                              defaultValue={entry.role}
+                              items={roles}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
@@ -64,19 +68,25 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                               id={`${engineName}-type-${entry.id}`}
                               value={type}
                               onValueChange={setType}
-                              items={contentTypes}
-                              nameAccessor={e => e}/>
+                              items={contentTypes}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor="setting-generator">
+                        {t("lorebook.match_type")}
+                    </FieldLabel>
+                    <Selector id={`lorebook-match_type-${entry.id}`}
+                              items={lorebookMatcherRegistry.getSorted()}
+                              name={'matchType'}
+                              value={editor}
+                              onValueChange={setEditor}
+                              valueAccessor={u => u.id}
+                              labelAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
                 </Field>
             </div>
-
-            <EditorSelectorField registry={lorebookMatcherRegistry}
-                                 fieldLabel={t(`lorebook.match_type`)}
-                                 id={`lorebook-match_type-${entry.id}`}
-                                 name={'matchType'}
-                                 defaultValue={entry.matchType}
-                                 editorProps={{defaultValue: entry.matchExpression, entry}}
-                                 valueAccessor={u => u.id}
-                                 nameAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
+            {editor?.component && (() => {
+                const Component = editor.component;
+                return <Component defaultValue={entry.matchExpression} entry={entry}/>
+            })()}
             <Field>
                 <FieldLabel>
                     {t("default.content")}
