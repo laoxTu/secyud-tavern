@@ -43,6 +43,7 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
+import {useVisible} from "@/utils/client/visible";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -72,6 +73,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
     const [key, setKey] = useState(0);
     const [updateOpen, setUpdateOpen] = useState(false);
     const [coverFile, setCoverFile] = useState<File | null>(null);
+    const {hide, show, isVisible, className} = useVisible();
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
     const {fetch} = useModelPagedItemsState();
@@ -158,7 +160,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
         <Item key={key}
               className={'overflow-hidden relative'}
               variant={"outline"}>
-            <ItemHeader>
+            <ItemHeader
+                onTouchStart={() => isVisible ? hide() : show()}
+                onMouseEnter={show} onMouseLeave={hide}>
                 <HoverCard>
                     <HoverCardTrigger className={'w-full'}>
                         <ItemCover model={model}/>
@@ -182,7 +186,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 <Badge variant="secondary">{model.type}</Badge>
                 <Badge variant="secondary">{content.baseModel}</Badge>
             </div>
-            <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70  ${className}`}>
                 {
                     content.url && <Tooltip>
                         <TooltipTrigger className={buttonVariants({variant: 'link'})}

@@ -37,6 +37,7 @@ import Link from "next/link";
 import {useImagePagedItemsState, useItemState} from "@/modules/stories/client/models";
 import {engineName} from "@/engines/regexes/models";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
+import {useVisible} from "@/utils/client/visible";
 
 
 function ContentItem({entry}: { entry: StoryImageModel }) {
@@ -47,6 +48,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
+    const {hide, show, isVisible, className} = useVisible();
     const {fetch} = useImagePagedItemsState();
     const {model} = useItemState();
 
@@ -111,7 +113,9 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
         <Item key={key}
               className={'relative'}
               variant={"outline"}>
-            <ItemHeader>
+            <ItemHeader
+                onTouchStart={() => isVisible ? hide() : show()}
+                onMouseEnter={show} onMouseLeave={hide}>
                 <Image
                     src={`/api/images/${entry.imageId}`}
                     alt={`${entry.code ?? ""}-${entry.name ?? ""}`}
@@ -128,7 +132,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                     {entry.name}
                 </ItemDescription>
             </ItemContent>
-            <ItemActions className={'absolute top-4 right-4 rounded bg-white/70 opacity-0 hover:opacity-100'}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70  ${className}`}>
                 <Tooltip>
                     <TooltipTrigger className={buttonVariants({variant: 'link'})}
                                     render={<Link href={`/api/images/${entry.imageId}`} target="_blank"/>}>
