@@ -31,7 +31,6 @@ import {del, post, put} from "@/client";
 import {Label} from "@/components/ui/label";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
-import {LlmapiModel} from "@/modules/llmapis/models";
 import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
@@ -114,8 +113,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 {
                     code: model.code,
                     name: data.get("name"),
+                    type: data.get("type"),
                     content: newContent
-                } as Partial<LlmapiModel>,
+                } as Partial<ComfyUIModelModel>,
                 {
                     params: {"id": model.id,}
                 });
