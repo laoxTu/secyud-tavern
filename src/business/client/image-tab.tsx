@@ -24,7 +24,7 @@ function ContentItem({entry}: { entry: ImageFile }) {
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
     const {fetch} = useImagePagedItemsState();
-    const {hide, show, isVisible, className} = useVisible();
+    const {change, className} = useVisible();
 
     const handleDelete = async () => {
         try {
@@ -43,9 +43,7 @@ function ContentItem({entry}: { entry: ImageFile }) {
     return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
         <Item className={'relative'}
               variant={"outline"}>
-            <ItemHeader
-                onTouchStart={() => isVisible ? hide() : show()}
-                onMouseEnter={show} onMouseLeave={hide}>
+            <ItemHeader onClick={change}>
                 <Image
                     src={`/api/images/${entry.id}`}
                     alt={entry.id}

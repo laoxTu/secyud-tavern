@@ -22,6 +22,11 @@ export function useVisible() {
         }, 100);
     };
 
+    const change = () => {
+        // 延迟隐藏，避免触摸时闪烁
+        isVisible ? hide() : show();
+    };
+
     useEffect(() => {
         return () => {
             if (timeoutRef.current) {
@@ -31,7 +36,7 @@ export function useVisible() {
     }, []);
 
     return {
-        isVisible, setIsVisible, hide, show,
+        isVisible, setIsVisible, hide, show, change,
         className: isVisible ? "" : "hidden",
     };
 }

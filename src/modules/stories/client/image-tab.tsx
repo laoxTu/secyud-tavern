@@ -48,7 +48,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
-    const {hide, show, isVisible, className} = useVisible();
+    const {change, className} = useVisible();
     const {fetch} = useImagePagedItemsState();
     const {model} = useItemState();
 
@@ -113,9 +113,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
         <Item key={key}
               className={'relative'}
               variant={"outline"}>
-            <ItemHeader
-                onTouchStart={() => isVisible ? hide() : show()}
-                onMouseEnter={show} onMouseLeave={hide}>
+            <ItemHeader onClick={change}>
                 <Image
                     src={`/api/images/${entry.imageId}`}
                     alt={`${entry.code ?? ""}-${entry.name ?? ""}`}
