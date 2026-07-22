@@ -9,7 +9,7 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
     id: importerName,
     async download(model: ComfyUIModelModel, downloadPath: string): Promise<void> {
         await ensureDir(path.dirname(downloadPath));
-        const command = `curl -L -o ${downloadPath} ${model.content.downloadUrl}`;
+        const command = `curl -L -o "${downloadPath}" "${model.content.downloadUrl}"`;
         console.info(`[command] ${command}`);
         execSync(command);
     },
