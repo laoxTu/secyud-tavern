@@ -1,3 +1,4 @@
+git pull
 npm install -g pnpm
 pnpm install
 pnpm pre-build
