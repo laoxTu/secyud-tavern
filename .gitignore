@@ -5,6 +5,9 @@
 /public/models/*
 /database/images
 /database/*.db
+/.*
+/!.gitignore
+
 # dependencies
 /node_modules
 /.pnp
