@@ -18,14 +18,21 @@ const eta = new Eta({
 
 function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
     const cache: MacroConversationCache = ctx.slot.content[enginePlural];
+
     return {
-        ...cache.variables,
+        ...Object.fromEntries(Object.values(cache.macros).map(u => [u.key, u.models[u.select].value])),
         variables: generateCurrentVariables(ctx.history, false),
     }
 }
 
+export interface MacroConversationCacheItem {
+    key: string,
+    models: PresetMacroModel[],
+    select: number,
+}
+
 export interface MacroConversationCache {
-    variables: Record<string, any>;
+    macros: Record<string, MacroConversationCacheItem>;
 }
 
 export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
@@ -53,14 +60,21 @@ export const macroConversationProvider:
     id: engineName,
     onInitialize: async (ctx) => {
         const cache: MacroConversationCache = {
-            variables: {}
+            macros: {}
         }
         for (const preset of ctx.slot.presets) {
             const entries: PresetMacroModel[] = preset.entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
-                if (entry.disabled) continue;
-                cache.variables[entry.key] = entry.value;
+                const item = cache.macros[entry.key] ??= {
+                    key: entry.key,
+                    select: 0,
+                    models: [],
+                };
+                item.models.push(entry);
+                if (!entry.disabled) {
+                    item.select = item.models.length - 1;
+                }
             }
         }
         ctx.slot.content[enginePlural] = cache;

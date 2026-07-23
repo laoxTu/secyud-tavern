@@ -31,15 +31,13 @@ export function HistoryEditor() {
     const [open, setOpen] = useState<boolean>(false);
     const formRef = useRef<HTMLFormElement>(null);
 
-
-    const handleDialogOpen = (open: boolean) => {
+    const handleDialogOpen = () => {
         try {
-            if (open) {
-                const {histories} = getSlotAndHistories(ctx);
-                const history = histories[useHistoryPageState.getState().page.cur - 1];
-                setHistory(history);
-            }
-            setOpen(open);
+            console.debug('[HistoryEditor] open edit dialog');
+            const {histories} = getSlotAndHistories(ctx);
+            const history = histories[useHistoryPageState.getState().page.cur - 1];
+            setHistory(history);
+            setOpen(true);
         } catch (error) {
             handleError(error);
         }
@@ -47,8 +45,7 @@ export function HistoryEditor() {
 
     const handleHistoryUpdate = async (data: FormData) => {
         try {
-            console.debug('[HistoryEditor] open edit dialog')
-
+            console.debug('[HistoryEditor] update');
             const {histories, slot} = getSlotAndHistories(ctx);
             const index = useHistoryPageState.getState().page.cur - 1;
             const history = histories[index];
@@ -72,16 +69,15 @@ export function HistoryEditor() {
             }
             await updateStoryHistory(slot.story.id, history);
             await handleHistoryPageChange(ctx, {curPage: page.cur})
+            setOpen(false);
         } catch (e) {
             handleError(e);
         }
-
-        handleDialogOpen(false);
     };
 
-    return (<Dialog open={open} onOpenChange={handleDialogOpen}>
+    return (<Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger render={<Tooltip/>}>
-            <TooltipTrigger onClick={() => handleDialogOpen(true)}
+            <TooltipTrigger onClick={handleDialogOpen}
                             render={<Button variant="outline"
                                             disabled={page.cur === 0}/>}>
                 <EditIcon/>

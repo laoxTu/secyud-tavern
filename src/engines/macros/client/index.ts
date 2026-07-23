@@ -2,6 +2,8 @@
 import {conversationManager} from "@/modules/slots/client/conversation";
 import {tabConfig} from "./preset-tab";
 import {macroConversationProvider, macroLlmapiInputProcesser} from "./conversation";
+import {slotFeatureManager} from "@/modules/slots/client/feature";
+import {macroSelectorFeature} from "@/engines/macros/client/slot-feature";
 
 
 export function registerMacrosClient() {
@@ -10,4 +12,7 @@ export function registerMacrosClient() {
     conversationManager.contentRenderer.register(macroConversationProvider);
     conversationManager.streamRenderer.register(macroConversationProvider);
     conversationManager.inputProcesser.register(macroLlmapiInputProcesser);
+    slotFeatureManager.register(
+        macroSelectorFeature
+    );
 }

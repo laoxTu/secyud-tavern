@@ -34,66 +34,61 @@ export function InputViewer() {
     const [open, setOpen] = useState(false);
     const [inputContext, setInputContext] = useState<LlmapiInputContext | undefined>();
 
-
-    const handleDialogOpen = async (open: boolean) => {
-
-        if (open) {
-            try {
-                setLoading(true);
-                const {slot, histories} = getSlotAndHistories(ctx);
-                const last = tryGetLastItem(histories);
-                const history: StoryHistory = {
-                    code: "",
-                    disabled: false,
+    const handleDialogOpen = async () => {
+        try {
+            setLoading(true);
+            const {slot, histories} = getSlotAndHistories(ctx);
+            const last = tryGetLastItem(histories);
+            const history: StoryHistory = {
+                code: "",
+                disabled: false,
+                id: 0,
+                inputs: [{
                     id: 0,
-                    inputs: [{
-                        id: 0,
-                        content: "",
-                        variables: [],
-                        properties: {}
-                    }],
-                    name: "",
-                    outputId: 0,
-                    outputs: [],
-                    summary: false,
-                    variables: last ? generateCurrentVariables(last, true) : {},
-                };
-                const inputElement = document.getElementById('slot-user-input') as HTMLInputElement;
-                extractVariableChanges(history.inputs[0], inputElement?.value);
-                const inputContext: LlmapiInputContext = {
-                    slot: {
-                        ...slot,
-                        story: {
-                            ...slot.story,
-                            histories: [...histories, history]
-                        }
-                    },
-                    content: {},
-                    history,
-                    histories: [],
-                    messages: [],
-                };
+                    content: "",
+                    variables: [],
+                    properties: {}
+                }],
+                name: "",
+                outputId: 0,
+                outputs: [],
+                summary: false,
+                variables: last ? generateCurrentVariables(last, true) : {},
+            };
+            const inputElement = document.getElementById('slot-user-input') as HTMLInputElement;
+            extractVariableChanges(history.inputs[0], inputElement?.value);
+            const inputContext: LlmapiInputContext = {
+                slot: {
+                    ...slot,
+                    story: {
+                        ...slot.story,
+                        histories: [...histories, history]
+                    }
+                },
+                content: {},
+                history,
+                histories: [],
+                messages: [],
+            };
 
-                generateInputBuildContext(inputContext);
+            generateInputBuildContext(inputContext);
 
-                await conversationManager.inputProcesser.use(provider =>
-                    provider.onProcessInput(inputContext));
+            await conversationManager.inputProcesser.use(provider =>
+                provider.onProcessInput(inputContext));
 
-                console.debug("input context", inputContext);
-                setInputContext(inputContext);
-            } catch (error) {
-                handleError(error);
-            } finally {
-                setLoading(false);
-            }
+            console.debug("input context", inputContext);
+            setInputContext(inputContext);
+            setOpen(true);
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
         }
-        setOpen(open);
     };
 
-    return (<Dialog open={open} onOpenChange={handleDialogOpen}>
+    return (<Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger render={<Tooltip/>}>
-
-            <TooltipTrigger onClick={() => handleDialogOpen(true)}
+            <TooltipTrigger onClick={handleDialogOpen}
                             render={<Button variant="outline"/>}>
                 <ViewIcon/>
             </TooltipTrigger>

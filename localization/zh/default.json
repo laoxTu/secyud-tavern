@@ -183,6 +183,8 @@
   },
   "macro": {
     "key": "键",
+    "show_selector": "显示宏选择",
+    "selector": "宏选择",
     "value": "值"
   },
   "page": {
