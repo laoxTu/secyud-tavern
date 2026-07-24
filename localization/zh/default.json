@@ -11,6 +11,7 @@
     "download_server": "下载到服务器",
     "download_started": "开始下载",
     "download_url": "下载地址",
+    "fetch_failed": "获取失败",
     "file_exists": "文件已存在",
     "generate": "生成",
     "generate_img": "生成图片",

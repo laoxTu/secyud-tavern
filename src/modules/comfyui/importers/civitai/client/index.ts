@@ -35,14 +35,22 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
         const modelId = data.get("modelId");
         const res: ComfyUIModelModel[] = [];
         if (modelVersionId) {
-            const response = await fetch(`${civitaiUrl}/api/v1/model-versions/${modelVersionId}`);
-            const modelVersionMeta = await response.json();
-            extractFromModelVersionMeta(modelVersionMeta, modelVersionMeta.model ?? {});
+            try {
+                const response = await fetch(`${civitaiUrl}/api/v1/model-versions/${modelVersionId}`);
+                const modelVersionMeta = await response.json();
+                extractFromModelVersionMeta(modelVersionMeta, modelVersionMeta.model ?? {});
+            } catch (err) {
+                throw new BusinessError("api fetch failed", "default.fetch_failed", err);
+            }
         } else if (modelId) {
-            const response = await fetch(`${civitaiUrl}/api/v1/models/${modelId}`);
-            const modelMeta = await response.json();
-            for (const modelVersionMeta of modelMeta.modelVersions) {
-                extractFromModelVersionMeta(modelVersionMeta, modelMeta);
+            try {
+                const response = await fetch(`${civitaiUrl}/api/v1/models/${modelId}`);
+                const modelMeta = await response.json();
+                for (const modelVersionMeta of modelMeta.modelVersions) {
+                    extractFromModelVersionMeta(modelVersionMeta, modelMeta);
+                }
+            } catch (err) {
+                throw new BusinessError("api fetch failed", "default.fetch_failed", err);
             }
         } else {
             throw new BusinessError("model id or model version id needed", "");
