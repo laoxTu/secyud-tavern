@@ -21,7 +21,7 @@ import {
     updateStoryHistory,
     useSlotContext
 } from "@/modules/slots/client/models";
-import { StoryOutputMessage} from "@/modules/stories/models";
+import {StoryOutputMessage} from "@/modules/stories/models";
 import {extractVariableChanges, LlmapiInputModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
@@ -59,6 +59,8 @@ export function HistoryChatbox() {
     const {handleError} = useErrorHandler();
     const ctx = useSlotContext();
     const t = useTranslations();
+    const [text, setText] = useState("");
+    const [summary, setSummary] = useState(false);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateLlmapiReply = async () => {
@@ -229,7 +231,7 @@ export function HistoryChatbox() {
         } catch (err) {
             handleError(err);
         }
-
+        setSummary(false);
         // 用户输入后立即跳转到最新页面，先渲染用户输入。
         await handleHistoryPageChange(ctx, {curPage: histories.length});
 
@@ -252,24 +254,39 @@ export function HistoryChatbox() {
     useEffect(() => {
         registerCallback(ctx, "generateLlmapiReply", generateLlmapiReply);
         registerCallback(ctx, "createStoryHistory", createStoryHistory);
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        const iframe = ctx.current.iframe.current;
+        const window = iframe?.contentWindow as any;
+
+        if (!window) return;
+        window.userInput = {
+            text: {get: () => text, set: (value: any) => setText(value)},
+            summary: {get: () => summary, set: (value: any) => setSummary(value)},
+        };
+
+    }, [setText]);
 
     return (
         <form action={formData => {
             if (output) return;
             const input = formData.get('slot-user-input') as string;
-            if (input.trim() === '') return;
+            if (!input?.trim()) return;
             const summary = Boolean(formData.get('summary') as string);
             void createStoryHistory({input, summary});
         }}>
             <InputGroup className={"bg-white"}>
                 <InputGroupTextarea id='slot-user-input'
                                     name='slot-user-input'
+                                    value={text}
+                                    onChange={(e) => setText(e.target.value)}
                                     placeholder={t('default.ctrl_enter_submit')}
                                     onKeyDown={submitTargetFormOnKey}/>
                 <InputGroupAddon align="inline-end">
                     <InputGroupText>
-                        <Checkbox name={'summary'} id={'summary-checkbox'}/>
+                        <Checkbox name={'summary'} id={'summary-checkbox'}
+                                  checked={summary} onCheckedChange={setSummary}/>
                         <Label htmlFor={'summary-checkbox'}>{t("default.summary")}</Label>
                     </InputGroupText>
                 </InputGroupAddon>
