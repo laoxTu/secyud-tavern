@@ -20,11 +20,11 @@ import {registerComfyUIClient} from "@/modules/comfyui/client";
 
 async function loadClientPlugins() {
     registerBusinessClient();
+    registerSlotClient();
     registerStoryClient();
     registerPresetClient();
     registerLlmapiClient();
     registerComfyUIClient();
-    registerSlotClient();
 
     registerSettingClient();
 

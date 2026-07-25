@@ -184,7 +184,8 @@ export function HistoryChatbox() {
     };
 
     // 发送输入内容，并尝试创建新历史
-    const createStoryHistory = async ({input, summary}: { input: string, summary: boolean }) => {
+    const createStoryHistory = async () => {
+        if (output || !text.trim()) return;
         const slot = ctx.current.slot!;
         const histories = slot.story.histories!;
         let history = tryGetLastItem(histories)!;
@@ -206,7 +207,7 @@ export function HistoryChatbox() {
                 history = {
                     id: 0,
                     disabled: false,
-                    code: input.substring(0, 10),
+                    code: text.substring(0, 10),
                     name: "0",
                     inputs: [],
                     summary: summary,
@@ -225,13 +226,14 @@ export function HistoryChatbox() {
                 variables: [],
                 properties: {},
             };
-            extractVariableChanges(message, input);
+            extractVariableChanges(message, text);
             inputs.push(message);
 
         } catch (err) {
             handleError(err);
         }
         setSummary(false);
+        setText("");
         // 用户输入后立即跳转到最新页面，先渲染用户输入。
         await handleHistoryPageChange(ctx, {curPage: histories.length});
 
@@ -269,13 +271,7 @@ export function HistoryChatbox() {
     }, [setText]);
 
     return (
-        <form action={formData => {
-            if (output) return;
-            const input = formData.get('slot-user-input') as string;
-            if (!input?.trim()) return;
-            const summary = Boolean(formData.get('summary') as string);
-            void createStoryHistory({input, summary});
-        }}>
+        <form action={createStoryHistory}>
             <InputGroup className={"bg-white"}>
                 <InputGroupTextarea id='slot-user-input'
                                     name='slot-user-input'

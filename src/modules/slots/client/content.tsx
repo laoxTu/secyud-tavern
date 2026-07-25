@@ -10,7 +10,6 @@ import {
     SlotInitializeContext
 } from "@/modules/slots/client/conversation-models";
 import {AccessibleComponent} from "@/components/custom/accessible";
-import {ButtonGroup} from "@/components/ui/button-group";
 import {SlotContext, SlotDataModel} from "@/modules/slots/client/models";
 import {HistoryPagerButtonGroup, useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {OutputPagerButtonGroup} from "@/modules/slots/client/output-pager";
@@ -91,12 +90,10 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
                           disabled={!loadingState.started || loadingState.loading}>
                     <HistoryPagerButtonGroup/>
                     <OutputPagerButtonGroup/>
-                    <ButtonGroup className={"bg-white rounded-md"}>
-                        {slotFeatureManager.getSorted().map((u, i) => {
-                            const Component = u.component
-                            return (<Component key={i}/>);
-                        })}
-                    </ButtonGroup>
+                    {slotFeatureManager.getSorted().map((u, i) => {
+                        const Component = u.component
+                        return (<Component key={i}/>);
+                    })}
                 </fieldset>
                 <fieldset className={"w-full"} disabled={!loadingState.success}>
                     <HistoryChatbox/>
