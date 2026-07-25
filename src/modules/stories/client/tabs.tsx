@@ -88,7 +88,7 @@ function Tab() {
                             defaultValue={model.requires ?? []}
                             comparer={(u, v) => u.code === v.code}
                             labelAccessor={e => `${e.code}-${e.version}`}
-                            valueAccessor={e => `${e.code}-${e.version}`}
+                            valueAccessor={e => JSON.stringify(e)}
                             searchHandler={async (search: string | null) => {
                                 try {
                                     const res = await get("/presets", {
