@@ -59,7 +59,7 @@ export function HistoryChatbox() {
     const {handleError} = useErrorHandler();
     const ctx = useSlotContext();
     const t = useTranslations();
-    const [text, setText] = useState("");
+    const [inputText, setInputText] = useState("");
     const [summary, setSummary] = useState(false);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
@@ -185,7 +185,7 @@ export function HistoryChatbox() {
 
     // 发送输入内容，并尝试创建新历史
     const createStoryHistory = async () => {
-        if (output || !text.trim()) return;
+        if (output || !inputText?.trim()) return;
         const slot = ctx.current.slot!;
         const histories = slot.story.histories!;
         let history = tryGetLastItem(histories)!;
@@ -207,7 +207,7 @@ export function HistoryChatbox() {
                 history = {
                     id: 0,
                     disabled: false,
-                    code: text.substring(0, 10),
+                    code: inputText.substring(0, 10),
                     name: "0",
                     inputs: [],
                     summary: summary,
@@ -226,14 +226,12 @@ export function HistoryChatbox() {
                 variables: [],
                 properties: {},
             };
-            extractVariableChanges(message, text);
+            extractVariableChanges(message, inputText);
             inputs.push(message);
 
         } catch (err) {
             handleError(err);
         }
-        setSummary(false);
-        setText("");
         // 用户输入后立即跳转到最新页面，先渲染用户输入。
         await handleHistoryPageChange(ctx, {curPage: histories.length});
 
@@ -248,7 +246,8 @@ export function HistoryChatbox() {
         } catch (err) {
             handleError(err);
         }
-
+        setSummary(false);
+        setInputText("");
         // 创建并保存历史后需要生成回复
         await generateLlmapiReply();
     };
@@ -264,19 +263,19 @@ export function HistoryChatbox() {
 
         if (!window) return;
         window.userInput = {
-            text: {get: () => text, set: (value: any) => setText(value)},
+            text: {get: () => inputText, set: (value: any) => setInputText(value)},
             summary: {get: () => summary, set: (value: any) => setSummary(value)},
         };
 
-    }, [setText]);
+    }, [setInputText]);
 
     return (
         <form action={createStoryHistory}>
             <InputGroup className={"bg-white"}>
                 <InputGroupTextarea id='slot-user-input'
                                     name='slot-user-input'
-                                    value={text}
-                                    onChange={(e) => setText(e.target.value)}
+                                    value={inputText}
+                                    onChange={(e) => setInputText(e.target.value)}
                                     placeholder={t('default.ctrl_enter_submit')}
                                     onKeyDown={submitTargetFormOnKey}/>
                 <InputGroupAddon align="inline-end">
