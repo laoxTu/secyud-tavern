@@ -233,6 +233,8 @@
     "delete_output_tip": "删除当前回复",
     "edit_history": "编辑历史",
     "edit_history_tip": "编辑当前历史",
+    "open_chatbox": "打开对话框",
+    "close_chatbox": "关闭对话框",
     "input": "用户输入",
     "input_viewer": "上下文",
     "input_viewer_tip": "查看上下文",

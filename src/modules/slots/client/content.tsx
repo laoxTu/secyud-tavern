@@ -9,12 +9,15 @@ import {SlotModel} from "@/modules/slots/models";
 import {
     SlotInitializeContext
 } from "@/modules/slots/client/conversation-models";
-import {AccessibleComponent} from "@/components/custom/accessible";
 import {SlotContext, SlotDataModel} from "@/modules/slots/client/models";
 import {HistoryPagerButtonGroup, useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {OutputPagerButtonGroup} from "@/modules/slots/client/output-pager";
 import {HistoryChatbox} from "@/modules/slots/client/history-chatbox";
 import {slotFeatureManager} from "@/modules/slots/client/feature";
+import {Button} from "@/components/ui/button";
+import {XIcon} from "lucide-react";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {useTranslations} from "next-intl";
 
 interface LoadingState {
     // 加载中
@@ -27,6 +30,7 @@ interface LoadingState {
 
 export default function StoryPageContent({params}: { params: Promise<{ id: string }> }) {
     const {handleError} = useErrorHandler();
+    const t = useTranslations();
     const [loadingState, setLoadingState] = useState<LoadingState>({
         loading: false, success: false, started: false
     });
@@ -35,6 +39,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         callbacks: {}, content: {}, iframe
     });
     const {setPage} = useHistoryPageState();
+    const [visible, setVisible] = useState(false);
 
     const loadingCurrentSlot = async () => {
         try {
@@ -85,20 +90,40 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         <SlotContext.Provider value={ctx}>
             {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
             <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
-            <AccessibleComponent className={"fixed inset-0 top-auto border-b flex flex-col gap-2  p-2"}>
-                <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}
-                          disabled={!loadingState.started || loadingState.loading}>
-                    <HistoryPagerButtonGroup/>
-                    <OutputPagerButtonGroup/>
-                    {slotFeatureManager.getSorted().map((u, i) => {
-                        const Component = u.component
-                        return (<Component key={i}/>);
-                    })}
-                </fieldset>
-                <fieldset className={"w-full"} disabled={!loadingState.success}>
-                    <HistoryChatbox/>
-                </fieldset>
-            </AccessibleComponent>
+            {
+                visible ?
+                    <div className={"fixed inset-0 top-auto border-b flex flex-col gap-2  p-2"}>
+                        <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}
+                                  disabled={!loadingState.started || loadingState.loading}>
+                            <HistoryPagerButtonGroup/>
+                            <OutputPagerButtonGroup/>
+                            {slotFeatureManager.getSorted().map((u, i) => {
+                                const Component = u.component
+                                return (<Component key={i}/>);
+                            })}
+                            <Tooltip>
+                                <TooltipTrigger onClick={() => setVisible(false)}
+                                                render={<Button variant="outline"/>}>
+                                    <XIcon/>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{t('slot.close_chatbox')}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </fieldset>
+                        <fieldset className={"w-full"} disabled={!loadingState.success}>
+                            <HistoryChatbox/>
+                        </fieldset>
+                    </div> :
+                    <div
+                        className={"fixed inset-0 top-auto h-28 p-2 opacity-0 hover:opacity-100"}>
+                        <Button variant="outline" onClick={() => setVisible(true)}
+                                className={'h-full w-full text-center'}>
+                            {t('slot.open_chatbox')}
+                        </Button>
+                    </div>
+            }
+
         </SlotContext.Provider>
     )
 }
