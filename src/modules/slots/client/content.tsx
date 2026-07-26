@@ -39,7 +39,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         callbacks: {}, content: {}, iframe
     });
     const {setPage} = useHistoryPageState();
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
 
     const loadingCurrentSlot = async () => {
         try {
@@ -123,7 +123,6 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
                         </Button>
                     </div>
             }
-
         </SlotContext.Provider>
     )
 }
