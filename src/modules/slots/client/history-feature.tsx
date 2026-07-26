@@ -20,5 +20,6 @@ export function HistoryFeature() {
 
 export const historyDefaultFeature: SlotFeature = {
     id: "HistoryFeature",
+    sequence: 1000,
     component: HistoryFeature,
 }
