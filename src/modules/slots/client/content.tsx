@@ -90,39 +90,36 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         <SlotContext.Provider value={ctx}>
             {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
             <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
-            {
-                visible ?
-                    <div className={"fixed inset-0 top-auto border-b flex flex-col gap-2  p-2"}>
-                        <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}
-                                  disabled={!loadingState.started || loadingState.loading}>
-                            <HistoryPagerButtonGroup/>
-                            <OutputPagerButtonGroup/>
-                            {slotFeatureManager.getSorted().map((u, i) => {
-                                const Component = u.component
-                                return (<Component key={i}/>);
-                            })}
-                            <Tooltip>
-                                <TooltipTrigger onClick={() => setVisible(false)}
-                                                render={<Button variant="outline"/>}>
-                                    <XIcon/>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{t('slot.close_chatbox')}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </fieldset>
-                        <fieldset className={"w-full"} disabled={!loadingState.success}>
-                            <HistoryChatbox/>
-                        </fieldset>
-                    </div> :
-                    <div
-                        className={"fixed inset-0 top-auto h-28 p-2 opacity-0 hover:opacity-100"}>
-                        <Button variant="outline" onClick={() => setVisible(true)}
-                                className={'h-full w-full text-center'}>
-                            {t('slot.open_chatbox')}
-                        </Button>
-                    </div>
-            }
+
+            <div className={`fixed inset-0 top-auto border-b flex flex-col gap-2 p-2${visible ? "" : " hidden"}`}>
+                <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}
+                          disabled={!loadingState.started || loadingState.loading}>
+                    <HistoryPagerButtonGroup/>
+                    <OutputPagerButtonGroup/>
+                    {slotFeatureManager.getSorted().map((u, i) => {
+                        const Component = u.component
+                        return (<Component key={i}/>);
+                    })}
+                    <Tooltip>
+                        <TooltipTrigger onClick={() => setVisible(false)}
+                                        render={<Button variant="outline"/>}>
+                            <XIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('slot.close_chatbox')}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </fieldset>
+                <fieldset className={"w-full"} disabled={!loadingState.success}>
+                    <HistoryChatbox/>
+                </fieldset>
+            </div>
+            <div className={`fixed inset-0 top-auto h-28 p-2 opacity-0 hover:opacity-100${visible ? " hidden" : ""}`}>
+                <Button variant="outline" onClick={() => setVisible(true)}
+                        className={'h-full w-full text-center'}>
+                    {t('slot.open_chatbox')}
+                </Button>
+            </div>
         </SlotContext.Provider>
     )
 }
