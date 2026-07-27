@@ -1,8 +1,16 @@
 // 下载文件
 import promise from "fs/promises";
-import {fileExists} from "next/dist/lib/file-exists";
 import path from "path";
 import fs from "fs";
+
+export async function fileExists(path: string) {
+    try {
+        await promise.access(path);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
 
 export async function ensureDir(dir: string) {
     try {

@@ -14,6 +14,7 @@ async function ensureUploadDir() {
     try {
         await mkdir(UPLOAD_DIR, {recursive: true});
     } catch (error) {
+        console.error(error);
     }
 }
 

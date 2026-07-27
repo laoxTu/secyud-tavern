@@ -11,13 +11,12 @@ import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
 import {PresetStyleModel, engineName} from "../models";
-import {PresetScriptModel} from "@/engines/scripts/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 
 const styleTypes = ["", "link", "text/css"];
 
-function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject<HTMLFormElement | null> }) {
+function Editor({entry, formRef}: { entry: PresetStyleModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
     const [type, setType] = useState(entry.type ?? null);
 

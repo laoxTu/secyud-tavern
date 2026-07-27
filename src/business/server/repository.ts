@@ -224,7 +224,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
             get: async (masterId: string, type: string, entryId: string): Promise<any> => {
 
-                let item: any = db
+                let item: any = await db
                     .select()
                     .from(entries)
                     .where(and(
@@ -306,7 +306,6 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 if (entry === undefined) return;
 
                 const updateData: Record<string, unknown> = {
-                    updatedAt: new Date().toISOString(),
                     search: modelStorage.bindSearch(type, entry),
                     sorter: modelStorage.bindSorter(type, entry),
                     content: JSON.stringify({
