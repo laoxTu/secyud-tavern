@@ -303,7 +303,8 @@ export function HistoryChatbox() {
                     {
                         output ?
                             <InputGroupButton type="button" disabled={false}
-                                              onClick={() => {
+                                              onClick={(e) => {
+                                                  e.stopPropagation();
                                                   const controller = getReplyAbortController(ctx);
                                                   controller.abort("user canceled.");
                                               }}>
