@@ -158,29 +158,26 @@ export function ModelContent<TModel>(
                             <p>{t('default.copy')}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent>
-                        <form action={handleClone}
-                              className="form-reset">
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {t("default.copy_title", {target: t(`default.${moduleName}`)})}
-                                </DialogTitle>
-                                <DialogDescription>
-                                    {t("default.copy_description", {target: t(`default.${moduleName}`)})}
-                                </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup>
-                                {cloneContent(model)}
-                            </FieldGroup>
-                            <DialogFooter>
-                                <Button type="submit">
-                                    {t("default.copy")}
-                                </Button>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
-                            </DialogFooter>
-                        </form>
+                    <DialogContent render={<form action={handleClone}/>}>
+                        <DialogHeader>
+                            <DialogTitle>
+                                {t("default.copy_title", {target: t(`default.${moduleName}`)})}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {t("default.copy_description", {target: t(`default.${moduleName}`)})}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <FieldGroup>
+                            {cloneContent(model)}
+                        </FieldGroup>
+                        <DialogFooter>
+                            <Button type="submit">
+                                {t("default.copy")}
+                            </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
                 <Tooltip>

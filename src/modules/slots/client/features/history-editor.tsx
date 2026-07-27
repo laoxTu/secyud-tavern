@@ -86,10 +86,11 @@ export function HistoryEditor() {
                 <p>{t('slot.edit_history_tip')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent style={{maxWidth: '86%', height: '86%'}}>
+        <DialogContent className={'flex flex-col overflow-hidden'}
+                       style={{maxWidth: '86%', height: '86%'}}
+                       render={<form action={handleHistoryUpdate} ref={formRef}/>}>
             {history && (
-                <form className={'flex flex-col overflow-hidden'}
-                      action={handleHistoryUpdate} ref={formRef}>
+                <>
                     <DialogHeader>
                         <DialogTitle>{t('slot.edit_history')}</DialogTitle>
                     </DialogHeader>
@@ -136,7 +137,7 @@ export function HistoryEditor() {
                             {t('default.cancel')}
                         </DialogClose>
                     </DialogFooter>
-                </form>)}
+                </>)}
         </DialogContent>
     </Dialog>);
 }

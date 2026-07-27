@@ -96,28 +96,26 @@ export function ModelCreate<TModel>(
                         <p>{t('default.create')}</p>
                     </TooltipContent>
                 </DialogTrigger>
-                <DialogContent>
-                    <form action={handleCreate} className="form-reset">
-                        <DialogHeader>
-                            <DialogTitle>
-                                {t("default.create_title", {target: t(`default.${moduleName}`)})}
-                            </DialogTitle>
-                            <DialogDescription>
-                                {t("default.create_description", {target: t(`default.${moduleName}`)})}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <FieldGroup>
-                            {createContent()}
-                        </FieldGroup>
-                        <DialogFooter>
-                            <Button type="submit">
-                                {t("default.create")}
-                            </Button>
-                            <DialogClose render={<Button variant="outline"/>}>
-                                {t("default.cancel")}
-                            </DialogClose>
-                        </DialogFooter>
-                    </form>
+                <DialogContent render={<form action={handleCreate}/>}>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {t("default.create_title", {target: t(`default.${moduleName}`)})}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {t("default.create_description", {target: t(`default.${moduleName}`)})}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <FieldGroup>
+                        {createContent()}
+                    </FieldGroup>
+                    <DialogFooter>
+                        <Button type="submit">
+                            {t("default.create")}
+                        </Button>
+                        <DialogClose render={<Button variant="outline"/>}>
+                            {t("default.cancel")}
+                        </DialogClose>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
             <Dialog open={importOpen} onOpenChange={setImportOpen}>
@@ -130,33 +128,30 @@ export function ModelCreate<TModel>(
                         <p>{t('default.import')}</p>
                     </TooltipContent>
                 </DialogTrigger>
-                <DialogContent>
-                    <form action={handleImport}
-                          className="form-reset">
-                        <DialogHeader>
-                            <DialogTitle>
-                                {t("default.import_title", {target: t(`default.${moduleName}`)})}
-                            </DialogTitle>
-                            <DialogDescription>
-                                {t("default.import_description", {target: t(`default.${moduleName}`)})}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor={`${moduleName}-filename`}>{t("default.name")}</FieldLabel>
-                                <Input id={`${moduleName}-filename`} name="filename" type="file"
-                                       accept={importAccept} required/>
-                            </Field>
-                        </FieldGroup>
-                        <DialogFooter>
-                            <Button type="submit">
-                                {t("default.import")}
-                            </Button>
-                            <DialogClose render={<Button variant="outline"/>}>
-                                {t("default.cancel")}
-                            </DialogClose>
-                        </DialogFooter>
-                    </form>
+                <DialogContent render={<form action={handleImport}/>}>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {t("default.import_title", {target: t(`default.${moduleName}`)})}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {t("default.import_description", {target: t(`default.${moduleName}`)})}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <FieldGroup>
+                        <Field>
+                            <FieldLabel htmlFor={`${moduleName}-filename`}>{t("default.name")}</FieldLabel>
+                            <Input id={`${moduleName}-filename`} name="filename" type="file"
+                                   accept={importAccept} required/>
+                        </Field>
+                    </FieldGroup>
+                    <DialogFooter>
+                        <Button type="submit">
+                            {t("default.import")}
+                        </Button>
+                        <DialogClose render={<Button variant="outline"/>}>
+                            {t("default.cancel")}
+                        </DialogClose>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </>

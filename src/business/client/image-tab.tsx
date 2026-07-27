@@ -17,14 +17,12 @@ import Link from "next/link";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {ImageFile} from "@/business/models";
 import {useImagePagedItemsState} from "@/business/client/models";
-import {useVisible} from "@/utils/client/visible";
 
 
 function ContentItem({entry}: { entry: ImageFile }) {
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
     const {fetch} = useImagePagedItemsState();
-    const {change, className} = useVisible();
 
     const handleDelete = async () => {
         try {
@@ -41,9 +39,9 @@ function ContentItem({entry}: { entry: ImageFile }) {
     };
 
     return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
-        <Item className={'relative'}
+        <Item className={'relative sc-active-control'}
               variant={"outline"}>
-            <ItemHeader onClick={change}>
+            <ItemHeader>
                 <Image
                     src={`/api/images/${entry.id}`}
                     alt={entry.id}
@@ -52,7 +50,10 @@ function ContentItem({entry}: { entry: ImageFile }) {
                     className="w-full h-auto rounded-sm"
                 />
             </ItemHeader>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70 ${className}`}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
+                         style={{
+                             display: "var(--display, flex)",
+                         }}>
                 <Tooltip>
                     <TooltipTrigger className={buttonVariants({variant: 'link'})}
                                     render={<Link href={`/api/images/${entry.id}`} target="_blank"/>}>

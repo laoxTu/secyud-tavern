@@ -37,7 +37,6 @@ import Link from "next/link";
 import {useImagePagedItemsState, useItemState} from "@/modules/stories/client/models";
 import {engineName} from "@/engines/regexes/models";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
-import {useVisible} from "@/utils/client/visible";
 
 
 function ContentItem({entry}: { entry: StoryImageModel }) {
@@ -48,7 +47,6 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
-    const {change, className} = useVisible();
     const {fetch} = useImagePagedItemsState();
     const {model} = useItemState();
 
@@ -110,10 +108,9 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
     };
 
     return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
-        <Item key={key}
-              className={'relative'}
-              variant={"outline"}>
-            <ItemHeader onClick={change}>
+        <Item key={key} variant={"outline"}
+              className={'relative sc-active-control'}>
+            <ItemHeader>
                 <Image
                     src={`/api/images/${entry.imageId}`}
                     alt={`${entry.code ?? ""}-${entry.name ?? ""}`}
@@ -130,7 +127,10 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                     {entry.name}
                 </ItemDescription>
             </ItemContent>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70  ${className}`}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
+                         style={{
+                             display: "var(--display, flex)",
+                         }}>
                 <Tooltip>
                     <TooltipTrigger className={buttonVariants({variant: 'link'})}
                                     render={<Link href={`/api/images/${entry.imageId}`} target="_blank"/>}>
@@ -281,35 +281,33 @@ export function Content() {
                             <p>{t('default.create')}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent>
-                        <form action={handleCreate} className="form-reset">
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {t("default.create_title", {target: t(`${moduleName}.image`)})}
-                                </DialogTitle>
-                                <DialogDescription>
-                                    {t("default.create_description", {target: t(`${moduleName}.image`)})}
-                                </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup className={'overflow-auto'}>
-                                <Field>
-                                    <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
-                                    <Input id={`${moduleName}-code`} name="code" required/>
-                                </Field>
-                                <Field>
-                                    <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
-                                    <Input id={`${moduleName}-name`} name="name" required/>
-                                </Field>
-                            </FieldGroup>
-                            <DialogFooter>
-                                <Button type="submit">
-                                    {t("default.create")}
-                                </Button>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
-                            </DialogFooter>
-                        </form>
+                    <DialogContent render={<form action={handleCreate}/>}>
+                        <DialogHeader>
+                            <DialogTitle>
+                                {t("default.create_title", {target: t(`${moduleName}.image`)})}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {t("default.create_description", {target: t(`${moduleName}.image`)})}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <FieldGroup className={'overflow-auto'}>
+                            <Field>
+                                <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                                <Input id={`${moduleName}-code`} name="code" required/>
+                            </Field>
+                            <Field>
+                                <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
+                                <Input id={`${moduleName}-name`} name="name" required/>
+                            </Field>
+                        </FieldGroup>
+                        <DialogFooter>
+                            <Button type="submit">
+                                {t("default.create")}
+                            </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </div>

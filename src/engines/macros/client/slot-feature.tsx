@@ -60,41 +60,39 @@ export function MacroSelector() {
                 </TooltipContent>
             </Tooltip>
         </DialogTrigger>
-        <DialogContent className={'right-0 left-auto'} style={{height: '86%'}}>
-            <form className={'flex flex-col overflow-hidden'}>
-                <DialogHeader>
-                    <DialogTitle>{t('macro.selector')}</DialogTitle>
-                </DialogHeader>
-                <div className={'overflow-auto p-2 flex-1'}>
-                    {cache && Object.values(cache.macros).map(item => (
-                        <FieldSet key={item.key}>
-                            <FieldLegend>{item.key}</FieldLegend>
-                            <RadioGroup defaultValue={item.select ?? 0}
-                                        onValueChange={i => handleSelectChange(item.key, i)}
-                                        className="w-fit">
-                                {
-                                    item.models.map((u, i) => (
-                                        <Field key={i} orientation="horizontal">
-                                            <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
-                                            <FieldContent>
-                                                <Tooltip>
-                                                    <TooltipTrigger render={<FieldLabel
-                                                        htmlFor={`macro-${u.key}-${i}`}/>}>
-                                                        {u.name}
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>
-                                                            {u.value}
-                                                        </p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </FieldContent>
-                                        </Field>))
-                                }
-                            </RadioGroup>
-                        </FieldSet>))}
-                </div>
-            </form>
+        <DialogContent className={'flex flex-col overflow-hidden h-5/6'} style={{height: '86%'}}>
+            <DialogHeader>
+                <DialogTitle>{t('macro.selector')}</DialogTitle>
+            </DialogHeader>
+            <div className={'overflow-auto p-2 flex-1'}>
+                {cache && Object.values(cache.macros).map(item => (
+                    <FieldSet key={item.key}>
+                        <FieldLegend>{item.key}</FieldLegend>
+                        <RadioGroup defaultValue={item.select ?? 0}
+                                    onValueChange={i => handleSelectChange(item.key, i)}
+                                    className="w-fit ml-4">
+                            {
+                                item.models.map((u, i) => (
+                                    <Field key={i} orientation="horizontal">
+                                        <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
+                                        <FieldContent>
+                                            <Tooltip>
+                                                <TooltipTrigger render={<FieldLabel
+                                                    htmlFor={`macro-${u.key}-${i}`}/>}>
+                                                    {u.name}
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>
+                                                        {u.value}
+                                                    </p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </FieldContent>
+                                    </Field>))
+                            }
+                        </RadioGroup>
+                    </FieldSet>))}
+            </div>
         </DialogContent>
     </Dialog>);
 }

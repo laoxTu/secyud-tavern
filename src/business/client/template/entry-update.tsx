@@ -140,46 +140,43 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                         <p>{t("default.copy")}</p>
                                     </TooltipContent>
                                 </DialogTrigger>
-                                <DialogContent>
-                                    <form action={handleClone}
-                                          className="form-reset">
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                {t("default.copy_title", {target: t(`${moduleName}.${entryType}`)})}
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                {t("default.copy_description", {target: t(`${moduleName}.${entryType}`)})}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <FieldGroup>
-                                            <Field>
-                                                <FieldLabel
-                                                    htmlFor={`${entryType}-code`}>
-                                                    {t("default.code") + "*"}
-                                                </FieldLabel>
-                                                <Input id={`${entryType}-code`} name="code"
-                                                       defaultValue={entry.code ?? null}
-                                                       required/>
-                                            </Field>
-                                            <Field>
-                                                <FieldLabel
-                                                    htmlFor={`${entryType}-name`}>
-                                                    {t("default.name") + "*"}
-                                                </FieldLabel>
-                                                <Input id={`${entryType}-name`} name="name"
-                                                       defaultValue={entry.name ?? null}
-                                                       required/>
-                                            </Field>
-                                        </FieldGroup>
-                                        <DialogFooter>
-                                            <Button type="submit">
-                                                {t("default.copy")}
-                                            </Button>
-                                            <DialogClose render={<Button variant="outline"/>}>
-                                                {t("default.cancel")}
-                                            </DialogClose>
-                                        </DialogFooter>
-                                    </form>
+                                <DialogContent render={<form action={handleClone}/>}>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            {t("default.copy_title", {target: t(`${moduleName}.${entryType}`)})}
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            {t("default.copy_description", {target: t(`${moduleName}.${entryType}`)})}
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <FieldGroup>
+                                        <Field>
+                                            <FieldLabel
+                                                htmlFor={`${entryType}-code`}>
+                                                {t("default.code") + "*"}
+                                            </FieldLabel>
+                                            <Input id={`${entryType}-code`} name="code"
+                                                   defaultValue={entry.code ?? null}
+                                                   required/>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel
+                                                htmlFor={`${entryType}-name`}>
+                                                {t("default.name") + "*"}
+                                            </FieldLabel>
+                                            <Input id={`${entryType}-name`} name="name"
+                                                   defaultValue={entry.name ?? null}
+                                                   required/>
+                                        </Field>
+                                    </FieldGroup>
+                                    <DialogFooter>
+                                        <Button type="submit">
+                                            {t("default.copy")}
+                                        </Button>
+                                        <DialogClose render={<Button variant="outline"/>}>
+                                            {t("default.cancel")}
+                                        </DialogClose>
+                                    </DialogFooter>
                                 </DialogContent>
                             </Dialog>
                             <DeleteDialog handleDelete={handleDelete}

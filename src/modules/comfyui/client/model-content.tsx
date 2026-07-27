@@ -42,7 +42,6 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
-import {useVisible} from "@/utils/client/visible";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -72,7 +71,6 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
     const [key, setKey] = useState(0);
     const [updateOpen, setUpdateOpen] = useState(false);
     const [coverFile, setCoverFile] = useState<File | null>(null);
-    const {change, className} = useVisible();
     const {handleError, handleSuccess} = useErrorHandler();
     const changed = useRef(false);
     const {fetch} = useModelPagedItemsState();
@@ -157,10 +155,9 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
     };
 
     return (<div className={'min-w-1/4 w-64 p-2'}>
-        <Item key={key}
-              className={'overflow-hidden relative'}
-              variant={"outline"}>
-            <ItemHeader onClick={change}>
+        <Item key={key} variant={"outline"}
+              className={'overflow-hidden relative sc-active-control'}>
+            <ItemHeader>
                 <HoverCard>
                     <HoverCardTrigger className={'w-full'}>
                         <ItemCover model={model}/>
@@ -184,7 +181,10 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 <Badge variant="secondary">{model.type}</Badge>
                 <Badge variant="secondary">{content.baseModel}</Badge>
             </div>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70 ${className}`}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
+                         style={{
+                             display: "var(--display, flex)",
+                         }}>
                 {
                     content.url && <Tooltip>
                         <TooltipTrigger className={buttonVariants({variant: 'link'})}
@@ -224,121 +224,120 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                             <p>{t("default.update")}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent style={{maxWidth: '86%', height: '86%'}}>
-                        <form className={'flex flex-col overflow-hidden'}
-                              action={handleUpdate} ref={formRef}>
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {t("default.update_title", {target: t(`${moduleName}.model`)})}
-                                </DialogTitle>
-                            </DialogHeader>
-                            <FieldGroup className={'overflow-auto p-2 flex-1'}>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-cover-${model.id}`}>
-                                        {t("default.cover")}
-                                    </FieldLabel>
-                                    <ImageUploader name="cover`" id={`${moduleName}-cover-${model.id}`}
-                                                   className={'max-w-52'}
-                                                   accept={"image/png"}
-                                                   defaultValue={content.coverId ? `/api/images/${content.coverId}` : undefined}
-                                                   onChange={file => {
-                                                       console.debug("file", file);
-                                                       setCoverFile(file);
-                                                       changed.current = true;
-                                                   }}/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-cover_src-${model.id}`}>
-                                        {t("default.cover_src")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-cover_src-${model.id}`}
-                                           defaultValue={content.coverSrc}
-                                           name="cover_src"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-code-${model.id}`}>
-                                        {t("default.code")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-code-${model.id}`}
-                                           defaultValue={model.code}
-                                           disabled
-                                           name="code"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-name-${model.id}`}>
-                                        {t("default.name")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-name-${model.id}`}
-                                           defaultValue={model.name}
-                                           name="name"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-type-${model.id}`}>
-                                        {t("default.type")}
-                                    </FieldLabel>
-                                    <Selector name={'type'} id={`${moduleName}-type-${model.id}`}
-                                              defaultValue={model.type}
-                                              items={modelTypes}/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
-                                        {t("comfyui.model_path")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-path-${model.id}`}
-                                           defaultValue={content.path}
-                                           name="path"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-url-${model.id}`}>
-                                        {t("default.url")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-url-${model.id}`}
-                                           defaultValue={content.url}
-                                           name="url"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-download_url-${model.id}`}>
-                                        {t("comfyui.download_url")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-download_url-${model.id}`}
-                                           defaultValue={content.downloadUrl}
-                                           name="download_url"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-base_model-${model.id}`}>
-                                        {t("comfyui.base_model")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-base_model-${model.id}`}
-                                           defaultValue={content.baseModel}
-                                           name="base_model"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-description-${model.id}`}>
-                                        {t("default.description")}
-                                    </FieldLabel>
-                                    <Input id={`${moduleName}-description-${model.id}`}
-                                           defaultValue={content.description}
-                                           name="description"/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel>
-                                        {t("default.html")}
-                                    </FieldLabel>
-                                    <MonacoEditor name={"html"}
-                                                  defaultValue={content.html ?? ""}
-                                                  language={"html"}
-                                                  formRef={formRef}/>
-                                </Field>
-                            </FieldGroup>
-                            <DialogFooter>
-                                <Button type={'submit'}>
-                                    {t("default.save")}
-                                </Button>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
-                            </DialogFooter>
-                        </form>
+                    <DialogContent className={'flex flex-col overflow-hidden'}
+                                   render={<form action={handleUpdate} ref={formRef}/>}
+                                   style={{maxWidth: '86%', height: '86%'}}>
+                        <DialogHeader>
+                            <DialogTitle>
+                                {t("default.update_title", {target: t(`${moduleName}.model`)})}
+                            </DialogTitle>
+                        </DialogHeader>
+                        <FieldGroup className={'overflow-auto p-2 flex-1'}>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-cover-${model.id}`}>
+                                    {t("default.cover")}
+                                </FieldLabel>
+                                <ImageUploader name="cover`" id={`${moduleName}-cover-${model.id}`}
+                                               className={'max-w-52'}
+                                               accept={"image/png"}
+                                               defaultValue={content.coverId ? `/api/images/${content.coverId}` : undefined}
+                                               onChange={file => {
+                                                   console.debug("file", file);
+                                                   setCoverFile(file);
+                                                   changed.current = true;
+                                               }}/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-cover_src-${model.id}`}>
+                                    {t("default.cover_src")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-cover_src-${model.id}`}
+                                       defaultValue={content.coverSrc}
+                                       name="cover_src"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-code-${model.id}`}>
+                                    {t("default.code")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-code-${model.id}`}
+                                       defaultValue={model.code}
+                                       disabled
+                                       name="code"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-name-${model.id}`}>
+                                    {t("default.name")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-name-${model.id}`}
+                                       defaultValue={model.name}
+                                       name="name"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-type-${model.id}`}>
+                                    {t("default.type")}
+                                </FieldLabel>
+                                <Selector name={'type'} id={`${moduleName}-type-${model.id}`}
+                                          defaultValue={model.type}
+                                          items={modelTypes}/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-path-${model.id}`}>
+                                    {t("comfyui.model_path")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-path-${model.id}`}
+                                       defaultValue={content.path}
+                                       name="path"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-url-${model.id}`}>
+                                    {t("default.url")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-url-${model.id}`}
+                                       defaultValue={content.url}
+                                       name="url"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-download_url-${model.id}`}>
+                                    {t("comfyui.download_url")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-download_url-${model.id}`}
+                                       defaultValue={content.downloadUrl}
+                                       name="download_url"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-base_model-${model.id}`}>
+                                    {t("comfyui.base_model")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-base_model-${model.id}`}
+                                       defaultValue={content.baseModel}
+                                       name="base_model"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-description-${model.id}`}>
+                                    {t("default.description")}
+                                </FieldLabel>
+                                <Input id={`${moduleName}-description-${model.id}`}
+                                       defaultValue={content.description}
+                                       name="description"/>
+                            </Field>
+                            <Field>
+                                <FieldLabel>
+                                    {t("default.html")}
+                                </FieldLabel>
+                                <MonacoEditor name={"html"}
+                                              defaultValue={content.html ?? ""}
+                                              language={"html"}
+                                              formRef={formRef}/>
+                            </Field>
+                        </FieldGroup>
+                        <DialogFooter>
+                            <Button type={'submit'}>
+                                {t("default.save")}
+                            </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </ItemActions>
@@ -441,35 +440,33 @@ function Content() {
                             <p>{t('default.create')}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent>
-                        <form action={handleCreate} className="form-reset">
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {t("default.create_title", {target: t(`default.${moduleName}_model`)})}
-                                </DialogTitle>
-                                <DialogDescription>
-                                    {t("default.create_description", {target: t(`default.${moduleName}_model`)})}
-                                </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup>
-                                <Field>
-                                    <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
-                                    <Input id={`${moduleName}-code`} name="code" required/>
-                                </Field>
-                                <Field>
-                                    <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
-                                    <Input id={`${moduleName}-name`} name="name" required/>
-                                </Field>
-                            </FieldGroup>
-                            <DialogFooter>
-                                <Button type="submit">
-                                    {t("default.create")}
-                                </Button>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
-                            </DialogFooter>
-                        </form>
+                    <DialogContent render={<form action={handleCreate}/>}>
+                        <DialogHeader>
+                            <DialogTitle>
+                                {t("default.create_title", {target: t(`default.${moduleName}_model`)})}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {t("default.create_description", {target: t(`default.${moduleName}_model`)})}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <FieldGroup>
+                            <Field>
+                                <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+                                <Input id={`${moduleName}-code`} name="code" required/>
+                            </Field>
+                            <Field>
+                                <Label htmlFor={`${moduleName}-name`}>{t("default.name") + "*"}</Label>
+                                <Input id={`${moduleName}-name`} name="name" required/>
+                            </Field>
+                        </FieldGroup>
+                        <DialogFooter>
+                            <Button type="submit">
+                                {t("default.create")}
+                            </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
                 <Dialog open={importOpen} onOpenChange={setImportOpen}>
@@ -482,44 +479,41 @@ function Content() {
                             <p>{t('default.import')}</p>
                         </TooltipContent>
                     </DialogTrigger>
-                    <DialogContent>
-                        <form action={handleImport}
-                              className="form-reset">
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {t("default.import_title", {target: t(`default.${moduleName}_model`)})}
-                                </DialogTitle>
-                                <DialogDescription>
-                                    {t("default.import_description", {target: t(`default.${moduleName}_model`)})}
-                                </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-importer`}>
-                                        {t(`${moduleName}.importer`)}
-                                    </FieldLabel>
-                                    <Selector id={`${moduleName}-importer`}
-                                              items={comfyUIModelImporterRegistry.getSorted()}
-                                              name="importer"
-                                              value={editor}
-                                              onValueChange={setEditor}
-                                              labelAccessor={e => t(`${moduleName}.importer_${e.id}`)}
-                                              valueAccessor={e => e.id}/>
-                                </Field>
-                                {editor?.component && (() => {
-                                    const Component = editor.component;
-                                    return <Component/>
-                                })()}
-                            </FieldGroup>
-                            <DialogFooter>
-                                <Button type="submit">
-                                    {t("default.import")}
-                                </Button>
-                                <DialogClose render={<Button variant="outline"/>}>
-                                    {t("default.cancel")}
-                                </DialogClose>
-                            </DialogFooter>
-                        </form>
+                    <DialogContent render={<form action={handleImport}/>}>
+                        <DialogHeader>
+                            <DialogTitle>
+                                {t("default.import_title", {target: t(`default.${moduleName}_model`)})}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {t("default.import_description", {target: t(`default.${moduleName}_model`)})}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <FieldGroup>
+                            <Field>
+                                <FieldLabel htmlFor={`${moduleName}-importer`}>
+                                    {t(`${moduleName}.importer`)}
+                                </FieldLabel>
+                                <Selector id={`${moduleName}-importer`}
+                                          items={comfyUIModelImporterRegistry.getSorted()}
+                                          name="importer"
+                                          value={editor}
+                                          onValueChange={setEditor}
+                                          labelAccessor={e => t(`${moduleName}.importer_${e.id}`)}
+                                          valueAccessor={e => e.id}/>
+                            </Field>
+                            {editor?.component && (() => {
+                                const Component = editor.component;
+                                return <Component/>
+                            })()}
+                        </FieldGroup>
+                        <DialogFooter>
+                            <Button type="submit">
+                                {t("default.import")}
+                            </Button>
+                            <DialogClose render={<Button variant="outline"/>}>
+                                {t("default.cancel")}
+                            </DialogClose>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </div>

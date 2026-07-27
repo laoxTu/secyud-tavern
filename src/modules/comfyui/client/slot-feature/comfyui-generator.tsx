@@ -73,76 +73,72 @@ export function ComfyUIGenerator() {
                 <p>{t('comfyui.generate_img')}</p>
             </TooltipContent>
         </DialogTrigger>
-        <DialogContent style={{maxWidth: '86%', height: '86%'}}>
-            {history && (
-                <form className={'flex flex-col overflow-hidden'}
-                      action={handleImageGenerate} ref={formRef}>
-                    <DialogHeader>
-                        <DialogTitle>{t('comfyui.generate_img')}</DialogTitle>
-                    </DialogHeader>
-                    <FieldSet className={'overflow-auto p-2 flex-1'}>
-                        <FieldGroup>
-                            <FieldLabel>
-                                {t("comfyui.workflow")}
-                            </FieldLabel>
-
-                            <RemoteSearchCombobox
-                                name={`workflow`} id={`workflow-select`}
-                                value={workflow}
-                                comparer={(u, v) => u.id === v.id}
-                                onValueChange={async (workflow) => {
-                                    try {
-                                        if (!workflow) return;
-                                        workflow = await get('/comfyuis/workflows/{id}', {
-                                            params: {
-                                                id: workflow.id, withDetails: true
-                                            },
-                                        }) as ComfyUIWorkflowModel;
-                                        if (workflow && workflow.entries && workflow.entries[parameterEntryPlural]) {
-                                            const parameters =
-                                                (workflow.entries[parameterEntryPlural] as ComfyUIParameterModel[])
-                                                    .filter(u => !u.disabled)
-                                                    .sort((a, b) => a.priority - b.priority);
-                                            setParameters(parameters);
-                                        }
-                                        setWorkflow(workflow);
-                                    } catch (error) {
-                                        handleError(error);
+        <DialogContent className={'flex flex-col overflow-hidden'}
+                       style={{maxWidth: '86%', height: '86%'}}
+                       render={<form action={handleImageGenerate} ref={formRef}/>}>
+            <DialogHeader>
+                <DialogTitle>{t('comfyui.generate_img')}</DialogTitle>
+            </DialogHeader>
+            <FieldSet className={'overflow-auto p-2 flex-1'}>
+                <FieldGroup>
+                    <FieldLabel>
+                        {t("comfyui.workflow")}
+                    </FieldLabel>
+                    <RemoteSearchCombobox
+                        name={`workflow`} id={`workflow-select`}
+                        value={workflow}
+                        comparer={(u, v) => u.id === v.id}
+                        onValueChange={async (workflow) => {
+                            try {
+                                if (!workflow) return;
+                                workflow = await get('/comfyuis/workflows/{id}', {
+                                    params: {
+                                        id: workflow.id, withDetails: true
+                                    },
+                                }) as ComfyUIWorkflowModel;
+                                if (workflow && workflow.entries && workflow.entries[parameterEntryPlural]) {
+                                    const parameters =
+                                        (workflow.entries[parameterEntryPlural] as ComfyUIParameterModel[])
+                                            .filter(u => !u.disabled)
+                                            .sort((a, b) => a.priority - b.priority);
+                                    setParameters(parameters);
+                                }
+                                setWorkflow(workflow);
+                            } catch (error) {
+                                handleError(error);
+                            }
+                        }}
+                        labelAccessor={e => `${e.code}-${e.name}`}
+                        valueAccessor={e => `${e.code}-${e.name}`}
+                        searchHandler={async (search: string | null) => {
+                            try {
+                                const res = await get("/comfyuis/workflows", {
+                                    params: {
+                                        search: {
+                                            fuzzy: search,
+                                        },
                                     }
-                                }}
-                                labelAccessor={e => `${e.code}-${e.name}`}
-                                valueAccessor={e => `${e.code}-${e.name}`}
-                                searchHandler={async (search: string | null) => {
-                                    try {
-                                        const res = await get("/comfyuis/workflows", {
-                                            params: {
-                                                search: {
-                                                    fuzzy: search,
-                                                },
-                                            }
-                                        }) as PagedResult<ComfyUIWorkflowModel>;
-                                        return res.data;
-                                    } catch (e) {
-                                        handleError(e);
-                                    }
-                                }}/>
-                        </FieldGroup>
-                        {
-                            parameters.map(u => {
-                                const editor = comfyUIParameterRegistry.records[u.type];
-                                const Component = editor.inputComponent;
-                                return Component ? <Component key={u.id} formRef={formRef} entry={u}/> : null;
-                            })
-                        }
-
-                    </FieldSet>
-                    <DialogFooter>
-                        <Button type="submit">{t('comfyui.generate')}</Button>
-                        <DialogClose render={<Button variant="outline"/>}>
-                            {t('default.cancel')}
-                        </DialogClose>
-                    </DialogFooter>
-                </form>)}
+                                }) as PagedResult<ComfyUIWorkflowModel>;
+                                return res.data;
+                            } catch (e) {
+                                handleError(e);
+                            }
+                        }}/>
+                </FieldGroup>
+                {
+                    parameters.map(u => {
+                        const editor = comfyUIParameterRegistry.records[u.type];
+                        const Component = editor.inputComponent;
+                        return Component ? <Component key={u.id} formRef={formRef} entry={u}/> : null;
+                    })
+                }
+            </FieldSet>
+            <DialogFooter>
+                <Button type="submit">{t('comfyui.generate')}</Button>
+                <DialogClose render={<Button variant="outline"/>}>
+                    {t('default.cancel')}
+                </DialogClose>
+            </DialogFooter>
         </DialogContent>
     </Dialog>)
 }

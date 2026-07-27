@@ -1,7 +1,4 @@
-﻿.form-reset {
-    all: inherit;
-}
-
+﻿
 html,
 body {
     margin: 0;
@@ -21,4 +18,12 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden; /* 禁止根容器滚动，滚动由内部组件控制 */
+}
+
+.sc-active-control {
+    --display: none;
+}
+
+.sc-active-control:hover, .sc-active-control:focus-within {
+    --display: initial;
 }

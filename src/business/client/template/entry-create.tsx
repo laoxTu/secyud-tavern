@@ -64,9 +64,7 @@ export function EntryCreate<TEntry>(
                     <p>{t('default.create')}</p>
                 </TooltipContent>
             </DialogTrigger>
-            <DialogContent>
-                <form action={handleCreate}
-                      className="form-reset">
+            <DialogContent render={<form action={handleCreate}/>}>
                     <DialogHeader>
                         <DialogTitle>
                             {t("default.create_title", {target: t(`${moduleName}.${entryType}`)})}
@@ -93,7 +91,6 @@ export function EntryCreate<TEntry>(
                             {t("default.cancel")}
                         </DialogClose>
                     </DialogFooter>
-                </form>
             </DialogContent>
         </Dialog>
     );
