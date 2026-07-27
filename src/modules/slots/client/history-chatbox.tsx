@@ -69,7 +69,7 @@ export function HistoryChatbox() {
             const iframe = ctx.current.iframe.current;
             const history = tryGetLastItem(histories);
             if (!iframe || !history) {
-                console.debug('[HistoryChatbox] failed to get history or iframe');
+                console.error('[HistoryChatbox] failed to get history or iframe');
                 return;
             }
 
@@ -185,12 +185,29 @@ export function HistoryChatbox() {
 
     // 发送输入内容，并尝试创建新历史
     const createStoryHistory = async () => {
-        if (output || !inputText?.trim()) return;
-        const slot = ctx.current.slot!;
-        const histories = slot.story.histories!;
-        let history = tryGetLastItem(histories)!;
-        let variables = undefined;
         try {
+            if (output || !inputText?.trim()) return;
+            const {slot, histories} = getSlotAndHistories(ctx);
+            const iframe = ctx.current.iframe.current;
+            let history = tryGetLastItem(histories)!;
+            if (!iframe || !history) {
+                console.error('[HistoryChatbox] failed to get history or iframe');
+                return;
+            }
+            let variables = undefined;
+            let input = inputText.trim();
+            if (iframe.contentWindow) {
+                const window = iframe.contentWindow as any;
+                (window?.userInput?.inputBuilders as {
+                    id: string, sequence?: number,
+                    build: (text: string) => string,
+                }[])
+                    ?.sort((a, b) =>
+                        (a.sequence ?? 0) - (b.sequence ?? 0))
+                    .forEach((builder) => {
+                        input = builder.build(input);
+                    });
+            }
 
             // 如果上一个历史还未输出，合并到上一个历史。
             // 如果上一个历史已经输出，创建新的历史。
@@ -207,7 +224,7 @@ export function HistoryChatbox() {
                 history = {
                     id: 0,
                     disabled: false,
-                    code: inputText.substring(0, 10),
+                    code: input.substring(0, 10),
                     name: "0",
                     inputs: [],
                     summary: summary,
@@ -226,16 +243,12 @@ export function HistoryChatbox() {
                 variables: [],
                 properties: {},
             };
-            extractVariableChanges(message, inputText);
+            extractVariableChanges(message, input);
             inputs.push(message);
 
-        } catch (err) {
-            handleError(err);
-        }
-        // 用户输入后立即跳转到最新页面，先渲染用户输入。
-        await handleHistoryPageChange(ctx, {curPage: histories.length});
+            // 用户输入后立即跳转到最新页面，先渲染用户输入。
+            await handleHistoryPageChange(ctx, {curPage: histories.length});
 
-        try {
             if (variables) {
                 const {id} = await post('/stories/{id}/entries/{entryType}', history,
                     {params: {id: slot.story.id, entryType: 'history'}}
@@ -265,9 +278,10 @@ export function HistoryChatbox() {
         window.userInput = {
             text: {get: () => inputText, set: (value: any) => setInputText(value)},
             summary: {get: () => summary, set: (value: any) => setSummary(value)},
+            inputBuilders: [], // { id: string, sequence?: number, build: (text: string) => string }
         };
 
-    }, [setInputText]);
+    }, [setInputText, setSummary]);
 
     return (
         <form action={createStoryHistory}>
