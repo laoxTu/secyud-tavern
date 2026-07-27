@@ -109,7 +109,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
 
     return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
         <Item key={key} variant={"outline"}
-              className={'relative sc-active-control'}>
+              className={'relative sc-dc'}>
             <ItemHeader>
                 <Image
                     src={`/api/images/${entry.imageId}`}
@@ -127,10 +127,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                     {entry.name}
                 </ItemDescription>
             </ItemContent>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
-                         style={{
-                             display: "var(--display, flex)",
-                         }}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}>
                 <Tooltip>
                     <TooltipTrigger className={buttonVariants({variant: 'link'})}
                                     render={<Link href={`/api/images/${entry.imageId}`} target="_blank"/>}>

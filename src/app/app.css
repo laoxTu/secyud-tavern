@@ -20,10 +20,14 @@ body {
     overflow: hidden; /* 禁止根容器滚动，滚动由内部组件控制 */
 }
 
-.sc-active-control {
+.sc-dc {
     --display: none;
 }
 
-.sc-active-control:hover, .sc-active-control:focus-within {
+.sc-dc:hover, .sc-dc:focus-within {
     --display: initial;
+}
+
+.sc-dc-flex {
+    display: var(--display, flex);
 }

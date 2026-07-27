@@ -156,7 +156,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
 
     return (<div className={'min-w-1/4 w-64 p-2'}>
         <Item key={key} variant={"outline"}
-              className={'overflow-hidden relative sc-active-control'}>
+              className={'overflow-hidden relative sc-dc'}>
             <ItemHeader>
                 <HoverCard>
                     <HoverCardTrigger className={'w-full'}>
@@ -181,10 +181,7 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                 <Badge variant="secondary">{model.type}</Badge>
                 <Badge variant="secondary">{content.baseModel}</Badge>
             </div>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
-                         style={{
-                             display: "var(--display, flex)",
-                         }}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}>
                 {
                     content.url && <Tooltip>
                         <TooltipTrigger className={buttonVariants({variant: 'link'})}

@@ -39,7 +39,7 @@ function ContentItem({entry}: { entry: ImageFile }) {
     };
 
     return (<div className={'min-w-1/4 w-96 h-auto p-2'}>
-        <Item className={'relative sc-active-control'}
+        <Item className={'relative sc-dc'}
               variant={"outline"}>
             <ItemHeader>
                 <Image
@@ -50,10 +50,7 @@ function ContentItem({entry}: { entry: ImageFile }) {
                     className="w-full h-auto rounded-sm"
                 />
             </ItemHeader>
-            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70`}
-                         style={{
-                             display: "var(--display, flex)",
-                         }}>
+            <ItemActions className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}>
                 <Tooltip>
                     <TooltipTrigger className={buttonVariants({variant: 'link'})}
                                     render={<Link href={`/api/images/${entry.id}`} target="_blank"/>}>
