@@ -11,14 +11,15 @@ class ErrorInterceptor implements InterceptorModels {
         } catch (error) {
 
             if (error instanceof BusinessError) {
-                console.error(error);
+                if (request.method !== "GET")
+                    console.error(error);
                 return NextResponse.json(
                     {
                         message: error.message,
                         code: error.code,
                         data: error.data,
                     },
-                    {status: 500}
+                    {status: error.status ?? 500}
                 );
             }
 

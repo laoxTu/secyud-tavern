@@ -1,6 +1,7 @@
 ﻿import {interceptor} from "@/handler/server/interceptor";
 import {imageRepository} from "@/business/server/image-repository";
 import {NextResponse} from "next/server";
+import {BusinessError} from "@/handler/models";
 
 /**
  * @pathParams { id:string }
@@ -11,6 +12,15 @@ export const GET = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.context.params;
         const file = await imageRepository.get(id);
+
+        if (!file) {
+            throw new BusinessError(
+                `Image not found: ${id}`,
+                "image.not_found",
+                undefined,
+                404);
+        }
+
         // 3. 返回图片
         return new NextResponse(file.buffer, {
             headers: {

@@ -2,11 +2,13 @@
     data: Record<string, any> = {};
     code?: string;
     innerError?: any;
+    status: number;
 
-    constructor(message: string, code?: string, innerError?: any) {
+    constructor(message: string, code?: string, innerError?: any, status: number = 500) {
         super(message);
         this.code = code;
         this.innerError = innerError;
+        this.status = status;
     }
 
     withValue(key: string, value: any) {
