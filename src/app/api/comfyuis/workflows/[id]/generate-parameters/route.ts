@@ -16,7 +16,7 @@ import {LoraConfig} from "@/modules/comfyui/parameters/power-lora-selector/model
  */
 export const POST = interceptor.createRoute(
     async (request, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         const model = await comfyuiWorkflowRepository.get(id, true);
 
         if (model) {

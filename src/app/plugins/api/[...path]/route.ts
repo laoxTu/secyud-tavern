@@ -55,14 +55,13 @@ function resolveRoute(
     return {handler, params};
 }
 
-
 /**
  * 通用插件路由处理器工厂
  * 遍历 getRouteTree() 构建的路由树，匹配动态参数（如 {id}）
  */
 function createPluginRouteHandler(method: "GET" | "POST" | "PUT" | "DELETE") {
     return async (request: NextRequest, records: NextRecord) => {
-        const params = records.params;
+        const params = await records.params;
         const pathSegments: string[] = params.path ?? [];
 
         const tree = pluginRouteManager.getRouteTree();
@@ -77,12 +76,11 @@ function createPluginRouteHandler(method: "GET" | "POST" | "PUT" | "DELETE") {
         }
 
         // 将提取的路径参数注入 records
-        records.params = resolved.params;
+        records.params = Promise.resolve(resolved.params);
 
         return resolved.handler(request, records);
     };
 }
-
 
 /**
  * GET /api/plugins/api/[...path]

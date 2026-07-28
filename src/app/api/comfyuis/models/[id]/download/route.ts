@@ -16,7 +16,7 @@ import {comfyUIModelImporterRegistry} from "@/modules/comfyui/server/impoter";
  */
 export const POST = interceptor.createRoute(
     async (_, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         const model = await comfyuiModelRepository.get(id);
 
         if (!model)

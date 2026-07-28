@@ -27,7 +27,7 @@ export function apiGetModelList<TModel>({repository, conditionSearch}: TemplateC
 
 export function apiGetModel<TModel>({repository, conditionMatchId}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         const {withDetails} =
             records.searchParams as { withDetails?: boolean };
         const model = await repository
@@ -52,7 +52,7 @@ export function apiCreateModel<TModel>({repository, checkCreate}: TemplateConfig
 
 export function apiUpdateModel<TModel>({repository, checkUpdate}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         const model = await request.json() as Partial<TModel>;
         if (checkUpdate) {
             await checkUpdate(id, model, records.searchParams);
@@ -64,7 +64,7 @@ export function apiUpdateModel<TModel>({repository, checkUpdate}: TemplateConfig
 
 export function apiDeleteModel<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         await repository.delete(id);
         return NextResponse.json(null);
     }
@@ -78,7 +78,7 @@ export function apiExportModel<TModel>(
         exportHandler
     }: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id} = records.params;
+        const {id} = await records.params;
         const model = await repository
             .get(id, true, conditionMatchId?.(id));
         if (model === null)
@@ -133,7 +133,7 @@ export function apiImportModel<TModel>({repository, importHandler}: TemplateConf
 
 export function apiGetEntryList<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id, entryType} = records.params as { id: string, entryType: string };
+        const {id, entryType} = await records.params as { id: string, entryType: string };
         const options = records.searchParams as PageOptions;
         const models = await repository.entry.getList(id, entryType, options);
         return NextResponse.json(models);
@@ -142,7 +142,7 @@ export function apiGetEntryList<TModel>({repository}: TemplateConfig<TModel>): N
 
 export function apiCreateEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
-        const {id, entryType} = records.params as { id: string, entryType: string };
+        const {id, entryType} = await records.params as { id: string, entryType: string };
         const model = await request.json();
         const entryId = await repository.entry.create(id, entryType, model);
         return NextResponse.json({id: entryId});
@@ -151,7 +151,7 @@ export function apiCreateEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
 
 export function apiGetEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id, entryType, entryId} = records.params;
+        const {id, entryType, entryId} = await records.params;
         const entry = await repository.entry.get(id, entryType, entryId);
         return NextResponse.json(entry);
     }
@@ -159,7 +159,7 @@ export function apiGetEntry<TModel>({repository}: TemplateConfig<TModel>): NextH
 
 export function apiUpdateEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
-        const {id, entryType, entryId} = records.params;
+        const {id, entryType, entryId} = await records.params;
         const model = await request.json();
         await repository.entry.update(id, entryType, entryId, model);
         return NextResponse.json(model);
@@ -168,7 +168,7 @@ export function apiUpdateEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
 
 export function apiDeleteEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
-        const {id, entryType, entryId} = records.params;
+        const {id, entryType, entryId} = await records.params;
         await repository.entry.delete(id, entryType, entryId);
         return NextResponse.json(null);
     }
@@ -176,7 +176,7 @@ export function apiDeleteEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
 
 export function apiDisableEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
-        const {id, entryType, entryId} = records.params;
+        const {id, entryType, entryId} = await records.params;
         const {disabled} = await request.json() as { disabled: boolean };
         await repository.entry.setDisabled(id, entryType, entryId, disabled);
         return NextResponse.json(null);

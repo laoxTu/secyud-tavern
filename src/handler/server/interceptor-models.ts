@@ -2,10 +2,10 @@
 import {Registerable} from "@/utils/register";
 
 export interface NextContext {
-    params: Record<string, any>,
+    params: Promise<Record<string, any>>,
 }
 
-export interface NextRecord extends NextContext{
+export interface NextRecord extends NextContext {
     searchParams: Record<string, any>,
 }
 
