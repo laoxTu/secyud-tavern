@@ -190,8 +190,8 @@ export function HistoryChatbox() {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             let history = tryGetLastItem(histories)!;
-            if (!iframe || !history) {
-                console.error('[HistoryChatbox] failed to get history or iframe');
+            if (!iframe) {
+                console.error('[HistoryChatbox] failed to get iframe');
                 return;
             }
             let variables = undefined;
