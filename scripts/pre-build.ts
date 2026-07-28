@@ -47,7 +47,7 @@ async function preBuild() {
     try {
         const envFilePath = path.join(root, '.env');
         // 使用 'wx' 标志
-        await promise.writeFile(envFilePath, `SECRET_SALT=${generateSecureDigitString(40)}\r\nSECRET_KEYS=${generateSecureDigitString(39)}`, {flag: 'wx'});
+        await promise.writeFile(envFilePath, `SECRET_SALT=${generateSecureString(40)}\r\nSECRET_KEYS=${generateSecureString(39)}`, {flag: 'wx'});
         console.log('generated .env file!');
         return true;
     } catch (err: any) {
@@ -88,18 +88,10 @@ async function preBuild() {
 }
 
 
-function generateSecureDigitString(length: number): string {
+function generateSecureString(length: number): string {
     if (length <= 0) return '';
-
-    // 每次生成 1 字节（0-255），取 0-9 的映射
     const bytes = randomBytes(length);
-    let result = '';
-
-    for (let i = 0; i < length; i++) {
-        // 取模 10 得到 0-9
-        result += bytes[i] % 10;
-    }
-    return result;
+    return bytes.toString('base64');
 }
 
 async function getPluginManifests() {

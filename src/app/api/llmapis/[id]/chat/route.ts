@@ -35,6 +35,7 @@ export const POST = interceptor.createRoute(
                 return {
                     provider: entity.provider,
                     key: entity.key,
+                    iv: entity.iv,
                     content: {
                         config: entity.content.config,
                     },
@@ -50,7 +51,8 @@ export const POST = interceptor.createRoute(
                 .withValue("id", provider);
         }
 
-        const apiKey = llmapi.key ? hasher.decrypt(llmapi.key) : "";
+        const apiKey = llmapi.key && llmapi.iv ?
+            hasher.decrypt(llmapi.key, llmapi.iv) : "";
 
         const config = llmapi.content.config ?? {};
 

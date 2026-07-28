@@ -1,5 +1,5 @@
 ﻿import {entryTable, masterTable} from "@/business/server/entities";
-import {index, text} from "drizzle-orm/sqlite-core";
+import {blob, index, text} from "drizzle-orm/sqlite-core";
 import {moduleName} from "../models";
 
 // 存档主表
@@ -8,6 +8,7 @@ export const llmapis = masterTable(moduleName, {
     provider: text("provider"),
     builder: text("builder"),
     key: text("key"),
+    iv: blob('iv', {mode: 'buffer'}),
     version: text("version").notNull(),
 }, table => [
     index(`${moduleName}_code_idx`).on(table.code),

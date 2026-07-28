@@ -1,0 +1,1 @@
+ALTER TABLE `llmapi` ADD `iv` blob;

@@ -91,7 +91,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
             {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
             <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
 
-            <div className="fixed inset-0 top-auto min-h-28 sc-dc">
+            <div className="fixed inset-0 top-auto min-h-20 sc-dc">
                 <div className={`flex-col gap-2 p-2 ${pinned ? "flex" : "sc-dc-flex"}`}>
                     <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}
                               disabled={!loadingState.started || loadingState.loading}>

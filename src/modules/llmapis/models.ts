@@ -8,6 +8,7 @@ export interface LlmapiModel extends BaseModel {
     provider?: string,
     // api key secret
     key?: string,
+    iv?: Buffer,
     builder?: string,
 }
 

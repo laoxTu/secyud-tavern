@@ -6,6 +6,7 @@ import {validate} from "uuid";
 import {BusinessError, Check} from "@/handler/models";
 import {presetRepository as repository} from "@/modules/presets/server/repository";
 import {hasher} from "@/utils/server/hasher";
+import crypto from "crypto";
 
 export const apiConfig: TemplateConfig<LlmapiModel> = {
     repository: llmapiRepository,
@@ -29,7 +30,9 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
                 ;
         }
         if (model.key) {
-            model.key = hasher.encrypt(model.key);
+            const iv = crypto.randomBytes(16);
+            model.key = hasher.encrypt(model.key, iv);
+            model.iv = iv;
         }
     },
     importHandler: undefined,

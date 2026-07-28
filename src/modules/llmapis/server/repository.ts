@@ -10,6 +10,7 @@ export const llmapiRepository =
             code: model.code,
             version: model.version,
             key: model.key,
+            iv: model.iv,
             provider: model.provider,
             builder: model.builder,
         }),
@@ -17,6 +18,7 @@ export const llmapiRepository =
             code: entity.code,
             version: entity.version,
             key: entity.key,
+            iv: entity.iv,
             provider: entity.provider,
             builder: entity.builder,
         })

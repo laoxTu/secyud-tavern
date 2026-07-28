@@ -1,6 +1,6 @@
 {
   "name": "secyud-tavern",
-  "version": "1.1.1.17",
+  "version": "1.1.1.18",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,6 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest",
-    "download-model": "npx tsx scripts/comfyui-model-download.ts",
     "gen-client-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
     "gen-db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
     "pre-build": "npx tsx scripts/pre-build.ts"

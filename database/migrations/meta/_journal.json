@@ -36,6 +36,13 @@
       "when": 1783996901223,
       "tag": "0004_bitter_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1785207894379,
+      "tag": "0005_living_the_santerians",
+      "breakpoints": true
     }
   ]
 }
