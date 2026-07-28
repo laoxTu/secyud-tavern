@@ -146,6 +146,7 @@
     "apikey": "api key",
     "builder": "提示词构造器",
     "builder_default": "默认构造器",
+    "builder_layered": "层级构造器",
     "extras": "额外参数",
     "frequency_penalty": "presence penalty (用词重复度 -2.0~2.0)",
     "logprobs": "logprobs (返回置信度)",

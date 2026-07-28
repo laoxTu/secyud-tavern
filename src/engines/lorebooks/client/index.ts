@@ -8,7 +8,7 @@ import {normalMatcher} from "../match/normal/client";
 import {eventMatcher} from "../match/event/client";
 import {vectorMatcher} from "../match/vector/client";
 import {llmapiInputBuilderManager} from "@/modules/llmapis/client/input-builder";
-import {llmapiLorebookInputBuilder} from "./input-builder";
+import {llmapiLorebookCachedInputBuilder, llmapiLorebookLayeredInputBuilder} from "./input-builder";
 
 export function registerLorebooksClient() {
     presetTabManager.register(tabConfig);
@@ -22,6 +22,7 @@ export function registerLorebooksClient() {
         vectorMatcher
     );
     llmapiInputBuilderManager.register(
-        llmapiLorebookInputBuilder
+        llmapiLorebookCachedInputBuilder,
+        llmapiLorebookLayeredInputBuilder,
     );
 }

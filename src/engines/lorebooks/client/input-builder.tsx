@@ -104,6 +104,85 @@ export async function defaultBuildInput(
     }
 }
 
+export async function layeredBuildInput(
+    ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
+    // 待填充的历史，从最后一个summary开始
+    const histories = ctx.histories;
+
+    const cache: { role: string, content: string[] } = {
+        role: "",
+        content: [],
+    }
+    const llmapiMessages: LlmapiMessage[] = [];
+    const visitedLorebooks = new Set<string>();
+    const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
+    const lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
+
+    for (const history of histories) {
+        const activeLorebooks = history.properties[enginePlural] as PresetLorebookModel[];
+        for (const activeLorebook of activeLorebooks) {
+            if (visitedLorebooks.has(activeLorebook.code)) continue;
+            lorebooks.push(activeLorebook);
+        }
+    }
+
+    lorebooks.sort(compareLorebook);
+
+    let li = 0;
+    for (let i = 0; i < histories.length; i++) {
+        const history = histories[i];
+        for (; li < lorebooks.length; li++) {
+            const lorebook = lorebooks[li];
+            if (lorebook.layer >= i - lorebooks.length + 100) break;
+            tryPushMessage(lorebook.role, lorebook.content);
+        }
+
+        if (history.inputs.length > 0) {
+            tryPushMessage("user", config.prefix);
+            for (const input of history.inputs) {
+                tryPushMessage("user", input.content);
+            }
+            tryPushMessage("user", config.suffix);
+        }
+
+        const output = getCurrentOutput(history);
+        if (output && i < histories.length - 1) {
+            tryPushMessage("assistant", output.content);
+        }
+    }
+
+    for (; li < lorebooks.length; li++) {
+        const lorebook = lorebooks[li];
+        tryPushMessage(lorebook.role, lorebook.content);
+    }
+
+    tryPushMessage("", "");
+
+    console.debug("llmapiMessages: ", llmapiMessages);
+    return llmapiMessages;
+
+    function tryPushMessage(messageRole: string, messageContent: string) {
+        if (messageRole !== cache.role) {
+            if (cache.content.length > 0) {
+                console.debug("generate message:", {
+                    role: cache.role,
+                    content: [...cache.content],
+                });
+                llmapiMessages.push({
+                    role: cache.role,
+                    content: cache.content.join("\r\n")
+                });
+            }
+            cache.role = messageRole;
+            cache.content.length = 0;
+        }
+        console.debug("push message:", {
+            messageRole, messageContent
+        });
+        cache.content.push(messageContent);
+    }
+}
+
 const defaultConfig: LorebookInputBuilderModel = {
     prefix: "",
     suffix: "",
@@ -138,7 +217,7 @@ function Content() {
 }
 
 
-export const llmapiLorebookInputBuilder: LlmapiInputBuilder =
+export const llmapiLorebookCachedInputBuilder: LlmapiInputBuilder =
     {
         id: "default",
         component: Content,
@@ -149,4 +228,17 @@ export const llmapiLorebookInputBuilder: LlmapiInputBuilder =
             };
         },
         onBuildInput: defaultBuildInput
+    } as const;
+
+export const llmapiLorebookLayeredInputBuilder: LlmapiInputBuilder =
+    {
+        id: "layered",
+        component: Content,
+        getValue: (data): LorebookInputBuilderModel => {
+            return {
+                prefix: data.get('builder-prefix') as string,
+                suffix: data.get('builder-suffix') as string,
+            };
+        },
+        onBuildInput: layeredBuildInput
     } as const;
