@@ -11,6 +11,8 @@ type NextHandlerResult = (request: NextRequest, context: NextContext) => Promise
 
 /**
  * 从 URLSearchParams 反序列化为对象
+ * 默认的searchParams 无法支持复杂对象
+ * 和 client.ts 中 buildUrl 方法对应
  */
 function deserializeSearchParams(searchParams: URLSearchParams) {
     const raw = Object.fromEntries(searchParams);
