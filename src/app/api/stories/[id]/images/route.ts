@@ -14,7 +14,7 @@ import {imageEntryName, StoryImageModel} from "@/modules/stories/models";
  */
 export const POST = interceptor.createRoute(
     async (request, records) => {
-        const {id, name, code} = await records.context.params;
+        const {id, name, code} = records.params;
         const formData = await request.formData();
         const imageFile = formData.get('image') as File | null;
         if (imageFile) {

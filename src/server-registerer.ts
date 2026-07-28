@@ -1,6 +1,5 @@
 ﻿import {interceptor} from "@/handler/server/interceptor";
 import {errorInterceptor} from "@/handler/server/error-interceptor";
-import {paramInterceptor} from "@/handler/server/param-interceptor";
 import {registerDeepseekServer} from "@/engines/deepseek/server";
 import {registerStylesServer} from "@/engines/styles/server";
 import {registerScriptsServer} from "@/engines/scripts/server";
@@ -18,7 +17,6 @@ export async function registerServerPlugins() {
     global.__initialized = true;
     interceptor.register(
         errorInterceptor,
-        paramInterceptor
     );
     registerStoryServer();
     registerComfyUIServer();

@@ -19,7 +19,7 @@ import {EntryModel} from "@/business/models";
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
 
         const story = await storyRepository.get(id, true);
 

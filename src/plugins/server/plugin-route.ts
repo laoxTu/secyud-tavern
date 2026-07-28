@@ -1,10 +1,10 @@
 import {Registerable} from "@/utils/register";
 import {getInstance, ServerRegistry} from "@/plugins/server/index";
-import {NextRouter} from "@/handler/server/interceptor";
+import {NextHandler} from "@/handler/server/interceptor";
 
 export interface PluginRouteItem {
     action: "POST" | "DELETE" | "PUT" | "GET";
-    handler: NextRouter;
+    handler: NextHandler;
 }
 
 export interface PluginRoute extends Registerable, PluginRouteItem {

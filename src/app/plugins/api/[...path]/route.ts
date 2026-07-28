@@ -2,6 +2,7 @@ import {interceptor} from "@/handler/server/interceptor";
 import {pluginRouteManager} from "@/plugins/server/plugin-route";
 import {BusinessError} from "@/handler/models";
 import {NextRequest, NextResponse} from "next/server";
+import {NextRecord} from "@/handler/server/interceptor-models";
 
 
 /**
@@ -12,7 +13,10 @@ function resolveRoute(
     tree: Record<string, any>,
     method: string,
     pathSegments: string[]
-): { handler: (req: NextRequest, records: Record<string, any>) => Promise<NextResponse>; params: Record<string, string> } | null {
+): {
+    handler: (req: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
+    params: Record<string, string>
+} | null {
 
     // 进入 [METHOD] 节点
     let node = tree[`[${method}]`];
@@ -57,8 +61,8 @@ function resolveRoute(
  * 遍历 getRouteTree() 构建的路由树，匹配动态参数（如 {id}）
  */
 function createPluginRouteHandler(method: "GET" | "POST" | "PUT" | "DELETE") {
-    return async (request: NextRequest, records: Record<string, any>) => {
-        const params = await records.context.params;
+    return async (request: NextRequest, records: NextRecord) => {
+        const params = records.params;
         const pathSegments: string[] = params.path ?? [];
 
         const tree = pluginRouteManager.getRouteTree();
@@ -73,7 +77,7 @@ function createPluginRouteHandler(method: "GET" | "POST" | "PUT" | "DELETE") {
         }
 
         // 将提取的路径参数注入 records
-        records.pluginRouteParams = resolved.params;
+        records.params = resolved.params;
 
         return resolved.handler(request, records);
     };

@@ -10,7 +10,7 @@ import {BusinessError} from "@/handler/models";
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
         const file = await imageRepository.get(id);
 
         if (!file) {
@@ -39,7 +39,7 @@ export const GET = interceptor.createRoute(
  */
 export const DELETE = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
         await imageRepository.delete(id);
         return NextResponse.json(null);
     }

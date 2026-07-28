@@ -20,7 +20,7 @@ import {getCache} from "@/utils/server/cache";
  */
 export const POST = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
         const input = await request.json() as LlmapiInputModel;
         console.debug("llmapi chat:");
         console.debug(input);

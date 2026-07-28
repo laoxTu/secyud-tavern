@@ -10,7 +10,7 @@ import {settingRepository} from "@/modules/settings/server/repository";
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
         const setting = await settingRepository.get(id);
         return NextResponse.json(setting ?? {});
     }
@@ -23,7 +23,7 @@ export const GET = interceptor.createRoute(
  */
 export const PUT = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.context.params;
+        const {id} = records.params;
         const {data} = await request.json();
         await settingRepository.set({id, data});
         return NextResponse.json(null);

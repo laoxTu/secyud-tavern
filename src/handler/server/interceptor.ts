@@ -1,10 +1,33 @@
 ﻿import {ServerRegistry, getInstance} from "@/plugins/server";
 import {NextRequest, NextResponse} from "next/server";
 import {registerServerPlugins} from "@/server-registerer";
-import {InterceptorModels} from "./interceptor-models";
+import {InterceptorModels, NextContext, NextRecord} from "./interceptor-models";
 
-export type NextRouter = (request: NextRequest, records: Record<string, any>) => Promise<NextResponse>;
-export type NextHandler = (request: NextRequest, context: any) => Promise<NextResponse>;
+// 用户的输入方法
+export type NextHandler = (request: NextRequest, records: NextRecord) => Promise<NextResponse>;
+// 拦截器生成的路由
+type NextHandlerResult = (request: NextRequest, context: NextContext) => Promise<NextResponse>;
+
+
+/**
+ * 从 URLSearchParams 反序列化为对象
+ */
+function deserializeSearchParams(searchParams: URLSearchParams) {
+    const raw = Object.fromEntries(searchParams);
+    const result: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(raw)) {
+        if (value === '' || value === undefined) continue;
+
+        try {
+            result[key] = JSON.parse(value);
+        } catch {
+            result[key] = value;
+        }
+    }
+
+    return result;
+}
 
 class Interceptor extends ServerRegistry<InterceptorModels> {
 
@@ -12,8 +35,8 @@ class Interceptor extends ServerRegistry<InterceptorModels> {
         super(name);
     }
 
-    createRoute(route: NextRouter): NextHandler {
-        return async (request: NextRequest, context: any) => {
+    createRoute(route: NextHandler): NextHandlerResult {
+        return async (request: NextRequest, context: NextContext) => {
             await registerServerPlugins();
             const interceptors = this.getSorted();
             const handler = this.compose(interceptors, route);
@@ -24,11 +47,12 @@ class Interceptor extends ServerRegistry<InterceptorModels> {
     /**
      * 递归执行中间件
      * */
-    compose(interceptors: InterceptorModels[], route: NextRouter): NextHandler {
+    compose(interceptors: InterceptorModels[], route: NextHandler): NextHandlerResult {
 
-        return async (request: NextRequest, context: any): Promise<NextResponse> => {
-            const records: Record<string, any> = {
-                context
+        return async (request, context) => {
+            const records: NextRecord = {
+                ...context,
+                searchParams: deserializeSearchParams(request.nextUrl.searchParams),
             };
 
             const dispatch = async (index: number): Promise<NextResponse> => {
