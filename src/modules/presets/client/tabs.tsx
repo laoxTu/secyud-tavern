@@ -17,6 +17,7 @@ import {defaultTags, modelState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 
 export function DefaultTab() {
@@ -44,11 +45,23 @@ export function DefaultTab() {
                     coverId = id;
                 }
                 console.debug("[cover id]", coverId);
+                const getVariables = () => {
+                    const variablesText = data.get("variables") as string;
+                    if (!variablesText.trim()) return null;
+                    try {
+                        return JSON.parse(variablesText);
+                    } catch (e) {
+                        throw new BusinessError("variable deserialize failed.",
+                            'default.json_invalid', e)
+                            .withValue("target", "default.variables");
+                    }
+                }
 
                 return await put("/presets/{id}",
                     {
                         content: {
-                            "description": data.get("description") as string,
+                            description: data.get("description") as string,
+                            variables: getVariables(),
                             coverId
                         },
                         version: data.get("version") as string,
@@ -62,7 +75,7 @@ export function DefaultTab() {
                         params: {"id": model.id,}
                     });
             },
-            updateContent: (model) => (<>
+            updateContent: (model, formRef) => (<>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-cover`}>
                         {t("default.cover")}
@@ -148,6 +161,14 @@ export function DefaultTab() {
                     <Textarea name="description" id={`${moduleName}-description`}
                               defaultValue={model.content.description ?? ""}
                               onKeyDown={submitTargetFormOnKey}/>
+                </Field>
+                <Field>
+                    <FieldLabel>
+                        {t("default.variables")}
+                    </FieldLabel>
+                    <MonacoEditor name={'variables'}
+                                  defaultValue={model.content.variables ?? ""}
+                                  language={'json'} formRef={formRef}/>
                 </Field>
             </>)
         }}/>

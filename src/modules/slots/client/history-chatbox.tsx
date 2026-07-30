@@ -1,4 +1,4 @@
-﻿import React, {useState, RefObject, useEffect} from "react";
+﻿import React, {useState, RefObject, useEffect, useRef} from "react";
 import {
     CornerDownLeftIcon,
     SquareStopIcon
@@ -61,6 +61,7 @@ export function HistoryChatbox() {
     const t = useTranslations();
     const [inputText, setInputText] = useState("");
     const [summary, setSummary] = useState(false);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateLlmapiReply = async () => {
@@ -276,7 +277,11 @@ export function HistoryChatbox() {
 
         if (!window) return;
         window.userInput = {
-            text: {get: () => inputText, set: (value: any) => setInputText(value)},
+            text: {
+                element: () => inputRef.current,
+                get: () => inputText,
+                set: (value: any) => setInputText(value)
+            },
             summary: {get: () => summary, set: (value: any) => setSummary(value)},
             inputBuilders: [], // { id: string, sequence?: number, build: (text: string) => string }
         };
@@ -286,7 +291,8 @@ export function HistoryChatbox() {
     return (
         <form action={createStoryHistory}>
             <InputGroup className={"bg-white"}>
-                <InputGroupTextarea id='slot-user-input'
+                <InputGroupTextarea ref={inputRef}
+                                    id='slot-user-input'
                                     name='slot-user-input'
                                     value={inputText}
                                     onChange={(e) => setInputText(e.target.value)}

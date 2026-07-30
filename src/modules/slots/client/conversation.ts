@@ -13,6 +13,7 @@ import {
     SlotInitializer, SlotStreamRenderer
 } from "@/modules/slots/client/conversation-models";
 import {ClientRegistry} from "@/plugins/client";
+import {mergeObjects} from "@/utils";
 
 export const conversationManager = {
     // 加载存档后需要做的事情，一般是初始化资源，将该排序的排序，该请求的请求。
@@ -80,6 +81,10 @@ export function getOpeningHistory(slot: SlotModel) {
             properties: {},
         };
         const openingRemarks = slot.story.content?.openingRemarks ?? "";
+        let variables = {};
+        for (const preset of slot.presets) {
+            variables = mergeObjects(variables, preset.content.variables);
+        }
         openingHistory = {
             id: 0,
             code: openingRemarks.substring(0, 10),
@@ -89,7 +94,7 @@ export function getOpeningHistory(slot: SlotModel) {
             summary: true,
             outputId: -1,
             outputs: [],
-            variables: {}
+            variables
         };
         extractVariableChanges(openingMessage, openingRemarks);
         slot.content[key] = openingHistory;

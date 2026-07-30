@@ -60,6 +60,8 @@
   },
   "default": {
     "author": "作者",
+    "json_invalid": "{target} JSON格式错误",
+    "variables": "变量",
     "base_url": "地址",
     "cancel": "取消",
     "chars": "字符",
