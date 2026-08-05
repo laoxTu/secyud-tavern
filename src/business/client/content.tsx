@@ -21,6 +21,7 @@ import {locales} from "@/localization/config";
 import Cookies from 'js-cookie';
 import {create} from "zustand";
 import {persist, createJSONStorage} from 'zustand/middleware'
+import {useClientUtils} from "@/utils/client";
 
 export interface BusinessTabState {
     businessTabId: string;
@@ -43,6 +44,7 @@ export const useBusinessTabState =
     ));
 
 export function BusinessPageContent() {
+    useClientUtils();
     const tabs = businessNavigationManager.getSorted();
     const t = useTranslations();
     const {businessTabId, setBusinessTabId} = useBusinessTabState();

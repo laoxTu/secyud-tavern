@@ -1,3 +1,6 @@
+import {sseManager} from "@/utils/sse/server/manager";
+import {TaskSseMessage, taskSseMessageId} from "@/utils/models";
+
 interface Task {
     promise: Promise<any>;
     startTime: number;
@@ -48,6 +51,10 @@ export const task = {
                 task.result = result;
                 const current = new Date();
                 console.log(`task "${id}" finished at ${current}, time taken : ${current.getTime() - startTime}ms`);
+                sseManager.send<TaskSseMessage>({
+                    type: taskSseMessageId,
+                    data: {id, success: true,},
+                });
             })
             .catch((error) => {
                 task.status = 'failed';
@@ -55,6 +62,15 @@ export const task = {
                 const current = new Date();
                 console.error(`task "${id}" failed at ${current}, time taken : ${current.getTime() - startTime}ms`,
                     error);
+                sseManager.send<TaskSseMessage>({
+                    type: taskSseMessageId,
+                    data: {
+                        id, success: false,
+                        error: {
+                            message: error.message,
+                        },
+                    },
+                });
             })
             .finally(() => {
                 const currentTask = tasks.get(id);

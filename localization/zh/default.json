@@ -69,6 +69,8 @@
     "comfyui_model": "ComfyUI模型",
     "comfyui_workflow": "ComfyUI工作流",
     "content": "内容",
+    "task_success": "任务完成：{target}",
+    "task_failed": "任务失败：{target}",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
     "copy_description": "将当前{target}复制到新的{target}",

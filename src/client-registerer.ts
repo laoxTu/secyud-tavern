@@ -55,6 +55,6 @@ export const useClientPlugins = () => {
             .catch(error => {
                 handleError(error);
             });
-    }, [handleError]);  // 空依赖
+    }, []);  // 空依赖
     return initialized;
 }
