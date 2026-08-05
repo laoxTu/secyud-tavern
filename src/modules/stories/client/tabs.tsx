@@ -15,9 +15,9 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {submitTargetFormOnKey} from "@/business/client";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
-import {PresetModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {LlmapiModel} from "@/modules/llmapis/models";
+import {getPresetRequires, PresetRequiresField} from "@/modules/presets/client/tabs";
 
 
 function Tab() {
@@ -27,14 +27,12 @@ function Tab() {
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-                return await put("/stories/{id}",
-                    {
+                return await put("/stories/{id}",                    {
                         content: {
                             "openingRemarks": data.get("openingRemarks") as string
                         },
                         name: data.get("name") as string,
-                        requires: data.getAll("require")
-                            .map(u => JSON.parse(u as string)),
+                        requires: getPresetRequires(data),
                         llmapi: tryParseJson(data.get("llmapi") as string),
                     },
                     {
@@ -79,34 +77,7 @@ function Tab() {
                                 }
                             }}/>
                     </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-requires`}>
-                            {t("default.requires")}
-                        </FieldLabel>
-                        <RemoteSearchCombobox
-                            multiple name={`require`} id={`${moduleName}-requires`}
-                            defaultValue={model.requires ?? []}
-                            comparer={(u, v) => u.code === v.code}
-                            labelAccessor={e => `${e.code}-${e.version}`}
-                            valueAccessor={e => JSON.stringify(e)}
-                            searchHandler={async (search: string | null) => {
-                                try {
-                                    const res = await get("/presets", {
-                                        params: {
-                                            search: {
-                                                fuzzy: search
-                                            },
-                                        }
-                                    }) as PagedResult<PresetModel>;
-                                    return res.data.map(u => ({
-                                        code: u.code,
-                                        version: u.version,
-                                    }));
-                                } catch (e) {
-                                    handleError(e);
-                                }
-                            }}/>
-                    </Field>
+                    <PresetRequiresField defaultValue={model.requires}/>
                 </div>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-opening_remarks`}>

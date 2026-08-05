@@ -12,19 +12,55 @@ import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {moduleName, PresetModel} from "../models";
+import {moduleName, PresetModel, RequireModel} from "../models";
 import {defaultTags, modelState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 
+export function getPresetRequires(data: FormData) {
+    return data.getAll("require")
+        .map(u => JSON.parse(u as string));
+}
+
+export function PresetRequiresField({defaultValue}: { defaultValue?: RequireModel[] }) {
+    const t = useTranslations();
+    const {handleError} = useErrorHandler();
+    return (<Field>
+        <FieldLabel htmlFor={`${moduleName}-requires`}>
+            {t("default.requires")}
+        </FieldLabel>
+        <RemoteSearchCombobox
+            multiple name={`require`} id={`${moduleName}-requires`}
+            defaultValue={defaultValue ?? []}
+            comparer={(u, v) => u.code === v.code}
+            labelAccessor={e => `${e.code}-${e.version}`}
+            valueAccessor={e => JSON.stringify(e)}
+            searchHandler={async (search: string | null) => {
+                try {
+                    const res = await get("/presets", {
+                        params: {
+                            search: {
+                                fuzzy: search
+                            },
+                        }
+                    }) as PagedResult<PresetModel>;
+                    return res.data.map(u => ({
+                        code: u.code,
+                        version: u.version,
+                    }));
+                } catch (e) {
+                    handleError(e);
+                }
+            }}/>
+    </Field>);
+}
 
 export function DefaultTab() {
     const t = useTranslations();
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const changed = useRef(false);
-    const {handleError} = useErrorHandler();
     return <TemplateModelUpdate<PresetModel>
         modelState={modelState}
         props={{
@@ -67,8 +103,7 @@ export function DefaultTab() {
                         version: data.get("version") as string,
                         name: data.get("name") as string,
                         code: model.code,
-                        requires: data.getAll("require")
-                            .map(u => JSON.parse(u as string)),
+                        requires: getPresetRequires(data),
                         tags: data.getAll("tag") as string[],
                     },
                     {
@@ -125,34 +160,7 @@ export function DefaultTab() {
                         <TagBox defaultValue={model.tags} name={"tag"}
                                 id={`${moduleName}-tags`} items={defaultTags}/>
                     </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-requires`}>
-                            {t("default.requires")}
-                        </FieldLabel>
-                        <RemoteSearchCombobox
-                            multiple name={`require`} id={`${moduleName}-requires`}
-                            defaultValue={model.requires ?? []}
-                            comparer={(u, v) => u.code === v.code}
-                            labelAccessor={e => `${e.code}-${e.version}`}
-                            valueAccessor={e => JSON.stringify(e)}
-                            searchHandler={async (search: string | null) => {
-                                try {
-                                    const res = await get("/presets", {
-                                        params: {
-                                            search: {
-                                                fuzzy: search
-                                            },
-                                        }
-                                    }) as PagedResult<PresetModel>;
-                                    return res.data.map(u => ({
-                                        code: u.code,
-                                        version: u.version,
-                                    }));
-                                } catch (e) {
-                                    handleError(e);
-                                }
-                            }}/>
-                    </Field>
+                    <PresetRequiresField defaultValue={model.requires}/>
                 </div>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-description`}>
@@ -167,7 +175,7 @@ export function DefaultTab() {
                         {t("default.variables")}
                     </FieldLabel>
                     <MonacoEditor name={'variables'}
-                                  defaultValue={model.content.variables ?? ""}
+                                  defaultValue={JSON.stringify(model.content.variables ?? undefined)}
                                   language={'json'} formRef={formRef}/>
                 </Field>
             </>)
