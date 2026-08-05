@@ -8,6 +8,7 @@ export default defineConfig({
         tsconfigPaths: true,  // 原生支持 tsconfig.json 的 paths
         alias: {
             '@': path.resolve(__dirname, './src'),
+            '@plugins': path.resolve(__dirname, './plugins'),
         },
     },
     test: {
