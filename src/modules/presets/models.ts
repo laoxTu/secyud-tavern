@@ -2,6 +2,8 @@
 
 export interface RequireModel {
     code: string,
+    author?: string,
+    name?: string,
     version: string,
 }
 

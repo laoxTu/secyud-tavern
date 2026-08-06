@@ -35,7 +35,7 @@ export function PresetRequiresField({defaultValue}: { defaultValue?: RequireMode
             multiple name={`require`} id={`${moduleName}-requires`}
             defaultValue={defaultValue ?? []}
             comparer={(u, v) => u.code === v.code}
-            labelAccessor={e => `${e.code}-${e.version}`}
+            labelAccessor={(e) => `${e.code}-${e.name}-${e.version}(${e.author})`}
             valueAccessor={e => JSON.stringify(e)}
             searchHandler={async (search: string | null) => {
                 try {
@@ -47,9 +47,11 @@ export function PresetRequiresField({defaultValue}: { defaultValue?: RequireMode
                         }
                     }) as PagedResult<PresetModel>;
                     return res.data.map(u => ({
-                        code: u.code,
+                        author: u.content.author,
                         version: u.version,
-                    }));
+                        code: u.code,
+                        name: u.name,
+                    }) as RequireModel);
                 } catch (e) {
                     handleError(e);
                 }
