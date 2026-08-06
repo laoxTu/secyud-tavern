@@ -94,7 +94,6 @@ export const scriptConversationProvider:
                     script.type = entry.type ?? "";
                     script.textContent = entry.content;
                     ctx.document.body.appendChild(script);
-                    await new Promise<void>(resolve => queueMicrotask(resolve));
                 }
             }
         }
