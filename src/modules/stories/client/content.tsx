@@ -29,11 +29,11 @@ function Content() {
         itemContent={(model) => (<>
             <ItemContent className={'flex-1 truncate'}>
                 <ItemTitle className="truncate">
-                    {model.name} - <span className="text-muted-foreground">{
-                    model.content["openingRemarks"]?.substring(0, 100) ?? ""
-                }</span>
+                    {model.name} - <span className="text-muted-foreground">
+                    {model.id}
+                </span>
                 </ItemTitle>
-                <ItemDescription>{model.llmapi?.code}</ItemDescription>
+                <ItemDescription>{model.content["openingRemarks"]?.substring(0, 100) ?? ""}</ItemDescription>
             </ItemContent>
             <ItemContent className="flex-none text-center">
                 <Tooltip>
