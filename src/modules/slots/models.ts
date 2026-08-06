@@ -52,7 +52,7 @@ export function applyPatch(variables: any, changes: VariableChangeModel[]) {
 
     console.debug("applyPatch", changes);
     for (const change of changes) {
-        const keys = change.path.split('/').filter(k => k !== '');
+        const keys = change.path.split('/').filter(k => k);
         if (keys.length === 0) {
             continue;
         }

@@ -18,6 +18,8 @@ import {Button} from "@/components/ui/button";
 import {PinIcon, PinOffIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useTranslations} from "next-intl";
+import {create} from "zustand";
+import {createJSONStorage, persist} from "zustand/middleware";
 
 interface LoadingState {
     // 加载中
@@ -27,6 +29,26 @@ interface LoadingState {
     // 已开始加载
     started: boolean;
 }
+
+interface SlotControlState {
+    pinned: boolean;
+    setPinned: (pinned: boolean) => void;
+}
+
+const useSlotControlState =
+    create<SlotControlState>()(persist(
+        (set) => {
+            return {
+                pinned: true,
+                setPinned: pinned => set({pinned})
+            };
+        }, {
+            name: "slot-control-state",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({
+                pinned: state.pinned,
+            }),
+        }));
 
 export default function StoryPageContent({params}: { params: Promise<{ id: string }> }) {
     const {handleError} = useErrorHandler();
@@ -39,7 +61,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
         callbacks: {}, content: {}, iframe
     });
     const {setPage} = useHistoryPageState();
-    const [pinned, setPinned] = useState(true);
+    const {pinned, setPinned} = useSlotControlState();
 
     const loadingCurrentSlot = async () => {
         try {
@@ -102,7 +124,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
                             return (<Component key={i}/>);
                         })}
                         <Tooltip>
-                            <TooltipTrigger onClick={() => setPinned(u => !u)}
+                            <TooltipTrigger onClick={() => setPinned(!pinned)}
                                             render={<Button variant="outline"/>}>
                                 {
                                     pinned ? <PinOffIcon/> : <PinIcon/>
