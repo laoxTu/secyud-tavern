@@ -6,13 +6,11 @@ import {get, put} from "@/client";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
 import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
 import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {submitTargetFormOnKey} from "@/business/client";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
@@ -27,10 +25,8 @@ function Tab() {
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-                return await put("/stories/{id}",                    {
-                        content: {
-                            openingRemarks: data.get("openingRemarks") as string
-                        },
+                return await put("/stories/{id}", {
+                        content: {},
                         name: data.get("name") as string,
                         requires: getPresetRequires(data),
                         llmapi: tryParseJson(data.get("llmapi") as string),
@@ -79,15 +75,6 @@ function Tab() {
                     </Field>
                     <PresetRequiresField defaultValue={model.requires}/>
                 </div>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-opening_remarks`}>
-                        {t("story.opening_remarks")}
-                    </FieldLabel>
-                    <Textarea name="openingRemarks" id={`${moduleName}-opening_remarks`}
-                              defaultValue={model.content.openingRemarks ?? ""}
-                              onKeyDown={submitTargetFormOnKey}
-                    />
-                </Field>
             </>)
         }}/>
 }

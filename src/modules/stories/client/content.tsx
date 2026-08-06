@@ -33,7 +33,7 @@ function Content() {
                     {model.id}
                 </span>
                 </ItemTitle>
-                <ItemDescription>{model.content["openingRemarks"]?.substring(0, 100) ?? ""}</ItemDescription>
+                <ItemDescription>{model.llmapi?.code}</ItemDescription>
             </ItemContent>
             <ItemContent className="flex-none text-center">
                 <Tooltip>

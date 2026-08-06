@@ -98,7 +98,8 @@ export function DefaultTab() {
                 return await put("/presets/{id}",
                     {
                         content: {
-                            description: data.get("description") as string,
+                            opening: data.get("opening"),
+                            description: data.get("description"),
                             variables: getVariables(),
                             coverId
                         },
@@ -165,20 +166,29 @@ export function DefaultTab() {
                     <PresetRequiresField defaultValue={model.requires}/>
                 </div>
                 <Field>
-                    <FieldLabel htmlFor={`${moduleName}-description`}>
-                        {t("default.description")}
-                    </FieldLabel>
-                    <Textarea name="description" id={`${moduleName}-description`}
-                              defaultValue={model.content.description ?? ""}
-                              onKeyDown={submitTargetFormOnKey}/>
-                </Field>
-                <Field>
                     <FieldLabel>
                         {t("default.variables")}
                     </FieldLabel>
                     <MonacoEditor name={'variables'}
                                   defaultValue={JSON.stringify(model.content.variables ?? undefined)}
                                   language={'json'} formRef={formRef}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-opening`}>
+                        {t("story.opening_remarks")}
+                    </FieldLabel>
+                    <Textarea name="opening" id={`${moduleName}-opening`}
+                              defaultValue={model.content.opening ?? ""}
+                              onKeyDown={submitTargetFormOnKey}
+                    />
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-description`}>
+                        {t("default.description")}
+                    </FieldLabel>
+                    <Textarea name="description" id={`${moduleName}-description`}
+                              defaultValue={model.content.description ?? ""}
+                              onKeyDown={submitTargetFormOnKey}/>
                 </Field>
             </>)
         }}/>

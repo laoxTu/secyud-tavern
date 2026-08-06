@@ -76,13 +76,7 @@ export function getOpeningHistory(slot: SlotModel) {
     const key = 'openingHistory';
     let openingHistory = slot.content[key] as StoryHistory;
     if (!openingHistory) {
-        const openingMessage: StoryInputMessage = {
-            id: 0,
-            content: "",
-            variables: [],
-            properties: {},
-        };
-        const openingRemarks = slot.story.content?.openingRemarks ?? "";
+
         let variables = {};
         for (const preset of slot.presets) {
             variables = mergeObjects(variables, preset.content.variables);
@@ -90,16 +84,26 @@ export function getOpeningHistory(slot: SlotModel) {
         console.debug("openingHistory variables", variables);
         openingHistory = {
             id: 0,
-            code: openingRemarks.substring(0, 10),
+            code: "opening history",
             name: "0",
             disabled: false,
-            inputs: [openingMessage],
+            inputs: [],
             summary: true,
             outputId: -1,
             outputs: [],
             variables
         };
-        extractVariableChanges(openingMessage, openingRemarks);
+        for (const preset of slot.presets) {
+            if (!preset.content.opening) continue;
+            const openingMessage: StoryInputMessage = {
+                id: 0,
+                content: "",
+                variables: [],
+                properties: {},
+            };
+            extractVariableChanges(openingMessage, preset.content.opening);
+            openingHistory.inputs.push(openingMessage);
+        }
         slot.content[key] = openingHistory;
     }
     return openingHistory;
