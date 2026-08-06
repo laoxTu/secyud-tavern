@@ -31,6 +31,8 @@ export const conversationManager = {
 
 export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
     const variables = structuredClone(history.variables);
+    console.debug("Generating current variables history", history);
+    console.debug("Generating current variables start", variables);
     for (const input of history.inputs) {
         if (input.variables) {
             applyPatch(variables, input.variables);
@@ -85,6 +87,7 @@ export function getOpeningHistory(slot: SlotModel) {
         for (const preset of slot.presets) {
             variables = mergeObjects(variables, preset.content.variables);
         }
+        console.debug("openingHistory variables", variables);
         openingHistory = {
             id: 0,
             code: openingRemarks.substring(0, 10),

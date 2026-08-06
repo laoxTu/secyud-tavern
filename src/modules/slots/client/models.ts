@@ -4,6 +4,8 @@ import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
 import {put} from "@/client";
 import {BusinessError} from "@/handler/models";
+import {tryGetLastItem} from "@/utils";
+import {getOpeningHistory} from "@/modules/slots/client/conversation";
 
 export interface SlotDataModel {
     slot?: SlotModel;
@@ -39,6 +41,10 @@ export function getSlotAndHistories(ctx: RefObject<SlotDataModel>) {
     }
 
     return {slot, histories};
+}
+
+export function getLastHistory(slot: SlotModel) {
+    return tryGetLastItem(slot.story.histories ?? []) ?? getOpeningHistory(slot);
 }
 
 export const SlotContext = createContext<RefObject<SlotDataModel> | undefined>(undefined)

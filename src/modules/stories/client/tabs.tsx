@@ -29,7 +29,7 @@ function Tab() {
             updateHandler: async (model, data) => {
                 return await put("/stories/{id}",                    {
                         content: {
-                            "openingRemarks": data.get("openingRemarks") as string
+                            openingRemarks: data.get("openingRemarks") as string
                         },
                         name: data.get("name") as string,
                         requires: getPresetRequires(data),

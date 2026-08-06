@@ -15,6 +15,7 @@ import {
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {
+    getLastHistory,
     getSlotAndHistories,
     invokeCallback, registerCallback,
     SlotDataModel,
@@ -68,7 +69,7 @@ export function HistoryChatbox() {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
-            const history = tryGetLastItem(histories);
+            const history = getLastHistory(slot);
             if (!iframe || !history) {
                 console.error('[HistoryChatbox] failed to get history or iframe');
                 return;
@@ -190,7 +191,6 @@ export function HistoryChatbox() {
             if (output || !inputText?.trim()) return;
             const {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
-            let history = tryGetLastItem(histories)!;
             if (!iframe) {
                 console.error('[HistoryChatbox] failed to get iframe');
                 return;
@@ -213,6 +213,7 @@ export function HistoryChatbox() {
             // 如果上一个历史还未输出，合并到上一个历史。
             // 如果上一个历史已经输出，创建新的历史。
             // 如果还没有历史，使用开场白变量。
+            let history = tryGetLastItem(histories)!;
             if (history) {
                 if (history.outputs.length > 0) {
                     variables = generateCurrentVariables(history);

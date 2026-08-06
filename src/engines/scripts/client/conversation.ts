@@ -79,8 +79,10 @@ export const scriptConversationProvider:
                 set.add(id);
                 const script = ctx.document.createElement("script");
                 script.id = id;
+                console.debug("script id", id)
                 // link 类型意味着链接
                 if (entry.type === 'link') {
+                    script.async = true;
                     script.src = entry.content.trim();
                     await new Promise((resolve, reject) => {
                         script.onload = resolve;
@@ -88,8 +90,9 @@ export const scriptConversationProvider:
                         ctx.document.body.appendChild(script);
                     });
                 } else {
+                    script.async = false;
                     script.type = entry.type ?? "";
-                    script.innerHTML = entry.content;
+                    script.textContent = entry.content;
                     ctx.document.body.appendChild(script);
                 }
             }

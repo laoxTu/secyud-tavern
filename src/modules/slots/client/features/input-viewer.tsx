@@ -1,6 +1,6 @@
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
+import {getLastHistory, getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
 import {useState} from "react";
 import {
     Dialog, DialogClose,
@@ -16,7 +16,6 @@ import {
     generateCurrentVariables,
     generateInputBuildContext
 } from "@/modules/slots/client/conversation";
-import {tryGetLastItem} from "@/utils";
 import {StoryHistory} from "@/modules/stories/models";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
@@ -38,7 +37,7 @@ export function InputViewer() {
         try {
             setLoading(true);
             const {slot, histories} = getSlotAndHistories(ctx);
-            const last = tryGetLastItem(histories);
+            const last = getLastHistory(slot);
             const history: StoryHistory = {
                 code: "",
                 disabled: false,
