@@ -1,14 +1,14 @@
 ﻿'use client';
-import React from "react";
+import React, {ChangeEvent, useRef, useState} from "react";
 import Image from "next/image"
 import {useTranslations} from "next-intl";
-import {Field} from "@/components/ui/field";
+import {Field, FieldContent, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {TabConfig} from "@/components/custom/tab";
-import {get, post, open, del} from "@/client";
-import {moduleName, PresetModel} from "../models";
+import {get, post, open, del, put} from "@/client";
+import {moduleName, PresetModel, RequireModel} from "../models";
 import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
 import {TemplateModelList} from "@/business/client/template";
@@ -16,8 +16,127 @@ import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {defaultTags, modelState} from "@/modules/presets/client/models";
 import {createUseTabState} from "@/business/client/models";
 import {TagBox} from "@/components/custom/combobox";
+import {useErrorHandler} from "@/handler/client/error";
+import {
+    Dialog, DialogTrigger,
+    DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose
+} from "@/components/ui/dialog";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {FileDownIcon} from "lucide-react";
+import {v4 as uuidv4} from "uuid";
+import {Checkbox} from "@/components/ui/checkbox";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
+
+function PresetImportDialog() {
+    const t = useTranslations();
+    const {handleError, handleSuccess} = useErrorHandler();
+    const [importOpen, setImportOpen] = useState(false);
+    const [importModels, setImportModels] = useState<RequireModel[]>([]);
+    const [selectKeys, setSelectKeys] = useState<string[]>([]);
+    const sessionId = useRef<string>(uuidv4());
+    const {fetch} = modelState.usePagedItemsState();
+    const {setModel} = modelState.useItemState();
+
+    const handleAnalyze = async (e: ChangeEvent<HTMLInputElement>) => {
+        try {
+            const file = e.target.files?.[0];
+            if (file) {
+                const models = await post("/presets/import", file, {
+                    headers: {
+                        'Content-Type': "image/png"
+                    },
+                    params: {
+                        sessionId,
+                    }
+                }) as RequireModel[];
+                setImportModels(models);
+                setSelectKeys(models.map(u => u.code));
+            }
+        } catch (error) {
+            handleError(error);
+        }
+    };
+    const handleImport = async (formData: FormData) => {
+        try {
+            const model = await put("/presets/import", {
+                ...Object.fromEntries(importModels.map(u =>
+                    [u.code, !!formData.get(`code_${u.code}`)]))
+            }, {
+                params: {
+                    sessionId,
+                }
+            });
+            setModel(model);
+            await fetch();
+            setImportOpen(false);
+            handleSuccess(t("default.imported_successfully"));
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    return (<Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogTrigger render={<Tooltip/>}>
+            <TooltipTrigger onClick={() => {
+                sessionId.current = uuidv4();
+                setImportModels([]);
+                setSelectKeys([]);
+                setImportOpen(true);
+            }}
+                            render={<Button variant="outline"/>}>
+                <FileDownIcon/>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{t('default.import')}</p>
+            </TooltipContent>
+        </DialogTrigger>
+        <DialogContent render={<form action={handleImport}/>}>
+            <DialogHeader>
+                <DialogTitle>
+                    {t("default.import_title", {target: t(`default.${moduleName}`)})}
+                </DialogTitle>
+                <DialogDescription>
+                    {t("default.import_description", {target: t(`default.${moduleName}`)})}
+                </DialogDescription>
+            </DialogHeader>
+            <FieldGroup>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-filename`}>{t("default.name")}</FieldLabel>
+                    <Input id={`${moduleName}-filename`} name="filename" type="file"
+                           accept={".json,.png"} onChange={handleAnalyze} required/>
+                </Field>
+                {importModels && <Field>
+                    {importModels.map(u =>
+                        <FieldContent key={u.code} className="flex-row gap-2">
+                            <Checkbox checked={selectKeys.includes(u.code)}
+                                      onCheckedChange={b => {
+                                          const set = new Set<string>(selectKeys);
+                                          b ? set.add(u.code) : set.delete(u.code);
+                                          setSelectKeys([...set])
+                                      }}
+                                      name={`code_${u.code}`}
+                                      id={`preset-import-${u.code}`}/>
+                            <FieldLabel htmlFor={`preset-import-${u.code}`}>
+                                {`${u.name}-${u.code}-${u.version}(${u.author})`}
+                            </FieldLabel>
+                        </FieldContent>
+                    )}
+                </Field>}
+            </FieldGroup>
+            <DialogFooter>
+                <Button type="submit">
+                    {t("default.import")}
+                </Button>
+                <DialogClose render={<Button variant="outline"/>}>
+                    {t("default.cancel")}
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>);
+}
+
 
 function Content() {
     const t = useTranslations();
@@ -57,14 +176,7 @@ function Content() {
             </>
         }
         createProps={{
-            importAccept: ".json,.png",
-            importHandler: async (file) => {
-                return await post("/presets/import", file, {
-                    headers: {
-                        'Content-Type': "image/png"
-                    }
-                })
-            },
+            importComponent: PresetImportDialog,
             createContent: () => (<>
                 <Field>
                     <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>

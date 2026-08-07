@@ -14,6 +14,14 @@ export interface PresetModel extends BaseModel {
     requires: RequireModel[],
 }
 
+export function convertToRequire(preset: PresetModel) {
+    return {
+        code: preset.code,
+        version: preset.version,
+        name: preset.name,
+        author: preset.content.author,
+    } as RequireModel;
+}
 
 export const moduleName = 'preset';
 export const modulePlural = 'presets';

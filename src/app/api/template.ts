@@ -140,7 +140,7 @@ export function apiImportModel<TModel extends BaseModel>({
             }
             await repository.create(model);
         }
-        return NextResponse.json(null);
+        return NextResponse.json(models[0]);
     }
 }
 

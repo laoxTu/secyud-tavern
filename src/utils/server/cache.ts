@@ -1,3 +1,5 @@
+import {BusinessError} from "@/handler/models";
+
 export interface CacheItem {
     data: any;
     expires: Date;
@@ -36,16 +38,19 @@ function getDate(date: Date, span: Span) {
         ((((month * 30 + week * 7 + day) * 24 + hour) * 60 + minute) * 60 + second) * 1000);
 }
 
-export async function getCache<T>(key: string, factory: () => Promise<T>, expire: Span = {
+export async function getCache<T>(key: string, factory?: () => Promise<T>, expire: Span = {
     day: 1,
 }) {
     let cache = cacheStorage.get(key);
     if (cache) {
         const now = new Date();
-        if (cache.expires >= now) {
+        if (cache.expires >= now || !factory) {
             cache.expires = getDate(now, expire);
             return cache.data as T;
         }
+    }
+    if (!factory) {
+        throw new BusinessError("cache not found");
     }
     return setCache(key, await factory(), expire);
 }

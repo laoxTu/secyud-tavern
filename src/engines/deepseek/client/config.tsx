@@ -144,15 +144,15 @@ export const config: LlmapiConfig =
                 parameters: {
                     model: data.get('model') as string,
                     thinking: {
-                        type: (Boolean(data.get('thinking') as string) ? "enabled" : "disabled"),
+                        type: data.get('thinking') ? "enabled" : "disabled",
                     },
                     reasoning_effort: data.get('reasoning_effort') as string,
-                    stream: Boolean(data.get('stream') as string),
-                    temperature: Number(data.get('temperature') as string),
-                    max_tokens: Math.trunc(Number(data.get('max_tokens') as string)),
-                    top_p: Number(data.get('top_p') as string),
-                    logprobs: Boolean(data.get('logprobs') as string),
-                    top_logprobs: Number(data.get('top_logprobs') as string)
+                    stream: !!data.get('stream'),
+                    temperature: Number(data.get('temperature')),
+                    max_tokens: Math.trunc(Number(data.get('max_tokens'))),
+                    top_p: Number(data.get('top_p')),
+                    logprobs: !!data.get('logprobs'),
+                    top_logprobs: Number(data.get('top_logprobs') )
                 }
             };
         }

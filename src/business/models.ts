@@ -31,7 +31,7 @@ export interface EntryModel {
     name: string;
 }
 
-export interface ImageFile{
+export interface ImageFile {
     id: string,
     type: string,
 }

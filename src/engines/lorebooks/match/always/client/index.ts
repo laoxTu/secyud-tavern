@@ -9,7 +9,7 @@ export const alwaysMatcher: Matcher =
         component: MatchEditor,
         getValue: (data): AlwaysMatchModel => {
             return {
-                lastMessage: Boolean(data.get("lastMessage") as string)
+                lastMessage: !!data.get("lastMessage")
             };
         },
         match: () => {

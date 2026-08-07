@@ -13,7 +13,7 @@ export const powerLoraSelector: ComfyUIParameter =
                     (_, i) => ({
                         lora: data.get(`lora_${entry.id}_${i}`) as string,
                         strength: parseFloat(data.get(`lora_strength_${entry.id}_${i}`) as string),
-                        on: Boolean(data.get(`lora_on_${entry.id}_${i}`))
+                        on: !!data.get(`lora_on_${entry.id}_${i}`)
                     })),
             };
         },
@@ -28,7 +28,7 @@ export const powerLoraSelector: ComfyUIParameter =
                     inputs[`lora_${i + 1}`] = {
                         lora: data.get(`lora_${entry.id}_${i}`) as string,
                         strength: parseFloat(data.get(`lora_strength_${entry.id}_${i}`) as string),
-                        on: Boolean(data.get(`lora_on_${entry.id}_${i}`))
+                        on: !!data.get(`lora_on_${entry.id}_${i}`)
                     };
                 } else {
                     delete inputs[`lora_${i + 1}`];

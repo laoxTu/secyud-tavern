@@ -12,7 +12,7 @@ import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import {TemplateModelUpdate} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {moduleName, PresetModel, RequireModel} from "../models";
+import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {defaultTags, modelState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
@@ -46,12 +46,7 @@ export function PresetRequiresField({defaultValue}: { defaultValue?: RequireMode
                             },
                         }
                     }) as PagedResult<PresetModel>;
-                    return res.data.map(u => ({
-                        author: u.content.author,
-                        version: u.version,
-                        code: u.code,
-                        name: u.name,
-                    }) as RequireModel);
+                    return res.data.map(convertToRequire);
                 } catch (e) {
                     handleError(e);
                 }

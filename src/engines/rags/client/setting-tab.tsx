@@ -21,7 +21,7 @@ function Tab() {
     const handleSubmit = async (data: FormData) => {
         try {
             useRagSettingState.setState({
-                disabled: Boolean(data.get("disabled") as string),
+                disabled: !!data.get("disabled"),
                 embeddingGenerator: editor?.id ?? "",
                 embeddingGeneratorConfig: editor?.getValue(data) ?? {},
             });

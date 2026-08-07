@@ -136,12 +136,12 @@ export const config: LlmapiConfig =
             return {
                 parameters: {
                     model: data.get('model') as string,
-                    stream: Boolean(data.get('stream') as string),
-                    temperature: Number(data.get('temperature') as string),
-                    top_p: Number(data.get('top_p') as string),
-                    presence_penalty: Number(data.get('presence_penalty') as string),
-                    frequency_penalty: Number(data.get('frequency_penalty') as string),
-                    max_tokens: Math.trunc(Number(data.get('max_tokens') as string)),
+                    stream: !!data.get('stream'),
+                    temperature: Number(data.get('temperature')),
+                    top_p: Number(data.get('top_p')),
+                    presence_penalty: Number(data.get('presence_penalty')),
+                    frequency_penalty: Number(data.get('frequency_penalty')),
+                    max_tokens: Math.trunc(Number(data.get('max_tokens'))),
                 },
                 url: data.get('url') as string,
                 extras: extras,
