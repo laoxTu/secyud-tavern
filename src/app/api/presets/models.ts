@@ -31,24 +31,28 @@ export const apiConfig: TemplateConfig<PresetModel> = {
     },
     importHandler: async (uint8) => {
         const data = splitPNGAndDataUniversal(uint8);
-        const model: PresetModel = JSON.parse(new TextDecoder().decode(data.extraData));
+        const json: PresetModel | PresetModel[] = JSON.parse(new TextDecoder().decode(data.extraData));
+
         if (data.imageData) {
             const imgBuffer = Buffer.from(data.imageData);
-            model.content.coverId = await imageRepository.create(imgBuffer, "image/png");
+            (Array.isArray(json) ? json[0] : json).content.coverId
+                = await imageRepository.create(imgBuffer, "image/png");
         }
-        return model;
+        return json;
     },
-    exportHandler: async (model, uint8arr) => {
+    exportHandler: async (model) => {
         const coverId = model.content.coverId;
         const image =
             coverId ? await imageRepository.get(coverId) : null;
 
+        const models = await presetRepository.getWithRequires([model.code]);
         return new ReadableStream({
             start(controller) {
                 if (image?.buffer) {
                     controller.enqueue(image.buffer);
                 }
-                controller.enqueue(uint8arr);
+                controller.enqueue(new TextEncoder()
+                    .encode(JSON.stringify(models)));
                 controller.close();  // 关闭流
             }
         });

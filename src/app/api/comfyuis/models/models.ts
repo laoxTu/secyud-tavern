@@ -46,7 +46,7 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
         }
         return model;
     },
-    exportHandler: async (model, uint8arr) => {
+    exportHandler: async (model) => {
         const coverId = model.content.coverId;
         const image =
             coverId ? await imageRepository.get(coverId) : null;
@@ -56,7 +56,8 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
                 if (image?.buffer) {
                     controller.enqueue(image.buffer);
                 }
-                controller.enqueue(uint8arr);
+                controller.enqueue(new TextEncoder()
+                    .encode(JSON.stringify(model)));
                 controller.close();  // 关闭流
             }
         });

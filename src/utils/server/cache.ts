@@ -19,6 +19,8 @@ export interface Span {
     second?: number;
 }
 
+const remainCount = 1000;
+
 function getDate(date: Date, span: Span) {
     const {month, week, day, hour, minute, second} = {
         ...{
@@ -37,28 +39,41 @@ function getDate(date: Date, span: Span) {
 export async function getCache<T>(key: string, factory: () => Promise<T>, expire: Span = {
     day: 1,
 }) {
-    const now = new Date();
     let cache = cacheStorage.get(key);
-    const expires = getDate(now, expire);
     if (cache) {
+        const now = new Date();
         if (cache.expires >= now) {
-            cache.expires = expires;
+            cache.expires = getDate(now, expire);
             return cache.data as T;
         }
     }
-    cache = {
-        data: await factory(),
-        expires: expires,
-    };
-    cacheStorage.set(key, cache);
-    return cache.data as T;
+    return setCache(key, await factory(), expire);
 }
 
-export async function setCache(key: string, data: any, expire: Span = {
+export async function setCache<T>(key: string, data: T, expire: Span = {
     day: 1,
 }) {
-    cacheStorage.set(key, {
+    const cache = {
         data,
         expires: getDate(new Date(), expire)
-    });
+    };
+    cacheStorage.set(key, cache);
+    if (cacheStorage.size > remainCount) {
+        const items = Array.from(cacheStorage)
+            .sort((a, b) =>
+                a[1].expires.getTime() -
+                b[1].expires.getTime());
+        for (let i = 0; i < items.length - remainCount; i++) {
+            cacheStorage.delete(items[i][0]);
+        }
+    }
+    return cache.data;
+}
+
+export async function deleteCache<T>(key: string): Promise<T> {
+    const cache = cacheStorage.get(key);
+    if (cache) {
+        cacheStorage.delete(key);
+    }
+    return cache?.data;
 }

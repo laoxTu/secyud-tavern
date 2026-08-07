@@ -1,22 +1,25 @@
 ﻿import {NextResponse} from "next/server";
 import {ConditionFunc, Repository} from "@/business/server/repository";
 import {NextHandler} from "@/handler/server/interceptor";
-import {PageOptions} from "@/business/models";
+import {BaseModel, PageOptions} from "@/business/models";
 import {BusinessError} from "@/handler/models";
 import {eq} from "drizzle-orm";
 
-export interface TemplateConfig<TModel> {
+export interface TemplateConfig<TModel extends BaseModel> {
     repository: Repository<TModel>,
     conditionSearch?: (search: any) => ConditionFunc,
     conditionMatchId?: (id: string) => ConditionFunc,
     checkCreate?: (model: TModel, params: any) => Promise<void>,
     checkUpdate?: (id: string, model: Partial<TModel>, params: any) => Promise<void>,
     filename: (model: TModel) => string,
-    exportHandler?: (model: TModel, uint8arr: Uint8Array) => Promise<ReadableStream>,
-    importHandler?: (uint8arr: Uint8Array) => Promise<TModel>,
+    exportHandler?: (model: TModel) => Promise<ReadableStream>,
+    importHandler?: (uint8arr: Uint8Array) => Promise<TModel | TModel[]>,
 }
 
-export function apiGetModelList<TModel>({repository, conditionSearch}: TemplateConfig<TModel>): NextHandler {
+export function apiGetModelList<TModel extends BaseModel>({
+                                                              repository,
+                                                              conditionSearch
+                                                          }: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const options = records.searchParams as PageOptions;
         const models = await repository
@@ -25,7 +28,10 @@ export function apiGetModelList<TModel>({repository, conditionSearch}: TemplateC
     }
 }
 
-export function apiGetModel<TModel>({repository, conditionMatchId}: TemplateConfig<TModel>): NextHandler {
+export function apiGetModel<TModel extends BaseModel>({
+                                                          repository,
+                                                          conditionMatchId
+                                                      }: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id} = await records.params;
         const {withDetails} =
@@ -36,7 +42,10 @@ export function apiGetModel<TModel>({repository, conditionMatchId}: TemplateConf
     }
 }
 
-export function apiCreateModel<TModel>({repository, checkCreate}: TemplateConfig<TModel>): NextHandler {
+export function apiCreateModel<TModel extends BaseModel>({
+                                                             repository,
+                                                             checkCreate
+                                                         }: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const model = await request.json() as TModel;
 
@@ -50,7 +59,10 @@ export function apiCreateModel<TModel>({repository, checkCreate}: TemplateConfig
     }
 }
 
-export function apiUpdateModel<TModel>({repository, checkUpdate}: TemplateConfig<TModel>): NextHandler {
+export function apiUpdateModel<TModel extends BaseModel>({
+                                                             repository,
+                                                             checkUpdate
+                                                         }: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id} = await records.params;
         const model = await request.json() as Partial<TModel>;
@@ -62,7 +74,7 @@ export function apiUpdateModel<TModel>({repository, checkUpdate}: TemplateConfig
     }
 }
 
-export function apiDeleteModel<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiDeleteModel<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id} = await records.params;
         await repository.delete(id);
@@ -70,7 +82,7 @@ export function apiDeleteModel<TModel>({repository}: TemplateConfig<TModel>): Ne
     }
 }
 
-export function apiExportModel<TModel>(
+export function apiExportModel<TModel extends BaseModel>(
     {
         repository,
         conditionMatchId,
@@ -87,16 +99,13 @@ export function apiExportModel<TModel>(
                 .withValue("id", id);
 
         // 1. 将 JSON 对象转为字符串
-        const json = JSON.stringify(model);
-        // 2. 创建 Web 标准的 ReadableStream（不是 Node.js 的 stream.ReadableStream）
-        const encoder = new TextEncoder();
-        const uint8arr = encoder.encode(json);
         const stream: ReadableStream = exportHandler ?
-            await exportHandler(model, uint8arr) :
+            await exportHandler(model) :
             new ReadableStream({
                 start(controller) {
                     // 将 JSON 字符串编码为 Uint8Array 并加入流
-                    controller.enqueue(uint8arr);
+                    controller.enqueue(new TextEncoder()
+                        .encode(JSON.stringify(model)));
                     controller.close();  // 关闭流
                 }
             });
@@ -108,30 +117,35 @@ export function apiExportModel<TModel>(
     }
 }
 
-export function apiImportModel<TModel>({repository, importHandler}: TemplateConfig<TModel>): NextHandler {
+export function apiImportModel<TModel extends BaseModel>({
+                                                             repository,
+                                                             importHandler
+                                                         }: TemplateConfig<TModel>): NextHandler {
     return async (request, _) => {
         const buffer = await request.arrayBuffer();
         const uint8 = new Uint8Array(buffer);
-        let model: any;
+        let importInput: TModel | TModel[];
         if (importHandler) {
-            model = await importHandler(uint8);
+            importInput = await importHandler(uint8);
         } else {
-            model = JSON.parse(new TextDecoder('utf-8').decode(uint8));
+            importInput = JSON.parse(new TextDecoder('utf-8').decode(uint8));
         }
 
-        const exist = await repository.exist(e => eq(e.id, model.id));
-        if (exist) {
-            await repository.delete(model.id);
+        const models = Array.isArray(importInput) ? importInput : [importInput];
+
+        for (const model of models) {
+            const exist = await repository.exist(e => eq(e.id, model.id));
+            if (exist) {
+                await repository.delete(model.id);
+            }
+            await repository.create(model);
         }
-
-        const result = await repository.create(model);
-
-        return NextResponse.json(result);
+        return NextResponse.json(null);
     }
 }
 
 
-export function apiGetEntryList<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiGetEntryList<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id, entryType} = await records.params as { id: string, entryType: string };
         const options = records.searchParams as PageOptions;
@@ -140,7 +154,7 @@ export function apiGetEntryList<TModel>({repository}: TemplateConfig<TModel>): N
     }
 }
 
-export function apiCreateEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiCreateEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType} = await records.params as { id: string, entryType: string };
         const model = await request.json();
@@ -149,7 +163,7 @@ export function apiCreateEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
     }
 }
 
-export function apiGetEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiGetEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id, entryType, entryId} = await records.params;
         const entry = await repository.entry.get(id, entryType, entryId);
@@ -157,7 +171,7 @@ export function apiGetEntry<TModel>({repository}: TemplateConfig<TModel>): NextH
     }
 }
 
-export function apiUpdateEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiUpdateEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType, entryId} = await records.params;
         const model = await request.json();
@@ -166,7 +180,7 @@ export function apiUpdateEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
     }
 }
 
-export function apiDeleteEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiDeleteEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id, entryType, entryId} = await records.params;
         await repository.entry.delete(id, entryType, entryId);
@@ -174,7 +188,7 @@ export function apiDeleteEntry<TModel>({repository}: TemplateConfig<TModel>): Ne
     }
 }
 
-export function apiDisableEntry<TModel>({repository}: TemplateConfig<TModel>): NextHandler {
+export function apiDisableEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id, entryType, entryId} = await records.params;
         const {disabled} = await request.json() as { disabled: boolean };

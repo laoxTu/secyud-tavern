@@ -6,7 +6,6 @@ import {BusinessError} from "@/handler/models";
 import {storyRepository} from "@/modules/stories/server/repository";
 import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
-import {presets} from "@/modules/presets/server/db-entities";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
 import {EntryModel} from "@/business/models";
@@ -45,27 +44,8 @@ export const GET = interceptor.createRoute(
         histories.sort((a, b) => a.id - b.id);
         story.histories = histories;
 
-        const presetsWithDetails: PresetModel[] = [];
-        const visited: Set<string> = new Set<string>();
-        const codes = story.requires.map(u => u.code);
-
-        while (codes.length > 0) {
-            const code = codes.shift()!;
-            const preset = await presetRepository.get(
-                code, true, () => eq(presets.code, code)
-            );
-            if (!preset) continue;
-
-            visited.add(preset.code);
-            presetsWithDetails.push(preset);
-
-            for (const require of preset.requires) {
-                if (!visited.has(require.code)) {
-                    codes.push(require.code);
-                }
-            }
-        }
-
+        const presets: PresetModel[] = await presetRepository
+            .getWithRequires(story.requires.map(u => u.code));
 
         const slot: SlotModel = {
             id: id,
@@ -73,7 +53,7 @@ export const GET = interceptor.createRoute(
             content: {},
             story,
             llmapi,
-            presets: presetsWithDetails
+            presets,
         };
 
         return NextResponse.json(slot);
