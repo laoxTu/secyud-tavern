@@ -35,7 +35,7 @@ export function PresetRequiresField({defaultValue}: { defaultValue?: RequireMode
             multiple name={`require`} id={`${moduleName}-requires`}
             defaultValue={defaultValue ?? []}
             comparer={(u, v) => u.code === v.code}
-            labelAccessor={(e) => `${e.code}-${e.name}-${e.version}(${e.author})`}
+            labelAccessor={(e) => `${e.name}-${e.version}(${e.author})`}
             valueAccessor={e => JSON.stringify(e)}
             searchHandler={async (search: string | null) => {
                 try {
