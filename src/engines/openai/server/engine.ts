@@ -93,6 +93,12 @@ export function mapToOpenAIMessage(context: LlmapiRequestContext) {
                         content: u.content,
                         tool_call_id: u.toolCallId,
                     }
+                case "assistant":
+                    return {
+                        role: u.role,
+                        content: u.content,
+                        tool_calls: u.toolCalls,
+                    }
                 default:
                     return {
                         role: u.role,

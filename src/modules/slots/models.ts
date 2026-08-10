@@ -1,8 +1,9 @@
 ﻿import {BaseModel} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
-import {StoryHistory, StoryModel} from "@/modules/stories/models";
+import {StoryHistory, StoryModel, StoryOutputToolCall} from "@/modules/stories/models";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {tryGetLastItem} from "@/utils";
+import {ChatCompletionChunk} from "openai/resources";
 
 export interface SlotModel extends BaseModel {
     story: StoryModel,
@@ -26,6 +27,7 @@ interface LlmapiSystemMessageModel extends LlmapiMessageModelBase {
 
 interface LlmapiAIMessageModel extends LlmapiMessageModelBase {
     role: "assistant",
+    toolCalls?: StoryOutputToolCall[],
 }
 
 interface LlmapiToolMessageModel extends LlmapiMessageModelBase {

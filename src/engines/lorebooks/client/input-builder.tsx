@@ -44,12 +44,23 @@ function pushMessage(
     cache.content.push(messageContent);
 }
 
-async function tryAddToolCallsMessage(
+async function tryPushOutputMessage(
     output: StoryOutputMessage,
     ctx: { slot: SlotModel },
-    llmapiMessages: LlmapiMessageModel[]
+    cache: { role: string, content: string[] },
+    llmapiMessages: LlmapiMessageModel[],
 ) {
     if (output.toolCalls?.length) {
+        llmapiMessages.push({
+            role: "assistant",
+            content: cache.content.join("\r\n"),
+            toolCalls: output.toolCalls.map(u => ({
+                ...u,
+                content: undefined
+            })),
+        });
+        cache.role = "";
+        cache.content.length = 0;
         await fillToolCallContent(output.toolCalls, ctx.slot);
         for (const toolCall of output.toolCalls) {
             if (!toolCall.content) continue;
@@ -106,7 +117,7 @@ export async function defaultBuildInput(
         const output = getCurrentOutput(history);
         if (output && i < histories.length - 1) {
             tryPushMessage("assistant", output.content);
-            await tryAddToolCallsMessage(output, ctx, llmapiMessages);
+            await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
         }
     }
 
@@ -178,7 +189,7 @@ export async function layeredBuildInput(
         const output = getCurrentOutput(history);
         if (output && i < histories.length - 1) {
             tryPushMessage("assistant", output.content);
-            await tryAddToolCallsMessage(output, ctx, llmapiMessages);
+            await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
         }
     }
 
