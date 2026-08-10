@@ -11,13 +11,43 @@ export interface SlotModel extends BaseModel {
     llmapi: LlmapiModel
 }
 
-export interface LlmapiMessage {
-    role: string; //"system" | "user" | "assistant"
+interface LlmapiContentMessage {
+    role: "system" | "user" | "assistant";
     content: string,
 }
 
+interface LlmapiToolMessage {
+    role: "tool";
+    content: string,
+    toolCallId: string,
+}
+
+export type LlmapiMessage = LlmapiToolMessage | LlmapiContentMessage;
+
+export function isContentRole(role: string) {
+    return role === "system" || role === "user" || role === "assistant";
+}
+
+interface LlmapiToolFunctionObjectParam {
+    type: "object",
+    properties: Record<string, { type: string, description: string }>,
+    required: string[],
+}
+
+interface LlmapiToolFunction {
+    type: "function",
+    function: {
+        name: string,
+        description: string,
+        parameters: LlmapiToolFunctionObjectParam
+    }
+}
+
+export type LlmapiTool = LlmapiToolFunction;
+
 export interface LlmapiInputModel {
     messages: LlmapiMessage[];
+    tools?: LlmapiTool[];
 }
 
 
@@ -117,7 +147,6 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
     history.variables = results;
     history.content = text;
 }
-
 
 
 export const moduleName = 'slot';

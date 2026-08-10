@@ -21,8 +21,7 @@ const defaultConfig: OpenAIConfigModel = {
         temperature: 1,
         top_p: 1,
         presence_penalty: 0,
-        frequency_penalty: 0,
-        max_tokens: 0
+        frequency_penalty: 0
     }
 
 } as const;
@@ -101,14 +100,6 @@ function Content() {
                            type={"number"} max={2} min={-2} step={0.05}
                            defaultValue={config.parameters.frequency_penalty}/>
                 </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-max_tokens`}>
-                        {t(`${moduleName}.max_tokens`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-max_tokens`} name={"max_tokens"}
-                           type={"number"} min={0} step={1}
-                           defaultValue={config.parameters.max_tokens}/>
-                </Field>
             </div>
             <Field>
                 <FieldLabel htmlFor={`${moduleName}-extras`}>
@@ -141,7 +132,6 @@ export const config: LlmapiConfig =
                     top_p: Number(data.get('top_p')),
                     presence_penalty: Number(data.get('presence_penalty')),
                     frequency_penalty: Number(data.get('frequency_penalty')),
-                    max_tokens: Math.trunc(Number(data.get('max_tokens'))),
                 },
                 url: data.get('url') as string,
                 extras: extras,

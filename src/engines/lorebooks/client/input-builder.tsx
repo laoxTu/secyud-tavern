@@ -4,7 +4,7 @@
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
-import {getCurrentOutput, LlmapiMessage} from "@/modules/slots/models";
+import {getCurrentOutput, isContentRole, LlmapiMessage} from "@/modules/slots/models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {useTranslations} from "next-intl";
@@ -15,6 +15,32 @@ import {Input} from "@/components/ui/input";
 import React from "react";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
+
+function pushMessage(
+    messageRole: string,
+    messageContent: string,
+    cache: { role: string, content: string[] },
+    llmapiMessages: LlmapiMessage[]
+) {
+    if (messageRole !== cache.role) {
+        if (cache.content.length > 0 && isContentRole(cache.role)) {
+            console.debug("generate message:", {
+                role: cache.role,
+                content: [...cache.content],
+            });
+            llmapiMessages.push({
+                role: cache.role,
+                content: cache.content.join("\r\n")
+            });
+        }
+        cache.role = messageRole;
+        cache.content.length = 0;
+    }
+    console.debug("push message:", {
+        messageRole, messageContent
+    });
+    cache.content.push(messageContent);
+}
 
 export async function defaultBuildInput(
     ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
@@ -83,24 +109,7 @@ export async function defaultBuildInput(
             visitedLorebooks.add(lorebook.code);
         }
 
-        if (messageRole !== cache.role) {
-            if (cache.content.length > 0) {
-                console.debug("generate message:", {
-                    role: cache.role,
-                    content: [...cache.content],
-                });
-                llmapiMessages.push({
-                    role: cache.role,
-                    content: cache.content.join("\r\n")
-                });
-            }
-            cache.role = messageRole;
-            cache.content.length = 0;
-        }
-        console.debug("push message:", {
-            messageRole, messageContent
-        });
-        cache.content.push(messageContent);
+        pushMessage(messageRole, messageContent, cache, llmapiMessages);
     }
 }
 
@@ -162,24 +171,7 @@ export async function layeredBuildInput(
     return llmapiMessages;
 
     function tryPushMessage(messageRole: string, messageContent: string) {
-        if (messageRole !== cache.role) {
-            if (cache.content.length > 0) {
-                console.debug("generate message:", {
-                    role: cache.role,
-                    content: [...cache.content],
-                });
-                llmapiMessages.push({
-                    role: cache.role,
-                    content: cache.content.join("\r\n")
-                });
-            }
-            cache.role = messageRole;
-            cache.content.length = 0;
-        }
-        console.debug("push message:", {
-            messageRole, messageContent
-        });
-        cache.content.push(messageContent);
+        pushMessage(messageRole, messageContent, cache, llmapiMessages);
     }
 }
 

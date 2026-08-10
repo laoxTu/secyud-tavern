@@ -2,9 +2,12 @@
 import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {Stream} from "openai/streaming";
+import {LlmapiMessage} from "@/modules/slots/models";
 
-
-export async function generateOpenAIReadableStreamReply(context: LlmapiRequestContext, parameter: any, openai: OpenAI) {
+export async function generateOpenAIReadableStreamReply(
+    context: LlmapiRequestContext,
+    parameter: OpenAI.ChatCompletionCreateParamsNonStreaming,
+    openai: OpenAI) {
     const externalSignal = context.signal;
     const encoder = new TextEncoder();
     // 流式请求
@@ -81,6 +84,29 @@ export async function generateOpenAIReadableStreamReply(context: LlmapiRequestCo
     }
 }
 
+export function mapToOpenAIMessage(context: LlmapiRequestContext) {
+    const res: OpenAI.ChatCompletionCreateParamsNonStreaming = {
+        ...context.config,
+        messages: context.messages.map(u => {
+            switch (u.role) {
+                case "tool":
+                    return {
+                        role: u.role,
+                        content: u.content,
+                        tool_call_id: u.toolCallId,
+                    }
+                default:
+                    return {
+                        role: u.role,
+                        content: u.content,
+                    }
+            }
+        }),
+    };
+
+    return res;
+}
+
 export class OpenAIEngine implements LlmapiEngine {
     readonly id: string = engineName;
 
@@ -90,17 +116,7 @@ export class OpenAIEngine implements LlmapiEngine {
             baseURL: config.url,
             apiKey: context.apiKey,
         });
-        const parameter: any = {
-            ...config.parameters,
-            messages: context.messages.map(u => ({
-                role: u.role,
-                content: u.content,
-            })),
-        };
-
-        if (!config.parameters.max_tokens) {
-            parameter.max_tokens = undefined;
-        }
+        const parameter = mapToOpenAIMessage(context);
 
         return await generateOpenAIReadableStreamReply(context, parameter, openai);
     }

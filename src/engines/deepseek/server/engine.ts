@@ -1,7 +1,7 @@
 ﻿import {OpenAI} from "openai";
 import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
 import {DeepseekConfigModel, engineName} from "../models";
-import {generateOpenAIReadableStreamReply} from "@/engines/openai/server/engine";
+import {generateOpenAIReadableStreamReply, mapToOpenAIMessage} from "@/engines/openai/server/engine";
 
 
 export class DeepseekEngine implements LlmapiEngine {
@@ -13,22 +13,15 @@ export class DeepseekEngine implements LlmapiEngine {
             baseURL: 'https://api.deepseek.com',
             apiKey: context.apiKey,
         });
-        const parameter: any = {
-            ...config.parameters,
-            messages: context.messages.map(u => ({
-                role: u.role,
-                content: u.content,
-            })),
-        };
+        const parameter = mapToOpenAIMessage(context);
+
         if (!config.parameters.logprobs) {
             parameter.top_logprobs = undefined;
         }
         if (!config.parameters.max_tokens) {
             parameter.max_tokens = undefined;
         }
-
-        if (config.parameters.thinking.type === "disabled")
-        {
+        if (config.parameters.thinking.type === "disabled") {
             parameter.reasoning_effort = undefined;
         }
 
