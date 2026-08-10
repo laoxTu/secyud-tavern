@@ -8,5 +8,5 @@ export function registerLlmapiClient() {
     businessNavigationManager.register(
         llmapiNavigationContent);
     conversationManager.inputProcesser.register(
-        llmapiConversationProvider)
+        llmapiConversationProvider);
 }

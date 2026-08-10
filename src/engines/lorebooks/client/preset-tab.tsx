@@ -71,7 +71,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                               items={contentTypes}/>
                 </Field>
                 <Field>
-                    <FieldLabel htmlFor="setting-generator">
+                    <FieldLabel id={`lorebook-match_type-${entry.id}`}>
                         {t("lorebook.match_type")}
                     </FieldLabel>
                     <Selector id={`lorebook-match_type-${entry.id}`}

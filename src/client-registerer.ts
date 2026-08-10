@@ -17,6 +17,7 @@ import {registerClientPlugin} from "@/plugins/client/registerer";
 import {registerSettingClient} from "@/modules/settings/client";
 import {registerRagsClient} from "@/engines/rags/client";
 import {registerComfyUIClient} from "@/modules/comfyui/client";
+import {registerToolsClient} from "@/engines/tools/client";
 
 async function loadClientPlugins() {
     registerBusinessClient();
@@ -37,6 +38,8 @@ async function loadClientPlugins() {
     registerStylesClient();
     registerScriptsClient();
     registerMacrosClient();
+
+    registerToolsClient();
 
     await registerClientPlugin();
 }

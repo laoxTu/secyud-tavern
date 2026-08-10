@@ -9,6 +9,7 @@ export interface StoryInputMessage extends StoryHistoryMessage {
 interface StoryOutputToolCallBase {
     id: string,
     role: "assistant",
+    content?: string,
 }
 
 interface StoryOutputToolCallFunction extends StoryOutputToolCallBase {

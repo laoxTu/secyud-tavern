@@ -4,7 +4,7 @@
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
-import {getCurrentOutput, isContentRole, LlmapiMessageModel} from "@/modules/slots/models";
+import {getCurrentOutput, isContentRole, LlmapiMessageModel, SlotModel} from "@/modules/slots/models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {useTranslations} from "next-intl";
@@ -15,6 +15,8 @@ import {Input} from "@/components/ui/input";
 import React from "react";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
+import {fillToolCallContent} from "@/engines/tools/client/conversation";
+import {StoryOutputMessage} from "@/modules/stories/models";
 
 function pushMessage(
     messageRole: string,
@@ -40,6 +42,24 @@ function pushMessage(
         messageRole, messageContent
     });
     cache.content.push(messageContent);
+}
+
+async function tryAddToolCallsMessage(
+    output: StoryOutputMessage,
+    ctx: { slot: SlotModel },
+    llmapiMessages: LlmapiMessageModel[]
+) {
+    if (output.toolCalls?.length) {
+        await fillToolCallContent(output.toolCalls, ctx.slot);
+        for (const toolCall of output.toolCalls) {
+            if (!toolCall.content) continue;
+            llmapiMessages.push({
+                role: "tool",
+                toolCallId: toolCall.id,
+                content: toolCall.content
+            });
+        }
+    }
 }
 
 export async function defaultBuildInput(
@@ -86,6 +106,7 @@ export async function defaultBuildInput(
         const output = getCurrentOutput(history);
         if (output && i < histories.length - 1) {
             tryPushMessage("assistant", output.content);
+            await tryAddToolCallsMessage(output, ctx, llmapiMessages);
         }
     }
 
@@ -157,6 +178,7 @@ export async function layeredBuildInput(
         const output = getCurrentOutput(history);
         if (output && i < histories.length - 1) {
             tryPushMessage("assistant", output.content);
+            await tryAddToolCallsMessage(output, ctx, llmapiMessages);
         }
     }
 

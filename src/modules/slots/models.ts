@@ -97,11 +97,11 @@ interface LlmapiToolFunction {
     }
 }
 
-export type LlmapiTool = LlmapiToolFunction;
+export type LlmapiToolModel = LlmapiToolFunction;
 
 export interface LlmapiInputModel {
     messages: LlmapiMessageModel[];
-    tools?: LlmapiTool[];
+    tools?: LlmapiToolModel[];
 }
 
 // endregion

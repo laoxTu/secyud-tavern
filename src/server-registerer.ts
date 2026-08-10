@@ -10,6 +10,7 @@ import {registerOpenAIServer} from "@/engines/openai/server";
 import {registerServerPlugin} from "@/plugins/server/registerer";
 import {registerComfyUIServer} from "@/modules/comfyui/server";
 import {registerStoryServer} from "@/modules/stories/server";
+import {registerToolsServer} from "@/engines/tools/server";
 
 export async function registerServerPlugins() {
     const global = globalThis as { __initialized?: boolean };
@@ -29,6 +30,8 @@ export async function registerServerPlugins() {
     registerStylesServer();
     registerScriptsServer();
     registerMacrosServer();
+
+    registerToolsServer();
 
     if (process.env.NODE_ENV === 'development') {
         // ✅ 替换为 console.log（带时间戳和前缀）

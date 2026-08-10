@@ -95,7 +95,10 @@ export function HistoryChatbox() {
             console.debug("[HistoryChatbox] chat messages: ", inputContext.messages);
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
-                {messages: inputContext.messages} as LlmapiInputModel,
+                {
+                    messages: inputContext.messages,
+                    tools: inputContext.tools,
+                } as LlmapiInputModel,
                 {
                     params: {id: slot.llmapi.id},
                     signal: reply.signal
