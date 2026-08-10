@@ -4,34 +4,88 @@ import {StoryHistory, StoryModel} from "@/modules/stories/models";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {tryGetLastItem} from "@/utils";
 
-
 export interface SlotModel extends BaseModel {
     story: StoryModel,
     presets: PresetModel[],
     llmapi: LlmapiModel
 }
 
-interface LlmapiContentMessage {
-    role: "system" | "user" | "assistant";
+// region llm api message
+
+interface LlmapiMessageModelBase {
     content: string,
 }
 
-interface LlmapiToolMessage {
+interface LlmapiUserMessageModel extends LlmapiMessageModelBase {
+    role: "user",
+}
+
+interface LlmapiSystemMessageModel extends LlmapiMessageModelBase {
+    role: "system",
+}
+
+interface LlmapiAIMessageModel extends LlmapiMessageModelBase {
+    role: "assistant",
+}
+
+interface LlmapiToolMessageModel extends LlmapiMessageModelBase {
     role: "tool";
-    content: string,
     toolCallId: string,
 }
 
-export type LlmapiMessage = LlmapiToolMessage | LlmapiContentMessage;
+export type LlmapiMessageModel =
+    LlmapiUserMessageModel |
+    LlmapiSystemMessageModel |
+    LlmapiAIMessageModel |
+    LlmapiToolMessageModel
+    ;
 
 export function isContentRole(role: string) {
     return role === "system" || role === "user" || role === "assistant";
 }
 
-interface LlmapiToolFunctionObjectParam {
+// endregion
+
+// region llm api input
+interface JsonPropertyBase {
+    description: string,
+}
+
+interface RefProperty {
+    $ref: string,
+}
+
+interface StringProperty extends JsonPropertyBase {
+    type: "string",
+    pattern?: string,
+    format?: "email" | "hostname" | "ipv4" | "ipv6" | "uuid",
+    enum?: string[],
+}
+
+interface NumberProperty extends JsonPropertyBase {
+    type: "number" | "integer",
+    const?: number,
+    default?: number,
+    minimum?: number,
+    maximum?: number,
+    exclusiveMinimum?: number,
+    exclusiveMaximum?: number,
+    multipleOf?: number,
+}
+
+interface ArrayProperty extends JsonPropertyBase {
+    type: "array",
+    items: JsonSchemaProperty,
+}
+
+type JsonSchemaProperty = RefProperty | StringProperty | NumberProperty | ArrayProperty;
+type JsonSchemaProperties = Record<string, JsonSchemaProperty>;
+
+interface JsonSchema {
     type: "object",
-    properties: Record<string, { type: string, description: string }>,
+    properties: JsonSchemaProperties | { anyOf: JsonSchemaProperties[] },
     required: string[],
+    $def: Omit<JsonSchema, "$def">,
 }
 
 interface LlmapiToolFunction {
@@ -39,18 +93,20 @@ interface LlmapiToolFunction {
     function: {
         name: string,
         description: string,
-        parameters: LlmapiToolFunctionObjectParam
+        parameters: JsonSchema
     }
 }
 
 export type LlmapiTool = LlmapiToolFunction;
 
 export interface LlmapiInputModel {
-    messages: LlmapiMessage[];
+    messages: LlmapiMessageModel[];
     tools?: LlmapiTool[];
 }
 
+// endregion
 
+// region variables
 export interface VariableChangeModel {
     op: string;
     path: string;
@@ -122,7 +178,7 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
 
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
-    text = text.trim().replace(regex, (match, element) => {
+    text = text.trim().replace(regex, (_, element) => {
             try {
                 const obj = JSON.parse(element.trim());
                 if (Array.isArray(obj)) {
@@ -148,6 +204,7 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
     history.content = text;
 }
 
+// endregion
 
 export const moduleName = 'slot';
 export const moduleArrayName = 'slots';

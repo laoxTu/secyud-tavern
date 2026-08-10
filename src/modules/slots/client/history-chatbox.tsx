@@ -36,6 +36,7 @@ import {readStream, tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
 import {handleHistoryPageChange, useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
+import {llmapiConfigRegistry} from "@/modules/llmapis/client/config";
 
 export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
     return ctx.current.content["ReplyAbortController"] as AbortController
@@ -118,24 +119,14 @@ export function HistoryChatbox() {
 
             if (response.body) {
                 let content = "";
+                const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
 
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('[HistoryChatbox] reply canceled');
                         break;
                     }
-                    let render = false;
-                    if (chunk?.reasoning_content) {
-                        currentOutput.reasoningContent += chunk.reasoning_content;
-                        render = true;
-                    }
-                    if (chunk?.content) {
-                        content += chunk.content;
-                        render = true;
-                    }
-                    if (!render) {
-                        continue;
-                    }
+                    await apiConfig.generateOutput(chunk, currentOutput);
                     // 流式渲染条件
                     // 故事页面为最新，输出页面为最新
                     const {page} = useHistoryPageState.getState();

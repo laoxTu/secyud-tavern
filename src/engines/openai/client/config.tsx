@@ -11,6 +11,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
+import {StoryOutputMessage, StoryOutputToolCall} from "@/modules/stories/models";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -113,6 +114,40 @@ function Content() {
     );
 }
 
+export async function generateOutput(output: any, context: StoryOutputMessage) {
+    if (output?.reasoning_content) {
+        context.reasoningContent += output.reasoning_content;
+    }
+    if (output?.content) {
+        context.content += output.content;
+    }
+    if (output?.tool_calls) {
+        for (const toolCall of output.tool_calls) {
+            context.toolCalls ??= [];
+            const index = context.toolCalls
+                .findIndex(u => u.id === toolCall.id);
+            let current =
+                index >= 0 ? context.toolCalls[index] : createToolCall(toolCall);
+            current.id ??= toolCall.id;
+            current.type ??= toolCall.type;
+            current.name ??= toolCall.name;
+            if (toolCall.arguments)
+                current.arguments += toolCall.arguments;
+        }
+    }
+
+    function createToolCall(toolCall: any) {
+        const current = {
+            id: toolCall.id,
+            type: toolCall.type,
+            name: toolCall.name,
+            arguments: toolCall.arguments,
+        } as StoryOutputToolCall;
+        context.toolCalls?.push(current)
+        return current;
+    }
+}
+
 export const config: LlmapiConfig =
     {
         id: engineName,
@@ -136,5 +171,6 @@ export const config: LlmapiConfig =
                 url: data.get('url') as string,
                 extras: extras,
             };
-        }
+        },
+        generateOutput,
     } as const;

@@ -4,7 +4,7 @@
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
-import {getCurrentOutput, isContentRole, LlmapiMessage} from "@/modules/slots/models";
+import {getCurrentOutput, isContentRole, LlmapiMessageModel} from "@/modules/slots/models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {useTranslations} from "next-intl";
@@ -20,7 +20,7 @@ function pushMessage(
     messageRole: string,
     messageContent: string,
     cache: { role: string, content: string[] },
-    llmapiMessages: LlmapiMessage[]
+    llmapiMessages: LlmapiMessageModel[]
 ) {
     if (messageRole !== cache.role) {
         if (cache.content.length > 0 && isContentRole(cache.role)) {
@@ -51,7 +51,7 @@ export async function defaultBuildInput(
         role: "",
         content: [],
     }
-    const llmapiMessages: LlmapiMessage[] = [];
+    const llmapiMessages: LlmapiMessageModel[] = [];
     const visitedLorebooks = new Set<string>();
     const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
     for (let i = 0; i < histories.length; i++) {
@@ -122,7 +122,7 @@ export async function layeredBuildInput(
         role: "",
         content: [],
     }
-    const llmapiMessages: LlmapiMessage[] = [];
+    const llmapiMessages: LlmapiMessageModel[] = [];
     const visitedLorebooks = new Set<string>();
     const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
     const lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];

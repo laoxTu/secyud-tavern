@@ -1,6 +1,5 @@
 ﻿import {BaseModel} from "@/business/models";
 
-
 export interface LlmapiModel extends BaseModel {
     code: string,
     version: string,
@@ -11,7 +10,6 @@ export interface LlmapiModel extends BaseModel {
     iv?: Buffer,
     builder?: string,
 }
-
 
 export const moduleName = 'llmapi';
 export const modulePlural = 'llmapis';

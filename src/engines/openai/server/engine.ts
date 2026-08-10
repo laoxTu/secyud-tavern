@@ -2,7 +2,6 @@
 import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {Stream} from "openai/streaming";
-import {LlmapiMessage} from "@/modules/slots/models";
 
 export async function generateOpenAIReadableStreamReply(
     context: LlmapiRequestContext,
@@ -68,7 +67,6 @@ export async function generateOpenAIReadableStreamReply(
 
                 clearInterval(heartbeatInterval);
 
-                // 发送完整结果 逗号做分隔符，方便解析
                 controller.enqueue(encode(message));
                 controller.close();
 

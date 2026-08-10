@@ -6,9 +6,23 @@ export interface StoryInputMessage extends StoryHistoryMessage {
     id: number;
 }
 
+interface StoryOutputToolCallBase {
+    id: string,
+    role: "assistant",
+}
+
+interface StoryOutputToolCallFunction extends StoryOutputToolCallBase {
+    type: "function",
+    name: string,
+    arguments: string,
+}
+
+export type StoryOutputToolCall = StoryOutputToolCallFunction;
+
 export interface StoryOutputMessage extends StoryHistoryMessage {
-    id: number;
-    reasoningContent: string;
+    id: number,
+    reasoningContent: string,
+    toolCalls?: StoryOutputToolCall[],
 }
 
 export interface StoryHistory extends EntryModel {

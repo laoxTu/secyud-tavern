@@ -10,6 +10,7 @@ import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {Selector} from "@/components/custom/selector";
+import {generateOutput} from "@/engines/openai/client/config";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 const reasoningEfforts = ["high", "max"];
@@ -152,8 +153,9 @@ export const config: LlmapiConfig =
                     max_tokens: Math.trunc(Number(data.get('max_tokens'))),
                     top_p: Number(data.get('top_p')),
                     logprobs: !!data.get('logprobs'),
-                    top_logprobs: Number(data.get('top_logprobs') )
+                    top_logprobs: Number(data.get('top_logprobs'))
                 }
             };
-        }
+        },
+        generateOutput,
     } as const;
