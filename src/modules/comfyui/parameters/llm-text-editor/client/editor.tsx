@@ -149,6 +149,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     properties: {}
                 })),
                 messages: [],
+                current: false,
             };
 
             await conversationManager.inputProcesser.use(provider =>

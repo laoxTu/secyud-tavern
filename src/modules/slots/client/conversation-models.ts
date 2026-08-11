@@ -21,6 +21,8 @@ export interface LlmapiInputContext extends LlmapiInputModel, SlotContextBase {
     // 这个和slot里面的有细微的差别
     // 截断summary或补充开场白
     histories: LlmapiHistory[],
+    // 持续当前输出，意味着要拼接当前output
+    current: boolean,
 }
 
 export interface LlmapiOutputContext extends SlotContextBase {

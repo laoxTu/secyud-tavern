@@ -99,7 +99,6 @@ export const lorebookConversationProvider:
         const message = getCurrentOutput(ctx.history);
         if (message) {
             const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
-
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message,
                 variables: generateCurrentVariables(ctx.history, true)

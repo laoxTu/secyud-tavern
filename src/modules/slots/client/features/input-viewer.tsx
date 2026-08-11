@@ -68,6 +68,7 @@ export function InputViewer() {
                 history,
                 histories: [],
                 messages: [],
+                current: false
             };
 
             generateInputBuildContext(inputContext);

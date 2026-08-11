@@ -17,7 +17,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Input} from "@/components/ui/input";
-import {getCurrentOutput} from "@/modules/slots/models";
+import {getCurrentOutputs} from "@/modules/slots/models";
 
 export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
     await invokeCallback(ctx, "handleOutputPageChange", curPage);
@@ -82,13 +82,13 @@ export function OutputPagerButtonGroup() {
 
             console.debug('[OutputPager] render history: ', history);
             console.debug('[OutputPager] render iframe: ', iframe);
-            const currentOutput = getCurrentOutput(history);
+            const currentOutput = getCurrentOutputs(history);
             const renderContext: RenderContext = {
                 content: {},
                 data: {
                     inputs: history.inputs.map(u => u.content),
-                    output: currentOutput?.content ?? "",
-                    reasoningContent: currentOutput?.reasoningContent ?? "",
+                    output: currentOutput?.map(u => u.content)?.join('\r\n') ?? "",
+                    reasoningContent: currentOutput?.map(u => u.reasoningContent)?.join('\r\n') ?? "",
                 },
                 variables: generateCurrentVariables(history),
                 document: iframe.contentDocument!,

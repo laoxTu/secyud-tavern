@@ -12,7 +12,6 @@ import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {StoryOutputMessage, StoryOutputToolCall} from "@/modules/stories/models";
-import {LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
 import {extractVariableChanges} from "@/modules/slots/models";
 
 const defaultConfig: OpenAIConfigModel = {

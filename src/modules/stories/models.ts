@@ -24,7 +24,6 @@ interface StoryOutputToolCallFunction extends StoryOutputToolCallBase {
 export type StoryOutputToolCall = StoryOutputToolCallFunction;
 
 export interface StoryOutputMessage extends StoryHistoryMessage {
-    id: number,
     reasoningContent: string,
     toolCalls?: StoryOutputToolCall[],
 }
@@ -34,7 +33,7 @@ export interface StoryHistory extends EntryModel {
     summary: boolean;
     variables: Record<string, any>;
     inputs: StoryInputMessage[];
-    outputs: StoryOutputMessage[];
+    outputs: StoryOutputMessage[][];
 }
 
 export interface StoryModel extends BaseModel {

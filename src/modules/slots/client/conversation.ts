@@ -3,7 +3,12 @@ import {
     StoryHistory,
     StoryInputMessage
 } from "@/modules/stories/models";
-import {applyPatch, extractVariableChanges, getCurrentOutput, SlotModel} from "@/modules/slots/models";
+import {
+    applyPatch,
+    extractVariableChanges,
+    getCurrentOutputs,
+    SlotModel
+} from "@/modules/slots/models";
 import {
     LlmapiHistory,
     LlmapiInputContext,
@@ -34,15 +39,14 @@ export function generateCurrentVariables(history: StoryHistory, includeOutput: b
     console.debug("Generating current variables history", history);
     console.debug("Generating current variables start", variables);
     for (const input of history.inputs) {
-        if (input.variables) {
-            applyPatch(variables, input.variables);
-        }
+        applyPatch(variables, input.variables);
     }
     if (includeOutput && history.outputs.length > 0) {
-        const changes = getCurrentOutput(history)?.variables;
-        if (changes) {
-            applyPatch(variables, changes);
-        }
+        const outputs = getCurrentOutputs(history);
+        if (outputs)
+            for (const output of outputs) {
+                applyPatch(variables, output.variables);
+            }
     }
     return variables;
 }
@@ -66,7 +70,7 @@ export function generateInputBuildContext(inputContext: LlmapiInputContext) {
             inputs: storyHistory.inputs
                 .map(u => ({...u})),
             outputs: storyHistory.outputs
-                .map(u => ({...u})),
+                .map(u => u.map(v => ({...v}))),
             properties: {}
         }
     }

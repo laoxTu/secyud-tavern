@@ -23,7 +23,7 @@ import {
     useSlotContext
 } from "@/modules/slots/client/models";
 import {StoryOutputMessage} from "@/modules/stories/models";
-import {extractVariableChanges, LlmapiInputModel} from "@/modules/slots/models";
+import {extractVariableChanges, getCurrentOutputs, LlmapiInputModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
     conversationManager,
@@ -77,89 +77,106 @@ export function HistoryChatbox() {
             }
 
             setOutput(true);
-            const inputContext: LlmapiInputContext = {
-                slot,
-                content: {},
-                history,
-                histories: [],
-                messages: [],
-            };
 
-            generateInputBuildContext(inputContext);
+            let generate = true;
+            let current = false;
+            while (generate) {
+                const inputContext: LlmapiInputContext = {
+                    slot,
+                    content: {},
+                    history,
+                    histories: [],
+                    messages: [],
+                    current
+                };
 
-            await conversationManager.inputProcesser.use(provider =>
-                provider.onProcessInput(inputContext));
+                generateInputBuildContext(inputContext);
 
-            const reply = setReplyAbortController(ctx);
+                await conversationManager.inputProcesser.use(provider =>
+                    provider.onProcessInput(inputContext));
 
-            console.debug("[HistoryChatbox] chat messages: ", inputContext.messages);
-            const response: Response = await post(
-                `/llmapis/{id}/chat` as any,
-                {
-                    messages: inputContext.messages,
-                    tools: inputContext.tools,
-                } as LlmapiInputModel,
-                {
-                    params: {id: slot.llmapi.id},
-                    signal: reply.signal
-                }
-            );
+                const reply = setReplyAbortController(ctx);
 
-            const currentOutput: StoryOutputMessage = {
-                id: (tryGetLastItem(history.outputs)?.id ?? 0) + 1,
-                content: "",
-                reasoningContent: "",
-                variables: [],
-                properties: {}
-            };
-
-            history.outputs.push(currentOutput);
-            console.debug(`[HistoryChatbox] current outputs: `, history.outputs);
-            await handleHistoryPageChange(ctx, {
-                curPage: histories.length,
-                curOutputPage: history.outputs.length - 1
-            });
-
-            if (response.body) {
-                const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
-                console.debug("apiConfig", apiConfig);
-                for await (const chunk of readStream(response.body)) {
-                    if (reply.signal.aborted) {
-                        console.warn('[HistoryChatbox] reply canceled');
-                        break;
+                console.debug("[HistoryChatbox] chat messages: ", inputContext.messages);
+                const response: Response = await post(
+                    `/llmapis/{id}/chat` as any,
+                    {
+                        messages: inputContext.messages,
+                        tools: inputContext.tools,
+                    } as LlmapiInputModel,
+                    {
+                        params: {id: slot.llmapi.id},
+                        signal: reply.signal
                     }
-                    apiConfig.generateOutput(chunk, currentOutput);
-                    // 流式渲染条件
-                    // 故事页面为最新，输出页面为最新
-                    const {page} = useHistoryPageState.getState();
-                    if (page.cur === histories.length &&
-                        history.outputId === history.outputs.length - 1) {
-                        const streamContext: RenderContext = {
-                            content: {},
-                            data: {
-                                inputs: [],
-                                output: currentOutput.content,
-                                reasoningContent: currentOutput.reasoningContent,
-                            },
-                            window: iframe.contentWindow!,
-                            document: iframe.contentDocument!,
-                            history: history,
-                            slot: slot,
-                            variables: generateCurrentVariables(history)
-                        };
-                        await conversationManager.streamRenderer
-                            .use(provider =>
-                                provider.onRenderStream(streamContext));
-                        renderData(streamContext, "content", {
-                            output: streamContext.data.output,
-                            reasoningContent: streamContext.data.reasoningContent
-                        });
+                );
+
+                const currentArray = current ?
+                    getCurrentOutputs(history) : (() => {
+                        const arr: StoryOutputMessage[] = [];
+                        history.outputId = history.outputs.length;
+                        history.outputs.push(arr);
+                        return arr;
+                    })();
+                // 如果用了current，没有的话直接返回。
+                if (!currentArray) return;
+
+                const currentOutput: StoryOutputMessage = {
+                    content: "",
+                    reasoningContent: "",
+                    variables: [],
+                    properties: {}
+                };
+                currentArray?.push(currentOutput);
+
+                console.debug(`[HistoryChatbox] current outputs: `, history.outputs);
+                await handleHistoryPageChange(ctx, {
+                    curPage: histories.length,
+                    curOutputPage: history.outputId
+                });
+
+                if (response.body) {
+                    const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
+                    console.debug("apiConfig", apiConfig);
+                    for await (const chunk of readStream(response.body)) {
+                        if (reply.signal.aborted) {
+                            console.warn('[HistoryChatbox] reply canceled');
+                            break;
+                        }
+                        apiConfig.generateOutput(chunk, currentOutput);
+                        // 流式渲染条件
+                        // 故事页面为最新，输出页面为最新
+                        const {page} = useHistoryPageState.getState();
+                        if (page.cur === histories.length &&
+                            history.outputId === history.outputs.length - 1) {
+                            const streamContext: RenderContext = {
+                                content: {},
+                                data: {
+                                    inputs: [],
+                                    output: currentArray?.map(u => u.content)?.join('\r\n') ?? "",
+                                    reasoningContent: currentArray?.map(u => u.reasoningContent)?.join('\r\n') ?? "",
+                                },
+                                window: iframe.contentWindow!,
+                                document: iframe.contentDocument!,
+                                history: history,
+                                slot: slot,
+                                variables: generateCurrentVariables(history)
+                            };
+                            await conversationManager.streamRenderer
+                                .use(provider =>
+                                    provider.onRenderStream(streamContext));
+                            renderData(streamContext, "content", {
+                                output: streamContext.data.output,
+                                reasoningContent: streamContext.data.reasoningContent
+                            });
+                        }
                     }
+                    const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
+                    // 解析输出，填充一些选项或处理，这里应该会缓存世界书
+                    await conversationManager.outputProcesser.use(provider =>
+                        provider.onProcessOutput(outputContext));
+                    generate = !!currentOutput.toolCalls?.length;
+                    current = true;
                 }
-                const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
-                // 解析输出，填充一些选项或处理，这里应该会缓存世界书
-                await conversationManager.outputProcesser.use(provider =>
-                    provider.onProcessOutput(outputContext));
                 await updateStoryHistory(slot.story.id, history);
             }
         } catch (err) {

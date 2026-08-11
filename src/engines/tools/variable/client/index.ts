@@ -11,9 +11,14 @@ export const variableTool: LlmapiTool = {
     invoke: async ({path}: { path: string }, ctx) => {
         const history = getLastHistory(ctx.slot);
         const variables = generateCurrentVariables(history, true);
-        return getVariableValue(variables, path, false);
+        const {current, realPath, exists} = getVariableValue(variables, path, false);
+        return {
+            path: realPath,
+            value: current,
+            exists,
+        };
     },
-    model(value: any): LlmapiToolModel {
+    model(): LlmapiToolModel {
         return {
             function: {
                 description: "get the specific path value desc of current variable (the variable after this ai output)",

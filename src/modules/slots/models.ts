@@ -111,7 +111,7 @@ export interface LlmapiInputModel {
 export interface VariableChangeModel {
     op: string;
     path: string;
-    value: any;
+    value?: any;
 }
 
 export function isVariableChangeModel(obj: any) {
@@ -129,10 +129,15 @@ export interface StoryHistoryMessage {
     properties: Record<string, any>;
 }
 
-export function getCurrentOutput(history: StoryHistory) {
-    if (history.outputs.length === 0) return undefined;
+export function getCurrentOutputs(history: StoryHistory) {
+    if (history.outputs.length === 0) return null;
     const outputId = Math.min(history.outputs.length - 1, history.outputId);
     return history.outputs[outputId];
+}
+
+export function getCurrentOutput(history: StoryHistory) {
+    const outputs = getCurrentOutputs(history);
+    return outputs ? tryGetLastItem(outputs) : null;
 }
 
 export function getVariableValue(variables: any, path: string, create: boolean = false) {
@@ -175,8 +180,8 @@ export function getVariableValue(variables: any, path: string, create: boolean =
     };
 }
 
-export function applyPatch(variables: any, changes: VariableChangeModel[]) {
-
+export function applyPatch(variables: any, changes?: VariableChangeModel[]) {
+    if (!changes?.length) return;
     console.debug("applyPatch", changes);
     for (const change of changes) {
         switch (change.op) {
@@ -212,8 +217,10 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
 
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
+    console.debug("extractVariableChanges element", text);
     text = text.trim().replace(regex, (_, element) => {
             try {
+                console.debug("extractVariableChanges element", element);
                 const obj = JSON.parse(element.trim());
                 if (Array.isArray(obj)) {
                     for (const item of obj) {
@@ -231,10 +238,10 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
             }
             return ''; // 删除匹配的内容
         }
-    )
-    ;
+    );
 
-    history.variables = results;
+    history.variables = results.map(u => u);
+    console.debug("extractVariableChanges result", history.variables);
     history.content = text;
 }
 

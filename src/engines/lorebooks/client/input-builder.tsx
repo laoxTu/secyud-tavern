@@ -4,7 +4,12 @@
     LorebookInputBuilderModel,
     PresetLorebookModel
 } from "@/engines/lorebooks/models";
-import {getCurrentOutput, isContentRole, LlmapiMessageModel, SlotModel} from "@/modules/slots/models";
+import {
+    getCurrentOutputs,
+    isContentRole,
+    LlmapiMessageModel,
+    SlotModel
+} from "@/modules/slots/models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
 import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {useTranslations} from "next-intl";
@@ -114,10 +119,12 @@ export async function defaultBuildInput(
             tryPushMessage(lorebook.role, lorebook.content, lorebook);
         }
 
-        const output = getCurrentOutput(history);
-        if (output && i < histories.length - 1) {
-            tryPushMessage("assistant", output.content);
-            await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
+        const outputs = getCurrentOutputs(history);
+        if (outputs && (i < histories.length - 1 || ctx.current)) {
+            for (const output of outputs) {
+                tryPushMessage("assistant", output.content);
+                await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
+            }
         }
     }
 
@@ -186,10 +193,12 @@ export async function layeredBuildInput(
             tryPushMessage("user", config.suffix);
         }
 
-        const output = getCurrentOutput(history);
-        if (output && i < histories.length - 1) {
-            tryPushMessage("assistant", output.content);
-            await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
+        const outputs = getCurrentOutputs(history);
+        if (outputs && (i < histories.length - 1 || ctx.current)) {
+            for (const output of outputs) {
+                tryPushMessage("assistant", output.content);
+                await tryPushOutputMessage(output, ctx, cache, llmapiMessages);
+            }
         }
     }
 

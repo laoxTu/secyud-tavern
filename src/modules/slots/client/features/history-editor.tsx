@@ -21,6 +21,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {toast} from "sonner";
 import {submitTargetFormOnKey} from "@/business/client";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -64,8 +65,11 @@ export function HistoryEditor() {
                 input.content = data.get(`history_input-${i}`) as string;
             }
             for (let i = 0; i < history.outputs.length; i++) {
-                const output = history.outputs[i];
-                output.content = data.get(`history_output-${i}`) as string;
+                const outputs = history.outputs[i];
+                for (let j = 0; j < outputs.length; j++) {
+                    const output = outputs[j];
+                    output.content = data.get(`history_output-${i}-${j}`) as string;
+                }
             }
             await updateStoryHistory(slot.story.id, history);
             await handleHistoryPageChange(ctx, {curPage: page.cur})
@@ -103,6 +107,8 @@ export function HistoryEditor() {
                                 <MonacoEditor name={'variables'}
                                               defaultValue={JSON.stringify(history.variables)}
                                               language={'json'} formRef={formRef}/>
+                                <Textarea disabled
+                                          defaultValue={JSON.stringify(generateCurrentVariables(history, true))}/>
                             </Field>
                         </FieldGroup>
                         <FieldGroup className={'p-1'}>
@@ -118,14 +124,14 @@ export function HistoryEditor() {
                                 </Field>))}
                             {history.outputs.map((u, i) => (
                                 <Field key={i}>
-                                    <FieldLabel htmlFor={`history_output-${i}`}
-                                                className={history.outputId === i ? "text-red-600" : ""}>
+                                    <FieldLabel className={history.outputId === i ? "text-red-600" : ""}>
                                         {`${t('slot.output')} ${i}`}
                                     </FieldLabel>
-                                    <Textarea defaultValue={u.content}
-                                              name={`history_output-${i}`}
-                                              id={`history_output-${i}`}
-                                              onKeyDown={submitTargetFormOnKey}/>
+                                    {u.map((v, vi) =>
+                                        <Textarea key={vi} defaultValue={v.content}
+                                                  name={`history_output-${i}-${vi}`}
+                                                  onKeyDown={submitTargetFormOnKey}/>)
+                                    }
                                 </Field>))}
                         </FieldGroup>
                     </FieldSet>

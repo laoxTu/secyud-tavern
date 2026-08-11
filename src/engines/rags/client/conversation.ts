@@ -109,9 +109,7 @@ export const ragConversationProvider:
             prepareLorebooks.length = 0;
 
             const output = getCurrentOutput(history);
-            if (output) {
-                await setActiveVectors(output);
-            }
+            if (output) await setActiveVectors(output);
         }
 
         async function setActiveVectors(message: StoryHistoryMessage) {
