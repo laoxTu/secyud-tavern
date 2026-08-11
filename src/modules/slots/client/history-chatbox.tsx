@@ -135,6 +135,7 @@ export function HistoryChatbox() {
                 });
 
                 if (response.body) {
+                    const cache: Record<string, any> = {};
                     const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
                     console.debug("apiConfig", apiConfig);
                     for await (const chunk of readStream(response.body)) {
@@ -142,7 +143,7 @@ export function HistoryChatbox() {
                             console.warn('[HistoryChatbox] reply canceled');
                             break;
                         }
-                        apiConfig.generateOutput(chunk, currentOutput);
+                        apiConfig.generateOutput(chunk, currentOutput, cache);
                         // 流式渲染条件
                         // 故事页面为最新，输出页面为最新
                         const {page} = useHistoryPageState.getState();
