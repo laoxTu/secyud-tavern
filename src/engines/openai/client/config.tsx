@@ -119,15 +119,16 @@ function Content() {
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
  */
-export function generateOutput(output: any, context: StoryOutputMessage) {
+export function generateOutput(output: any, context: StoryOutputMessage, cache: Record<string, any>) {
     console.debug("generateOutput", output);
 
     if (output?.reasoning_content) {
         context.reasoningContent += output.reasoning_content;
     }
     if (output?.content) {
-        context.content += output.content;
-        extractVariableChanges(context, context.content);
+        cache.content ??= "";
+        cache.content += output.content;
+        extractVariableChanges(context, cache.content);
     }
     if (output?.tool_calls) {
         for (const toolCall of output.tool_calls) {

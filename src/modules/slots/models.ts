@@ -194,7 +194,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         realPath,     // 完整路径
         nextPath,     // 下一个路径
         lastKey,      // 最后一个键名
-        exists: current !== undefined && current !== null
+        exists: realPath === keys.join('/')
     };
 }
 
