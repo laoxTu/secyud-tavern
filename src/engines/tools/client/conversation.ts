@@ -28,9 +28,8 @@ export const toolConversationProvider:
         for (const entry of entries) {
             if (entry.disabled || !entry.toolId) continue;
             const tool = llmapiToolManager.records[entry.toolId];
-            const model = tool.model(entry.value);
-            model.function.name = entry.code;
-            cache.tools[entry.code] = {
+            const model = tool.model(entry);
+            cache.tools[model.function.name] = {
                 config: entry,
                 tool: model
             };

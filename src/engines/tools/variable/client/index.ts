@@ -22,7 +22,7 @@ export const variableGetTool: LlmapiTool = {
         return {
             function: {
                 description: "get the specific path value desc of current variable (the variable after this ai output)",
-                name: "",
+                name: "getVariable",
                 parameters: {
                     type: "object",
                     properties: {
@@ -57,7 +57,7 @@ export const variableSetTool: LlmapiTool = {
         return {
             function: {
                 description: "set the variable changes",
-                name: "",
+                name: "setVariable",
                 parameters: {
                     type: "object",
                     additionalProperties: false,

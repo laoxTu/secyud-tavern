@@ -125,16 +125,15 @@ export function InputViewer() {
                                     </AccordionTrigger>
                                     <AccordionContent className={'h-full'}>
                                         <pre className={'text-wrap'}>
-                                            {u.content}
-                                        </pre>
-                                        {
+                                            {u.content}{
                                             u.role === "assistant" && u.toolCalls?.length &&
-                                            u.toolCalls.map((x, xi) => (<pre key={xi}>
-                                                <code>
+                                            u.toolCalls.map((x, xi) => (
+                                                <code className={'text-wrap block'} key={xi}>
                                                     {JSON.stringify(x, null, 2)}
                                                 </code>
-                                            </pre>))
+                                            ))
                                         }
+                                        </pre>
                                     </AccordionContent>
                                 </AccordionItem>
                             ))}
