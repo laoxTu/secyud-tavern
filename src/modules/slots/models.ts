@@ -74,19 +74,33 @@ interface NumberProperty extends JsonPropertyBase {
     multipleOf?: number,
 }
 
+interface BooleanProperty extends JsonPropertyBase {
+    type: "boolean",
+}
+
 interface ArrayProperty extends JsonPropertyBase {
     type: "array",
     items: JsonSchemaProperty,
 }
 
-type JsonSchemaProperty = RefProperty | StringProperty | NumberProperty | ArrayProperty;
-type JsonSchemaProperties = Record<string, JsonSchemaProperty>;
-
-interface JsonSchema {
+interface JsonProperty {
     type: "object",
-    properties: JsonSchemaProperties | { anyOf: JsonSchemaProperties[] },
+    properties: JsonSchemaProperties,
     required: string[],
-    $def?: Omit<JsonSchema, "$def">,
+    additionalProperties: boolean,
+}
+
+type JsonSchemaProperty =
+    RefProperty
+    | StringProperty
+    | NumberProperty
+    | BooleanProperty
+    | ArrayProperty
+    | JsonProperty;
+type JsonSchemaProperties = Record<string, JsonSchemaProperty | { anyOf: JsonSchemaProperty[] }>;
+
+interface JsonSchema extends JsonProperty {
+    $def?: JsonSchemaProperties,
 }
 
 interface LlmapiToolFunction {
