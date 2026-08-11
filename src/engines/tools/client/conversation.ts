@@ -66,7 +66,7 @@ export async function fillToolCallContent(
             const res = await tool.invoke(args, {slot});
             toolCall.content = JSON.stringify(res);
         } catch (err) {
-            toolCall.content = JSON.stringify(err);
+            toolCall.content = JSON.stringify({error: err, success: false});
         }
     }
 }
