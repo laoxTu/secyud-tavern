@@ -187,6 +187,8 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         nextPath = nextPath ? `${nextPath}/${key}` : key;
         current = current[key];
     }
+    
+    realPath = nextPath;
 
     return {
         current,      // 目标节点
