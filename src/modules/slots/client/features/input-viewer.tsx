@@ -127,6 +127,14 @@ export function InputViewer() {
                                         <pre className={'text-wrap'}>
                                             {u.content}
                                         </pre>
+                                        {
+                                            u.role === "assistant" && u.toolCalls?.length &&
+                                            u.toolCalls.map((x, xi) => (<pre key={xi}>
+                                                <code>
+                                                    {JSON.stringify(x, null, 2)}
+                                                </code>
+                                            </pre>))
+                                        }
                                     </AccordionContent>
                                 </AccordionItem>
                             ))}

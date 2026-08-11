@@ -159,6 +159,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
     let current = variables;
     let parent = null;
     let realPath = '';
+    let nextPath = '';
     let lastKey = '';
 
     for (const key of keys) {
@@ -169,6 +170,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
                     current,
                     parent,
                     realPath,
+                    nextPath,
                     lastKey,
                     exists: false
                 };
@@ -181,7 +183,8 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         // 向下移动
         parent = current;
         lastKey = key;
-        realPath = realPath ? `${realPath}/${key}` : key;
+        realPath = nextPath;
+        nextPath = nextPath ? `${nextPath}/${key}` : key;
         current = current[key];
     }
 
@@ -189,6 +192,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         current,      // 目标节点
         parent,       // 目标节点的父节点
         realPath,     // 完整路径
+        nextPath,     // 下一个路径
         lastKey,      // 最后一个键名
         exists: current !== undefined && current !== null
     };

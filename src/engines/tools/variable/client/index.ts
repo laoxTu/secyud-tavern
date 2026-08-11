@@ -6,7 +6,7 @@ import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 
 
 export const variableGetTool: LlmapiTool = {
-    id: "variable", component: Editor,
+    id: "get_variable", component: Editor,
     getValue: () => ({}),
     invoke: async ({path}: { path: string }, ctx) => {
         const history = getLastHistory(ctx.slot);
@@ -41,7 +41,7 @@ export const variableGetTool: LlmapiTool = {
 };
 
 export const variableSetTool: LlmapiTool = {
-    id: "variable", component: Editor,
+    id: "set_variable", component: Editor,
     getValue: () => ({}),
     invoke: async ({variableChanges}: { variableChanges: VariableChangeModel[] }, ctx) => {
         const history = getLastHistory(ctx.slot);
