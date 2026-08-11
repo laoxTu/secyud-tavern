@@ -7,6 +7,7 @@ export interface StoryInputMessage extends StoryHistoryMessage {
 }
 
 interface StoryOutputToolCallBase {
+    index: number,
     id: string,
     role: "assistant",
     content?: string,
@@ -14,8 +15,10 @@ interface StoryOutputToolCallBase {
 
 interface StoryOutputToolCallFunction extends StoryOutputToolCallBase {
     type: "function",
-    name: string,
-    arguments: string,
+    function: {
+        name: string,
+        arguments: string,
+    }
 }
 
 export type StoryOutputToolCall = StoryOutputToolCallFunction;

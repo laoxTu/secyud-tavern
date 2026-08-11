@@ -1,5 +1,5 @@
 import {Registerable} from "@/utils/register";
-import {LlmapiToolModel} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import React from "react";
 import {EntryState} from "@/business/client/models";
 import {moduleName, modulePlural} from "@/modules/llmapis/models";
@@ -12,11 +12,15 @@ export interface LlmapiToolProps {
     entry: LlmapiToolConfigModel,
 }
 
+export interface LlmapiToolContext {
+    slot: SlotModel
+}
+
 export interface LlmapiTool extends Registerable {
     component: React.ComponentType<LlmapiToolProps>,
     getValue: (data: FormData) => any,
     model: (value: any) => LlmapiToolModel,
-    invoke: (args: any) => Promise<any>,
+    invoke: (args: any, ctx: LlmapiToolContext) => Promise<any>,
 }
 
 

@@ -13,6 +13,8 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
     checkCreate: async (model) => {
         Check.NotEmpty('code', model.code);
         Check.NotEmpty('name', model.name);
+        model.key = undefined;
+        model.iv = undefined;
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")

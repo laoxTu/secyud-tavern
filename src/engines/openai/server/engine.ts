@@ -84,7 +84,8 @@ export async function generateOpenAIReadableStreamReply(
 
 export function mapToOpenAIMessage(context: LlmapiRequestContext) {
     const res: OpenAI.ChatCompletionCreateParamsNonStreaming = {
-        ...context.config,
+        ...context.config.parameters,
+        tools: context.tools,
         messages: context.messages.map(u => {
             switch (u.role) {
                 case "tool":
@@ -94,6 +95,7 @@ export function mapToOpenAIMessage(context: LlmapiRequestContext) {
                         tool_call_id: u.toolCallId,
                     }
                 case "assistant":
+                    console.debug("tool calls: ", JSON.stringify(u.toolCalls));
                     return {
                         role: u.role,
                         content: u.content,

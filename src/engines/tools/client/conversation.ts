@@ -60,10 +60,11 @@ export async function fillToolCallContent(
     for (const toolCall of toolCalls) {
         if (toolCall.content) continue;
         try {
-            const config = cache.tools[toolCall.name];
+            console.debug(`use tool: ${toolCall.function.name}`)
+            const config = cache.tools[toolCall.function.name];
             const tool = llmapiToolManager.records[config.config.toolId];
-            const args = JSON.parse(toolCall.arguments);
-            const res = await tool.invoke(args);
+            const args = JSON.parse(toolCall.function.arguments);
+            const res = await tool.invoke(args, {slot});
             toolCall.content = JSON.stringify(res);
         } catch (err) {
             toolCall.content = JSON.stringify(err);

@@ -28,10 +28,11 @@ export function apiGetModelList<TModel extends BaseModel>({
     }
 }
 
-export function apiGetModel<TModel extends BaseModel>({
-                                                          repository,
-                                                          conditionMatchId
-                                                      }: TemplateConfig<TModel>): NextHandler {
+export function apiGetModel<TModel extends BaseModel>(
+    {
+        repository,
+        conditionMatchId
+    }: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id} = await records.params;
         const {withDetails} =
@@ -59,10 +60,11 @@ export function apiCreateModel<TModel extends BaseModel>({
     }
 }
 
-export function apiUpdateModel<TModel extends BaseModel>({
-                                                             repository,
-                                                             checkUpdate
-                                                         }: TemplateConfig<TModel>): NextHandler {
+export function apiUpdateModel<TModel extends BaseModel>(
+    {
+        repository,
+        checkUpdate
+    }: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {
         const {id} = await records.params;
         const model = await request.json() as Partial<TModel>;

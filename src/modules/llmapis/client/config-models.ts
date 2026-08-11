@@ -6,5 +6,5 @@ import React from "react";
 export interface LlmapiConfig extends Registerable {
     component: React.ComponentType,
     getValue: (data: FormData) => any,
-    generateOutput: (output: any, context: StoryOutputMessage) => Promise<void>,
+    generateOutput: (output: any, context: StoryOutputMessage) => void,
 }

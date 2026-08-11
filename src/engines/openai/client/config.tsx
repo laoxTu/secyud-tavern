@@ -12,6 +12,8 @@ import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {StoryOutputMessage, StoryOutputToolCall} from "@/modules/stories/models";
+import {LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
+import {extractVariableChanges} from "@/modules/slots/models";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -118,34 +120,40 @@ function Content() {
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
  */
-export async function generateOutput(output: any, context: StoryOutputMessage) {
+export function generateOutput(output: any, context: StoryOutputMessage) {
+    console.debug("generateOutput", output);
+
     if (output?.reasoning_content) {
         context.reasoningContent += output.reasoning_content;
     }
     if (output?.content) {
         context.content += output.content;
+        extractVariableChanges(context, context.content);
     }
     if (output?.tool_calls) {
         for (const toolCall of output.tool_calls) {
             context.toolCalls ??= [];
             const index = context.toolCalls
-                .findIndex(u => u.id === toolCall.id);
+                .findIndex(u => u.index === toolCall.index);
             let current =
                 index >= 0 ? context.toolCalls[index] : createToolCall(toolCall);
             current.id ??= toolCall.id;
             current.type ??= toolCall.type;
-            current.name ??= toolCall.name;
-            if (toolCall.arguments)
-                current.arguments += toolCall.arguments;
+            current.function.name ??= toolCall.function?.name;
+            if (toolCall.function?.arguments)
+                current.function.arguments += toolCall.function.arguments;
         }
     }
 
     function createToolCall(toolCall: any) {
         const current = {
+            index: toolCall.index,
             id: toolCall.id,
             type: toolCall.type,
-            name: toolCall.name,
-            arguments: toolCall.arguments,
+            function: {
+                name: toolCall.function?.name,
+                arguments: toolCall.function?.arguments ?? "",
+            }
         } as StoryOutputToolCall;
         context.toolCalls?.push(current)
         return current;

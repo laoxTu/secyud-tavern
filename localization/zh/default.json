@@ -163,6 +163,7 @@
     "provider_openai": "Open AI",
     "tool": "工具",
     "tool_id": "工具类型",
+    "tool_id_variable": "获取变量",
     "reasoning_effort": "reasoning effort (思考强度)",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",

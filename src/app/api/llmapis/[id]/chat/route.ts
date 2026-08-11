@@ -58,6 +58,7 @@ export const POST = interceptor.createRoute(
 
         const stream = await engine.run({
             messages: input.messages,
+            tools: input.tools,
             type: provider,
             config,
             apiKey,

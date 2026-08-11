@@ -1,7 +1,7 @@
-﻿import {presetStorage} from "@/modules/presets/server/storage";
-import {toolStorageProvider} from "./storage";
+﻿import {toolStorageProvider} from "./storage";
+import {llmapiStorage} from "@/modules/llmapis/server/storage";
 
 
 export function registerToolsServer() {
-    presetStorage.register(toolStorageProvider)
+    llmapiStorage.register(toolStorageProvider);
 }

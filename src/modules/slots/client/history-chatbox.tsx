@@ -121,22 +121,19 @@ export function HistoryChatbox() {
             });
 
             if (response.body) {
-                let content = "";
                 const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
-
+                console.debug("apiConfig", apiConfig);
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('[HistoryChatbox] reply canceled');
                         break;
                     }
-                    await apiConfig.generateOutput(chunk, currentOutput);
+                    apiConfig.generateOutput(chunk, currentOutput);
                     // 流式渲染条件
                     // 故事页面为最新，输出页面为最新
                     const {page} = useHistoryPageState.getState();
                     if (page.cur === histories.length &&
                         history.outputId === history.outputs.length - 1) {
-                        // 每次重渲染重新解析变量变化。
-                        extractVariableChanges(currentOutput, content);
                         const streamContext: RenderContext = {
                             content: {},
                             data: {
@@ -159,8 +156,6 @@ export function HistoryChatbox() {
                         });
                     }
                 }
-                // for 循环内可能不渲染，所以重新解析一下变量
-                extractVariableChanges(currentOutput, content);
                 const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
                 // 解析输出，填充一些选项或处理，这里应该会缓存世界书
                 await conversationManager.outputProcesser.use(provider =>

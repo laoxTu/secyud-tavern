@@ -86,7 +86,7 @@ interface JsonSchema {
     type: "object",
     properties: JsonSchemaProperties | { anyOf: JsonSchemaProperties[] },
     required: string[],
-    $def: Omit<JsonSchema, "$def">,
+    $def?: Omit<JsonSchema, "$def">,
 }
 
 interface LlmapiToolFunction {
@@ -135,35 +135,68 @@ export function getCurrentOutput(history: StoryHistory) {
     return history.outputs[outputId];
 }
 
+export function getVariableValue(variables: any, path: string, create: boolean = false) {
+    const keys = path.split('/').filter(k => k);
+    let current = variables;
+    let parent = null;
+    let realPath = '';
+    let lastKey = '';
+
+    for (const key of keys) {
+        // 检查当前节点是否存在
+        if (current === null || current === undefined || typeof current !== 'object') {
+            if (!create || !parent) {
+                return {
+                    current,
+                    parent,
+                    realPath,
+                    lastKey,
+                    exists: false
+                };
+            }
+            // 在父节点上创建新对象
+            parent[lastKey] = {};
+            current = parent[lastKey];
+        }
+
+        // 向下移动
+        parent = current;
+        lastKey = key;
+        realPath = realPath ? `${realPath}/${key}` : key;
+        current = current[key];
+    }
+
+    return {
+        current,      // 目标节点
+        parent,       // 目标节点的父节点
+        realPath,     // 完整路径
+        lastKey,      // 最后一个键名
+        exists: current !== undefined && current !== null
+    };
+}
+
 export function applyPatch(variables: any, changes: VariableChangeModel[]) {
 
     console.debug("applyPatch", changes);
     for (const change of changes) {
-        const keys = change.path.split('/').filter(k => k);
-        if (keys.length === 0) {
-            continue;
-        }
-        let current = variables;
         switch (change.op) {
             case "add":
-            case "update":
-                for (const key of keys.slice(0, keys.length - 1)) {
-                    if (current[key] === undefined || typeof current[key] !== 'object') {
-                        current[key] = {};
-                    }
-                    current = current[key];
-                }
-                current[tryGetLastItem(keys)!] = change.value;
-                break;
-            case "remove":
-                for (const key of keys.slice(0, keys.length - 1)) {
-                    current = current[key];
-                    if (current === undefined || typeof current !== 'object') break;
-                }
-                if (current || typeof current === 'object') {
-                    delete current[tryGetLastItem(keys)!];
+            case "update": {
+                const {parent, lastKey} =
+                    getVariableValue(variables, change.path, true);
+                if (lastKey) {
+                    parent[lastKey] = change.value;
                 }
                 break;
+            }
+            case "remove": {
+                const {exists, parent, lastKey} =
+                    getVariableValue(variables, change.path, false);
+                if (exists) {
+                    delete parent[lastKey];
+                }
+                break;
+            }
             default:
                 break;
         }
