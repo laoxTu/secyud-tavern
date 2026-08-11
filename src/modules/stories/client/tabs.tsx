@@ -2,7 +2,7 @@
 import React from "react";
 import {useTranslations} from "next-intl";
 import {FileIcon} from "lucide-react";
-import {get, put} from "@/client";
+import {put} from "@/client";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -11,16 +11,12 @@ import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
 import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {RemoteSearchCombobox} from "@/components/custom/combobox";
-import {PagedResult} from "@/business/models";
-import {useErrorHandler} from "@/handler/client/error";
-import {LlmapiModel} from "@/modules/llmapis/models";
 import {getPresetRequires, PresetRequiresField} from "@/modules/presets/client/tabs";
+import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 
 
 function Tab() {
     const t = useTranslations();
-    const {handleError} = useErrorHandler();
     return <ModelUpdate<StoryModel>
         modelState={modelState}
         props={{
@@ -44,35 +40,7 @@ function Tab() {
                         <Input name="name" id={`${moduleName}-name`}
                                defaultValue={model.name}/>
                     </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-llmapi`}>
-                            {t("default.llmapi")}
-                        </FieldLabel>
-
-                        <RemoteSearchCombobox
-                            name={`llmapi`} id={`${moduleName}-llmapi`}
-                            defaultValue={model.llmapi ?? null}
-                            comparer={(u, v) => u.code === v.code}
-                            labelAccessor={e => `${e.code}-${e.version}`}
-                            valueAccessor={e => JSON.stringify(e)}
-                            searchHandler={async (search: string | null) => {
-                                try {
-                                    const res = await get("/llmapis", {
-                                        params: {
-                                            search: {
-                                                fuzzy: search,
-                                            },
-                                        }
-                                    }) as PagedResult<LlmapiModel>;
-                                    return res.data.map(u => ({
-                                        code: u.code,
-                                        version: u.version,
-                                    }));
-                                } catch (e) {
-                                    handleError(e);
-                                }
-                            }}/>
-                    </Field>
+                    <LlmapiRequireField defaultValue={model.llmapi}/>
                     <PresetRequiresField defaultValue={model.requires}/>
                 </div>
             </>)

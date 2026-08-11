@@ -11,6 +11,7 @@ export const llmTextEditor: ComfyUIParameter =
                 nodeId: data.get('node_id') as string,
                 nodeName: data.get('node_name') as string,
                 textPrompt: data.get(`text_prompt`) as string,
+                llmapi: JSON.parse(data.get(`llmapi`) as string),
             };
         },
         inputComponent: InputComponent,

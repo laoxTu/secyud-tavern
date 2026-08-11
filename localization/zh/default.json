@@ -73,6 +73,7 @@
     "task_failed": "任务失败：{target}",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
+    "thinking": "思考中",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
     "copy_title": "复制{target}",

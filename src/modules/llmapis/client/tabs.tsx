@@ -6,7 +6,7 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {TabManager} from "@/components/custom/tab";
-import {put} from "@/client";
+import {get, put} from "@/client";
 import {llmapiInputBuilderManager} from "@/modules/llmapis/client/input-builder";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {LlmapiModel, moduleName} from "../models";
@@ -16,7 +16,46 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
 import {Selector} from "@/components/custom/selector";
+import {RequireModel} from "@/modules/presets/models";
+import {useErrorHandler} from "@/handler/client/error";
+import {RemoteSearchCombobox} from "@/components/custom/combobox";
+import {PagedResult} from "@/business/models";
 
+export function LlmapiRequireField({defaultValue, prefix}: { defaultValue?: RequireModel | null, prefix?: string }) {
+    const t = useTranslations();
+    const {handleError} = useErrorHandler();
+    return (<Field>
+        <FieldLabel htmlFor={`${prefix ?? moduleName}-llmapi`}>
+            {t("default.llmapi")}
+        </FieldLabel>
+
+        <RemoteSearchCombobox
+            name={`llmapi`} id={`${prefix ?? moduleName}-llmapi`}
+            defaultValue={defaultValue ?? null}
+            comparer={(u, v) => u.code === v.code}
+            labelAccessor={e => `${e.name}-${e.version}(${e.author})`}
+            valueAccessor={e => JSON.stringify(e)}
+            searchHandler={async (search: string | null) => {
+                try {
+                    const res = await get("/llmapis", {
+                        params: {
+                            search: {
+                                fuzzy: search,
+                            },
+                        }
+                    }) as PagedResult<LlmapiModel>;
+                    return res.data.map(u => ({
+                        code: u.code,
+                        name: u.name,
+                        author: u.provider,
+                        version: u.version,
+                    }));
+                } catch (e) {
+                    handleError(e);
+                }
+            }}/>
+    </Field>);
+}
 
 function UpdateContent({model}: { model: LlmapiModel }) {
     const t = useTranslations();

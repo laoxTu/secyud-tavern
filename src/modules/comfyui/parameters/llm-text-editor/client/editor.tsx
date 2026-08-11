@@ -14,7 +14,7 @@ import {
 import {
     conversationManager
 } from "@/modules/slots/client/conversation";
-import {post} from "@/client";
+import {get, post} from "@/client";
 import {LlmapiInputModel} from "@/modules/slots/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
@@ -23,6 +23,8 @@ import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {StoryHistory} from "@/modules/stories/models";
+import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
+import {LlmapiModel} from "@/modules/llmapis/models";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -44,6 +46,8 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
                 <Input name={"node_name"} defaultValue={config?.nodeName}
                        id={`${engineName}-node_name-${entry.id}`}/>
             </Field>
+            <LlmapiRequireField defaultValue={config.llmapi}
+                                prefix={`${engineName}-${entry.id}`}/>
         </div>
         <Field>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
@@ -85,7 +89,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     // 生成提示词
     const generateLlmapiPrompt = async () => {
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
+            let {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             const page = useHistoryPageState.getState().page;
             if (!iframe) {
@@ -119,6 +123,19 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
             historiesAdd.push(input);
 
+            if (config?.llmapi) {
+                const llmapi: LlmapiModel = await get(`/llmapis/{id}`, {
+                    params: {
+                        id: config.llmapi.code,
+                        withDetails: true,
+                    }
+                });
+                slot = {
+                    ...slot,
+                    llmapi
+                };
+            }
+
             const inputContext: LlmapiInputContext = {
                 slot,
                 content: {},
@@ -147,7 +164,10 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             console.debug("[LlmTextEditor] chat messages: ", inputContext.messages);
             const response: Response = await post(
                 `/llmapis/{id}/chat` as any,
-                {messages: inputContext.messages} as LlmapiInputModel,
+                {
+                    messages: inputContext.messages,
+                    // 绘图不需要tools
+                } as LlmapiInputModel,
                 {
                     params: {id: slot.llmapi.id},
                     signal: reply.signal
@@ -212,7 +232,10 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                         </Button>
                 }
                 {
-                    thinking ? <Skeleton className="h-4 w-62.5"/> : <></>
+                    thinking && (<div className="flex items-center gap-2">
+                        <span className="text-gray-500">{t("default.thinking")}</span>
+                        <Skeleton className="h-4 w-32"/>
+                    </div>)
                 }
             </FieldLabel>
             <Textarea id={`${engineName}-text-${entry.id}`}

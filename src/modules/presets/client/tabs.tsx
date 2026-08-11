@@ -24,15 +24,15 @@ export function getPresetRequires(data: FormData) {
         .map(u => JSON.parse(u as string));
 }
 
-export function PresetRequiresField({defaultValue}: { defaultValue?: RequireModel[] }) {
+export function PresetRequiresField({defaultValue, prefix}: { defaultValue?: RequireModel[], prefix?: string }) {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     return (<Field>
-        <FieldLabel htmlFor={`${moduleName}-requires`}>
+        <FieldLabel htmlFor={`${prefix ?? moduleName}-requires`}>
             {t("default.requires")}
         </FieldLabel>
         <RemoteSearchCombobox
-            multiple name={`require`} id={`${moduleName}-requires`}
+            multiple name={`require`} id={`${prefix ?? moduleName}-requires`}
             defaultValue={defaultValue ?? []}
             comparer={(u, v) => u.code === v.code}
             labelAccessor={(e) => `${e.name}-${e.version}(${e.author})`}

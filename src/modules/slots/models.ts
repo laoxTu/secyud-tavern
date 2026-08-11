@@ -3,7 +3,6 @@ import {PresetModel} from "@/modules/presets/models";
 import {StoryHistory, StoryModel, StoryOutputToolCall} from "@/modules/stories/models";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {tryGetLastItem} from "@/utils";
-import {ChatCompletionChunk} from "openai/resources";
 
 export interface SlotModel extends BaseModel {
     story: StoryModel,
