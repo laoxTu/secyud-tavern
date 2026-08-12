@@ -87,3 +87,25 @@ export async function* readStream(stream: ReadableStream) {
         reader.releaseLock();
     }
 }
+
+export function joinAsString<T>(arr: T[], separator: string, value?: (t: T) => string | null) {
+    if (value) {
+        return arr
+            .map(u => value(u))
+            .filter(u => u)
+            .join(separator);
+    }
+
+    // 检查数组中的元素是否为字符串
+    if (arr.length > 0 && typeof arr[0] === 'string') {
+        return arr
+            .filter(u => u !== null && u !== undefined)
+            .join(separator);
+    }
+
+    // 其他类型处理
+    return arr
+        .map(u => String(u))
+        .filter(u => u)
+        .join(separator);
+}

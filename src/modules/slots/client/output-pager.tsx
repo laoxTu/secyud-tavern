@@ -12,12 +12,11 @@ import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
 import React, {RefObject, useEffect, useState} from "react";
 import {StoryHistory} from "@/modules/stories/models";
 import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/modules/slots/client/conversation";
-import {renderData, RenderContext} from "@/modules/slots/client/conversation-models";
+import {renderData, RenderContext, generateRenderData} from "@/modules/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Input} from "@/components/ui/input";
-import {getCurrentOutputs} from "@/modules/slots/models";
 
 export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
     await invokeCallback(ctx, "handleOutputPageChange", curPage);
@@ -82,14 +81,9 @@ export function OutputPagerButtonGroup() {
 
             console.debug('[OutputPager] render history: ', history);
             console.debug('[OutputPager] render iframe: ', iframe);
-            const currentOutput = getCurrentOutputs(history);
             const renderContext: RenderContext = {
                 content: {},
-                data: {
-                    inputs: history.inputs.map(u => u.content),
-                    output: currentOutput?.map(u => u.content)?.join('\r\n') ?? "",
-                    reasoningContent: currentOutput?.map(u => u.reasoningContent)?.join('\r\n') ?? "",
-                },
+                data: generateRenderData(history),
                 variables: generateCurrentVariables(history),
                 document: iframe.contentDocument!,
                 window: iframe.contentWindow!,

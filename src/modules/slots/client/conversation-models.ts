@@ -1,6 +1,7 @@
 ﻿import {Registerable} from "@/utils/register";
-import {LlmapiInputModel, SlotModel} from "@/modules/slots/models";
+import {getCurrentOutputs, LlmapiInputModel, SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
+import {joinAsString} from "@/utils";
 
 export interface SlotContextBase {
     slot: SlotModel;
@@ -69,6 +70,16 @@ export interface SlotStreamRenderer extends Registerable {
     onRenderStream(ctx: RenderContext): Promise<void>;
 }
 
+export function generateRenderData(history: StoryHistory) {
+    const outputs = getCurrentOutputs(history) ?? [];
+    const res: RenderData = {
+        inputs: history.inputs.map(u => u.content).filter(u => u),
+        output: joinAsString(outputs, "\r\n", u => u.content).trim(),
+        reasoningContent: joinAsString(outputs, "\r\n", u => u.reasoningContent).trim(),
+    };
+
+    return res;
+}
 
 export function renderData(ctx: RenderContext, type: string, data: any) {
     console.debug("renderData", data);

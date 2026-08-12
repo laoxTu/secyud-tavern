@@ -9,6 +9,7 @@ import {
     InputGroupTextarea
 } from "@/components/ui/input-group";
 import {
+    generateRenderData,
     LlmapiInputContext, LlmapiOutputContext,
     RenderContext, renderData,
 } from "@/modules/slots/client/conversation-models";
@@ -151,11 +152,7 @@ export function HistoryChatbox() {
                             history.outputId === history.outputs.length - 1) {
                             const streamContext: RenderContext = {
                                 content: {},
-                                data: {
-                                    inputs: [],
-                                    output: currentArray?.map(u => u.content)?.join('\r\n') ?? "",
-                                    reasoningContent: currentArray?.map(u => u.reasoningContent)?.join('\r\n') ?? "",
-                                },
+                                data: generateRenderData(history),
                                 window: iframe.contentWindow!,
                                 document: iframe.contentDocument!,
                                 history: history,
