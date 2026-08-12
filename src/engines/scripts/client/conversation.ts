@@ -80,7 +80,8 @@ export const scriptConversationProvider:
                 const script = ctx.document.createElement("script");
                 script.id = id;
                 console.debug("script id", id)
-                // link 类型意味着链接
+                // link 类型意味着链接：await onload 保证按优先级顺序依次加载；
+                // 内联脚本则同步执行
                 if (entry.type === 'link') {
                     script.async = true;
                     script.src = entry.content.trim();

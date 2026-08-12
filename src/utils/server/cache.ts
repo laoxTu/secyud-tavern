@@ -23,6 +23,7 @@ export interface Span {
 
 const remainCount = 1000;
 
+// 把月/周/天/时/分/秒统一折算成毫秒偏移量加到 date 上
 function getDate(date: Date, span: Span) {
     const {month, week, day, hour, minute, second} = {
         ...{
@@ -45,7 +46,7 @@ export async function getCache<T>(key: string, factory?: () => Promise<T>, expir
     if (cache) {
         const now = new Date();
         if (cache.expires >= now || !factory) {
-            cache.expires = getDate(now, expire);
+            cache.expires = getDate(now, expire); // 命中即续期，形成滑动过期
             return cache.data as T;
         }
     }
@@ -64,6 +65,7 @@ export async function setCache<T>(key: string, data: T, expire: Span = {
     };
     cacheStorage.set(key, cache);
     if (cacheStorage.size > remainCount) {
+        // 超上限时按过期时间清掉最旧的一批，防止缓存无限增长
         const items = Array.from(cacheStorage)
             .sort((a, b) =>
                 a[1].expires.getTime() -

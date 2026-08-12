@@ -52,7 +52,7 @@ export async function generateOpenAIReadableStreamReply(
         });
     }
 
-    // 非流式模拟
+    // 非流式请求也包装成流：完成前靠 300ms 心跳空包保活，让前端持续收到数据
     return new ReadableStream({
         async start(controller) {
             // 心跳定时器

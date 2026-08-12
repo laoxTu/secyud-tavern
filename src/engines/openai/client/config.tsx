@@ -130,6 +130,7 @@ export function generateOutput(output: any, context: StoryOutputMessage, cache: 
         cache.content += output.content;
         extractVariableChanges(context, cache.content);
     }
+    // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
     if (output?.tool_calls) {
         for (const toolCall of output.tool_calls) {
             context.toolCalls ??= [];

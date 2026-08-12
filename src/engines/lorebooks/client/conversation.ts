@@ -59,6 +59,7 @@ export const lorebookConversationProvider:
         const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
 
         const prepareLorebooks: PresetLorebookModel[] = [];
+        // 遍历历史：逐条输入/输出触发匹配，激活的世界书先积攒再合并进该条历史的 properties，供后续拼装提示词
         // 将世界书拷贝到上下文中，用于生成提示词。
         for (const history of ctx.histories) {
             for (const input of history.inputs) {

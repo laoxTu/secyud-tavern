@@ -38,6 +38,8 @@ export function InputViewer() {
             setLoading(true);
             const {slot, histories} = getSlotAndHistories(ctx);
             const last = getLastHistory(slot);
+            // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
+            // 让用户预览这次输入实际会发给模型的上下文
             const history: StoryHistory = {
                 code: "",
                 disabled: false,

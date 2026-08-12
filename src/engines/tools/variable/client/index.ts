@@ -10,8 +10,10 @@ export const variableGetTool: LlmapiTool = {
     getValue: () => ({}),
     invoke: async ({path}: { path: string }, ctx) => {
         const history = getLastHistory(ctx.slot);
+        // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
         const variables = generateCurrentVariables(history, true);
         const {current, realPath, exists} = getVariableValue(variables, path, false);
+        // 返回标准化路径、值和是否存在，供模型判断后续读写。
         return {
             path: realPath,
             value: current,
@@ -47,6 +49,7 @@ export const variableSetTool: LlmapiTool = {
         const history = getLastHistory(ctx.slot);
         const currentOutput = getCurrentOutput(history);
         if (currentOutput) {
+            // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
             for (const variableChange of variableChanges) {
                 currentOutput.variables.push(variableChange);
             }
@@ -66,11 +69,12 @@ export const variableSetTool: LlmapiTool = {
                         variableChanges: {
                             type: "array",
                             items: {
-                                $ref: "variable",
+                                $ref: "variableChange",
                             },
                             description: "the change of the target variable",
                         }
                     },
+                    // DeepSeek 官方用 $def（非标准 $defs），$ref 直接写键名，勿改。
                     $def: {
                         variableChange: {
                             type: "object",

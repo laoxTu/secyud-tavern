@@ -79,6 +79,7 @@ export function HistoryChatbox() {
 
             setOutput(true);
 
+            // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
             let generate = true;
             let current = false;
             while (generate) {
@@ -111,6 +112,7 @@ export function HistoryChatbox() {
                     }
                 );
 
+                // 首轮新建输出数组，工具续轮复用当前数组，多轮结果记在同一轮。
                 const currentArray = current ?
                     getCurrentOutputs(history) : (() => {
                         const arr: StoryOutputMessage[] = [];
@@ -172,6 +174,7 @@ export function HistoryChatbox() {
                     // 解析输出，填充一些选项或处理，这里应该会缓存世界书
                     await conversationManager.outputProcesser.use(provider =>
                         provider.onProcessOutput(outputContext));
+                    // 还有 toolCalls 就继续请求，current 置 true 续接当前输出。
                     generate = !!currentOutput.toolCalls?.length;
                     current = true;
                 }

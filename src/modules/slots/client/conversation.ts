@@ -34,6 +34,7 @@ export const conversationManager = {
 };
 
 
+// 以存档 variables 为底，叠加输入与（可选）当前输出的变更，算出当前变量状态。
 export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
     const variables = structuredClone(history.variables);
     console.debug("Generating current variables history", history);
@@ -53,6 +54,7 @@ export function generateCurrentVariables(history: StoryHistory, includeOutput: b
 
 export function generateInputBuildContext(inputContext: LlmapiInputContext) {
     const histories = inputContext.slot.story.histories!
+    // 从最后一个 summary 历史开始发送（更早的历史已总结过）；无 summary 时补开场白作为起点
     let start = histories.slice(0, histories.length - 1)
         .findLastIndex(u => u.summary);
     if (start === -1) {
@@ -76,6 +78,7 @@ export function generateInputBuildContext(inputContext: LlmapiInputContext) {
     }
 }
 
+// 生成虚拟开场历史：把各预设 opening 解析为输入消息，作为变量的初始来源（懒生成并缓存）。
 export function getOpeningHistory(slot: SlotModel) {
     const key = 'openingHistory';
     let openingHistory = slot.content[key] as StoryHistory;

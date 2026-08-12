@@ -154,6 +154,7 @@ export function getCurrentOutput(history: StoryHistory) {
     return outputs ? tryGetLastItem(outputs) : null;
 }
 
+// 沿 '/' 路径定位变量节点，create=true 时补建缺失的中间对象，增删改通过返回的 parent 操作。
 export function getVariableValue(variables: any, path: string, create: boolean = false) {
     const keys = path.split('/').filter(k => k);
     let current = variables;
@@ -187,7 +188,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         nextPath = nextPath ? `${nextPath}/${key}` : key;
         current = current[key];
     }
-    
+
     realPath = nextPath;
 
     return {
@@ -196,10 +197,11 @@ export function getVariableValue(variables: any, path: string, create: boolean =
         realPath,     // 完整路径
         nextPath,     // 下一个路径
         lastKey,      // 最后一个键名
-        exists: realPath === keys.join('/')
+        exists: realPath === keys.join('/') && current != undefined
     };
 }
 
+// 应用一批变量变更：add/update 补建后赋值，remove 按 exists 删除。
 export function applyPatch(variables: any, changes?: VariableChangeModel[]) {
     if (!changes?.length) return;
     console.debug("applyPatch", changes);
@@ -228,6 +230,7 @@ export function applyPatch(variables: any, changes?: VariableChangeModel[]) {
     }
 }
 
+// 解析 AI 输出中的 <variable_changes> 块为变量变更并移除标签，非法 JSON 只跳过该块。
 export function extractVariableChanges(history: StoryHistoryMessage, text?: string) {
     if (!text || text.trim() == '') {
         history.variables = [];

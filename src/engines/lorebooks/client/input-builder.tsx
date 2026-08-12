@@ -49,6 +49,7 @@ function pushMessage(
     cache.content.push(messageContent);
 }
 
+// 重建工具调用消息序列：assistant 带 tool_calls，再逐条补 role:"tool" 结果消息。
 async function tryPushOutputMessage(
     output: StoryOutputMessage,
     ctx: { slot: SlotModel },
@@ -61,11 +62,13 @@ async function tryPushOutputMessage(
             content: cache.content.join("\r\n"),
             toolCalls: output.toolCalls.map(u => ({
                 ...u,
+                // 执行结果由下方 tool 消息携带，这里不能带。
                 content: undefined
             })),
         });
         cache.role = "";
         cache.content.length = 0;
+        // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
         await fillToolCallContent(output.toolCalls, ctx.slot);
         for (const toolCall of output.toolCalls) {
             if (!toolCall.content) continue;
@@ -78,6 +81,7 @@ async function tryPushOutputMessage(
     }
 }
 
+// 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function defaultBuildInput(
     ctx: LlmapiInputContext, config: LorebookInputBuilderModel) {
     // 待填充的历史，从最后一个summary开始
