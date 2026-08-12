@@ -71,13 +71,14 @@ export const variableSetTool: LlmapiTool = {
                             items: {
                                 $ref: "variableChange",
                             },
-                            description: "the change of the target variable",
+                            description: "the change list of the target variable",
                         }
                     },
                     // DeepSeek 官方用 $def（非标准 $defs），$ref 直接写键名，勿改。
                     $def: {
                         variableChange: {
                             type: "object",
+                            description: "the change operation of variable",
                             properties: {
                                 op: {
                                     type: "string",
@@ -104,6 +105,7 @@ export const variableSetTool: LlmapiTool = {
                                         },
                                         {
                                             type: "object",
+                                            description: "any object struct value, set the whole object to value",
                                             additionalProperties: true,
                                             properties: {},
                                             required: [],

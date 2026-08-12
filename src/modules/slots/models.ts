@@ -3,6 +3,7 @@ import {PresetModel} from "@/modules/presets/models";
 import {StoryHistory, StoryModel, StoryOutputToolCall} from "@/modules/stories/models";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {tryGetLastItem} from "@/utils";
+import {JsonSchema} from "@/utils/json-schema";
 
 export interface SlotModel extends BaseModel {
     story: StoryModel,
@@ -48,60 +49,6 @@ export function isContentRole(role: string) {
 // endregion
 
 // region llm api input
-interface JsonPropertyBase {
-    description: string,
-}
-
-interface RefProperty {
-    $ref: string,
-}
-
-interface StringProperty extends JsonPropertyBase {
-    type: "string",
-    pattern?: string,
-    format?: "email" | "hostname" | "ipv4" | "ipv6" | "uuid",
-    enum?: string[],
-}
-
-interface NumberProperty extends JsonPropertyBase {
-    type: "number" | "integer",
-    const?: number,
-    default?: number,
-    minimum?: number,
-    maximum?: number,
-    exclusiveMinimum?: number,
-    exclusiveMaximum?: number,
-    multipleOf?: number,
-}
-
-interface BooleanProperty extends JsonPropertyBase {
-    type: "boolean",
-}
-
-interface ArrayProperty extends JsonPropertyBase {
-    type: "array",
-    items: JsonSchemaProperty,
-}
-
-interface JsonProperty {
-    type: "object",
-    properties: JsonSchemaProperties,
-    required: string[],
-    additionalProperties: boolean,
-}
-
-type JsonSchemaProperty =
-    RefProperty
-    | StringProperty
-    | NumberProperty
-    | BooleanProperty
-    | ArrayProperty
-    | JsonProperty;
-type JsonSchemaProperties = Record<string, JsonSchemaProperty | { anyOf: JsonSchemaProperty[] }>;
-
-interface JsonSchema extends JsonProperty {
-    $def?: JsonSchemaProperties,
-}
 
 interface LlmapiToolFunction {
     type: "function",
