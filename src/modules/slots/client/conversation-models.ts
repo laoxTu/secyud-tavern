@@ -2,6 +2,7 @@
 import {getCurrentOutputs, LlmapiInputModel, SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
 import {joinAsString} from "@/utils";
+import {BusinessError} from "@/handler/models";
 
 export interface SlotContextBase {
     slot: SlotModel;
@@ -87,4 +88,25 @@ export function renderData(ctx: RenderContext, type: string, data: any) {
     g.__messageData ??= new Map<string, any>();
     g.__messageData[type] = data;
     ctx.window.postMessage({type, data}, "*");
+}
+
+// 读取初始化好的缓存；未初始化说明漏了 initialize，直接报错而不是拿到 undefined 往下传。
+export function getContent<T>(slot: SlotModel, key: string): T {
+    const value = slot.content[key];
+    if (value === undefined) {
+        throw new BusinessError(`slot content "${key}" is not initialized`,
+            "slot.content_not_initialized")
+            .withValue("key", key);
+    }
+    return value as T;
+}
+
+// 初始化缓存；同键禁止重复初始化，防止两个引擎/插件意外共用同一 key 互相覆盖。
+export function setContent(slot: SlotModel, key: string, value: any) {
+    if (slot.content[key] !== undefined || value === undefined) {
+        throw new BusinessError(`slot content "${key}" already initialized`,
+            "slot.content_already_initialized")
+            .withValue("key", key);
+    }
+    slot.content[key] = value;
 }

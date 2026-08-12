@@ -1,7 +1,9 @@
 ﻿import {engineName, enginePlural, PresetMacroModel} from "../models";
 import {moduleName as llmapiModuleName} from "@/modules/llmapis/models";
 import {
+    getContent,
     LlmapiInputProcesser,
+    setContent,
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
@@ -17,7 +19,7 @@ const eta = new Eta({
 });
 
 function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
-    const cache: MacroConversationCache = ctx.slot.content[enginePlural];
+    const cache: MacroConversationCache = getContent(ctx.slot, enginePlural);
 
     return {
         ...Object.fromEntries(Object.values(cache.macros).map(u => [u.key, u.models[u.select].value])),
@@ -77,7 +79,7 @@ export const macroConversationProvider:
                 }
             }
         }
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
         const data = ctx.data;

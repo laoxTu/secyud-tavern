@@ -1,6 +1,8 @@
 'use client';
 import {
+    getContent,
     renderData,
+    setContent,
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
@@ -51,7 +53,7 @@ export const scriptConversationProvider:
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
         cache.importMap = JSON.stringify(cache.importMap);
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
         renderData(ctx, "variables", generateCurrentVariables(ctx.history));
@@ -62,7 +64,7 @@ export const scriptConversationProvider:
         if (!window.__injectedScriptInitialized) {
             window.__injectedScriptInitialized = true;
             console.debug('start generate injected-scripts');
-            const cache: ScriptConversationCache = ctx.slot.content[enginePlural];
+            const cache: ScriptConversationCache = getContent(ctx.slot, enginePlural);
 
             if (cache.importMap !== "{}") {
                 const script = ctx.document.createElement("script");

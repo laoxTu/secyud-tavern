@@ -246,7 +246,9 @@
     "output": "AI Output",
     "regenerate_reply_tip": "Regenerate",
     "variable": "Variable",
-    "variable_invalid_json": "Invalid variable format"
+    "variable_invalid_json": "Invalid variable format",
+    "content_not_initialized": "Slot content not initialized: {key}",
+    "content_already_initialized": "Slot content already initialized: {key}"
   },
   "story": {
     "enter": "Enter",

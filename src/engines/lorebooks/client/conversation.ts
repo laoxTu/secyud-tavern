@@ -7,9 +7,11 @@ import {matchName} from "../match/always/models";
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {tryFillActiveLorebooks} from "@/engines/lorebooks/client/match";
 import {
+    getContent,
     LlmapiHistory,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
+    setContent,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
@@ -53,10 +55,10 @@ export const lorebookConversationProvider:
                 }
             }
         }
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
-        const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
+        const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
 
         const prepareLorebooks: PresetLorebookModel[] = [];
         // 遍历历史：逐条输入/输出触发匹配，激活的世界书先积攒再合并进该条历史的 properties，供后续拼装提示词
@@ -99,7 +101,7 @@ export const lorebookConversationProvider:
     onProcessOutput: async (ctx) => {
         const message = getCurrentOutput(ctx.history);
         if (message) {
-            const cache: LorebookConversationCache = ctx.slot.content[enginePlural];
+            const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message,
                 variables: generateCurrentVariables(ctx.history, true)

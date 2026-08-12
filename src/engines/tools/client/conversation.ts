@@ -1,7 +1,9 @@
 import {getCurrentOutput, LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import {
+    getContent,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
+    setContent,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
@@ -36,10 +38,10 @@ export const toolConversationProvider:
                 tool: model
             };
         }
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
-        const cache = ctx.slot.content[enginePlural] as ToolConversationCache;
+        const cache: ToolConversationCache = getContent(ctx.slot, enginePlural);
         const tools = Object
             .values(cache.tools).map(u => u.tool);
         ctx.tools = tools.length > 0 ? tools : undefined;
@@ -59,7 +61,7 @@ export async function fillToolCallContent(
     toolCalls: StoryOutputToolCall[],
     slot: SlotModel,
 ) {
-    const cache = slot.content[enginePlural] as ToolConversationCache;
+    const cache: ToolConversationCache = getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
         if (toolCall.content) continue;

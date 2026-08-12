@@ -3,8 +3,10 @@
     enginePlural,
 } from "../models";
 import {
+    getContent,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
+    setContent,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
 import {getCurrentOutput, StoryHistoryMessage} from "@/modules/slots/models";
@@ -57,9 +59,15 @@ export const ragConversationProvider:
     onInitialize: async (ctx) => {
         const manager = embeddingGeneratorManager;
         const state = useRagSettingState.getState();
-        if (state.disabled) return;
-        const provider = manager.records[state.embeddingGenerator];
-        if (!provider) return;
+
+        const provider =
+            manager.records[state.embeddingGenerator];
+        if (state.disabled || !provider) {
+            setContent(ctx.slot, enginePlural, {
+                disabled: true
+            });
+            return;
+        }
         const generator = await provider.getGenerator();
         const cache: RagConversationCache = {
             generator,
@@ -68,7 +76,8 @@ export const ragConversationProvider:
                     ...ragVectorSchema,
                     embedding: `vector[${generator.embeddingDimension}]`
                 }
-            })
+            }),
+            disabled: false,
         };
 
         for (const preset of ctx.slot.presets) {
@@ -87,13 +96,17 @@ export const ragConversationProvider:
                 })
             }
         }
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
-        const cache: RagConversationCache = ctx.slot.content[enginePlural];
-        if (!cache) return;
+        // 缓存可选：RAG 未启用时 onInitialize 不会写入，这里用守卫而非 getContent；
+        // cache.disabled 用于收窄联合类型到完整缓存分支
+        const cache: RagConversationCache =
+            getContent(ctx.slot, enginePlural);
+        if (cache.disabled) return;
 
-        const lorebookCache: LorebookConversationCache = ctx.slot.content[lorebookEnginePlural];
+        // 世界书缓存必定初始化，跨引擎读取走 getContent
+        const lorebookCache: LorebookConversationCache = getContent(ctx.slot, lorebookEnginePlural);
         const prepareLorebooks: PresetLorebookModel[] = [];
         for (const history of ctx.histories) {
             for (const input of history.inputs) {
@@ -113,6 +126,7 @@ export const ragConversationProvider:
         }
 
         async function setActiveVectors(message: StoryHistoryMessage) {
+            if (cache.disabled) return;
             console.debug("setActiveVectors: message", message);
             const lorebookNames = message.properties[enginePlural] ?? await tryFillActiveVectors({
                 message, ...cache
@@ -128,8 +142,9 @@ export const ragConversationProvider:
         }
     },
     onProcessOutput: async (ctx) => {
-        const cache: RagConversationCache = ctx.slot.content[enginePlural];
-        if (!cache) return;
+        // 同 onProcessInput，RAG 缓存可选，用守卫
+        const cache: RagConversationCache = getContent(ctx.slot, enginePlural);
+        if (cache.disabled) return;
         const message = getCurrentOutput(ctx.history);
         if (!message) return;
         await tryFillActiveVectors({

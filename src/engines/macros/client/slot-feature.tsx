@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import {Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet} from "@/components/ui/field";
 import {getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
+import {getContent} from "@/modules/slots/client/conversation-models";
 import {enginePlural} from "@/engines/macros/models";
 import {MacroConversationCache} from "@/engines/macros/client/conversation";
 import {useErrorHandler} from "@/handler/client/error";
@@ -30,7 +31,7 @@ export function MacroSelector() {
     const handleDialogOpen = () => {
         try {
             const {slot} = getSlotAndHistories(ctx);
-            const cache: MacroConversationCache = slot.content[enginePlural];
+            const cache: MacroConversationCache = getContent(slot, enginePlural);
             setCache(cache);
             setOpen(true);
         } catch (error) {
@@ -40,7 +41,7 @@ export function MacroSelector() {
     const handleSelectChange = (key: string, index: number) => {
         try {
             const {slot} = getSlotAndHistories(ctx);
-            const cache: MacroConversationCache = slot.content[enginePlural];
+            const cache: MacroConversationCache = getContent(slot, enginePlural);
             const item = cache.macros[key];
             item.select = index;
             setCache(cache);

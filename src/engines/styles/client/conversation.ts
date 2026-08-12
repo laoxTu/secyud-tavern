@@ -1,4 +1,4 @@
-﻿import {SlotContentRenderer, SlotInitializer} from "@/modules/slots/client/conversation-models";
+﻿import {getContent, setContent, SlotContentRenderer, SlotInitializer} from "@/modules/slots/client/conversation-models";
 import {PresetStyleModel, engineName, enginePlural} from "../models";
 
 const prefix = "injected-style";
@@ -26,7 +26,7 @@ export const styleConversationProvider:
             }
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
@@ -35,7 +35,7 @@ export const styleConversationProvider:
         }
         window.__injectedStyleInitialized = true;
         console.debug('[injected-styles] start generate');
-        const cache: StyleConversationCache = ctx.slot.content[enginePlural];
+        const cache: StyleConversationCache = getContent(ctx.slot, enginePlural);
         const set = new Set<string>();
         for (const entry of cache.entries) {
             const id = `${prefix}-${entry.code}`;

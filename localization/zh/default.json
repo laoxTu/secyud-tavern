@@ -251,7 +251,9 @@
     "output": "AI输出",
     "regenerate_reply_tip": "重新生成",
     "variable": "变量",
-    "variable_invalid_json": "变量格式错误"
+    "variable_invalid_json": "变量格式错误",
+    "content_not_initialized": "插槽缓存未初始化：{key}",
+    "content_already_initialized": "插槽缓存已存在：{key}"
   },
   "story": {
     "enter": "进入",

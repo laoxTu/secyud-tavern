@@ -1,5 +1,7 @@
 ﻿import {
+    getContent,
     LlmapiInputProcesser,
+    setContent,
     SlotContentRenderer,
     SlotInitializer,
     SlotStreamRenderer
@@ -25,7 +27,7 @@ export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
+        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
         for (const message of ctx.histories) {
             for (const input of message.inputs) {
                 input.content = applyRegexes(cache.inputs, input.content);
@@ -63,15 +65,15 @@ export const regexConversationProvider:
                 }
             }
         }
-        ctx.slot.content[enginePlural] = cache;
+        setContent(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
+        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
         const data = ctx.data;
         data.output = applyRegexes(cache.outputs, data.output);
     },
     onRenderContent: async (ctx) => {
-        const cache: RegexConversationCache = ctx.slot.content[enginePlural]
+        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
         console.debug('start apply regex for input');
         const data = ctx.data;
         const inputs = data.inputs;

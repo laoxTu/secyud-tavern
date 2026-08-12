@@ -11,12 +11,15 @@ export const ragVectorSchema = {
 
 export type RagVectorSchema = typeof ragVectorSchema & { embedding: Vector };
 
-export interface RagConversationCache {
-    lorebookDb: Orama<RagVectorSchema>;
-    generator: RagEmbeddingGenerator;
+interface RagConversationCacheBase {
+    lorebookDb: Orama<RagVectorSchema>,
+    generator: RagEmbeddingGenerator,
+    disabled: false,
 }
 
-export interface RagSearchContext extends RagConversationCache {
+export type RagConversationCache = RagConversationCacheBase | { disabled: true }
+
+export interface RagSearchContext extends RagConversationCacheBase {
     message: StoryHistoryMessage;
 }
 

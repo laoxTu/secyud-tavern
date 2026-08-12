@@ -14,6 +14,7 @@ import {
     LlmapiInputContext,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
+    setContent,
     SlotContentRenderer,
     SlotInitializer, SlotStreamRenderer
 } from "@/modules/slots/client/conversation-models";
@@ -111,7 +112,8 @@ export function getOpeningHistory(slot: SlotModel) {
             extractVariableChanges(openingMessage, preset.content.opening);
             openingHistory.inputs.push(openingMessage);
         }
-        slot.content[key] = openingHistory;
+        // 懒生成写入，setContent 会检测同键重复初始化
+        setContent(slot, key, openingHistory);
     }
     return openingHistory;
 }

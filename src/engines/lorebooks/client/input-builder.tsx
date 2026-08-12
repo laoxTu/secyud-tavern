@@ -11,7 +11,7 @@ import {
     SlotModel
 } from "@/modules/slots/models";
 import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
-import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
+import {getContent, LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {useTranslations} from "next-intl";
 import {mergeObjects} from "@/utils";
 import {Field, FieldLabel} from "@/components/ui/field";
@@ -93,7 +93,7 @@ export async function defaultBuildInput(
     }
     const llmapiMessages: LlmapiMessageModel[] = [];
     const visitedLorebooks = new Set<string>();
-    const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
+    const entries: LorebookConversationCache = getContent(ctx.slot, enginePlural);
     for (let i = 0; i < histories.length; i++) {
         const history = histories[i];
         // 这里是api history 缓存，和message的properties不是同一实例
@@ -167,7 +167,7 @@ export async function layeredBuildInput(
     }
     const llmapiMessages: LlmapiMessageModel[] = [];
     const visitedLorebooks = new Set<string>();
-    const entries: LorebookConversationCache = ctx.slot.content[enginePlural];
+    const entries: LorebookConversationCache = getContent(ctx.slot, enginePlural);
     const lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
 
     for (const history of histories) {
