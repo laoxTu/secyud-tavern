@@ -4,15 +4,17 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {moduleName} from "@/modules/llmapis/models";
-import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
+import {LlmapiProvider} from "@/modules/llmapis/client/provider-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
-import {StoryOutputMessage, StoryOutputToolCall} from "@/modules/stories/models";
+import {StoryOutputCalling} from "@/modules/stories/models";
 import {extractVariableChanges} from "@/modules/slots/models";
+import {LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
+import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -24,6 +26,11 @@ const defaultConfig: OpenAIConfigModel = {
         top_p: 1,
         presence_penalty: 0,
         frequency_penalty: 0
+    },
+    inputBuilder: {
+        prefix: "<user_input>",
+        suffix: "</user_input>",
+        type: "default",
     }
 
 } as const;
@@ -102,6 +109,7 @@ function Content() {
                            type={"number"} max={2} min={-2} step={0.05}
                            defaultValue={config.parameters.frequency_penalty}/>
                 </Field>
+                <BuilderContent config={config.inputBuilder}/>
             </div>
             <Field>
                 <FieldLabel htmlFor={`${moduleName}-extras`}>
@@ -115,34 +123,35 @@ function Content() {
     );
 }
 
+
+
 /**
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
  */
-export function generateOutput(output: any, context: StoryOutputMessage, cache: Record<string, any>) {
+export async function generateOutput({output, content, message}: LlmapiOutputContext) {
     console.debug("generateOutput", output);
 
     if (output?.reasoning_content) {
-        context.reasoningContent += output.reasoning_content;
+        message.reasoningContent += output.reasoning_content;
     }
     if (output?.content) {
-        cache.content ??= "";
-        cache.content += output.content;
-        extractVariableChanges(context, cache.content);
+        content.content ??= "";
+        content.content += output.content;
+        extractVariableChanges(message, content.content);
     }
     // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
     if (output?.tool_calls) {
         for (const toolCall of output.tool_calls) {
-            context.toolCalls ??= [];
-            const index = context.toolCalls
+            message.callings ??= [];
+            const index = message.callings
                 .findIndex(u => u.index === toolCall.index);
             let current =
-                index >= 0 ? context.toolCalls[index] : createToolCall(toolCall);
+                index >= 0 ? message.callings[index] : createToolCall(toolCall);
             current.id ??= toolCall.id;
-            current.type ??= toolCall.type;
-            current.function.name ??= toolCall.function?.name;
+            current.name ??= toolCall.function?.name;
             if (toolCall.function?.arguments)
-                current.function.arguments += toolCall.function.arguments;
+                current.arguments += toolCall.function.arguments;
         }
     }
 
@@ -150,18 +159,16 @@ export function generateOutput(output: any, context: StoryOutputMessage, cache: 
         const current = {
             index: toolCall.index,
             id: toolCall.id,
-            type: toolCall.type,
-            function: {
-                name: toolCall.function?.name,
-                arguments: toolCall.function?.arguments ?? "",
-            }
-        } as StoryOutputToolCall;
-        context.toolCalls?.push(current)
+            name: toolCall.function?.name,
+            arguments: toolCall.function?.arguments ?? "",
+        } as StoryOutputCalling;
+        message.callings?.push(current)
         return current;
     }
 }
 
-export const config: LlmapiConfig =
+
+export const provider: LlmapiProvider =
     {
         id: engineName,
         component: Content,
@@ -181,9 +188,11 @@ export const config: LlmapiConfig =
                     presence_penalty: Number(data.get('presence_penalty')),
                     frequency_penalty: Number(data.get('frequency_penalty')),
                 },
+                inputBuilder: getInputBuilderConfig(data),
                 url: data.get('url') as string,
                 extras: extras,
             };
         },
         generateOutput,
+        generateInput,
     } as const;

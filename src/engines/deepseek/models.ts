@@ -1,4 +1,6 @@
-﻿export interface DeepseekConfigModel {
+﻿import {OpenAIInputBuilderConfigModel} from "@/engines/openai/models";
+
+export interface DeepseekConfigModel {
     parameters: {
         model: string,
         thinking: {
@@ -12,7 +14,8 @@
         max_tokens: number,// [0, ...]
         logprobs: boolean,
         top_logprobs: number, // [0,20]
-    }
+    },
+    inputBuilder: OpenAIInputBuilderConfigModel,
 }
 
 export const engineName = "deepseek";

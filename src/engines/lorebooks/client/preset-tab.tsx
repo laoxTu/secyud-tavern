@@ -161,7 +161,7 @@ function Tab() {
                 },
                 updateHandler: async (entry, data) => {
                     const matchType = data.get("matchType") as string;
-                    const result = {
+                    const result : PresetLorebookModel = {
                         ...entry,
                         matchType: matchType,
                         matchExpression: matchEditors[matchType]?.getValue(data),
@@ -169,7 +169,7 @@ function Tab() {
                         type: data.get("type") as string,
                         priority: parseInt(data.get("priority") as string),
                         layer: parseInt(data.get("layer") as string),
-                        role: data.get("role") as string,
+                        role: data.get("role") as any,
                         code: data.get('code') as string,
                         name: data.get('name') as string,
                     }

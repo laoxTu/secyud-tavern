@@ -1,6 +1,6 @@
 ﻿import {Registerable} from "@/utils/register";
-import {getCurrentOutputs, LlmapiInputModel, SlotModel} from "@/modules/slots/models";
-import {StoryHistory} from "@/modules/stories/models";
+import {getCurrentOutputs, SlotModel} from "@/modules/slots/models";
+import {StoryHistory, StoryOutputMessage} from "@/modules/stories/models";
 import {joinAsString} from "@/utils";
 import {BusinessError} from "@/handler/models";
 
@@ -18,16 +18,41 @@ export interface LlmapiHistory extends StoryHistory {
     properties: Record<string, any>;
 }
 
-export interface LlmapiInputContext extends LlmapiInputModel, SlotContextBase {
+type ContentHandler = (str: string, role: string, type: string) => string;
+
+export interface LlmapiInputContext extends SlotContextBase {
     history: StoryHistory,
     // 这个和slot里面的有细微的差别
     // 截断summary或补充开场白
     histories: LlmapiHistory[],
     // 持续当前输出，意味着要拼接当前output
     current: boolean,
+    contentHandlers: ContentHandler[],
+    config: any,
+}
+
+export function handleContent(
+    handlers: ContentHandler[],
+    {str, role, type}: {
+        str: string,
+        role: string,
+        type: string
+    }) {
+    let res = str;
+    for (const contentHandler of handlers) {
+        res = contentHandler(res, role, type);
+    }
+    return res;
 }
 
 export interface LlmapiOutputContext extends SlotContextBase {
+    // output is the origin output of llm chunk
+    // for openai it may be { content: string, tool_calls: [], ...}
+    output: any,
+    message: StoryOutputMessage,
+}
+
+export interface LlmapiResultContext extends SlotContextBase {
     sessionId?: string;
     history: StoryHistory,
 }
@@ -58,7 +83,7 @@ export interface LlmapiInputProcesser extends Registerable {
 
 export interface LlmapiOutputProcesser extends Registerable {
     // 处理输出信息 更新输出属性
-    onProcessOutput(ctx: LlmapiOutputContext): Promise<void>;
+    onProcessOutput(ctx: LlmapiResultContext): Promise<void>;
 }
 
 export interface SlotContentRenderer extends Registerable {

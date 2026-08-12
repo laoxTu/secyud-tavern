@@ -1,5 +1,4 @@
 ﻿import {engineName, enginePlural, PresetMacroModel} from "../models";
-import {moduleName as llmapiModuleName} from "@/modules/llmapis/models";
 import {
     getContent,
     LlmapiInputProcesser,
@@ -12,6 +11,7 @@ import {Eta} from 'eta/core';
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
+import {cache} from "next/dist/server/use-cache/use-cache-wrapper";
 
 const eta = new Eta({
     autoTrim: false,
@@ -39,18 +39,14 @@ export interface MacroConversationCache {
 
 export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
-    requires: [llmapiModuleName],
+    requires: [],
+    sequence: 1000,
     onProcessInput: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
-        for (const message of ctx.messages) {
-            const content = eta.renderString(
-                message.content, macroObject);
-            console.debug("apply macro: ", {
-                origin: message.content,
-                target: content
-            });
-            message.content = content;
-        }
+        const generate = (str: string, role: string) => {
+            return role !== "tool" ? eta.renderString(str, macroObject) : str;
+        };
+        ctx.contentHandlers.push(generate);
     },
 }
 

@@ -1,8 +1,8 @@
-﻿import {llmapiEngineRegistry} from "@/modules/llmapis/server/engine";
-import {OpenAIEngine} from "@/engines/openai/server/engine";
+﻿import {llmapiProviderRegistry} from "@/modules/llmapis/server/provider";
+import {OpenAIProvider} from "@/engines/openai/server/provider";
 
 export function registerOpenAIServer() {
-    llmapiEngineRegistry.register(
-        new OpenAIEngine()
+    llmapiProviderRegistry.register(
+        new OpenAIProvider()
     );
 }

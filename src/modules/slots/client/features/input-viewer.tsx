@@ -21,6 +21,8 @@ import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {extractVariableChanges} from "@/modules/slots/models";
+import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
+import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 
 
 export function InputViewer() {
@@ -31,12 +33,14 @@ export function InputViewer() {
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [inputContext, setInputContext] = useState<LlmapiInputContext | undefined>();
+    const [items, setItems] = useState<LlmapiInputItem[] | undefined>();
 
     const handleDialogOpen = async () => {
         try {
             setLoading(true);
             const {slot, histories} = getSlotAndHistories(ctx);
+            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
+            console.debug("apiConfig", apiConfig);
             const last = getLastHistory(slot);
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
@@ -68,8 +72,9 @@ export function InputViewer() {
                 },
                 content: {},
                 history,
+                contentHandlers: [],
                 histories: [],
-                messages: [],
+                config: slot.llmapi.content.config,
                 current: false
             };
 
@@ -79,7 +84,8 @@ export function InputViewer() {
                 provider.onProcessInput(inputContext));
 
             console.debug("input context", inputContext);
-            setInputContext(inputContext);
+            const {items} = await apiConfig.generateInput(inputContext);
+            setItems(items);
             setOpen(true);
         } catch (error) {
             handleError(error);
@@ -114,10 +120,10 @@ export function InputViewer() {
                         </CardContent>
                     </Card> :
                     <div className={'overflow-auto p-2 flex-1'}>
-                        <p>{`${t('default.total_chars')}: ${inputContext?.messages?.reduce(
+                        <p>{`${t('default.total_chars')}: ${items?.reduce(
                             (acc, cur) => acc + cur.content.length, 0) ?? 0}`}</p>
                         <Accordion multiple>
-                            {inputContext && inputContext.messages.map((u, i) => (
+                            {items && items.map((u, i) => (
                                 <AccordionItem value={`${i}`} key={i}>
                                     <AccordionTrigger>
                                         <span className={'w-32'}>{u.role}</span>
@@ -127,14 +133,7 @@ export function InputViewer() {
                                     </AccordionTrigger>
                                     <AccordionContent className={'h-full'}>
                                         <pre className={'text-wrap'}>
-                                            {u.content}{
-                                            u.role === "assistant" && u.toolCalls?.length &&
-                                            u.toolCalls.map((x, xi) => (
-                                                <code className={'text-wrap block'} key={xi}>
-                                                    {JSON.stringify(x, null, 2)}
-                                                </code>
-                                            ))
-                                        }
+                                            {u.content}
                                         </pre>
                                     </AccordionContent>
                                 </AccordionItem>

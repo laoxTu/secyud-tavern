@@ -4,13 +4,14 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {moduleName} from "@/modules/llmapis/models";
-import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
+import {LlmapiProvider} from "@/modules/llmapis/client/provider-models";
 import {DeepseekConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {Selector} from "@/components/custom/selector";
-import {generateOutput} from "@/engines/openai/client/config";
+import {generateOutput} from "@/engines/openai/client/provider";
+import {BuilderContent, generateInput, getInputBuilderConfig} from "@/engines/openai/client/input-builder";
 
 const models = ["deepseek-v4-flash", "deepseek-v4-pro"];
 const reasoningEfforts = ["high", "max"];
@@ -28,6 +29,11 @@ const defaultConfig: DeepseekConfigModel = {
         logprobs: false,
         top_logprobs: 10,
         max_tokens: 0
+    },
+    inputBuilder: {
+        prefix: "<user_input>",
+        suffix: "</user_input>",
+        type: "default",
     }
 } as const;
 
@@ -131,17 +137,19 @@ function Content() {
                            type={"number"} max={2} min={0} step={0.05}
                            defaultValue={config?.parameters.top_p}/>
                 </Field>
+                <BuilderContent config={config.inputBuilder}/>
             </div>
         </>
     );
 }
 
-export const config: LlmapiConfig =
+export const provider: LlmapiProvider =
     {
         id: engineName,
         component: Content,
         getValue: (data): DeepseekConfigModel => {
             return {
+                inputBuilder: getInputBuilderConfig(data),
                 parameters: {
                     model: data.get('model') as string,
                     thinking: {
@@ -158,4 +166,5 @@ export const config: LlmapiConfig =
             };
         },
         generateOutput,
+        generateInput,
     } as const;

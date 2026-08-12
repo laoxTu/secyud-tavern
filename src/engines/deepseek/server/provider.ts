@@ -1,10 +1,10 @@
 ﻿import {OpenAI} from "openai";
-import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
+import {LlmapiProvider, LlmapiRequestContext} from "@/modules/llmapis/server/provider-models";
 import {DeepseekConfigModel, engineName} from "../models";
-import {generateOpenAIReadableStreamReply, mapToOpenAIMessage} from "@/engines/openai/server/engine";
+import {generateOpenAIReadableStreamReply, mapToOpenAIMessage} from "@/engines/openai/server/provider";
 
 
-export class DeepseekEngine implements LlmapiEngine {
+export class DeepseekProvider implements LlmapiProvider {
     readonly id: string = engineName;
 
     async run(context: LlmapiRequestContext) {

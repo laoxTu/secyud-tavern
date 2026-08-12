@@ -2,10 +2,9 @@ import {NextResponse} from "next/server";
 
 import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
-import {llmapiEngineRegistry} from "@/modules/llmapis/server/engine";
+import {llmapiProviderRegistry} from "@/modules/llmapis/server/provider";
 import {hasher} from "@/utils/server/hasher";
 import {BusinessError} from "@/handler/models";
-import {LlmapiInputModel} from "@/modules/slots/models";
 import {getCache} from "@/utils/server/cache";
 
 /**
@@ -21,9 +20,8 @@ import {getCache} from "@/utils/server/cache";
 export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.params;
-        const input = await request.json() as LlmapiInputModel;
-        console.debug("llmapi chat:");
-        console.debug(input);
+        const input = await request.json();
+        console.debug("llmapi chat: ", input);
 
         const llmapi = await getCache(`llmapi_chat_${id}`,
             async () => {
@@ -45,7 +43,7 @@ export const POST = interceptor.createRoute(
 
         const provider = llmapi.provider as string;
         console.debug("use engine " + provider);
-        const engine = llmapiEngineRegistry.records[provider];
+        const engine = llmapiProviderRegistry.records[provider];
         if (!engine) {
             throw new BusinessError('engine not found', "default.entity_not_found")
                 .withValue("id", provider);
@@ -57,12 +55,11 @@ export const POST = interceptor.createRoute(
         const config = llmapi.content.config ?? {};
 
         const stream = await engine.run({
-            messages: input.messages,
-            tools: input.tools,
             type: provider,
             config,
             apiKey,
-            signal: request.signal
+            signal: request.signal,
+            input,
         });
 
         return new NextResponse(stream, {
