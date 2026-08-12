@@ -8,7 +8,7 @@ import {
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/index";
-import {StoryOutputToolCall} from "@/modules/stories/models";
+import {StoryOutputCalling} from "@/modules/stories/models";
 
 export interface ToolConversationCache {
     tools: Record<string, { tool: LlmapiToolModel, config: LlmapiToolConfigModel }>;
@@ -33,23 +33,19 @@ export const toolConversationProvider:
             // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
             const tool = llmapiToolManager.records[entry.toolId];
             const model = tool.model(entry);
-            cache.tools[model.function.name] = {
+            cache.tools[model.name] = {
                 config: entry,
                 tool: model
             };
         }
         setContent(ctx.slot, enginePlural, cache);
     },
-    onProcessInput: async (ctx) => {
-        const cache: ToolConversationCache = getContent(ctx.slot, enginePlural);
-        const tools = Object
-            .values(cache.tools).map(u => u.tool);
-        ctx.tools = tools.length > 0 ? tools : undefined;
+    onProcessInput: async () => {
     },
     onProcessOutput: async (ctx) => {
         const output = getCurrentOutput(ctx.history);
-        if (output?.toolCalls) {
-            await fillToolCallContent(output.toolCalls, ctx.slot);
+        if (output?.callings) {
+            await fillToolCallContent(output.callings, ctx.slot);
         }
     }
 };
@@ -58,7 +54,7 @@ export const toolConversationProvider:
 // 在浏览器端执行模型请求的工具，结果写回 content。
 // 会被两处调用，靠 content 已填去重，避免重复执行。
 export async function fillToolCallContent(
-    toolCalls: StoryOutputToolCall[],
+    toolCalls: StoryOutputCalling[],
     slot: SlotModel,
 ) {
     const cache: ToolConversationCache = getContent(slot, enginePlural);
@@ -66,11 +62,11 @@ export async function fillToolCallContent(
         // 已执行过则跳过。
         if (toolCall.content) continue;
         try {
-            console.debug(`use tool: ${toolCall.function.name}`)
+            console.debug(`use tool: ${toolCall.name}`)
             // 按函数名找配置，再经 toolId 找具体实现。
-            const config = cache.tools[toolCall.function.name];
+            const config = cache.tools[toolCall.name];
             const tool = llmapiToolManager.records[config.config.toolId];
-            const args = JSON.parse(toolCall.function.arguments);
+            const args = JSON.parse(toolCall.arguments);
             const res = await tool.invoke(args, {slot});
             toolCall.content = JSON.stringify(res);
         } catch (err) {

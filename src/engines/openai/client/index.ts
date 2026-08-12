@@ -1,6 +1,6 @@
-﻿import {config} from "./config"
-import {llmapiConfigRegistry} from "@/modules/llmapis/client/config";
+﻿import {provider} from "./provider"
+import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 
 export function registerOpenAIClient() {
-    llmapiConfigRegistry.register(config);
+    llmapiProviderRegistry.register(provider);
 }

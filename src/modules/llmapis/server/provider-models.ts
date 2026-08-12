@@ -1,13 +1,13 @@
 ﻿import {Registerable} from "@/utils/register";
-import {LlmapiInputModel} from "@/modules/slots/models";
 
-export interface LlmapiRequestContext extends LlmapiInputModel {
+export interface LlmapiRequestContext {
     type: string,
     config: any,
     signal: AbortSignal,
     apiKey: string,
+    input: any,
 }
 
-export interface LlmapiEngine extends Registerable {
+export interface LlmapiProvider extends Registerable {
     run: (context: LlmapiRequestContext) => Promise<ReadableStream>;
 }

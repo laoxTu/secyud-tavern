@@ -109,3 +109,21 @@ export function joinAsString<T>(arr: T[], separator: string, value?: (t: T) => s
         .filter(u => u)
         .join(separator);
 }
+
+interface SequenceGroup<T, TKey = string> {
+    key: TKey,
+    items: T[],
+}
+
+export function sequenceGroupBy<T, TKey = string>(arr: T[], value: (t: T) => TKey) {
+    return arr.reduce((acc, item) => {
+        const lastGroup = acc[acc.length - 1];
+        const key = value(item);
+        if (lastGroup && lastGroup.key === key) {
+            lastGroup.items.push(item);
+        } else {
+            acc.push({key, items: [item]});
+        }
+        return acc;
+    }, [] as SequenceGroup<T, TKey>[]);
+}

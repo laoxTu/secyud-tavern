@@ -1,6 +1,6 @@
 ﻿import {BaseModel} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
-import {StoryHistory, StoryModel, StoryOutputToolCall} from "@/modules/stories/models";
+import {StoryHistory, StoryModel} from "@/modules/stories/models";
 import {LlmapiModel} from "@/modules/llmapis/models";
 import {tryGetLastItem} from "@/utils";
 import {JsonSchema} from "@/utils/json-schema";
@@ -11,59 +11,13 @@ export interface SlotModel extends BaseModel {
     llmapi: LlmapiModel
 }
 
-// region llm api message
-
-interface LlmapiMessageModelBase {
-    content: string,
-}
-
-interface LlmapiUserMessageModel extends LlmapiMessageModelBase {
-    role: "user",
-}
-
-interface LlmapiSystemMessageModel extends LlmapiMessageModelBase {
-    role: "system",
-}
-
-interface LlmapiAIMessageModel extends LlmapiMessageModelBase {
-    role: "assistant",
-    toolCalls?: StoryOutputToolCall[],
-}
-
-interface LlmapiToolMessageModel extends LlmapiMessageModelBase {
-    role: "tool";
-    toolCallId: string,
-}
-
-export type LlmapiMessageModel =
-    LlmapiUserMessageModel |
-    LlmapiSystemMessageModel |
-    LlmapiAIMessageModel |
-    LlmapiToolMessageModel
-    ;
-
-export function isContentRole(role: string) {
-    return role === "system" || role === "user" || role === "assistant";
-}
-
-// endregion
 
 // region llm api input
 
-interface LlmapiToolFunction {
-    type: "function",
-    function: {
-        name: string,
-        description: string,
-        parameters: JsonSchema
-    }
-}
-
-export type LlmapiToolModel = LlmapiToolFunction;
-
-export interface LlmapiInputModel {
-    messages: LlmapiMessageModel[];
-    tools?: LlmapiToolModel[];
+export interface LlmapiToolModel {
+    name: string,
+    description: string,
+    parameters: JsonSchema
 }
 
 // endregion

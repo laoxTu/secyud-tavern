@@ -4,7 +4,6 @@ import {Editor} from "@/engines/tools/variable/client/editor";
 import {getLastHistory} from "@/modules/slots/client/models";
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 
-
 export const variableGetTool: LlmapiTool = {
     id: "get_variable", component: Editor,
     getValue: () => ({}),
@@ -22,22 +21,19 @@ export const variableGetTool: LlmapiTool = {
     },
     model(): LlmapiToolModel {
         return {
-            function: {
-                description: "get the specific path value desc of current variable (the variable after this ai output)",
-                name: "getVariable",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        path: {
-                            type: "string",
-                            description: "the path of the target variable, use '/' separate",
-                        }
-                    },
-                    additionalProperties: false,
-                    required: ["path"],
-                }
-            },
-            type: "function"
+            name: "getVariable",
+            description: "get the specific path value desc of current variable (the variable after this ai output)",
+            parameters: {
+                type: "object",
+                additionalProperties: false,
+                required: ["path"],
+                properties: {
+                    path: {
+                        type: "string",
+                        description: "the path of the target variable, use '/' separate",
+                    }
+                },
+            }
         };
     }
 };
@@ -58,68 +54,65 @@ export const variableSetTool: LlmapiTool = {
     },
     model(): LlmapiToolModel {
         return {
-            function: {
-                description: "set the variable changes",
-                name: "setVariable",
-                parameters: {
-                    type: "object",
-                    additionalProperties: false,
-                    required: ["variableChanges"],
-                    properties: {
-                        variableChanges: {
-                            type: "array",
-                            items: {
-                                $ref: "variableChange",
-                            },
-                            description: "the change list of the target variable",
-                        }
-                    },
-                    // DeepSeek 官方用 $def（非标准 $defs），$ref 直接写键名，勿改。
-                    $def: {
-                        variableChange: {
-                            type: "object",
-                            description: "the change operation of variable",
-                            properties: {
-                                op: {
-                                    type: "string",
-                                    description: "the operation, if remove, value is not required",
-                                    enum: ["add", "update", "remove"],
-                                },
-                                path: {
-                                    type: "string",
-                                    description: "the path of the target variable, use '/' separate",
-                                },
-                                value: {
-                                    anyOf: [
-                                        {
-                                            type: "string",
-                                            description: "string value",
-                                        },
-                                        {
-                                            type: "number",
-                                            description: "number value",
-                                        },
-                                        {
-                                            type: "boolean",
-                                            description: "boolean value",
-                                        },
-                                        {
-                                            type: "object",
-                                            description: "any object struct value, set the whole object to value",
-                                            additionalProperties: true,
-                                            properties: {},
-                                            required: [],
-                                        }
-                                    ]
-                                }
-                            },
-                            additionalProperties: false,
-                            required: ["op", "path", "value"],
-                        }
+            name: "setVariable",
+            description: "set the variable changes",
+            parameters: {
+                type: "object",
+                additionalProperties: false,
+                required: ["variableChanges"],
+                properties: {
+                    variableChanges: {
+                        type: "array",
+                        description: "the change list of the target variable",
+                        items: {
+                            $ref: "variableChange",
+                        },
                     }
-                }
+                },
+                // DeepSeek 官方用 $def（非标准 $defs），$ref 直接写键名，勿改。
+                $def: {
+                    variableChange: {
+                        type: "object",
+                        description: "the change operation of variable",
+                        additionalProperties: false,
+                        required: ["op", "path", "value"],
+                        properties: {
+                            op: {
+                                type: "string",
+                                description: "the operation, if remove, value is not required",
+                                enum: ["add", "update", "remove"],
+                            },
+                            path: {
+                                type: "string",
+                                description: "the path of the target variable, use '/' separate",
+                            },
+                            value: {
+                                anyOf: [
+                                    {
+                                        type: "string",
+                                        description: "string value",
+                                    },
+                                    {
+                                        type: "number",
+                                        description: "number value",
+                                    },
+                                    {
+                                        type: "boolean",
+                                        description: "boolean value",
+                                    },
+                                    {
+                                        type: "object",
+                                        description: "any object struct value, set the whole object to value",
+                                        additionalProperties: true,
+                                        properties: {},
+                                        required: [],
+                                    }
+                                ]
+                            }
+                        },
+                    },
+                },
             },
-            type: "function",
         };
     }
 };

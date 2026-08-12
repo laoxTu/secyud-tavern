@@ -7,14 +7,12 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {TabManager} from "@/components/custom/tab";
 import {get, put} from "@/client";
-import {llmapiInputBuilderManager} from "@/modules/llmapis/client/input-builder";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {LlmapiModel, moduleName} from "../models";
-import {llmapiConfigRegistry} from "./config";
+import {llmapiProviderRegistry} from "./provider";
 import {modelState} from './models';
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {LlmapiConfig} from "@/modules/llmapis/client/config-models";
-import {LlmapiInputBuilder} from "@/modules/llmapis/client/input-builder-models";
+import {LlmapiProvider} from "@/modules/llmapis/client/provider-models";
 import {Selector} from "@/components/custom/selector";
 import {RequireModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
@@ -59,10 +57,8 @@ export function LlmapiRequireField({defaultValue, prefix}: { defaultValue?: Requ
 
 function UpdateContent({model}: { model: LlmapiModel }) {
     const t = useTranslations();
-    const [configEditor, setConfigEditor] = useState<LlmapiConfig | null>(
-        llmapiConfigRegistry.records[model.provider ?? ""] ?? null);
-    const [builderEditor, setBuilderEditor] = useState<LlmapiInputBuilder | null>(
-        llmapiInputBuilderManager.records[model.builder ?? ""] ?? null);
+    const [configEditor, setConfigEditor] = useState<LlmapiProvider | null>(
+        llmapiProviderRegistry.records[model.provider ?? ""] ?? null);
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
@@ -93,7 +89,7 @@ function UpdateContent({model}: { model: LlmapiModel }) {
                 {t(`${moduleName}.provider`)}
             </FieldLabel>
             <Selector id={`${moduleName}-provider`}
-                      items={llmapiConfigRegistry.getSorted()}
+                      items={llmapiProviderRegistry.getSorted()}
                       name={'provider'}
                       value={configEditor}
                       onValueChange={setConfigEditor}
@@ -102,22 +98,6 @@ function UpdateContent({model}: { model: LlmapiModel }) {
         </Field>
         {configEditor?.component && (() => {
             const Component = configEditor.component;
-            return <Component/>
-        })()}
-        <Field>
-            <FieldLabel htmlFor={`${moduleName}-builder`}>
-                {t(`${moduleName}.builder`)}
-            </FieldLabel>
-            <Selector id={`${moduleName}-builder`}
-                      items={llmapiInputBuilderManager.getSorted()}
-                      name={'builder'}
-                      value={builderEditor}
-                      onValueChange={setBuilderEditor}
-                      valueAccessor={u => u.id}
-                      labelAccessor={(u) => t(`${moduleName}.builder_${u.id}`)}/>
-        </Field>
-        {builderEditor?.component && (() => {
-            const Component = builderEditor.component;
             return <Component/>
         })()}
     </>;
@@ -136,8 +116,7 @@ function DefaultTab() {
                 return await put("/llmapis/{id}",
                     {
                         content: {
-                            "config": llmapiConfigRegistry.records[provider]?.getValue(data),
-                            "builder": llmapiInputBuilderManager.records[builder]?.getValue(data),
+                            config: llmapiProviderRegistry.records[provider]?.getValue(data),
                         },
                         provider: provider,
                         builder: builder,

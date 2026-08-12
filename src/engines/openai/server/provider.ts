@@ -1,5 +1,5 @@
 ﻿import {OpenAI} from "openai";
-import {LlmapiEngine, LlmapiRequestContext} from "@/modules/llmapis/server/engine-models";
+import {LlmapiProvider, LlmapiRequestContext} from "@/modules/llmapis/server/provider-models";
 import {OpenAIConfigModel, engineName} from "../models";
 import {Stream} from "openai/streaming";
 
@@ -85,35 +85,13 @@ export async function generateOpenAIReadableStreamReply(
 export function mapToOpenAIMessage(context: LlmapiRequestContext) {
     const res: OpenAI.ChatCompletionCreateParamsNonStreaming = {
         ...context.config.parameters,
-        tools: context.tools,
-        messages: context.messages.map(u => {
-            switch (u.role) {
-                case "tool":
-                    return {
-                        role: u.role,
-                        content: u.content,
-                        tool_call_id: u.toolCallId,
-                    }
-                case "assistant":
-                    console.debug("tool calls: ", JSON.stringify(u.toolCalls));
-                    return {
-                        role: u.role,
-                        content: u.content,
-                        tool_calls: u.toolCalls,
-                    }
-                default:
-                    return {
-                        role: u.role,
-                        content: u.content,
-                    }
-            }
-        }),
+        ...context.input
     };
 
     return res;
 }
 
-export class OpenAIEngine implements LlmapiEngine {
+export class OpenAIProvider implements LlmapiProvider {
     readonly id: string = engineName;
 
     async run(context: LlmapiRequestContext) {

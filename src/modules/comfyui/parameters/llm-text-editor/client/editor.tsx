@@ -15,16 +15,16 @@ import {
     conversationManager
 } from "@/modules/slots/client/conversation";
 import {get, post} from "@/client";
-import {LlmapiInputModel} from "@/modules/slots/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
-import {StoryHistory} from "@/modules/stories/models";
+import {StoryHistory, StoryOutputMessage} from "@/modules/stories/models";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {LlmapiModel} from "@/modules/llmapis/models";
+import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -103,15 +103,24 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             }
 
             setOutput(true);
+            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
+            console.debug("apiConfig", apiConfig);
 
-            const input: StoryHistory = {
+            const promptOutput: StoryOutputMessage = {
+                content: "",
+                reasoningContent: "",
+                variables: [],
+                properties: {},
+            };
+
+            const promptHistory: StoryHistory = {
                 inputs: [{
                     id: 0,
                     content: prompt,
                     variables: [],
                     properties: {}
                 }],
-                outputs: [],
+                outputs: [[promptOutput]],
                 outputId: 0,
                 summary: false,
                 variables: [],
@@ -121,7 +130,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 name: ""
             };
 
-            historiesAdd.push(input);
+            historiesAdd.push(promptHistory);
 
             if (config?.llmapi) {
                 const llmapi: LlmapiModel = await get(`/llmapis/{id}`, {
@@ -139,7 +148,8 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             const inputContext: LlmapiInputContext = {
                 slot,
                 content: {},
-                history: input,
+                history: promptHistory,
+                contentHandlers: [],
                 histories: historiesAdd.map(u => ({
                     ...u,
                     inputs: u.inputs
@@ -148,8 +158,8 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                         .map(v => ({...v})),
                     properties: {}
                 })),
-                messages: [],
                 current: false,
+                config: slot.llmapi.content.config
             };
 
             await conversationManager.inputProcesser.use(provider =>
@@ -157,18 +167,9 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
             const reply = setReplyAbortController(ctx);
 
-            // 生图提示词放最后, 优先级最高
-            inputContext.messages.push({
-                content: prompt, role: "user"
-            })
-
-            console.debug("[LlmTextEditor] chat messages: ", inputContext.messages);
-            const response: Response = await post(
-                `/llmapis/{id}/chat` as any,
-                {
-                    messages: inputContext.messages,
-                    // 绘图不需要tools
-                } as LlmapiInputModel,
+            const {input} = await apiConfig.generateInput(inputContext);
+            console.debug("[generateLlmapiPrompt] chat messages: ", input);
+            const response: Response = await post(`/llmapis/{id}/chat`, input,
                 {
                     params: {id: slot.llmapi.id},
                     signal: reply.signal
@@ -176,20 +177,26 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             );
 
             if (response.body) {
-                let content = "";
+                const cache: Record<string, any> = {};
 
                 for await (const chunk of readStream(response.body)) {
                     if (reply.signal.aborted) {
                         console.warn('[HistoryChatbox] reply canceled');
                         break;
                     }
-                    if (chunk?.reasoning_content) {
+
+                    await apiConfig.generateOutput({
+                        content: cache,
+                        message: promptOutput,
+                        output: chunk,
+                        slot,
+                    });
+                    if (promptOutput?.reasoningContent) {
                         setThinking(true);
                     }
-                    if (chunk?.content) {
+                    if (promptOutput?.content) {
                         setThinking(false);
-                        content += chunk.content;
-                        setText(content);
+                        setText(promptOutput.content);
                     }
                 }
             }

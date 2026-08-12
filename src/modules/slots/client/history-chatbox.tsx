@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/input-group";
 import {
     generateRenderData,
-    LlmapiInputContext, LlmapiOutputContext,
+    LlmapiInputContext, LlmapiResultContext,
     RenderContext, renderData,
 } from "@/modules/slots/client/conversation-models";
 import {Checkbox} from "@/components/ui/checkbox";
@@ -24,7 +24,7 @@ import {
     useSlotContext
 } from "@/modules/slots/client/models";
 import {StoryOutputMessage} from "@/modules/stories/models";
-import {extractVariableChanges, getCurrentOutputs, LlmapiInputModel} from "@/modules/slots/models";
+import {extractVariableChanges, getCurrentOutputs} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
     conversationManager,
@@ -37,7 +37,7 @@ import {readStream, tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
 import {handleHistoryPageChange, useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
-import {llmapiConfigRegistry} from "@/modules/llmapis/client/config";
+import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 
 export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
     return ctx.current.content["ReplyAbortController"] as AbortController
@@ -76,20 +76,22 @@ export function HistoryChatbox() {
                 console.error('[HistoryChatbox] failed to get history or iframe');
                 return;
             }
-
             setOutput(true);
 
             // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
             let generate = true;
             let current = false;
+            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
+            console.debug("apiConfig", apiConfig);
             while (generate) {
                 const inputContext: LlmapiInputContext = {
                     slot,
                     content: {},
                     history,
                     histories: [],
-                    messages: [],
-                    current
+                    contentHandlers: [],
+                    current,
+                    config: slot.llmapi.content.config,
                 };
 
                 generateInputBuildContext(inputContext);
@@ -98,14 +100,9 @@ export function HistoryChatbox() {
                     provider.onProcessInput(inputContext));
 
                 const reply = setReplyAbortController(ctx);
-
-                console.debug("[HistoryChatbox] chat messages: ", inputContext.messages);
-                const response: Response = await post(
-                    `/llmapis/{id}/chat` as any,
-                    {
-                        messages: inputContext.messages,
-                        tools: inputContext.tools,
-                    } as LlmapiInputModel,
+                const {input} = await apiConfig.generateInput(inputContext);
+                console.debug("[HistoryChatbox] chat messages: ", input);
+                const response: Response = await post(`/llmapis/{id}/chat`, input,
                     {
                         params: {id: slot.llmapi.id},
                         signal: reply.signal
@@ -139,14 +136,17 @@ export function HistoryChatbox() {
 
                 if (response.body) {
                     const cache: Record<string, any> = {};
-                    const apiConfig = llmapiConfigRegistry.records[slot.llmapi.provider!];
-                    console.debug("apiConfig", apiConfig);
                     for await (const chunk of readStream(response.body)) {
                         if (reply.signal.aborted) {
                             console.warn('[HistoryChatbox] reply canceled');
                             break;
                         }
-                        apiConfig.generateOutput(chunk, currentOutput, cache);
+                        await apiConfig.generateOutput({
+                            content: cache,
+                            message: currentOutput,
+                            output: chunk,
+                            slot,
+                        });
                         // 流式渲染条件
                         // 故事页面为最新，输出页面为最新
                         const {page} = useHistoryPageState.getState();
@@ -170,12 +170,12 @@ export function HistoryChatbox() {
                             });
                         }
                     }
-                    const outputContext: LlmapiOutputContext = {content: {}, history: history, slot: slot};
+                    const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
                     // 解析输出，填充一些选项或处理，这里应该会缓存世界书
                     await conversationManager.outputProcesser.use(provider =>
                         provider.onProcessOutput(outputContext));
                     // 还有 toolCalls 就继续请求，current 置 true 续接当前输出。
-                    generate = !!currentOutput.toolCalls?.length;
+                    generate = !!currentOutput.callings?.length;
                     current = true;
                 }
                 await updateStoryHistory(slot.story.id, history);

@@ -1,4 +1,10 @@
-﻿export interface OpenAIConfigModel {
+﻿export interface OpenAIInputBuilderConfigModel {
+    prefix: string,
+    suffix: string,
+    type: string,
+}
+
+export interface OpenAIConfigModel {
     parameters: {
         model: string,
         stream: boolean,
@@ -9,7 +15,7 @@
     },
     extras: any,
     url: string,
+    inputBuilder: OpenAIInputBuilderConfigModel,
 }
-
 
 export const engineName = "openai";
