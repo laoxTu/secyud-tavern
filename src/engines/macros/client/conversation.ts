@@ -11,6 +11,7 @@ import {Eta} from 'eta/core';
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
+import {cache} from "next/dist/server/use-cache/use-cache-wrapper";
 
 const eta = new Eta({
     autoTrim: false,
