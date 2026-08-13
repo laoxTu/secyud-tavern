@@ -4,6 +4,7 @@ import {Readability} from "@mozilla/readability";
 import {LlmapiTool, LlmapiToolContext} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel} from "@/modules/slots/models";
+import {post} from "@/client";
 
 
 export const webSearchTool: LlmapiTool = {
@@ -75,36 +76,23 @@ async function fetchUrl(url: string, timeout: number, maxLength: number): Promis
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-        const response = await fetch(url, {
+        let {content, contentType}: { content: string | null | undefined, contentType: string } = await post("/proxy", {
+            url,
+        }, {
             signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
 
-        if (!response.ok) return {success: false, error: `HTTP ${response.status}`};
-
-        // 检测流式，直接终止
-        const contentType = response.headers.get('content-type') || '';
-        const transferEncoding = response.headers.get('transfer-encoding');
+        console.debug("[web search](content type): ", contentType);
         if (
-            contentType.includes('text/event-stream') ||
-            contentType.includes('application/octet-stream') ||
-            transferEncoding === 'chunked'
-        ) {
-            controller.abort();
-            return {success: false, error: 'Streaming response not supported'};
-        }
-
-        let content: string | null | undefined = await response.text();
-
-        if (
-            // json
-            contentType.includes('application/json') ||
+            // html
+            contentType.includes('html') ||
             // xml
-            contentType.includes('text/xml')
+            contentType.includes('xml')
         ) {
             const parser = new DOMParser();
-            const doc = parser.parseFromString(content, 'text/html');
+            const doc = parser.parseFromString(content ?? "", 'text/html');
             // 2. 创建 Readability 实例，传入 document 对象
             const reader = new Readability(doc);
             // 3. 解析文章

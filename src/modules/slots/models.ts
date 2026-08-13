@@ -141,10 +141,9 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
 
     const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
     const results: VariableChangeModel[] = [];
-    console.debug("extractVariableChanges element", text);
     text = text.trim().replace(regex, (_, element) => {
             try {
-                console.debug("extractVariableChanges element", element);
+                console.debug("[extractVariableChanges] element", element);
                 const obj = JSON.parse(element.trim());
                 if (Array.isArray(obj)) {
                     for (const item of obj) {
@@ -155,10 +154,8 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
                 } else if (isVariableChangeModel(obj)) {
                     results.push(obj);
                 }
-            } catch
-                (e) {
-                console.warn(`JSON 解析失败: ${element.trim().substring(0, 100)}...`);
-                console.warn(e);
+            } catch (e) {
+                console.warn("[extractVariableChanges](error): ", e);
             }
             return ''; // 删除匹配的内容
         }

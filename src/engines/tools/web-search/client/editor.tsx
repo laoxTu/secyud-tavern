@@ -26,7 +26,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                 </FieldLabel>
                 <Input
                     id={`${entry.id}-maxResults`}
-                    defaultValue={config.maxResults}
+                    defaultValue={config.maxResults ?? 1}
                     name="max_result_count"
                     type="number"
                     min={1}
@@ -42,7 +42,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                     <Input
                         id={`${entry.id}-timeout`}
                         name="timeout"
-                        defaultValue={config.timeout}
+                        defaultValue={config.timeout ?? 5}
                         min={3}
                         max={30}
                         step={1}
@@ -60,7 +60,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                 <Input
                     id={`${entry.id}-max_length`}
                     name="max_length"
-                    defaultValue={config.maxLength}
+                    defaultValue={config.maxLength ?? 8000}
                     min={3}
                     max={30}
                     step={1}

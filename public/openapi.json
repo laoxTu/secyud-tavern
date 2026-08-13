@@ -103,6 +103,10 @@
             "type": "string",
             "description": "api key secret"
           },
+          "iv": {
+            "type": "string",
+            "format": "binary"
+          },
           "builder": {
             "type": "string"
           }
@@ -198,6 +202,12 @@
                 "code": {
                   "type": "string"
                 },
+                "author": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
                 "version": {
                   "type": "string"
                 }
@@ -221,6 +231,12 @@
         "type": "object",
         "properties": {
           "code": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "name": {
             "type": "string"
           },
           "version": {
@@ -274,6 +290,12 @@
                     "code": {
                       "type": "string"
                     },
+                    "author": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
                     "version": {
                       "type": "string"
                     }
@@ -288,6 +310,12 @@
                 "type": "object",
                 "properties": {
                   "code": {
+                    "type": "string"
+                  },
+                  "author": {
+                    "type": "string"
+                  },
+                  "name": {
                     "type": "string"
                   },
                   "version": {
@@ -353,8 +381,7 @@
                               },
                               "required": [
                                 "op",
-                                "path",
-                                "value"
+                                "path"
                               ]
                             }
                           },
@@ -374,46 +401,73 @@
                     "outputs": {
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "content": {
-                            "type": "string"
-                          },
-                          "variables": {
-                            "type": "array",
-                            "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "content": {
+                              "type": "string"
+                            },
+                            "variables": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "op": {
+                                    "type": "string"
+                                  },
+                                  "path": {
+                                    "type": "string"
+                                  },
+                                  "value": {}
+                                },
+                                "required": [
+                                  "op",
+                                  "path"
+                                ]
+                              }
+                            },
+                            "properties": {
                               "type": "object",
-                              "properties": {
-                                "op": {
-                                  "type": "string"
+                              "additionalProperties": {}
+                            },
+                            "reasoningContent": {
+                              "type": "string"
+                            },
+                            "callings": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "index": {
+                                    "type": "number"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "arguments": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  }
                                 },
-                                "path": {
-                                  "type": "string"
-                                },
-                                "value": {}
-                              },
-                              "required": [
-                                "op",
-                                "path",
-                                "value"
-                              ]
+                                "required": [
+                                  "index",
+                                  "id",
+                                  "name",
+                                  "arguments"
+                                ]
+                              }
                             }
                           },
-                          "properties": {
-                            "type": "object",
-                            "additionalProperties": {}
-                          },
-                          "id": {
-                            "type": "number"
-                          },
-                          "reasoningContent": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "reasoningContent"
-                        ]
+                          "required": [
+                            "reasoningContent"
+                          ]
+                        }
                       }
                     }
                   },
@@ -471,6 +525,12 @@
                       "code": {
                         "type": "string"
                       },
+                      "author": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
                       "version": {
                         "type": "string"
                       }
@@ -521,6 +581,10 @@
               "key": {
                 "type": "string",
                 "description": "api key secret"
+              },
+              "iv": {
+                "type": "string",
+                "format": "binary"
               },
               "builder": {
                 "type": "string"
@@ -589,8 +653,7 @@
                     },
                     "required": [
                       "op",
-                      "path",
-                      "value"
+                      "path"
                     ]
                   }
                 },
@@ -610,46 +673,73 @@
           "outputs": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "type": "string"
-                },
-                "variables": {
-                  "type": "array",
-                  "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "variables": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "op": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "value": {}
+                      },
+                      "required": [
+                        "op",
+                        "path"
+                      ]
+                    }
+                  },
+                  "properties": {
                     "type": "object",
-                    "properties": {
-                      "op": {
-                        "type": "string"
+                    "additionalProperties": {}
+                  },
+                  "reasoningContent": {
+                    "type": "string"
+                  },
+                  "callings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "index": {
+                          "type": "number"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "arguments": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
                       },
-                      "path": {
-                        "type": "string"
-                      },
-                      "value": {}
-                    },
-                    "required": [
-                      "op",
-                      "path",
-                      "value"
-                    ]
+                      "required": [
+                        "index",
+                        "id",
+                        "name",
+                        "arguments"
+                      ]
+                    }
                   }
                 },
-                "properties": {
-                  "type": "object",
-                  "additionalProperties": {}
-                },
-                "id": {
-                  "type": "number"
-                },
-                "reasoningContent": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "id",
-                "reasoningContent"
-              ]
+                "required": [
+                  "reasoningContent"
+                ]
+              }
             }
           }
         },
@@ -682,8 +772,7 @@
               },
               "required": [
                 "op",
-                "path",
-                "value"
+                "path"
               ]
             }
           },
@@ -719,8 +808,7 @@
               },
               "required": [
                 "op",
-                "path",
-                "value"
+                "path"
               ]
             }
           },
@@ -761,6 +849,12 @@
                 "code": {
                   "type": "string"
                 },
+                "author": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
                 "version": {
                   "type": "string"
                 }
@@ -775,6 +869,12 @@
             "type": "object",
             "properties": {
               "code": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "name": {
                 "type": "string"
               },
               "version": {
@@ -840,8 +940,7 @@
                           },
                           "required": [
                             "op",
-                            "path",
-                            "value"
+                            "path"
                           ]
                         }
                       },
@@ -861,46 +960,73 @@
                 "outputs": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "content": {
-                        "type": "string"
-                      },
-                      "variables": {
-                        "type": "array",
-                        "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string"
+                        },
+                        "variables": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "op": {
+                                "type": "string"
+                              },
+                              "path": {
+                                "type": "string"
+                              },
+                              "value": {}
+                            },
+                            "required": [
+                              "op",
+                              "path"
+                            ]
+                          }
+                        },
+                        "properties": {
                           "type": "object",
-                          "properties": {
-                            "op": {
-                              "type": "string"
+                          "additionalProperties": {}
+                        },
+                        "reasoningContent": {
+                          "type": "string"
+                        },
+                        "callings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "index": {
+                                "type": "number"
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "arguments": {
+                                "type": "string"
+                              },
+                              "content": {
+                                "type": "string"
+                              }
                             },
-                            "path": {
-                              "type": "string"
-                            },
-                            "value": {}
-                          },
-                          "required": [
-                            "op",
-                            "path",
-                            "value"
-                          ]
+                            "required": [
+                              "index",
+                              "id",
+                              "name",
+                              "arguments"
+                            ]
+                          }
                         }
                       },
-                      "properties": {
-                        "type": "object",
-                        "additionalProperties": {}
-                      },
-                      "id": {
-                        "type": "number"
-                      },
-                      "reasoningContent": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "reasoningContent"
-                    ]
+                      "required": [
+                        "reasoningContent"
+                      ]
+                    }
                   }
                 }
               },
@@ -917,6 +1043,32 @@
         "required": [
           "requires",
           "llmapi"
+        ]
+      },
+      "StoryOutputCalling": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "id",
+          "name",
+          "arguments"
         ]
       },
       "StoryOutputMessage": {
@@ -940,8 +1092,7 @@
               },
               "required": [
                 "op",
-                "path",
-                "value"
+                "path"
               ]
             }
           },
@@ -949,15 +1100,40 @@
             "type": "object",
             "additionalProperties": {}
           },
-          "id": {
-            "type": "number"
-          },
           "reasoningContent": {
             "type": "string"
+          },
+          "callings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "number"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "arguments": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "index",
+                "id",
+                "name",
+                "arguments"
+              ]
+            }
           }
         },
         "required": [
-          "id",
           "reasoningContent"
         ]
       },
@@ -974,8 +1150,7 @@
         },
         "required": [
           "op",
-          "path",
-          "value"
+          "path"
         ]
       }
     },
@@ -3639,24 +3814,32 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "id"
-                  ]
-                }
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-presets-import",
+        "summary": "创建预设",
+        "description": "",
+        "tags": [
+          "Presets"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/any"
               }
             }
-          },
+          }
+        },
+        "responses": {
           "400": {
             "$ref": "#/components/responses/400"
           },
@@ -4069,6 +4252,49 @@
         }
       }
     },
+    "/proxy": {
+      "post": {
+        "operationId": "post-proxy",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contentType": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "content": {
+                      "type": "string",
+                      "nullable": false
+                    }
+                  },
+                  "required": [
+                    "contentType",
+                    "content"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/settings/{id}": {
       "get": {
         "operationId": "get-settings-{id}",
@@ -4141,6 +4367,25 @@
             "description": "Path parameter: id"
           }
         ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/sse": {
+      "get": {
+        "operationId": "get-sse",
+        "summary": "",
+        "description": "",
+        "tags": [
+          "Sse"
+        ],
+        "parameters": [],
         "responses": {
           "400": {
             "$ref": "#/components/responses/400"
@@ -4906,7 +5151,13 @@
       "name": "Presets"
     },
     {
+      "name": "Proxy"
+    },
+    {
       "name": "Settings"
+    },
+    {
+      "name": "Sse"
     },
     {
       "name": "Stories"

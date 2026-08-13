@@ -1,11 +1,8 @@
-﻿// src/client/index.ts
-/**
+﻿/**
  * 此文件只用于client请求server。调用第三方接口请使用fetch。
  */
-import type {paths} from './schema.d.ts';
 import {ApiError} from "@/handler/client/models";
 
-type Paths = paths;
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'open';
 export const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
@@ -80,10 +77,9 @@ interface RequestOptions {
  * });
  */
 export async function api<
-    P extends keyof Paths,
     M extends HttpMethod
 >(
-    url: P,
+    url: string,
     method: M,
     options?: RequestOptions
 ): Promise<any> {
@@ -115,8 +111,8 @@ export async function api<
     return await handleResponse(response);
 }
 
-export const get = (url: keyof Paths, options?: RequestOptions) => api(url, 'get', options);
-export const post = (url: keyof Paths, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
-export const put = (url: keyof Paths, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
-export const del = (url: keyof Paths, options?: RequestOptions) => api(url, 'delete', options);
-export const open = (url: keyof Paths, options?: RequestOptions) => api(url, 'open', options);
+export const get = (url: string, options?: RequestOptions) => api(url, 'get', options);
+export const post = (url: string, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
+export const put = (url: string, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
+export const del = (url: string, options?: RequestOptions) => api(url, 'delete', options);
+export const open = (url: string, options?: RequestOptions) => api(url, 'open', options);
