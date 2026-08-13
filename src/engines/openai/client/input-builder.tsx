@@ -130,39 +130,37 @@ export async function generateInput(
         const outputs = getCurrentOutputs(history);
         if (outputs) {
             for (const output of outputs) {
-                if (output.callings?.length) {
-                    const content = generateContent(output.content, "assistant", "output");
-                    items.push({content, role: "assistant"});
-                    const message: OpenAI.ChatCompletionAssistantMessageParam = {
-                        role: "assistant",
+                const content = generateContent(output.content, "assistant", "output");
+                if (content) items.push({content, role: "assistant"});
+                const message: OpenAI.ChatCompletionAssistantMessageParam = {
+                    role: "assistant",
+                    content,
+                    tool_calls: output.callings ? [] : undefined,
+                    refusal: null
+                };
+                messages.push(message);
+                if (!output.callings?.length) continue;
+                // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
+                await fillToolCallContent(output.callings, slot);
+                for (const calling of output.callings) {
+                    message.tool_calls?.push({
+                        id: calling.id,
+                        type: "function",
+                        function: {
+                            arguments: calling.arguments,
+                            name: calling.name,
+                        },
+                    })
+                    const content = generateContent(calling.content ?? '{"success":false}', "tool", "output");
+                    items.push({
+                        role: "tool",
+                        content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
+                    });
+                    messages.push({
+                        role: "tool",
+                        tool_call_id: calling.id,
                         content,
-                        tool_calls: output.callings ? [] : undefined,
-                        refusal: null
-                    };
-                    messages.push(message);
-                    if (!output.callings) continue;
-                    // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
-                    await fillToolCallContent(output.callings, slot);
-                    for (const calling of output.callings) {
-                        message.tool_calls?.push({
-                            id: calling.id,
-                            type: "function",
-                            function: {
-                                arguments: calling.arguments,
-                                name: calling.name,
-                            },
-                        })
-                        const content = generateContent(calling.content ?? '{"success":false}', "tool", "output");
-                        items.push({
-                            role: "tool",
-                            content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
-                        });
-                        messages.push({
-                            role: "tool",
-                            tool_call_id: calling.id,
-                            content,
-                        });
-                    }
+                    });
                 }
             }
         }
