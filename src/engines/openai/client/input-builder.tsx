@@ -25,7 +25,6 @@ const virtualTool: OpenAI.ChatCompletionFunctionTool = {
     type: "function",
     function: {
         name: "getLorebookContent",
-        parameters: {},
         description: "a virtual tool to get lorebook. user will simulate ai and invoke this.",
     }
 }
@@ -46,6 +45,7 @@ export async function generateInput(
                 description: u.tool.description,
             }
         }));
+    tools.push(virtualTool);
     const items: LlmapiInputItem[] = [];
     const builder: OpenAIInputBuilderConfigModel = config.inputBuilder;
     let simCount = 0;
@@ -63,7 +63,7 @@ export async function generateInput(
                 const splitIndex = index < 0 ? lorebooks.length : index;
                 const items = lorebooks.slice(0, splitIndex);
                 lorebooks = lorebooks.slice(splitIndex);
-                pushLorebooks(items);
+                await pushLorebooks(items);
                 if (i < histories.length - 1 || current)
                     await pushOutputs(history);
             }
@@ -83,12 +83,12 @@ export async function generateInput(
                 const splitIndex = index < 0 ? lorebooks.length : index;
 
                 // 添加user前世界书
-                pushLorebooks(lorebooks.slice(0, splitIndex))
+                await pushLorebooks(lorebooks.slice(0, splitIndex))
 
                 pushInputs(history);
 
                 // 添加user后世界书
-                pushLorebooks(lorebooks.slice(splitIndex, lorebooks.length))
+                await pushLorebooks(lorebooks.slice(splitIndex, lorebooks.length))
 
                 if (i < histories.length - 1 || current)
                     await pushOutputs(history);
@@ -172,7 +172,7 @@ export async function generateInput(
         }
     }
 
-    function pushLorebooks(inputs: PresetLorebookModel[]) {
+    async function pushLorebooks(inputs: PresetLorebookModel[]) {
         const lorebooks: PresetLorebookModel[] = [];
         for (const lorebook of inputs) {
             if (visitedLorebooks.has(lorebook.code)) continue;
@@ -183,7 +183,7 @@ export async function generateInput(
         for (const group of groups) {
             if (group.key === 'knowledge') {
                 simCount += 1;
-                pushOutput({
+                await pushOutput({
                     content: "",
                     properties: {},
                     reasoningContent: "",
