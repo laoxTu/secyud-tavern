@@ -25,7 +25,7 @@ const virtualTool: OpenAI.ChatCompletionFunctionTool = {
     type: "function",
     function: {
         name: "getLorebookContent",
-        description: "a virtual tool to get lorebook. user will simulate ai and invoke this.",
+        description: "a virtual tool to get lorebook. user will simulate ai and invoke this. ",
     }
 }
 
@@ -57,7 +57,7 @@ export async function generateInput(
 
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
-                pushInputs(history);
+                await pushInputs(history);
                 const index = lorebooks.findIndex(
                     u => u.layer + histories.length >= i + 100);
                 const splitIndex = index < 0 ? lorebooks.length : index;
@@ -85,7 +85,7 @@ export async function generateInput(
                 // 添加user前世界书
                 await pushLorebooks(lorebooks.slice(0, splitIndex))
 
-                pushInputs(history);
+                await pushInputs(history);
 
                 // 添加user后世界书
                 await pushLorebooks(lorebooks.slice(splitIndex, lorebooks.length))
@@ -105,7 +105,6 @@ export async function generateInput(
         items,
     };
 
-
     function fillLorebooks(lorebooks: PresetLorebookModel[], groups: PresetLorebookModel[][]) {
         for (const group of groups) {
             for (const item of group) {
@@ -115,16 +114,12 @@ export async function generateInput(
         lorebooks.sort(compareLorebook);
     }
 
-    function pushInputs(history: LlmapiHistory) {
-        if (history.inputs.length > 0) {
-            const content = generateContent(
-                joinAsString(history.inputs, "\r\n", u => u.content),
-                "user", "input");
+    async function pushInputs(history: LlmapiHistory) {
+        if (history.inputs.length) {
+            const input = joinAsString(history.inputs, "\r\n", u => u.content);
+            const content = await generateContent(input, "user", "input");
             items.push({content, role: "user"});
-            messages.push({
-                role: "user",
-                content,
-            });
+            messages.push({role: "user", content,});
         }
     }
 
@@ -137,12 +132,12 @@ export async function generateInput(
         }
     }
 
-    async function pushOutput(output: StoryOutputMessage) {
-        const content = generateContent(output.content, "assistant", "output");
-        if (content) items.push({content, role: "assistant"});
+    async function pushOutput(output: StoryOutputMessage, toolRole = "tool") {
+        const aiContent = await generateContent(output.content, "assistant", "output");
+        if (aiContent) items.push({content: aiContent, role: "assistant"});
         const message: OpenAI.ChatCompletionAssistantMessageParam = {
             role: "assistant",
-            content,
+            content: aiContent ? aiContent : undefined,
             tool_calls: output.callings ? [] : undefined,
             refusal: null
         };
@@ -159,7 +154,8 @@ export async function generateInput(
                     name: calling.name,
                 },
             });
-            const content = generateContent(calling.content ?? '{"success":false}', "tool", "output");
+
+            const content = await generateContent(calling.content ?? "error", toolRole, "output");
             items.push({
                 role: "tool",
                 content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
@@ -194,31 +190,24 @@ export async function generateInput(
                             id: `call_x${simCount}`,
                             name: virtualTool.function.name,
                             arguments: "{}",
-                            content: joinAsString(group.items, "\r\n\r\n", u => u.content),
+                            content: joinAsString(group.items, "\r\n", u => u.content),
                         }
                     ]
-                })
-                continue;
+                }, "knowledge")
+            } else {
+                const content: OpenAI.ChatCompletionContentPartText[] = [];
+                for (const item of group.items) {
+                    const text = await generateContent(item.content, group.key, "lorebook");
+                    items.push({role: group.key, content: text});
+                    content.push({text, type: "text"});
+                }
+                messages.push({role: group.key as any, content,});
             }
-            messages.push({
-                role: group.key as any,
-                content: group.items.map(item => {
-                    const content = generateContent(item.content, group.key, "lorebook");
-                    items.push({
-                        role: group.key,
-                        content
-                    })
-                    return ({
-                        type: "text",
-                        text: content,
-                    });
-                }),
-            });
         }
     }
 
-    function generateContent(str: string, role: string, type: string) {
-        return handleContent(contentHandlers, {str, role, type});
+    async function generateContent(str: string, role: string, type: string) {
+        return await handleContent(contentHandlers, {str, role, type});
     }
 }
 

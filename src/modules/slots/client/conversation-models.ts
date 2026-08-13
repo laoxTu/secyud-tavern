@@ -18,7 +18,7 @@ export interface LlmapiHistory extends StoryHistory {
     properties: Record<string, any>;
 }
 
-type ContentHandler = (str: string, role: string, type: string) => string;
+type ContentHandler = (str: string, role: string, type: string) => Promise<string>;
 
 export interface LlmapiInputContext extends SlotContextBase {
     history: StoryHistory,
@@ -31,7 +31,7 @@ export interface LlmapiInputContext extends SlotContextBase {
     config: any,
 }
 
-export function handleContent(
+export async function handleContent(
     handlers: ContentHandler[],
     {str, role, type}: {
         str: string,
@@ -40,7 +40,7 @@ export function handleContent(
     }) {
     let res = str;
     for (const contentHandler of handlers) {
-        res = contentHandler(res, role, type);
+        res = await contentHandler(res, role, type);
     }
     return res;
 }

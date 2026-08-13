@@ -11,7 +11,6 @@ import {Eta} from 'eta/core';
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
-import {cache} from "next/dist/server/use-cache/use-cache-wrapper";
 
 const eta = new Eta({
     autoTrim: false,
@@ -43,8 +42,8 @@ export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
     sequence: 1000,
     onProcessInput: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
-        const generate = (str: string, role: string) => {
-            return role !== "tool" ? eta.renderString(str, macroObject) : str;
+        const generate = async (str: string, role: string) => {
+            return role !== "tool" ? await eta.renderStringAsync(str, macroObject) : str;
         };
         ctx.contentHandlers.push(generate);
     },
