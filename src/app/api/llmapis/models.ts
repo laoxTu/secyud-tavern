@@ -7,6 +7,7 @@ import {BusinessError, Check} from "@/handler/models";
 import {presetRepository as repository} from "@/modules/presets/server/repository";
 import {hasher} from "@/utils/server/hasher";
 import crypto from "crypto";
+import {deleteCache} from "@/utils/server/cache";
 
 export const apiConfig: TemplateConfig<LlmapiModel> = {
     repository: llmapiRepository,
@@ -36,6 +37,8 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
             model.key = hasher.encrypt(model.key, iv);
             model.iv = iv;
         }
+
+        await deleteCache(`llmapi_chat_${id}`);
     },
     importHandler: undefined,
     exportHandler: undefined,
