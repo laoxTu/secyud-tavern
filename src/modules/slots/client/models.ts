@@ -10,7 +10,6 @@ import {getOpeningHistory} from "@/modules/slots/client/conversation";
 export interface SlotDataModel {
     slot?: SlotModel;
     iframe: RefObject<HTMLIFrameElement | null>;
-    content: Record<string, any>;
     callbacks: Record<string, (params?: any) => Promise<void>>,
 }
 
@@ -45,6 +44,14 @@ export function getSlotAndHistories(ctx: RefObject<SlotDataModel>) {
 
 export function getLastHistory(slot: SlotModel) {
     return tryGetLastItem(slot.story.histories ?? []) ?? getOpeningHistory(slot);
+}
+
+export function getHistory(slot: SlotModel, index: number) {
+    const histories = slot.story.histories ?? [];
+    if (histories.length > index && index >= 0) {
+        return histories[index];
+    }
+    return getLastHistory(slot);
 }
 
 export const SlotContext = createContext<RefObject<SlotDataModel> | undefined>(undefined)

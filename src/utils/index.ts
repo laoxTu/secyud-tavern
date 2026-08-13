@@ -79,7 +79,6 @@ export async function* readStream(stream: ReadableStream) {
                 .split("\n\n")
                 .filter(u => u && u !== '');
             for (const str of arr) {
-                console.debug("stream json: ", str);
                 yield JSON.parse(str);
             }
         }
@@ -88,11 +87,13 @@ export async function* readStream(stream: ReadableStream) {
     }
 }
 
-export function joinAsString<T>(arr: T[], separator: string, value?: (t: T) => string | null) {
+export function joinAsString<T>(
+    arr: T[], separator: string,
+    value?: (t: T) => string | null) {
     if (value) {
         return arr
             .map(u => value(u))
-            .filter(u => u)
+            .filter(u => u?.trim())
             .join(separator);
     }
 

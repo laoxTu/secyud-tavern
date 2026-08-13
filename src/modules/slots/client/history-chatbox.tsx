@@ -8,11 +8,6 @@ import {
     InputGroupAddon, InputGroupButton, InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
-import {
-    generateRenderData,
-    LlmapiInputContext, LlmapiResultContext,
-    RenderContext, renderData,
-} from "@/modules/slots/client/conversation-models";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {
@@ -23,9 +18,14 @@ import {
     updateStoryHistory,
     useSlotContext
 } from "@/modules/slots/client/models";
-import {StoryOutputMessage} from "@/modules/stories/models";
-import {extractVariableChanges, getCurrentOutputs} from "@/modules/slots/models";
+import {StoryHistory, StoryOutputMessage} from "@/modules/stories/models";
+import {extractVariableChanges, SlotModel} from "@/modules/slots/models";
 import {post} from "@/client";
+import {
+    generateRenderData,
+    LlmapiInputContext, LlmapiResultContext,
+    RenderContext, renderData,
+} from "@/modules/slots/client/conversation-models";
 import {
     conversationManager,
     generateCurrentVariables,
@@ -39,23 +39,95 @@ import {handleHistoryPageChange, useHistoryPageState} from "@/modules/slots/clie
 import {submitTargetFormOnKey} from "@/business/client";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 
-export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
-    return ctx.current.content["ReplyAbortController"] as AbortController
+export const signalName = "ReplyAbortController";
+
+export function getReplyAbortController(slot: SlotModel, signal: string) {
+    return slot.content[signal] as AbortController
 }
 
-export function setReplyAbortController(ctx: RefObject<SlotDataModel>) {
-    let controller = getReplyAbortController(ctx);
+export function setReplyAbortController(slot: SlotModel, signal: string) {
+    let controller = getReplyAbortController(slot, signal);
     if (controller) {
         controller.abort("reset");
     }
     controller = new AbortController();
-    ctx.current.content["ReplyAbortController"] = controller;
+    slot.content[signal] = controller;
     return controller;
 }
 
 export async function generateLlmapiReply(ctx: RefObject<SlotDataModel>) {
     await invokeCallback(ctx, "generateLlmapiReply");
 }
+
+export async function* requestLlmapiReply(
+    {slot, history, signal}: {
+        slot: SlotModel,
+        history: StoryHistory,
+        signal: string,
+    },) {
+    // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
+    const llmapi = slot.llmapi;
+    let generate = true;
+    const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
+    console.debug("[llmapi provider](provider): ", llmapiProvider);
+    const outputs: StoryOutputMessage[] = [];
+    history.outputId = history.outputs.length;
+    history.outputs.push(outputs);
+    while (generate) {
+        const current = outputs.length > 0;
+        const inputContext: LlmapiInputContext = {
+            slot,
+            content: {},
+            history,
+            histories: [],
+            contentHandlers: [],
+            current,
+            config: llmapi.content.config,
+        };
+
+        generateInputBuildContext(inputContext);
+
+        await conversationManager.inputProcesser.use(provider =>
+            provider.onProcessInput(inputContext));
+
+        const reply = setReplyAbortController(slot, signal);
+        const {input} = await llmapiProvider.generateInput(inputContext);
+        console.debug("[llmapi provider](input): ", input);
+        const response: Response = await post(`/llmapis/{id}/chat`, input,
+            {
+                params: {id: llmapi.id},
+                signal: reply.signal
+            }
+        );
+
+        const output: StoryOutputMessage = {
+            content: "",
+            reasoningContent: "",
+            variables: [],
+            properties: {}
+        };
+        if (response.body) {
+            outputs?.push(output);
+            const cache: Record<string, any> = {};
+            for await (const chunk of readStream(response.body)) {
+                if (reply.signal.aborted) {
+                    console.warn('[HistoryChatbox] reply canceled');
+                    break;
+                }
+                await llmapiProvider.generateOutput({
+                    content: cache,
+                    message: output,
+                    output: chunk,
+                    slot,
+                });
+                yield {outputs, output};
+            }
+            // 还有 toolCalls 就继续请求，current 置 true 续接当前输出。
+            generate = !!output.callings?.length;
+        }
+    }
+}
+
 
 export function HistoryChatbox() {
     const [output, setOutput] = useState(false);
@@ -69,118 +141,61 @@ export function HistoryChatbox() {
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateLlmapiReply = async () => {
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
+            let {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
-            const history = getLastHistory(slot);
-            if (!iframe || !history) {
-                console.error('[HistoryChatbox] failed to get history or iframe');
+            if (!iframe) {
+                console.debug('[HistoryChatbox] failed to get history or iframe');
                 return;
             }
             setOutput(true);
+            const history = getLastHistory(slot);
+            await handleHistoryPageChange(ctx, {
+                curPage: histories.length,
+                curOutputPage: history.outputId
+            });
 
-            // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
-            let generate = true;
-            let current = false;
-            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
-            console.debug("apiConfig", apiConfig);
-            while (generate) {
-                const inputContext: LlmapiInputContext = {
+            for await (const {} of requestLlmapiReply(
+                {
                     slot,
-                    content: {},
                     history,
-                    histories: [],
-                    contentHandlers: [],
-                    current,
-                    config: slot.llmapi.content.config,
-                };
+                    signal: signalName,
+                })) {
 
-                generateInputBuildContext(inputContext);
-
-                await conversationManager.inputProcesser.use(provider =>
-                    provider.onProcessInput(inputContext));
-
-                const reply = setReplyAbortController(ctx);
-                const {input} = await apiConfig.generateInput(inputContext);
-                console.debug("[HistoryChatbox] chat messages: ", input);
-                const response: Response = await post(`/llmapis/{id}/chat`, input,
-                    {
-                        params: {id: slot.llmapi.id},
-                        signal: reply.signal
-                    }
-                );
-
-                // 首轮新建输出数组，工具续轮复用当前数组，多轮结果记在同一轮。
-                const currentArray = current ?
-                    getCurrentOutputs(history) : (() => {
-                        const arr: StoryOutputMessage[] = [];
-                        history.outputId = history.outputs.length;
-                        history.outputs.push(arr);
-                        return arr;
-                    })();
-                // 如果用了current，没有的话直接返回。
-                if (!currentArray) return;
-
-                const currentOutput: StoryOutputMessage = {
-                    content: "",
-                    reasoningContent: "",
-                    variables: [],
-                    properties: {}
-                };
-                currentArray?.push(currentOutput);
-
-                console.debug(`[HistoryChatbox] current outputs: `, history.outputs);
+                // 流式渲染条件
+                // 故事页面为最新，输出页面为最新
+                const {page} = useHistoryPageState.getState();
+                if (page.cur === histories.length &&
+                    history.outputId === history.outputs.length - 1) {
+                    const streamContext: RenderContext = {
+                        content: {},
+                        data: generateRenderData(history),
+                        window: iframe.contentWindow!,
+                        document: iframe.contentDocument!,
+                        history: history,
+                        slot: slot,
+                        variables: generateCurrentVariables(history)
+                    };
+                    await conversationManager.streamRenderer
+                        .use(provider =>
+                            provider.onRenderStream(streamContext));
+                    renderData(streamContext, "content", {
+                        output: streamContext.data.output,
+                        reasoningContent: streamContext.data.reasoningContent
+                    });
+                }
                 await handleHistoryPageChange(ctx, {
                     curPage: histories.length,
                     curOutputPage: history.outputId
                 });
-
-                if (response.body) {
-                    const cache: Record<string, any> = {};
-                    for await (const chunk of readStream(response.body)) {
-                        if (reply.signal.aborted) {
-                            console.warn('[HistoryChatbox] reply canceled');
-                            break;
-                        }
-                        await apiConfig.generateOutput({
-                            content: cache,
-                            message: currentOutput,
-                            output: chunk,
-                            slot,
-                        });
-                        // 流式渲染条件
-                        // 故事页面为最新，输出页面为最新
-                        const {page} = useHistoryPageState.getState();
-                        if (page.cur === histories.length &&
-                            history.outputId === history.outputs.length - 1) {
-                            const streamContext: RenderContext = {
-                                content: {},
-                                data: generateRenderData(history),
-                                window: iframe.contentWindow!,
-                                document: iframe.contentDocument!,
-                                history: history,
-                                slot: slot,
-                                variables: generateCurrentVariables(history)
-                            };
-                            await conversationManager.streamRenderer
-                                .use(provider =>
-                                    provider.onRenderStream(streamContext));
-                            renderData(streamContext, "content", {
-                                output: streamContext.data.output,
-                                reasoningContent: streamContext.data.reasoningContent
-                            });
-                        }
-                    }
-                    const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
-                    // 解析输出，填充一些选项或处理，这里应该会缓存世界书
-                    await conversationManager.outputProcesser.use(provider =>
-                        provider.onProcessOutput(outputContext));
-                    // 还有 toolCalls 就继续请求，current 置 true 续接当前输出。
-                    generate = !!currentOutput.callings?.length;
-                    current = true;
-                }
-                await updateStoryHistory(slot.story.id, history);
             }
-        } catch (err) {
+
+            const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
+            // 解析输出，填充一些选项或处理，这里应该会缓存世界书
+            await conversationManager.outputProcesser.use(provider =>
+                provider.onProcessOutput(outputContext));
+            await updateStoryHistory(slot.story.id, history);
+        } catch
+            (err) {
             if (err instanceof Error && err.name === 'AbortError') {
                 console.log('user abort reply');
                 return; // 或者不处理
@@ -192,7 +207,7 @@ export function HistoryChatbox() {
         }
     };
 
-    // 发送输入内容，并尝试创建新历史
+// 发送输入内容，并尝试创建新历史
     const createStoryHistory = async () => {
         try {
             if (output || !inputText?.trim()) return;
@@ -319,7 +334,8 @@ export function HistoryChatbox() {
                             <InputGroupButton type="button" disabled={false}
                                               onClick={(e) => {
                                                   e.stopPropagation();
-                                                  const controller = getReplyAbortController(ctx);
+                                                  const controller = getReplyAbortController(
+                                                      ctx.current.slot!, signalName);
                                                   controller.abort("user canceled.");
                                               }}>
                                 <SquareStopIcon/>

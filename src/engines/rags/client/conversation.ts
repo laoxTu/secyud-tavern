@@ -9,7 +9,7 @@ import {
     setContent,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
-import {getCurrentOutput, StoryHistoryMessage} from "@/modules/slots/models";
+import {getCurrentOutput, getCurrentOutputs, StoryHistoryMessage} from "@/modules/slots/models";
 import {
     RagConversationCache,
     RagSearchContext,
@@ -145,10 +145,12 @@ export const ragConversationProvider:
         // 同 onProcessInput，RAG 缓存可选，用守卫
         const cache: RagConversationCache = getContent(ctx.slot, enginePlural);
         if (cache.disabled) return;
-        const message = getCurrentOutput(ctx.history);
-        if (!message) return;
-        await tryFillActiveVectors({
-            message, ...cache
-        });
+        const outputs = getCurrentOutputs(ctx.history);
+        if (!outputs?.length) return;
+        for (const output of outputs) {
+            await tryFillActiveVectors({
+                message: output, ...cache
+            });
+        }
     }
 };

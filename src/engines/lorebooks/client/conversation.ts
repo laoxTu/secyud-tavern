@@ -15,7 +15,7 @@ import {
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
-import {getCurrentOutput, StoryHistoryMessage} from "@/modules/slots/models";
+import {getCurrentOutput, getCurrentOutputs, StoryHistoryMessage} from "@/modules/slots/models";
 
 
 export interface LorebookConversationCache {
@@ -99,11 +99,12 @@ export const lorebookConversationProvider:
         }
     },
     onProcessOutput: async (ctx) => {
-        const message = getCurrentOutput(ctx.history);
-        if (message) {
-            const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
+        const outputs = getCurrentOutputs(ctx.history);
+        if (!outputs) return;
+        const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
+        for (const output of outputs) {
             tryFillActiveLorebooks(cache.entries, {
-                history: ctx.history, message,
+                history: ctx.history, message: output,
                 variables: generateCurrentVariables(ctx.history, true)
             });
         }

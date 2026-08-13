@@ -1,4 +1,4 @@
-import {getCurrentOutput, LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {getCurrentOutputs, LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import {
     getContent,
     LlmapiInputProcesser,
@@ -43,8 +43,10 @@ export const toolConversationProvider:
     onProcessInput: async () => {
     },
     onProcessOutput: async (ctx) => {
-        const output = getCurrentOutput(ctx.history);
-        if (output?.callings) {
+        const outputs = getCurrentOutputs(ctx.history);
+        if (!outputs?.length) return;
+        for (const output of outputs) {
+            if (!output?.callings?.length) continue;
             await fillToolCallContent(output.callings, ctx.slot);
         }
     }

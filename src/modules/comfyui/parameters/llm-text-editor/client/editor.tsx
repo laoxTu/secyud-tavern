@@ -1,4 +1,4 @@
-import React, {RefObject, useState} from "react";
+import React, {useState} from "react";
 import {ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {parameterEntryName as engineName} from "@/modules/comfyui/models";
@@ -6,25 +6,22 @@ import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
-import {getSlotAndHistories, SlotDataModel, useSlotContext} from "@/modules/slots/client/models";
-import {readStream} from "@/utils";
 import {
-    LlmapiInputContext,
-} from "@/modules/slots/client/conversation-models";
-import {
-    conversationManager
-} from "@/modules/slots/client/conversation";
-import {get, post} from "@/client";
+    getHistory,
+    getSlotAndHistories,
+    useSlotContext
+} from "@/modules/slots/client/models";
+import {joinAsString} from "@/utils";
+import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
-import {StoryHistory, StoryOutputMessage} from "@/modules/stories/models";
+import {StoryHistory} from "@/modules/stories/models";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
-import {LlmapiModel} from "@/modules/llmapis/models";
-import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
+import {getReplyAbortController, requestLlmapiReply} from "@/modules/slots/client/history-chatbox";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
@@ -61,19 +58,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     </>;
 }
 
-export function getReplyAbortController(ctx: RefObject<SlotDataModel>) {
-    return ctx.current.content["ComfyUIAbortController"] as AbortController
-}
-
-export function setReplyAbortController(ctx: RefObject<SlotDataModel>) {
-    let controller = getReplyAbortController(ctx);
-    if (controller) {
-        controller.abort("reset");
-    }
-    controller = new AbortController();
-    ctx.current.content["ComfyUIAbortController"] = controller;
-    return controller;
-}
+export const signalName = 'ComfyUIAbortController';
 
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
@@ -89,38 +74,22 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     // 生成提示词
     const generateLlmapiPrompt = async () => {
         try {
-            let {slot, histories} = getSlotAndHistories(ctx);
+            const {slot} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
-            const page = useHistoryPageState.getState().page;
             if (!iframe) {
                 console.debug('[HistoryChatbox] failed to get history or iframe');
                 return;
             }
-
-            const historiesAdd = [];
-            if (histories.length > page.cur && page.cur >= 0) {
-                historiesAdd.push(histories[page.cur]);
-            }
-
             setOutput(true);
-            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
-            console.debug("apiConfig", apiConfig);
 
-            const promptOutput: StoryOutputMessage = {
-                content: "",
-                reasoningContent: "",
-                variables: [],
-                properties: {},
-            };
-
-            const promptHistory: StoryHistory = {
+            const history: StoryHistory = {
                 inputs: [{
                     id: 0,
                     content: prompt,
                     variables: [],
                     properties: {}
                 }],
-                outputs: [[promptOutput]],
+                outputs: [],
                 outputId: 0,
                 summary: false,
                 variables: [],
@@ -129,75 +98,42 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 code: "",
                 name: ""
             };
-
-            historiesAdd.push(promptHistory);
-
-            if (config?.llmapi) {
-                const llmapi: LlmapiModel = await get(`/llmapis/{id}`, {
+            const llmapi = config?.llmapi ?
+                await get(`/llmapis/{id}`, {
                     params: {
                         id: config.llmapi.code,
                         withDetails: true,
                     }
-                });
-                slot = {
-                    ...slot,
-                    llmapi
-                };
-            }
+                }) :
+                slot.llmapi;
 
-            const inputContext: LlmapiInputContext = {
-                slot,
-                content: {},
-                history: promptHistory,
-                contentHandlers: [],
-                histories: historiesAdd.map(u => ({
-                    ...u,
-                    inputs: u.inputs
-                        .map(v => ({...v})),
-                    outputs: u.outputs
-                        .map(v => ({...v})),
-                    properties: {}
-                })),
-                current: false,
-                config: slot.llmapi.content.config
-            };
-
-            await conversationManager.inputProcesser.use(provider =>
-                provider.onProcessInput(inputContext));
-
-            const reply = setReplyAbortController(ctx);
-
-            const {input} = await apiConfig.generateInput(inputContext);
-            console.debug("[generateLlmapiPrompt] chat messages: ", input);
-            const response: Response = await post(`/llmapis/{id}/chat`, input,
+            let thought = "";
+            let content = "";
+            for await (const {output, outputs} of requestLlmapiReply(
                 {
-                    params: {id: slot.llmapi.id},
-                    signal: reply.signal
+                    slot: {
+                        ...slot,
+                        story: {
+                            ...slot.story,
+                            histories: [
+                                getHistory(slot, useHistoryPageState.getState().page.cur),
+                                history,
+                            ]
+                        },
+                        llmapi,
+                    },
+                    history,
+                    signal: signalName,
+                })) {
+                if (output.reasoningContent === thought) {
+                    setThinking(false);
+                } else {
+                    thought = output.reasoningContent;
+                    setThinking(true);
                 }
-            );
-
-            if (response.body) {
-                const cache: Record<string, any> = {};
-
-                for await (const chunk of readStream(response.body)) {
-                    if (reply.signal.aborted) {
-                        console.warn('[HistoryChatbox] reply canceled');
-                        break;
-                    }
-
-                    await apiConfig.generateOutput({
-                        content: cache,
-                        message: promptOutput,
-                        output: chunk,
-                        slot,
-                    });
-                    if (promptOutput?.reasoningContent) {
-                        setThinking(true);
-                    }
-                    if (promptOutput?.content) {
-                        setThinking(false);
-                        setText(promptOutput.content);
-                    }
+                if (output.content !== content) {
+                    content = output.content;
+                    setText(joinAsString(outputs, "\r\n", u => u.content));
                 }
             }
         } catch (err) {
@@ -230,7 +166,8 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     output ?
                         <Button disabled={false}
                                 onClick={() => {
-                                    const controller = getReplyAbortController(ctx);
+                                    const controller = getReplyAbortController(
+                                        ctx.current.slot!, signalName);
                                     controller.abort("user canceled.");
                                 }}>
                             <SquareStopIcon/>

@@ -58,7 +58,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     });
     const iframe = useRef<HTMLIFrameElement>(null);
     const ctx = useRef<SlotDataModel>({
-        callbacks: {}, content: {}, iframe
+        callbacks: {},  iframe
     });
     const {setPage} = useHistoryPageState();
     const {pinned, setPinned} = useSlotControlState();
