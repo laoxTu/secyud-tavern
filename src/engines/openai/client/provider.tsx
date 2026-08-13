@@ -28,8 +28,6 @@ const defaultConfig: OpenAIConfigModel = {
         frequency_penalty: 0
     },
     inputBuilder: {
-        prefix: "<user_input>",
-        suffix: "</user_input>",
         type: "default",
     }
 

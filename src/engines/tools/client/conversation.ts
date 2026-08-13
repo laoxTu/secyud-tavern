@@ -67,6 +67,10 @@ export async function fillToolCallContent(
             console.debug(`use tool: ${toolCall.name}`)
             // 按函数名找配置，再经 toolId 找具体实现。
             const config = cache.tools[toolCall.name];
+            if (!config) {
+                toolCall.content = JSON.stringify({error: "tool is virtual", success: false});
+                continue;
+            }
             const tool = llmapiToolManager.records[config.config.toolId];
             const args = JSON.parse(toolCall.arguments);
             const res = await tool.invoke(args, {slot, config: config.config});

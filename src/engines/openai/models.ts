@@ -1,6 +1,4 @@
 ﻿export interface OpenAIInputBuilderConfigModel {
-    prefix: string,
-    suffix: string,
     type: string,
 }
 

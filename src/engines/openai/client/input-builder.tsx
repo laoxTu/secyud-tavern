@@ -11,15 +11,24 @@ import {
 import {getContent, handleContent, LlmapiHistory, LlmapiInputContext} from "@/modules/slots/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
-import {Input} from "@/components/ui/input";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 import {fillToolCallContent, ToolConversationCache} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
 import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
-import {sequenceGroupBy} from "@/utils";
+import {joinAsString, sequenceGroupBy} from "@/utils";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
+import {StoryOutputMessage} from "@/modules/stories/models";
+
+const virtualTool: OpenAI.ChatCompletionFunctionTool = {
+    type: "function",
+    function: {
+        name: "getLorebookContent",
+        parameters: {},
+        description: "a virtual tool to get lorebook. user will simulate ai and invoke this.",
+    }
+}
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
@@ -39,25 +48,22 @@ export async function generateInput(
         }));
     const items: LlmapiInputItem[] = [];
     const builder: OpenAIInputBuilderConfigModel = config.inputBuilder;
+    let simCount = 0;
 
     switch (builder.type) {
         case "layered":
-            const lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
+            let lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
             fillLorebooks(lorebooks, histories.map(u => u.properties[lorebookPlural]))
-            const groups = sequenceGroupBy(lorebooks, u => u.layer);
-            let groupI = 0;
+
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
-
                 pushInputs(history);
-
-                for (; groupI < groups.length; groupI++) {
-                    const group = groups[groupI];
-                    if (group.key + histories.length >= i + 100 &&
-                        i != histories.length - 1) break;
-                    pushLorebooks(group.items);
-                }
-
+                const index = lorebooks.findIndex(
+                    u => u.layer + histories.length >= i + 100);
+                const splitIndex = index < 0 ? lorebooks.length : index;
+                const items = lorebooks.slice(0, splitIndex);
+                lorebooks = lorebooks.slice(splitIndex);
+                pushLorebooks(items);
                 if (i < histories.length - 1 || current)
                     await pushOutputs(history);
             }
@@ -111,13 +117,9 @@ export async function generateInput(
 
     function pushInputs(history: LlmapiHistory) {
         if (history.inputs.length > 0) {
-            const content = generateContent([
-                builder.prefix,
-                ...history.inputs
-                    .map(u => u.content)
-                    .filter(u => u.trim()),
-                builder.suffix
-            ].join(""), "user", "input");
+            const content = generateContent(
+                joinAsString(history.inputs, "\r\n", u => u.content),
+                "user", "input");
             items.push({content, role: "user"});
             messages.push({
                 role: "user",
@@ -130,39 +132,43 @@ export async function generateInput(
         const outputs = getCurrentOutputs(history);
         if (outputs) {
             for (const output of outputs) {
-                const content = generateContent(output.content, "assistant", "output");
-                if (content) items.push({content, role: "assistant"});
-                const message: OpenAI.ChatCompletionAssistantMessageParam = {
-                    role: "assistant",
-                    content,
-                    tool_calls: output.callings ? [] : undefined,
-                    refusal: null
-                };
-                messages.push(message);
-                if (!output.callings?.length) continue;
-                // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
-                await fillToolCallContent(output.callings, slot);
-                for (const calling of output.callings) {
-                    message.tool_calls?.push({
-                        id: calling.id,
-                        type: "function",
-                        function: {
-                            arguments: calling.arguments,
-                            name: calling.name,
-                        },
-                    })
-                    const content = generateContent(calling.content ?? '{"success":false}', "tool", "output");
-                    items.push({
-                        role: "tool",
-                        content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
-                    });
-                    messages.push({
-                        role: "tool",
-                        tool_call_id: calling.id,
-                        content,
-                    });
-                }
+                await pushOutput(output);
             }
+        }
+    }
+
+    async function pushOutput(output: StoryOutputMessage) {
+        const content = generateContent(output.content, "assistant", "output");
+        if (content) items.push({content, role: "assistant"});
+        const message: OpenAI.ChatCompletionAssistantMessageParam = {
+            role: "assistant",
+            content,
+            tool_calls: output.callings ? [] : undefined,
+            refusal: null
+        };
+        messages.push(message);
+        if (!output.callings?.length) return;
+        // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
+        await fillToolCallContent(output.callings, slot);
+        for (const calling of output.callings) {
+            message.tool_calls?.push({
+                id: calling.id,
+                type: "function",
+                function: {
+                    arguments: calling.arguments,
+                    name: calling.name,
+                },
+            });
+            const content = generateContent(calling.content ?? '{"success":false}', "tool", "output");
+            items.push({
+                role: "tool",
+                content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
+            });
+            messages.push({
+                role: "tool",
+                tool_call_id: calling.id,
+                content,
+            });
         }
     }
 
@@ -175,6 +181,25 @@ export async function generateInput(
         }
         const groups = sequenceGroupBy(lorebooks, u => u.role);
         for (const group of groups) {
+            if (group.key === 'user') {
+                simCount += 1;
+                pushOutput({
+                    content: "",
+                    properties: {},
+                    reasoningContent: "",
+                    variables: [],
+                    callings: [
+                        {
+                            index: 0,
+                            id: `call_x${simCount}`,
+                            name: virtualTool.function.name,
+                            arguments: "{}",
+                            content: JSON.stringify(group.items.map(u => u.content)),
+                        }
+                    ]
+                })
+                continue;
+            }
             messages.push({
                 role: group.key as any,
                 content: group.items.map(item => {
@@ -210,20 +235,6 @@ export function BuilderContent({config}: { config: OpenAIInputBuilderConfigModel
                           items={["default", "layered"]}
                           defaultValue={config.type}/>
             </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-builder-prefix`}>
-                    {t(`${moduleName}.user_input_prefix`)}
-                </FieldLabel>
-                <Input id={`${moduleName}-builder-prefix`} name={"builder-prefix"}
-                       defaultValue={config.prefix}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-builder-suffix`}>
-                    {t(`${moduleName}.user_input_suffix`)}
-                </FieldLabel>
-                <Input id={`${moduleName}-builder-suffix`} name={"builder-suffix"}
-                       defaultValue={config.suffix}/>
-            </Field>
         </>
     );
 }
@@ -231,8 +242,6 @@ export function BuilderContent({config}: { config: OpenAIInputBuilderConfigModel
 export function getInputBuilderConfig(data: FormData) {
     const res: OpenAIInputBuilderConfigModel = {
         type: data.get('builder-type') as string,
-        prefix: data.get('builder-prefix') as string,
-        suffix: data.get('builder-suffix') as string,
     };
     return res;
 }
