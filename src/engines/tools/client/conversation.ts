@@ -69,7 +69,7 @@ export async function fillToolCallContent(
             const config = cache.tools[toolCall.name];
             const tool = llmapiToolManager.records[config.config.toolId];
             const args = JSON.parse(toolCall.arguments);
-            const res = await tool.invoke(args, {slot});
+            const res = await tool.invoke(args, {slot, config: config.config});
             toolCall.content = JSON.stringify(res);
         } catch (err) {
             // 错误写回给模型调整，同时 console.error 供人工排查。

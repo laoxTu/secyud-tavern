@@ -1,6 +1,6 @@
 {
   "name": "secyud-tavern",
-  "version": "1.1.2.9",
+  "version": "1.1.2.11",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,6 +17,7 @@
     "@huggingface/transformers": "^4.2.0",
     "@libsql/client": "^0.17.4",
     "@monaco-editor/react": "^4.7.0",
+    "@mozilla/readability": "^0.6.0",
     "@orama/orama": "^3.1.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

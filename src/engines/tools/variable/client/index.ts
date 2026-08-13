@@ -22,7 +22,7 @@ export const variableGetTool: LlmapiTool = {
     model(): LlmapiToolModel {
         return {
             name: "getVariable",
-            description: "get the specific path value desc of current variable (the variable after this ai output)",
+            description: "get the specific path value desc of current variable",
             parameters: {
                 type: "object",
                 additionalProperties: false,
@@ -79,12 +79,12 @@ export const variableSetTool: LlmapiTool = {
                         properties: {
                             op: {
                                 type: "string",
-                                description: "the operation, if remove, value is not required",
+                                description: "operation, value is not required if remove",
                                 enum: ["add", "update", "remove"],
                             },
                             path: {
                                 type: "string",
-                                description: "the path of the target variable, use '/' separate",
+                                description: "path of the target variable, use '/' separate. recursively create object if path not exist",
                             },
                             value: {
                                 anyOf: [

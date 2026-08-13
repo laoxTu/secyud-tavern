@@ -1,0 +1,71 @@
+// tools/web-search/Editor.tsx
+'use client';
+
+import {useTranslations} from 'next-intl';
+import {WebSearchConfigModel} from "@/engines/tools/web-search/models";
+import {mergeObjects} from "@/utils";
+import {LlmapiToolProps} from "@/engines/tools/client/models";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
+import {Input} from "@/components/ui/input";
+
+const defaultConfig: WebSearchConfigModel = {
+    maxResults: 3,
+    timeout: 10000,
+    maxLength: 8000,
+};
+
+export function Editor({defaultValue, entry}: LlmapiToolProps) {
+    const t = useTranslations();
+    const config: WebSearchConfigModel = mergeObjects(defaultConfig, defaultValue);
+
+    return (
+        <div className="grid md:grid-cols-2 gap-4">
+            <Field>
+                <FieldLabel htmlFor={`${entry.id}-maxResults`}>
+                    {t('web_search.max_results')}
+                </FieldLabel>
+                <Input
+                    id={`${entry.id}-maxResults`}
+                    defaultValue={config.maxResults}
+                    name="max_result_count"
+                    type="number"
+                    min={1}
+                    max={5}
+                />
+            </Field>
+
+            <Field>
+                <FieldLabel htmlFor={`${entry.id}-timeout`}>
+                    {t('web_search.timeout')}
+                </FieldLabel>
+                <FieldContent className={"flex-row"}>
+                    <Input
+                        id={`${entry.id}-timeout`}
+                        name="timeout"
+                        defaultValue={config.timeout}
+                        min={3}
+                        max={30}
+                        step={1}
+                    />
+                    <span className="m-auto text-muted-foreground">
+                        s
+                    </span>
+                </FieldContent>
+            </Field>
+
+            <Field>
+                <FieldLabel htmlFor={`${entry.id}-max_length`}>
+                    {t('web_search.max_length')}
+                </FieldLabel>
+                <Input
+                    id={`${entry.id}-max_length`}
+                    name="max_length"
+                    defaultValue={config.maxLength}
+                    min={3}
+                    max={30}
+                    step={1}
+                />
+            </Field>
+        </div>
+    );
+}
