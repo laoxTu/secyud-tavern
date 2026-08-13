@@ -12,7 +12,7 @@ export interface PresetLorebookModel extends EntryModel {
     priority: number,
     // 层级，表示插入位置
     layer: number,
-    role: "assistant" | "user" | "system",
+    role: "assistant" | "user" | "system" | "knowledge",
 }
 
 export function getLorebookOrder(item: PresetLorebookModel) {

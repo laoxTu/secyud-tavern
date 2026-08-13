@@ -17,7 +17,7 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
 
-const roles = ["system", "user", "assistant"];
+const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
 
 function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: RefObject<HTMLFormElement | null> }) {
@@ -116,7 +116,7 @@ function Tab() {
                         content: "",
                         priority: 100,
                         layer: 100,
-                        role: 'user'
+                        role: 'knowledge',
                     }, {
                         params: {
                             id: model?.id,
@@ -161,7 +161,7 @@ function Tab() {
                 },
                 updateHandler: async (entry, data) => {
                     const matchType = data.get("matchType") as string;
-                    const result : PresetLorebookModel = {
+                    const result: PresetLorebookModel = {
                         ...entry,
                         matchType: matchType,
                         matchExpression: matchEditors[matchType]?.getValue(data),

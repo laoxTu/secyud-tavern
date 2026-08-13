@@ -31,8 +31,6 @@ const defaultConfig: DeepseekConfigModel = {
         max_tokens: 0
     },
     inputBuilder: {
-        prefix: "<user_input>",
-        suffix: "</user_input>",
         type: "default",
     }
 } as const;

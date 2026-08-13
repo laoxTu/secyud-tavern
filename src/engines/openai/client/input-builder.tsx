@@ -181,7 +181,7 @@ export async function generateInput(
         }
         const groups = sequenceGroupBy(lorebooks, u => u.role);
         for (const group of groups) {
-            if (group.key === 'user') {
+            if (group.key === 'knowledge') {
                 simCount += 1;
                 pushOutput({
                     content: "",

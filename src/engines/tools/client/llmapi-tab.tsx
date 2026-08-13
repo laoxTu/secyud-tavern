@@ -53,8 +53,8 @@ function Tab() {
                     await post('/llmapis/{id}/entries/{entryType}', {
                         code: data.get('code'),
                         name: data.get('name'),
-                        content: "",
-                        priority: 100,
+                        toolId: "",
+                        value: {},
                     }, {
                         params: {
                             id: model?.id,
