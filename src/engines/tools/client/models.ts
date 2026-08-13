@@ -21,7 +21,7 @@ export interface LlmapiTool extends Registerable {
     component: React.ComponentType<LlmapiToolProps>,
     getValue: (data: FormData) => any,
     model: (config: LlmapiToolConfigModel) => LlmapiToolModel,
-    invoke: (args: any, ctx: LlmapiToolContext) => Promise<any>,
+    invoke: (args: any, ctx: LlmapiToolContext) => Promise<string>,
 }
 
 

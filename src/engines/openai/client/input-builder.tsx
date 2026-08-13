@@ -194,7 +194,7 @@ export async function generateInput(
                             id: `call_x${simCount}`,
                             name: virtualTool.function.name,
                             arguments: "{}",
-                            content: JSON.stringify(group.items.map(u => u.content)),
+                            content: joinAsString(group.items, "\r\n\r\n", u => u.content),
                         }
                     ]
                 })

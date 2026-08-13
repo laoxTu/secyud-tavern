@@ -13,11 +13,11 @@ export const variableGetTool: LlmapiTool = {
         const variables = generateCurrentVariables(history, true);
         const {current, realPath, exists} = getVariableValue(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
-        return {
+        return JSON.stringify({
             path: realPath,
             value: current,
             exists,
-        };
+        });
     },
     model(): LlmapiToolModel {
         return {
@@ -50,7 +50,7 @@ export const variableSetTool: LlmapiTool = {
                 currentOutput.variables.push(variableChange);
             }
         }
-        return {success: true,};
+        return "success";
     },
     model(): LlmapiToolModel {
         return {

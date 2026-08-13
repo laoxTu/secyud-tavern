@@ -68,16 +68,15 @@ export async function fillToolCallContent(
             // 按函数名找配置，再经 toolId 找具体实现。
             const config = cache.tools[toolCall.name];
             if (!config) {
-                toolCall.content = JSON.stringify({error: "tool is virtual", success: false});
+                toolCall.content = 'error: virtual tool should called by user simulated ai.';
                 continue;
             }
             const tool = llmapiToolManager.records[config.config.toolId];
             const args = JSON.parse(toolCall.arguments);
-            const res = await tool.invoke(args, {slot, config: config.config});
-            toolCall.content = JSON.stringify(res);
-        } catch (err) {
+            toolCall.content = await tool.invoke(args, {slot, config: config.config});
+        } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
-            toolCall.content = JSON.stringify({error: err, success: false});
+            toolCall.content = `error: ${err?.message ?? "unknown error"}`;
             console.error(err);
         }
     }

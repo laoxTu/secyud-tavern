@@ -5,6 +5,7 @@ import {LlmapiTool, LlmapiToolContext} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel} from "@/modules/slots/models";
 import {post} from "@/client";
+import {joinAsString} from "@/utils";
 
 
 export const webSearchTool: LlmapiTool = {
@@ -61,17 +62,13 @@ export const webSearchTool: LlmapiTool = {
             results.push(await fetchUrl(url, config.timeout * 1000, config.maxLength));
         }
 
-        return results;
+        return joinAsString(results, "\r\n\r\n", u => `${u.url}\r\n${u.content ?? u.error}`);
     },
 };
 
 // ============ 简化版抓取 ============
 
-async function fetchUrl(url: string, timeout: number, maxLength: number): Promise<{
-    success: boolean;
-    content?: string | null;
-    error?: string
-}> {
+async function fetchUrl(url: string, timeout: number, maxLength: number) {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -100,13 +97,14 @@ async function fetchUrl(url: string, timeout: number, maxLength: number): Promis
             content = article?.textContent;
         }
 
-        return {success: true, content: content?.substring(0, maxLength)};
+        return {url, success: true, content: content?.substring(0, maxLength)};
     } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-            return {success: false, error: 'Request timeout'};
+            return {url, success: false, error: 'Request timeout'};
         }
         console.warn("[web search]", error);
         return {
+            url,
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
         };
