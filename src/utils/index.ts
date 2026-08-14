@@ -16,13 +16,16 @@ export function mergeObjects(target: any, source: any) {
 
     if (source) {
         for (const key in source) {
+            const s = source[key];
+            if (!s) continue;
+            const t = result[key];
             // 如果当前值和源值都是普通对象，则递归合并
-            if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key]) &&
-                result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])) {
-                result[key] = mergeObjects(result[key], source[key]);
+            if (s && typeof s === 'object' && !Array.isArray(s) &&
+                t && typeof t === 'object' && !Array.isArray(t)) {
+                result[key] = mergeObjects(t, s);
             } else {
                 // 否则，直接覆盖或添加
-                result[key] = source[key];
+                result[key] = s;
             }
         }
     }

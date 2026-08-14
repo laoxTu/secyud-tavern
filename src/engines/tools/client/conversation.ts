@@ -27,19 +27,24 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        const entries = ctx.slot.llmapi.entries
-            ?.[enginePlural] as LlmapiToolConfigModel[];
-        for (const entry of entries) {
-            if (entry.disabled || !entry.provider) continue;
-            // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
-            const provider = llmapiToolManager.records[entry.provider];
-            if (!provider) {
-                console.warn(`tool provider missing: ${entry.provider}`);
-                continue;
-            }
-            const tools = await provider.create(entry, ctx.slot);
-            for (const tool of tools) {
-                cache.tools[tool.model.name] = tool;
+        const entriesList: LlmapiToolConfigModel[][] = [
+            ...ctx.slot.presets.map(
+                u => u.entries?.[enginePlural] ?? []),
+            ctx.slot.llmapi.entries?.[enginePlural],
+        ];
+        for (const entries of entriesList) {
+            for (const entry of entries) {
+                if (entry.disabled || !entry.provider) continue;
+                // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
+                const provider = llmapiToolManager.records[entry.provider];
+                if (!provider) {
+                    console.warn(`[tool]: provider missing(${entry.provider})`);
+                    continue;
+                }
+                const tools = await provider.create(entry, ctx.slot);
+                for (const tool of tools) {
+                    cache.tools[tool.model.name] = tool;
+                }
             }
         }
         setContent(ctx.slot, enginePlural, cache);

@@ -1,20 +1,12 @@
 import {Registerable} from "@/utils/register";
 import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import React from "react";
-import {EntryState} from "@/business/client/models";
-import {moduleName, modulePlural} from "@/modules/llmapis/models";
-import {engineName, LlmapiToolConfigModel} from "@/engines/tools/models";
-import {createUsePagedItemsState} from "@/components/custom/pager";
-import {get} from "@/client";
+import {LlmapiToolConfigModel} from "@/engines/tools/models";
 
 export interface LlmapiToolProps {
     defaultValue?: any,
     entry: LlmapiToolConfigModel,
-}
-
-export interface LlmapiToolContext {
-    slot: SlotModel,
-    config: LlmapiToolConfigModel,
+    formRef: React.RefObject<HTMLFormElement | null>,
 }
 
 export interface LlmapiTool {
@@ -28,13 +20,3 @@ export interface LlmapiToolProvider extends Registerable {
     create: (config: LlmapiToolConfigModel, slot: SlotModel) => Promise<LlmapiTool[]>,
 }
 
-
-export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
-    async options => {
-        return await get('/llmapis/{id}/entries/{entryType}', {params: options})
-    });
-
-
-export const entryState: EntryState<LlmapiToolConfigModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName
-};
