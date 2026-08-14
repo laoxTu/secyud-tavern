@@ -111,8 +111,6 @@ function DefaultTab() {
                 const key = data.get("apikey") as string | undefined;
                 const provider = data.get("provider") as string;
                 const builder = data.get("builder") as string;
-                console.debug("builder", builder);
-                console.debug("provider", provider);
                 return await put("/llmapis/{id}",
                     {
                         content: {

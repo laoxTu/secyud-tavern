@@ -83,7 +83,6 @@ export const lorebookConversationProvider:
         }
 
         function setActiveLorebooks(history: LlmapiHistory, message: StoryHistoryMessage, includeOutput: boolean) {
-            console.debug("setActiveLorebooks: message", message);
             // 从持久化数据中设置/读取 string[]
             const lorebookNames = message.properties[enginePlural] ??
                 tryFillActiveLorebooks(cache.entries, {

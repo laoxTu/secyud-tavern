@@ -83,8 +83,8 @@ export class Registry<T extends Registerable> {
         const records = this.records;
         const recordList = Object.values(records)
             .sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
-        console.debug(`[${this.name}] sort ${recordList.length} items`);
-        console.debug(`[${this.name}] sorted`, recordList);
+        console.debug(`[${this.name}](count): ${recordList.length} items`);
+        console.debug(`[${this.name}](items)`, JSON.stringify(recordList));
         const sorted: T[] = [];
         const visited = new Set<string>();
 

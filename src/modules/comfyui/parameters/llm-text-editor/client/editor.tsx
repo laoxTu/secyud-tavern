@@ -77,7 +77,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             const {slot} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             if (!iframe) {
-                console.debug('[HistoryChatbox] failed to get history or iframe');
+                console.error('[slot]: failed to get history or iframe');
                 return;
             }
             setOutput(true);

@@ -29,13 +29,10 @@ export const remoteStorage: StateStorage = {
         const {data} = await get(`/settings/{id}`, {
             params: {id: name},
         });
-
-        console.debug("getItem ", data);
         return data ?? null;
     },
 
     setItem: async (name: string, value: string) => {
-        console.debug("setItem ", value);
         await put(`/settings/{id}`, {data: value}, {
             params: {id: name},
         });

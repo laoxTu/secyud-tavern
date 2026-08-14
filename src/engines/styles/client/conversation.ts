@@ -30,29 +30,28 @@ export const styleConversationProvider:
     },
     onRenderContent: async (ctx) => {
         const window = (ctx.window as any);
-        if (window.__injectedStyleInitialized) {
-            return;
-        }
-        window.__injectedStyleInitialized = true;
-        console.debug('[injected-styles] start generate');
-        const cache: StyleConversationCache = getContent(ctx.slot, enginePlural);
-        const set = new Set<string>();
-        for (const entry of cache.entries) {
-            const id = `${prefix}-${entry.code}`;
-            if (set.has(id)) continue;
-            set.add(id);
-            if (entry.type === 'link') {
-                // style 的链接用的是link[rel='stylesheet']的href
-                const link = ctx.document.createElement("link");
-                link.id = id;
-                link.rel = "stylesheet";
-                link.href = entry.content.trim();
-                ctx.document.head.appendChild(link)
-            } else {
-                const style = ctx.document.createElement("style");
-                style.id = id;
-                style.innerHTML = entry.content;
-                ctx.document.head.appendChild(style)
+        if (!window.__injectedStyleInitialized) {
+            window.__injectedStyleInitialized = true;
+            console.info('[style]: start inject');
+            const cache: StyleConversationCache = getContent(ctx.slot, enginePlural);
+            const set = new Set<string>();
+            for (const entry of cache.entries) {
+                const id = `${prefix}-${entry.code}`;
+                if (set.has(id)) continue;
+                set.add(id);
+                if (entry.type === 'link') {
+                    // style 的链接用的是link[rel='stylesheet']的href
+                    const link = ctx.document.createElement("link");
+                    link.id = id;
+                    link.rel = "stylesheet";
+                    link.href = entry.content.trim();
+                    ctx.document.head.appendChild(link)
+                } else {
+                    const style = ctx.document.createElement("style");
+                    style.id = id;
+                    style.innerHTML = entry.content;
+                    ctx.document.head.appendChild(style)
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ export default getRequestConfig(async ({}) => {
 
     const cookieStore = await cookies();
     const locale = cookieStore.get('locale')?.value;
-    console.debug("[getRequestConfig] locale", locale);
+    console.debug("[localization](locale): ", locale);
 
     const currentLocale = locale || defaultLocale;
     if (!locales.includes(currentLocale)) {
@@ -40,7 +40,7 @@ export default getRequestConfig(async ({}) => {
     // 遍历所有路径
     for (const dirName of localizationPaths) {
         const localizationDir = path.join(/*turbopackIgnore: true*/dirName, 'localization', language);
-        console.debug(`[localization] analyze dir: ${localizationDir}`);
+        console.debug(`[localization](directory): `, localizationDir);
         try {
             await fs.access(localizationDir);
         } catch {
@@ -55,7 +55,7 @@ export default getRequestConfig(async ({}) => {
             const content = await fs.readFile(filePath, 'utf-8');
             const messages = JSON.parse(content);
             allMessages = mergeObjects(allMessages, messages);
-            console.debug(`[localization] ✅ loading localization file: ${filePath}.json`);
+            console.debug(`[localization](file): `, `${filePath}.json`);
         }
     }
 

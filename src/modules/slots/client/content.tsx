@@ -58,7 +58,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     });
     const iframe = useRef<HTMLIFrameElement>(null);
     const ctx = useRef<SlotDataModel>({
-        callbacks: {},  iframe
+        callbacks: {}, iframe
     });
     const {setPage} = useHistoryPageState();
     const {pinned, setPinned} = useSlotControlState();
@@ -95,7 +95,6 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     };
 
     useEffect(() => {
-        console.debug(`[StoryPage] loadingState.started: ${loadingState.started}`);
         if (!loadingState.started) {
             (async () => {
                 setLoadingState(u => ({...u, started: true}));

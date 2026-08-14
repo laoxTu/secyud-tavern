@@ -105,7 +105,7 @@ export function getVariableValue(variables: any, path: string, create: boolean =
 // 应用一批变量变更：add/update 补建后赋值，remove 按 exists 删除。
 export function applyPatch(variables: any, changes?: VariableChangeModel[]) {
     if (!changes?.length) return;
-    console.debug("applyPatch", changes);
+    console.debug("[variables](apply): ", changes);
     for (const change of changes) {
         switch (change.op) {
             case "add":
@@ -143,7 +143,7 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
     const results: VariableChangeModel[] = [];
     text = text.trim().replace(regex, (_, element) => {
             try {
-                console.debug("[extractVariableChanges] element", element);
+                console.debug("[variables](extract element): ", element);
                 const obj = JSON.parse(element.trim());
                 if (Array.isArray(obj)) {
                     for (const item of obj) {
@@ -155,14 +155,13 @@ export function extractVariableChanges(history: StoryHistoryMessage, text?: stri
                     results.push(obj);
                 }
             } catch (e) {
-                console.warn("[extractVariableChanges](error): ", e);
+                console.warn("[variables](extract error): ", e);
             }
             return ''; // 删除匹配的内容
         }
     );
 
     history.variables = results.map(u => u);
-    console.debug("extractVariableChanges result", history.variables);
     history.content = text;
 }
 

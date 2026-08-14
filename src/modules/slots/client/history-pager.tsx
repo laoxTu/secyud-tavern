@@ -46,7 +46,7 @@ export function HistoryPagerButtonGroup() {
             const {histories} = getSlotAndHistories(ctx);
             const maxPage = histories.length;
             curPage = Math.min(Math.max(0, curPage), maxPage);
-            console.debug(`[HistoryPager] set story page: ${curPage}/${maxPage}`);
+            console.debug(`[slot](page): ${curPage}/${maxPage}`);
             setPage({max: maxPage, cur: curPage});
 
             if (curOutputPage === undefined) {

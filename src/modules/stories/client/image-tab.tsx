@@ -169,7 +169,6 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                                                    accept={"image/png"}
                                                    defaultValue={`/api/images/${entry.imageId}`}
                                                    onChange={file => {
-                                                       console.debug("file", file);
                                                        setImageFile(file);
                                                        changed.current = true;
                                                    }}/>

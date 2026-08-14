@@ -62,18 +62,18 @@ export async function fillToolCallContent(
     const cache: ToolConversationCache = getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
-        if (toolCall.content) continue;
+        if (toolCall.content !== undefined) continue;
         try {
-            console.debug(`use tool: ${toolCall.name}`)
             // 按函数名找配置，再经 toolId 找具体实现。
             const config = cache.tools[toolCall.name];
-            if (!config) {
-                toolCall.content = 'error: virtual tool should called by user simulated ai.';
-                continue;
+            if (config) {
+                const tool = llmapiToolManager.records[config.config.toolId];
+                console.debug(`[tool]: `, tool.id)
+                const args = JSON.parse(toolCall.arguments);
+                toolCall.content = await tool.invoke(args, {slot, config: config.config});
+            } else {
+                toolCall.content = '';
             }
-            const tool = llmapiToolManager.records[config.config.toolId];
-            const args = JSON.parse(toolCall.arguments);
-            toolCall.content = await tool.invoke(args, {slot, config: config.config});
         } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
             toolCall.content = `error: ${err?.message ?? "unknown error"}`;

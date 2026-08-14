@@ -21,7 +21,6 @@ export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.params;
         const input = await request.json();
-        console.debug("llmapi chat: ", input);
 
         const llmapi = await getCache(`llmapi_chat_${id}`,
             async () => {
@@ -42,7 +41,6 @@ export const POST = interceptor.createRoute(
 
 
         const provider = llmapi.provider as string;
-        console.debug("use engine " + provider);
         const engine = llmapiProviderRegistry.records[provider];
         if (!engine) {
             throw new BusinessError('engine not found', "default.entity_not_found")

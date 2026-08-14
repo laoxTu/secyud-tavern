@@ -34,7 +34,6 @@ export function HistoryEditor() {
 
     const handleDialogOpen = () => {
         try {
-            console.debug('[HistoryEditor] open edit dialog');
             const {histories} = getSlotAndHistories(ctx);
             const history = histories[useHistoryPageState.getState().page.cur - 1];
             setHistory(history);
@@ -46,7 +45,6 @@ export function HistoryEditor() {
 
     const handleHistoryUpdate = async (data: FormData) => {
         try {
-            console.debug('[HistoryEditor] update');
             const {histories, slot} = getSlotAndHistories(ctx);
             const index = useHistoryPageState.getState().page.cur - 1;
             const history = histories[index];
