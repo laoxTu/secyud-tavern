@@ -128,7 +128,7 @@ function Content() {
  */
 export async function generateOutput({output, content, message}: LlmapiOutputContext) {
     if (output?.reasoning_content) {
-        message.reasoningContent += output.reasoning_content;
+        message.thought += output.reasoning_content;
     }
     if (output?.content) {
         content.content ??= "";

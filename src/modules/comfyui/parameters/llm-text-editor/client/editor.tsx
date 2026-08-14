@@ -125,10 +125,10 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     history,
                     signal: signalName,
                 })) {
-                if (output.reasoningContent === thought) {
+                if (output.thought === thought) {
                     setThinking(false);
                 } else {
-                    thought = output.reasoningContent;
+                    thought = output.thought;
                     setThinking(true);
                 }
                 if (output.content !== content) {

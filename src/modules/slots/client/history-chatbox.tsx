@@ -18,7 +18,7 @@ import {
     updateStoryHistory,
     useSlotContext
 } from "@/modules/slots/client/models";
-import {StoryHistory, StoryOutputMessage} from "@/modules/stories/models";
+import {StoryHistory, StoryInputMessage, StoryOutputMessage} from "@/modules/stories/models";
 import {extractVariableChanges, SlotModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
@@ -100,7 +100,7 @@ export async function* requestLlmapiReply(
 
         const output: StoryOutputMessage = {
             content: "",
-            reasoningContent: "",
+            thought: "",
             variables: [],
             properties: {}
         };
@@ -176,10 +176,7 @@ export function HistoryChatbox() {
                     await conversationManager.streamRenderer
                         .use(provider =>
                             provider.onRenderStream(streamContext));
-                    renderData(streamContext, "content", {
-                        output: streamContext.data.output,
-                        reasoningContent: streamContext.data.reasoningContent
-                    });
+                    renderData(streamContext, "content", streamContext.data);
                 }
                 await handleHistoryPageChange(ctx, {
                     curPage: histories.length,
@@ -258,12 +255,11 @@ export function HistoryChatbox() {
             }
 
             const inputs = history.inputs;
-            const message = {
+            const message: StoryInputMessage = {
                 id: (tryGetLastItem(inputs)?.id ?? 0) + 1,
                 content: '',
-                reasoningContent: '',
                 variables: [],
-                properties: {},
+                properties: {}
             };
             extractVariableChanges(message, input);
             inputs.push(message);

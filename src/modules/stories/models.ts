@@ -16,7 +16,7 @@ export interface StoryOutputCalling {
 }
 
 export interface StoryOutputMessage extends StoryHistoryMessage {
-    reasoningContent: string,
+    thought: string,
     callings?: StoryOutputCalling[],
 }
 

@@ -1,62 +1,26 @@
 ﻿import {ToolboxIcon} from "lucide-react";
-import React, {RefObject, useState} from "react";
-import {del, post, put} from "@/client";
+import React from "react";
+import {del, get, post, put} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
 import {TemplateEntryList} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {useItemState} from "@/modules/llmapis/client/models";
-import {moduleName, modulePlural} from "@/modules/llmapis/models";
-import {LlmapiToolProvider} from "./models";
+import {useItemState} from "@/modules/presets/client/models";
+import {moduleName} from "@/modules/presets/models";
 import {engineName, LlmapiToolConfigModel} from "../models";
-import {useTranslations} from "next-intl";
-import {Field, FieldLabel} from "@/components/ui/field";
-import {Selector} from "@/components/custom/selector";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
+import {EditorContent} from "./llmapi-tab";
 import {createUsePagedItemsState} from "@/components/custom/pager";
-import {get} from "@/client";
 import {EntryState} from "@/business/client/models";
+import {modulePlural} from "@/modules/presets/models";
 
 export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
     async options => {
-        return await get('/llmapis/{id}/entries/{entryType}', {params: options})
+        return await get('/presets/{id}/entries/{entryType}', {params: options})
     });
-
 
 export const entryState: EntryState<LlmapiToolConfigModel> = {
     moduleName, modulePlural, usePagedItemsState, entryType: engineName
 };
-
-export function EditorContent({entry, formRef}: {
-    entry: LlmapiToolConfigModel,
-    formRef: RefObject<HTMLFormElement | null>
-}) {
-    const t = useTranslations();
-    const [editor, setEditor] = useState<LlmapiToolProvider | null>(
-        llmapiToolManager.records[entry.provider] ?? null);
-
-    return (
-        <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
-                        {t("llmapi.tool_provider")}
-                    </FieldLabel>
-                    <Selector id={`llmapi-tool_provider-${entry.id}`}
-                              items={llmapiToolManager.getSorted()}
-                              name={'provider'}
-                              value={editor}
-                              onValueChange={setEditor}
-                              valueAccessor={u => u.id}
-                              labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
-                </Field>
-            </div>
-            {editor?.component && (() => {
-                const Component = editor.component;
-                return <Component defaultValue={entry.value} entry={entry} formRef={formRef}/>
-            })()}
-        </>
-    );
-}
 
 function Tab() {
     const {model} = useItemState();
@@ -66,7 +30,7 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/llmapis/{id}/entries/{entryType}', {
+                    await post('/presets/{id}/entries/{entryType}', {
                         code: data.get('code'),
                         name: data.get('name'),
                         provider: "",
@@ -81,7 +45,7 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/llmapis/{id}/entries/{entryType}/{entryId}/disabled', {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
                         disabled,
                     }, {
                         params: {
@@ -93,7 +57,7 @@ function Tab() {
                     return {...entry, disabled};
                 },
                 deleteHandler: async entry => {
-                    await del('/llmapis/{id}/entries/{entryType}/{entryId}', {
+                    await del('/presets/{id}/entries/{entryType}/{entryId}', {
                         params: {
                             id: model?.id,
                             entryType: engineName,
@@ -102,7 +66,7 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/llmapis/{id}/entries/{entryType}', {
+                    await post('/presets/{id}/entries/{entryType}', {
                         ...entry,
                         code: data.get('code'),
                         name: data.get('name'),
@@ -123,7 +87,7 @@ function Tab() {
                         provider: provider,
                         value: llmapiToolManager.records[provider]?.getValue(data),
                     };
-                    await put('/llmapis/{id}/entries/{entryType}/{entryId}', result, {
+                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
                             id: model?.id,
                             entryType: engineName,

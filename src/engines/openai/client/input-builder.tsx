@@ -181,7 +181,7 @@ export async function generateInput(
                 await pushOutput({
                     content: "",
                     properties: {},
-                    reasoningContent: "",
+                    thought: "",
                     variables: [],
                     callings: [
                         {

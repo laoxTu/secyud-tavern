@@ -60,8 +60,6 @@
   },
   "default": {
     "author": "作者",
-    "json_invalid": "{target} JSON格式错误",
-    "variables": "变量",
     "base_url": "地址",
     "cancel": "取消",
     "chars": "字符",
@@ -69,11 +67,8 @@
     "comfyui_model": "ComfyUI模型",
     "comfyui_workflow": "ComfyUI工作流",
     "content": "内容",
-    "task_success": "任务完成：{target}",
-    "task_failed": "任务失败：{target}",
     "context_not_found": "上下文未找到：{target}",
     "copy": "复制",
-    "thinking": "思考中",
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
     "copy_title": "复制{target}",
@@ -107,6 +102,7 @@
     "import_description": "请导入一个{target}",
     "import_title": "导入{target}",
     "imported_successfully": "导入成功",
+    "json_invalid": "{target} JSON格式错误",
     "language": "语言",
     "layer": "层级",
     "link": "链接",
@@ -121,6 +117,8 @@
     "reset": "重置",
     "save": "保存",
     "saved_successfully": "保存成功",
+    "schema": "结构",
+    "script": "脚本",
     "search": "搜索",
     "select_description": "点击一个{target}，然后您可以对它进行编辑。",
     "select_file": "选择一个文件",
@@ -132,6 +130,9 @@
     "submit": "提交",
     "summary": "总结",
     "tags": "标签",
+    "task_failed": "任务失败：{target}",
+    "task_success": "任务完成：{target}",
+    "thinking": "思考中",
     "total_chars": "总字符",
     "type": "类型",
     "types": "类型",
@@ -139,6 +140,7 @@
     "update_description": "更新{target}的内容",
     "update_title": "更新{target}",
     "url": "链接",
+    "variables": "变量",
     "version": "版本",
     "year": "年",
     "zh": "简体中文"
@@ -161,24 +163,20 @@
     "provider": "供应者",
     "provider_deepseek": "Deepseek",
     "provider_openai": "Open AI",
-    "tool": "工具",
-    "tool_provider": "工具类型",
-    "tool_provider_url_fetch": "联网搜索",
-    "tool_provider_variable": "变量工具",
     "reasoning_effort": "reasoning effort (思考强度)",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
     "thinking": "思考模式",
+    "tool": "工具",
+    "tool_provider": "工具类型",
+    "tool_provider_script": "脚本",
+    "tool_provider_url_fetch": "联网搜索",
+    "tool_provider_variable": "变量工具",
     "top_logprobs": "top logprobs (最大返回置信词数)",
     "top_p": "top p (核采样 0~1)",
     "url": "地址",
     "user_input_prefix": "用户输入前缀",
     "user_input_suffix": "用户输入后缀"
-  },
-  "url_fetch": {
-    "max_results": "最大搜索数量",
-    "timeout": "超时设置",
-    "max_length": "长度返回限制"
   },
   "lorebook": {
     "delete_title": "删除世界书",
@@ -199,8 +197,8 @@
   },
   "macro": {
     "key": "键",
-    "show_selector": "显示宏选择",
     "selector": "宏选择",
+    "show_selector": "显示宏选择",
     "value": "值"
   },
   "page": {
@@ -213,6 +211,7 @@
     "lorebook": "世界书",
     "macro": "宏",
     "regex": "正则",
+    "tool": "工具",
     "script": "脚本",
     "style": "样式"
   },
@@ -243,22 +242,22 @@
   },
   "slot": {
     "back_home_tip": "回到主页",
+    "content_already_initialized": "插槽缓存已存在：{key}",
+    "content_not_initialized": "插槽缓存未初始化：{key}",
     "current_history": "当前历史",
     "delete_history_tip": "删除当前历史",
     "delete_output_tip": "删除当前回复",
     "edit_history": "编辑历史",
     "edit_history_tip": "编辑当前历史",
-    "unpin_chatbox": "取消固定聊天框",
-    "pin_chatbox": "固定聊天框",
     "input": "用户输入",
     "input_viewer": "上下文",
     "input_viewer_tip": "查看上下文",
     "output": "AI输出",
+    "pin_chatbox": "固定聊天框",
     "regenerate_reply_tip": "重新生成",
+    "unpin_chatbox": "取消固定聊天框",
     "variable": "变量",
-    "variable_invalid_json": "变量格式错误",
-    "content_not_initialized": "插槽缓存未初始化：{key}",
-    "content_already_initialized": "插槽缓存已存在：{key}"
+    "variable_invalid_json": "变量格式错误"
   },
   "story": {
     "enter": "进入",
@@ -267,5 +266,10 @@
     "opening_remarks": "开场白"
   },
   "style": {
+  },
+  "url_fetch": {
+    "max_length": "长度返回限制",
+    "max_results": "最大搜索数量",
+    "timeout": "超时设置"
   }
 }

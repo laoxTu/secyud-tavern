@@ -156,7 +156,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                                 {t("default.code") + "*"}
                                             </FieldLabel>
                                             <Input id={`${entryType}-code`} name="code"
-                                                   defaultValue={entry.code ?? null}
+                                                   defaultValue={entry.code ?? ""}
                                                    required/>
                                         </Field>
                                         <Field>
@@ -165,7 +165,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                                 {t("default.name") + "*"}
                                             </FieldLabel>
                                             <Input id={`${entryType}-name`} name="name"
-                                                   defaultValue={entry.name ?? null}
+                                                   defaultValue={entry.name ?? ""}
                                                    required/>
                                         </Field>
                                     </FieldGroup>
@@ -198,7 +198,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                             </FieldLabel>
                                             <Input name="code"
                                                    id={`${entryType}-code-${entry.id}`}
-                                                   defaultValue={entry.code ?? null}/>
+                                                   defaultValue={entry.code ?? ""}/>
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
@@ -206,7 +206,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
                                             </FieldLabel>
                                             <Input name="name"
                                                    id={`${entryType}-name-${entry.id}`}
-                                                   defaultValue={entry.name ?? null}/>
+                                                   defaultValue={entry.name ?? ""}/>
                                         </Field>
                                     </div>
                                     {updateContent(entry, formRef)}
