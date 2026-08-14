@@ -3,7 +3,7 @@ import {ComfyUIModelModel} from "@/modules/comfyui/models";
 import {importerName} from "../models";
 import {execSync} from "node:child_process";
 import path from "path";
-import {ensureDir} from "@/utils/download";
+import {ensureDir} from "@/utils/fs-extention";
 
 export const civitaiModelImporter: ComfyUIModelImporter = {
     id: importerName,

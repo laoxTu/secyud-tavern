@@ -2,6 +2,7 @@
  * 此文件只用于client请求server。调用第三方接口请使用fetch。
  */
 import {ApiError} from "@/handler/client/models";
+import {ApiPath} from "@/client-schema";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'open';
 export const getBaseUrl = () => {
@@ -79,7 +80,7 @@ interface RequestOptions {
 export async function api<
     M extends HttpMethod
 >(
-    url: string,
+    url: ApiPath,
     method: M,
     options?: RequestOptions
 ): Promise<any> {
@@ -111,8 +112,8 @@ export async function api<
     return await handleResponse(response);
 }
 
-export const get = (url: string, options?: RequestOptions) => api(url, 'get', options);
-export const post = (url: string, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
-export const put = (url: string, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
-export const del = (url: string, options?: RequestOptions) => api(url, 'delete', options);
-export const open = (url: string, options?: RequestOptions) => api(url, 'open', options);
+export const get = (url: ApiPath, options?: RequestOptions) => api(url, 'get', options);
+export const post = (url: ApiPath, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
+export const put = (url: ApiPath, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
+export const del = (url: ApiPath, options?: RequestOptions) => api(url, 'delete', options);
+export const open = (url: ApiPath, options?: RequestOptions) => api(url, 'open', options);

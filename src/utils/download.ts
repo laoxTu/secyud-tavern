@@ -1,27 +1,10 @@
 // 下载文件
-import promise from "fs/promises";
 import path from "path";
 import fs from "fs";
-
-export async function fileExists(path: string) {
-    try {
-        await promise.access(path);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-export async function ensureDir(dir: string) {
-    try {
-        await promise.access(dir);
-    } catch (err) {
-        await promise.mkdir(dir, {recursive: true});
-    }
-}
+import {ensureDir, pathExists} from "@/utils/fs-extention";
 
 export async function downloadFile(url: string, dest: string, init?: any) {
-    if (await fileExists(dest)) return;
+    if (await pathExists(dest)) return;
     await ensureDir(path.dirname(dest));
     console.log(`⬇️ download: ${url} to ${dest}`);
     const response = await fetch(url, init);

@@ -1,6 +1,6 @@
 {
   "name": "secyud-tavern",
-  "version": "1.1.2.12",
+  "version": "1.1.2.14",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,9 +8,9 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest",
-    "gen-client-api": "npx next-openapi-gen generate & openapi-typescript ./public/openapi.json -o src/schema.d.ts",
-    "gen-db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts",
-    "pre-build": "npx tsx scripts/pre-build.ts"
+    "pre-build": "npx tsx scripts/pre-build.ts",
+    "gen-proxy": "npx tsx scripts/gen-proxy.ts",
+    "gen-db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -58,7 +58,6 @@
     "onnxruntime-common": "^1.27.0",
     "onnxruntime-node": "^1.27.0",
     "openapi-fetch": "^0.17.0",
-    "openapi-typescript": "^7.13.0",
     "shadcn": "^4.15.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.1",
