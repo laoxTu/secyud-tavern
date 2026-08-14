@@ -33,7 +33,7 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
         env.localModelPath = '/models/';
         env.allowRemoteModels = false;
         const info = transformerModels[model];
-        console.debug("[transformer]", info);
+        console.debug("[transformer](info): ", info);
         const extractor = await pipeline("feature-extraction", info.model);
         return {
             embeddingDimension: info.dimension,

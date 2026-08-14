@@ -122,14 +122,11 @@ function Content() {
 }
 
 
-
 /**
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
  */
 export async function generateOutput({output, content, message}: LlmapiOutputContext) {
-    console.debug("generateOutput", output);
-
     if (output?.reasoning_content) {
         message.reasoningContent += output.reasoning_content;
     }

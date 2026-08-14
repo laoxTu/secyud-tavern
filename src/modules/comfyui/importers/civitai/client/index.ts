@@ -59,8 +59,6 @@ export const civitaiModelImporter: ComfyUIModelImporter = {
         return res;
 
         function extractFromModelVersionMeta(meta: any, modelMeta: any) {
-            console.debug(`meta model version ${modelVersionId}: `, meta);
-
             const imageSrc = meta.images.length > 0 ? meta.images[0].url : null;
             for (const fileInfo of meta.files) {
                 const {name: fileName} = fileInfo;

@@ -162,10 +162,9 @@
     "provider_deepseek": "Deepseek",
     "provider_openai": "Open AI",
     "tool": "工具",
-    "tool_id": "工具类型",
-    "tool_id_web_search": "联网搜索",
-    "tool_id_get_variable": "获取变量",
-    "tool_id_set_variable": "设置变量",
+    "tool_provider": "工具类型",
+    "tool_provider_url_fetch": "联网搜索",
+    "tool_provider_variable": "变量工具",
     "reasoning_effort": "reasoning effort (思考强度)",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
@@ -176,7 +175,7 @@
     "user_input_prefix": "用户输入前缀",
     "user_input_suffix": "用户输入后缀"
   },
-  "web_search": {
+  "url_fetch": {
     "max_results": "最大搜索数量",
     "timeout": "超时设置",
     "max_length": "长度返回限制"

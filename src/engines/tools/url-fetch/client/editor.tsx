@@ -1,14 +1,13 @@
-// tools/web-search/Editor.tsx
 'use client';
 
 import {useTranslations} from 'next-intl';
-import {WebSearchConfigModel} from "@/engines/tools/web-search/models";
+import {UrlFetchConfigModel} from "@/engines/tools/url-fetch/models";
 import {mergeObjects} from "@/utils";
 import {LlmapiToolProps} from "@/engines/tools/client/models";
 import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 
-const defaultConfig: WebSearchConfigModel = {
+const defaultConfig: UrlFetchConfigModel = {
     maxResults: 3,
     timeout: 10000,
     maxLength: 8000,
@@ -16,13 +15,13 @@ const defaultConfig: WebSearchConfigModel = {
 
 export function Editor({defaultValue, entry}: LlmapiToolProps) {
     const t = useTranslations();
-    const config: WebSearchConfigModel = mergeObjects(defaultConfig, defaultValue);
+    const config: UrlFetchConfigModel = mergeObjects(defaultConfig, defaultValue);
 
     return (
         <div className="grid md:grid-cols-2 gap-4">
             <Field>
                 <FieldLabel htmlFor={`${entry.id}-maxResults`}>
-                    {t('web_search.max_results')}
+                    {t('url_fetch.max_results')}
                 </FieldLabel>
                 <Input
                     id={`${entry.id}-maxResults`}
@@ -36,7 +35,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
 
             <Field>
                 <FieldLabel htmlFor={`${entry.id}-timeout`}>
-                    {t('web_search.timeout')}
+                    {t('url_fetch.timeout')}
                 </FieldLabel>
                 <FieldContent className={"flex-row"}>
                     <Input
@@ -55,7 +54,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
 
             <Field>
                 <FieldLabel htmlFor={`${entry.id}-max_length`}>
-                    {t('web_search.max_length')}
+                    {t('url_fetch.max_length')}
                 </FieldLabel>
                 <Input
                     id={`${entry.id}-max_length`}

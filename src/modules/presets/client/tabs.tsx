@@ -77,7 +77,6 @@ export function DefaultTab() {
                     });
                     coverId = id;
                 }
-                console.debug("[cover id]", coverId);
                 const getVariables = () => {
                     const variablesText = data.get("variables") as string;
                     if (!variablesText.trim()) return null;
@@ -117,7 +116,6 @@ export function DefaultTab() {
                                    accept={"image/png"}
                                    defaultValue={model.content.coverId ? `/api/images/${model.content.coverId}` : undefined}
                                    onChange={file => {
-                                       console.debug("file", file);
                                        setCoverFile(file);
                                        changed.current = true;
                                    }}/>

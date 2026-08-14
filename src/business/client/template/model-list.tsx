@@ -73,7 +73,6 @@ export function ModelList<TModel extends BaseModel>(
                 fuzzy: data.get("search") as string,
                 ...searchAccessor?.(data) ?? {}
             }
-            console.debug("search", search);
             await fetch({search});
         } catch (err) {
             handleError(err);
@@ -94,7 +93,6 @@ export function ModelList<TModel extends BaseModel>(
 
     const updateWidth = () => {
         if (width.current.update) {
-            console.debug("width", width.current.panelWidth);
             setPanelWidth(width.current.panelWidth);
             width.current.update = false;
         }
@@ -117,7 +115,6 @@ export function ModelList<TModel extends BaseModel>(
         (async () => {
             await fetch();
             const items = usePagedItemsState.getState().items;
-            console.debug("items", items);
             if (!useItemState.getState().model &&
                 items && items.length > 0) {
                 setModel(items[0]);

@@ -108,7 +108,6 @@ export function generateRenderData(history: StoryHistory) {
 }
 
 export function renderData(ctx: RenderContext, type: string, data: any) {
-    console.debug("renderData", data);
     const g = ctx.window as { __messageData?: Record<string, any> };
     g.__messageData ??= new Map<string, any>();
     g.__messageData[type] = data;

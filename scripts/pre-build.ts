@@ -42,8 +42,7 @@ async function preBuild() {
             .join(" ")}export async function registerClientPlugin() {${clientPlugins
             .map((u, i) =>
                 `await registerer${i}();`)
-            .join("")}}
-        `);
+            .join("")}}`);
     try {
         const envFilePath = path.join(root, '.env');
         // 使用 'wx' 标志

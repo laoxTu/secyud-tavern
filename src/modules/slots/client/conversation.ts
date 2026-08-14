@@ -38,8 +38,6 @@ export const conversationManager = {
 // 以存档 variables 为底，叠加输入与（可选）当前输出的变更，算出当前变量状态。
 export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
     const variables = structuredClone(history.variables);
-    console.debug("Generating current variables history", history);
-    console.debug("Generating current variables start", variables);
     for (const input of history.inputs) {
         applyPatch(variables, input.variables);
     }
@@ -89,7 +87,6 @@ export function getOpeningHistory(slot: SlotModel) {
         for (const preset of slot.presets) {
             variables = mergeObjects(variables, preset.content.variables);
         }
-        console.debug("openingHistory variables", variables);
         openingHistory = {
             id: 0,
             code: "opening history",

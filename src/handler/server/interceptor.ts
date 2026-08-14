@@ -61,7 +61,6 @@ class Interceptor extends ServerRegistry<InterceptorModels> {
                 if (index >= interceptors.length) {
                     return await route(request, records);
                 }
-
                 const interceptor = interceptors[index];
                 console.debug(`[${this.name}] intercepted by ${interceptor.id}`);
                 const next = () => dispatch(index + 1);

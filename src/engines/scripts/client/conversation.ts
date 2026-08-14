@@ -63,7 +63,7 @@ export const scriptConversationProvider:
         // 使用window的变量，以防window切换实例
         if (!window.__injectedScriptInitialized) {
             window.__injectedScriptInitialized = true;
-            console.debug('start generate injected-scripts');
+            console.info('[script]: start inject');
             const cache: ScriptConversationCache = getContent(ctx.slot, enginePlural);
 
             if (cache.importMap !== "{}") {
@@ -81,7 +81,6 @@ export const scriptConversationProvider:
                 set.add(id);
                 const script = ctx.document.createElement("script");
                 script.id = id;
-                console.debug("script id", id)
                 // link 类型意味着链接：await onload 保证按优先级顺序依次加载；
                 // 内联脚本则同步执行
                 if (entry.type === 'link') {

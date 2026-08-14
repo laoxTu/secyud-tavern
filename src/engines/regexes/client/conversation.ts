@@ -74,14 +74,11 @@ export const regexConversationProvider:
     },
     onRenderContent: async (ctx) => {
         const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
-        console.debug('start apply regex for input');
         const data = ctx.data;
         const inputs = data.inputs;
         for (let i = 0; i < inputs.length; i++) {
             inputs[i] = applyRegexes(cache.outputs, inputs[i]);
         }
-
-        console.debug('start apply regex for output');
         data.output = applyRegexes(cache.outputs, data.output);
     }
 };

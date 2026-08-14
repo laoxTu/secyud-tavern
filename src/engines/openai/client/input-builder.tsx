@@ -24,8 +24,8 @@ import {StoryOutputMessage} from "@/modules/stories/models";
 const virtualTool: OpenAI.ChatCompletionFunctionTool = {
     type: "function",
     function: {
-        name: "getLorebookContent",
-        description: "a virtual tool to get lorebook. user will simulate ai and invoke this. ",
+        name: "getLorebook",
+        description: "get lorebook. return empty if current lorebook is requested. ",
     }
 }
 
@@ -40,9 +40,9 @@ export async function generateInput(
         .map((u) => ({
             type: "function",
             function: {
-                name: u.tool.name,
-                parameters: u.tool.parameters as any,
-                description: u.tool.description,
+                name: u.model.name,
+                parameters: u.model.parameters as any,
+                description: u.model.description,
             }
         }));
     tools.push(virtualTool);
@@ -96,7 +96,6 @@ export async function generateInput(
             break;
     }
 
-    console.debug("llmapiMessages: ", messages);
     return {
         input: {
             messages,

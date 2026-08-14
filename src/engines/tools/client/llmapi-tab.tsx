@@ -6,32 +6,32 @@ import {TemplateEntryList} from "@/business/client/template";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {moduleName} from "@/modules/llmapis/models";
-import {entryState, LlmapiTool} from "./models";
+import {entryState, LlmapiToolProvider} from "./models";
 import {engineName, LlmapiToolConfigModel} from "../models";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Selector} from "@/components/custom/selector";
-import {llmapiToolManager} from "@/engines/tools/client/index";
+import {llmapiToolManager} from "@/engines/tools/client/manager";
 
 function EditorContent({entry}: { entry: LlmapiToolConfigModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
-    const [editor, setEditor] = useState<LlmapiTool | null>(
-        llmapiToolManager.records[entry.toolId] ?? null);
+    const [editor, setEditor] = useState<LlmapiToolProvider | null>(
+        llmapiToolManager.records[entry.provider] ?? null);
 
     return (
         <>
             <div className="grid md:grid-cols-2 gap-4">
                 <Field>
-                    <FieldLabel htmlFor={`llmapi-tool_id-${entry.id}`}>
-                        {t("llmapi.tool_id")}
+                    <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
+                        {t("llmapi.tool_provider")}
                     </FieldLabel>
-                    <Selector id={`llmapi-tool_id-${entry.id}`}
+                    <Selector id={`llmapi-tool_provider-${entry.id}`}
                               items={llmapiToolManager.getSorted()}
-                              name={'tool_id'}
+                              name={'provider'}
                               value={editor}
                               onValueChange={setEditor}
                               valueAccessor={u => u.id}
-                              labelAccessor={(u) => t(`llmapi.tool_id_${u.id}`)}/>
+                              labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
                 </Field>
             </div>
             {editor?.component && (() => {
@@ -53,7 +53,7 @@ function Tab() {
                     await post('/llmapis/{id}/entries/{entryType}', {
                         code: data.get('code'),
                         name: data.get('name'),
-                        toolId: "",
+                        provider: "",
                         value: {},
                     }, {
                         params: {
@@ -98,14 +98,14 @@ function Tab() {
                     })
                 },
                 updateHandler: async (entry, data) => {
-                    const toolId = data.get('tool_id') as string;
+                    const provider = data.get('provider') as string;
 
                     const result: LlmapiToolConfigModel = {
                         ...entry,
                         code: data.get('code') as string,
                         name: data.get('name') as string,
-                        toolId,
-                        value: llmapiToolManager.records[toolId]?.getValue(data),
+                        provider: provider,
+                        value: llmapiToolManager.records[provider]?.getValue(data),
                     };
                     await put('/llmapis/{id}/entries/{entryType}/{entryId}', result, {
                         params: {

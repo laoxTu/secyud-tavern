@@ -69,7 +69,6 @@ export async function* requestLlmapiReply(
     const llmapi = slot.llmapi;
     let generate = true;
     const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
-    console.debug("[llmapi provider](provider): ", llmapiProvider);
     const outputs: StoryOutputMessage[] = [];
     history.outputId = history.outputs.length;
     history.outputs.push(outputs);
@@ -92,7 +91,6 @@ export async function* requestLlmapiReply(
 
         const reply = setReplyAbortController(slot, signal);
         const {input} = await llmapiProvider.generateInput(inputContext);
-        console.debug("[llmapi provider](input): ", input);
         const response: Response = await post(`/llmapis/{id}/chat`, input,
             {
                 params: {id: llmapi.id},
@@ -144,7 +142,7 @@ export function HistoryChatbox() {
             let {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             if (!iframe) {
-                console.debug('[HistoryChatbox] failed to get history or iframe');
+                console.error('[slot]: failed to get history or iframe');
                 return;
             }
             setOutput(true);

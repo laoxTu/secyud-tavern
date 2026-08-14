@@ -9,7 +9,6 @@ import {BusinessError} from "@/handler/models";
  */
 export const POST = interceptor.createRoute(
     async (request) => {
-
         const prompt = await request.json();
         const setting = await settingRepository.get("comfyuiSettingState");
         const {state: {baseUrl, clientId}} = setting?.data ? JSON.parse(setting.data) : {
@@ -18,14 +17,14 @@ export const POST = interceptor.createRoute(
                 clientId: "secyud-tavern"
             }
         };
-        console.debug(`base_url: ${baseUrl}`);
+        const body = JSON.stringify({
+            client_id: clientId,
+            prompt: prompt
+        })
+        console.info(`[comfyui]: send prompt: `, body);
         const response = await fetch(`${baseUrl}/prompt`, {
             method: "POST",
-
-            body: JSON.stringify({
-                client_id: clientId,
-                prompt: prompt
-            }),
+            body,
         })
         const res = await response.json();
 

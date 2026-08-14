@@ -45,7 +45,6 @@ export function HistoryDeleter() {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
             let history = histories[page.cur - 1];
-            console.debug(history);
             if (history.outputs.length > 0) {
                 history.outputs.splice(history.outputId, 1);
             }

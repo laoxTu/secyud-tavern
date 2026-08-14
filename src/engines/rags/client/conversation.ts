@@ -43,7 +43,7 @@ export async function tryFillActiveVectors({lorebookDb, message, generator}: Rag
         // 可选：设定相似度阈值，低于此分数的不返回
         similarity: 0.75
     });
-    console.debug("[rag]", results);
+    console.debug("[rag](results): ", results);
     const activeLorebooks: string[] = results.hits.map(u => u.document.name);
 
     message.properties[enginePlural] = activeLorebooks;
@@ -127,7 +127,6 @@ export const ragConversationProvider:
 
         async function setActiveVectors(message: StoryHistoryMessage) {
             if (cache.disabled) return;
-            console.debug("setActiveVectors: message", message);
             const lorebookNames = message.properties[enginePlural] ?? await tryFillActiveVectors({
                 message, ...cache
             });

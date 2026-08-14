@@ -37,7 +37,7 @@ export function OutputPagerButtonGroup() {
             outstate.cur = current.outputId;
         }
     } catch (error) {
-        console.debug("[OutputPagerButtonGroup] err", error);
+        console.error("[slot](output error): ", error);
     }
     const [page, setPage] = useState<PageState>(outstate);
 
@@ -61,7 +61,7 @@ export function OutputPagerButtonGroup() {
             } else {
                 curPage = -1;
             }
-            console.debug(`[OutputPager] set output page: ${curPage}/${maxPage}`);
+            console.debug(`[slot](output page): ${curPage}/${maxPage}`);
             setPage({max: maxPage, cur: curPage});
             setPrepare(true);
         } catch (error) {
@@ -79,8 +79,6 @@ export function OutputPagerButtonGroup() {
             const history: StoryHistory = page.cur === 0 ?
                 getOpeningHistory(slot) : histories[page.cur - 1];
 
-            console.debug('[OutputPager] render history: ', history);
-            console.debug('[OutputPager] render iframe: ', iframe);
             const renderContext: RenderContext = {
                 content: {},
                 data: generateRenderData(history),
@@ -93,7 +91,6 @@ export function OutputPagerButtonGroup() {
             await conversationManager.contentRenderer
                 .use(provider =>
                     provider.onRenderContent(renderContext));
-            console.debug("[OutputPager] contentRenderer finished");
             renderData(renderContext, "content", renderContext.data);
         } catch (err) {
             handleError(err);
@@ -105,7 +102,7 @@ export function OutputPagerButtonGroup() {
         registerCallback(ctx, "handleOutputPageChange", handleOutputPageChange);
         if (prepare) {
             (async () => {
-                console.debug('[OutputPager] start render page');
+                console.debug('[slot](output render): start');
                 setPrepare(false);
                 await renderCurrentPage();
             })();

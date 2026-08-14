@@ -46,7 +46,6 @@ import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
     const content = model.content as ComfyUIModelContentModel;
-    console.debug("cover id", content.coverId);
     if (content.coverId)
         src = `/api/images/${content.coverId}`;
     else if (content.coverSrc)
@@ -239,7 +238,6 @@ function ContentItem({model}: { model: ComfyUIModelModel }) {
                                                accept={"image/png"}
                                                defaultValue={content.coverId ? `/api/images/${content.coverId}` : undefined}
                                                onChange={file => {
-                                                   console.debug("file", file);
                                                    setCoverFile(file);
                                                    changed.current = true;
                                                }}/>
@@ -400,7 +398,6 @@ function Content() {
                 types: data.getAll("type") as string[],
                 fuzzy: data.get("search") as string,
             }
-            console.debug("search", search);
             await fetch({search});
         } catch (err) {
             handleError(err);

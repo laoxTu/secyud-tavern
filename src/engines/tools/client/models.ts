@@ -17,11 +17,15 @@ export interface LlmapiToolContext {
     config: LlmapiToolConfigModel,
 }
 
-export interface LlmapiTool extends Registerable {
+export interface LlmapiTool {
+    model: LlmapiToolModel,
+    invoke: (args: any) => Promise<string>,
+}
+
+export interface LlmapiToolProvider extends Registerable {
     component: React.ComponentType<LlmapiToolProps>,
     getValue: (data: FormData) => any,
-    model: (config: LlmapiToolConfigModel) => LlmapiToolModel,
-    invoke: (args: any, ctx: LlmapiToolContext) => Promise<string>,
+    create: (config: LlmapiToolConfigModel, slot: SlotModel) => Promise<LlmapiTool[]>,
 }
 
 

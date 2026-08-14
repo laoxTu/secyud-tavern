@@ -86,8 +86,7 @@ export function ModelContent<TModel>(
     const handleClone = async (data: FormData) => {
         try {
             if (model) {
-                const result = await cloneHandler(model, data);
-                console.debug(`[handle clone: ${moduleName}]`, result);
+                const result : TModel = await cloneHandler(model, data);
                 await refresh(result);
                 setCloneOpen(false);
                 handleSuccess(t("default.copy_successfully"));
