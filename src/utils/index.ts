@@ -17,7 +17,7 @@ export function mergeObjects(target: any, source: any) {
     if (source) {
         for (const key in source) {
             const s = source[key];
-            if (!s) continue;
+            if (s === undefined || s === null) continue;
             const t = result[key];
             // 如果当前值和源值都是普通对象，则递归合并
             if (s && typeof s === 'object' && !Array.isArray(s) &&

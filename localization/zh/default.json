@@ -265,6 +265,10 @@
     "images": "图库",
     "opening_remarks": "开场白"
   },
+  "variable": {
+    "disable_get": "禁止获取",
+    "disable_set": "禁止设置"
+  },
   "style": {
   },
   "url_fetch": {

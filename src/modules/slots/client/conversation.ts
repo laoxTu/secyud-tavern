@@ -4,7 +4,6 @@ import {
     StoryInputMessage
 } from "@/modules/stories/models";
 import {
-    applyPatch,
     extractVariableChanges,
     getCurrentOutputs,
     SlotModel
@@ -20,6 +19,7 @@ import {
 } from "@/modules/slots/client/conversation-models";
 import {ClientRegistry} from "@/plugins/client";
 import {mergeObjects} from "@/utils";
+import {patch} from "@/utils/json-patch";
 
 export const conversationManager = {
     // 加载存档后需要做的事情，一般是初始化资源，将该排序的排序，该请求的请求。
@@ -39,13 +39,13 @@ export const conversationManager = {
 export function generateCurrentVariables(history: StoryHistory, includeOutput: boolean = true) {
     const variables = structuredClone(history.variables);
     for (const input of history.inputs) {
-        applyPatch(variables, input.variables);
+        patch(variables, input.variables);
     }
     if (includeOutput && history.outputs.length > 0) {
         const outputs = getCurrentOutputs(history);
         if (outputs)
             for (const output of outputs) {
-                applyPatch(variables, output.variables);
+                patch(variables, output.variables);
             }
     }
     return variables;

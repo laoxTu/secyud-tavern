@@ -1,5 +1,5 @@
 interface JsonPropertyBase {
-    description: string,
+    description?: string,
 }
 
 export interface RefProperty {
@@ -36,7 +36,7 @@ export interface ArrayProperty extends JsonPropertyBase {
 export interface JsonProperty extends JsonPropertyBase {
     type: "object",
     properties?: JsonSchemaProperties,
-    required: string[],
+    required?: string[],
     additionalProperties: boolean,
 }
 
@@ -46,8 +46,9 @@ export type JsonSchemaProperty =
     | NumberProperty
     | BooleanProperty
     | ArrayProperty
-    | JsonProperty;
-export type JsonSchemaProperties = Record<string, JsonSchemaProperty | { anyOf: JsonSchemaProperty[] }>;
+    | JsonProperty
+    | { anyOf: JsonSchemaProperty[] };
+export type JsonSchemaProperties = Record<string, JsonSchemaProperty>;
 
 export interface JsonSchema extends Omit<JsonProperty, "description"> {
     $def?: JsonSchemaProperties,
