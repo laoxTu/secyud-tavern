@@ -60,7 +60,7 @@ export interface LlmapiResultContext extends SlotContextBase {
 export interface RenderData {
     inputs: string[],
     output: string,
-    reasoningContent: string,
+    thought: string,
 }
 
 export interface RenderContext extends SlotContextBase {
@@ -101,7 +101,7 @@ export function generateRenderData(history: StoryHistory) {
     const res: RenderData = {
         inputs: history.inputs.map(u => u.content).filter(u => u),
         output: joinAsString(outputs, "\r\n", u => u.content).trim(),
-        reasoningContent: joinAsString(outputs, "\r\n", u => u.reasoningContent).trim(),
+        thought: joinAsString(outputs, "\r\n", u => u.thought).trim(),
     };
 
     return res;
