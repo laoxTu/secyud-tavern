@@ -1,4 +1,4 @@
-import {getCurrentOutputs, LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {getCurrentOutputs, SlotModel} from "@/modules/slots/models";
 import {
     getContent,
     LlmapiInputProcesser,
@@ -7,11 +7,12 @@ import {
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
-import {llmapiToolManager} from "@/engines/tools/client/index";
+import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {StoryOutputCalling} from "@/modules/stories/models";
+import {LlmapiTool} from "@/engines/tools/client/models";
 
 export interface ToolConversationCache {
-    tools: Record<string, { tool: LlmapiToolModel, config: LlmapiToolConfigModel }>;
+    tools: Record<string, LlmapiTool>;
 }
 
 
@@ -29,14 +30,17 @@ export const toolConversationProvider:
         const entries = ctx.slot.llmapi.entries
             ?.[enginePlural] as LlmapiToolConfigModel[];
         for (const entry of entries) {
-            if (entry.disabled || !entry.toolId) continue;
+            if (entry.disabled || !entry.provider) continue;
             // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
-            const tool = llmapiToolManager.records[entry.toolId];
-            const model = tool.model(entry);
-            cache.tools[model.name] = {
-                config: entry,
-                tool: model
-            };
+            const provider = llmapiToolManager.records[entry.provider];
+            if (!provider) {
+                console.warn(`tool provider missing: ${entry.provider}`);
+                continue;
+            }
+            const tools = await provider.create(entry, ctx.slot);
+            for (const tool of tools) {
+                cache.tools[tool.model.name] = tool;
+            }
         }
         setContent(ctx.slot, enginePlural, cache);
     },
@@ -65,12 +69,11 @@ export async function fillToolCallContent(
         if (toolCall.content !== undefined) continue;
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
-            const config = cache.tools[toolCall.name];
-            if (config) {
-                const tool = llmapiToolManager.records[config.config.toolId];
-                console.debug(`[tool]: `, tool.id)
+            const tool = cache.tools[toolCall.name];
+            if (tool) {
+                console.debug(`[tool]: `, tool.model.name);
                 const args = JSON.parse(toolCall.arguments);
-                toolCall.content = await tool.invoke(args, {slot, config: config.config});
+                toolCall.content = await tool.invoke(args);
             } else {
                 toolCall.content = '';
             }

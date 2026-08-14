@@ -40,9 +40,9 @@ export async function generateInput(
         .map((u) => ({
             type: "function",
             function: {
-                name: u.tool.name,
-                parameters: u.tool.parameters as any,
-                description: u.tool.description,
+                name: u.model.name,
+                parameters: u.model.parameters as any,
+                description: u.model.description,
             }
         }));
     tools.push(virtualTool);

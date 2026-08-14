@@ -1,7 +1,7 @@
 import {EntryModel} from "@/business/models";
 
 export interface LlmapiToolConfigModel extends EntryModel {
-    toolId: string,
+    provider: string,
     value?: any,
 }
 

@@ -1,28 +1,37 @@
-import {LlmapiTool} from "@/engines/tools/client/models";
-import {getCurrentOutput, getVariableValue, LlmapiToolModel, VariableChangeModel} from "@/modules/slots/models";
-import {Editor} from "@/engines/tools/variable/client/editor";
+import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
+import {
+    getCurrentOutput,
+    getVariableValue,
+    LlmapiToolModel,
+    SlotModel,
+    VariableChangeModel
+} from "@/modules/slots/models";
+import {Editor} from "./editor";
 import {getLastHistory} from "@/modules/slots/client/models";
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
+import {UrlFetchConfigModel} from "@/engines/tools/url-fetch/models";
+import {LlmapiToolConfigModel} from "@/engines/tools/models";
 
-export const variableGetTool: LlmapiTool = {
-    id: "get_variable", component: Editor,
-    getValue: () => ({}),
-    invoke: async ({path}: { path: string }, ctx) => {
-        const history = getLastHistory(ctx.slot);
-        // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
-        const variables = generateCurrentVariables(history, true);
-        const {current, realPath, exists} = getVariableValue(variables, path, false);
-        // 返回标准化路径、值和是否存在，供模型判断后续读写。
-        return JSON.stringify({
-            path: realPath,
-            value: current,
-            exists,
-        });
-    },
-    model(): LlmapiToolModel {
+export const variableToolProvider: LlmapiToolProvider = {
+    id: "variable",
+    component: Editor,
+    getValue: (data: FormData): UrlFetchConfigModel => {
         return {
-            name: "getVariable",
-            description: "get the specific path value desc of current variable",
+            maxResults: parseInt(data.get('max_result_count') as string),
+            timeout: parseInt(data.get('timeout') as string),
+            maxLength: parseInt(data.get('max_length') as string),
+        };
+    },
+    async create(config: LlmapiToolConfigModel, slot) {
+        return [new VariableGetTool(slot), new VariableSetTool(slot)];
+    },
+};
+
+export class VariableGetTool implements LlmapiTool {
+    constructor(private slot: SlotModel) {
+        this.model = {
+            name: "get_variable",
+            description: "get the value of the variable object by path",
             parameters: {
                 type: "object",
                 additionalProperties: false,
@@ -30,61 +39,58 @@ export const variableGetTool: LlmapiTool = {
                 properties: {
                     path: {
                         type: "string",
-                        description: "the path of the target variable, use '/' separate",
+                        description: "path, use '/' separate",
                     }
                 },
             }
         };
     }
-};
 
-export const variableSetTool: LlmapiTool = {
-    id: "set_variable", component: Editor,
-    getValue: () => ({}),
-    invoke: async ({variableChanges}: { variableChanges: VariableChangeModel[] }, ctx) => {
-        const history = getLastHistory(ctx.slot);
-        const currentOutput = getCurrentOutput(history);
-        if (currentOutput) {
-            // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
-            for (const variableChange of variableChanges) {
-                currentOutput.variables.push(variableChange);
-            }
-        }
-        return "success";
-    },
-    model(): LlmapiToolModel {
-        return {
-            name: "setVariable",
-            description: "set the variable changes",
+    async invoke({path}: { path: string }) {
+        const history = getLastHistory(this.slot);
+        // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
+        const variables = generateCurrentVariables(history, true);
+        const {current, realPath, exists} = getVariableValue(variables, path, false);
+        // 返回标准化路径、值和是否存在，供模型判断后续读写。
+        return exists ? JSON.stringify(current) : `not exists, closest path: ${realPath}`;
+    }
+
+    model: LlmapiToolModel;
+}
+
+export class VariableSetTool implements LlmapiTool {
+    constructor(private slot: SlotModel) {
+        this.model = {
+            name: "set_variable",
+            description: "use JSON patch change list to change variable",
             parameters: {
                 type: "object",
                 additionalProperties: false,
-                required: ["variableChanges"],
+                required: ["changes"],
                 properties: {
-                    variableChanges: {
+                    changes: {
                         type: "array",
-                        description: "the change list of the target variable",
+                        description: "the change list",
                         items: {
-                            $ref: "variableChange",
+                            $ref: "change",
                         },
                     }
                 },
-                // DeepSeek 官方用 $def（非标准 $defs），$ref 直接写键名，勿改。
                 $def: {
-                    variableChange: {
+                    change: {
                         type: "object",
-                        description: "the change operation of variable",
+                        description: "a JSON patch option",
                         additionalProperties: false,
                         required: ["op", "path", "value"],
                         properties: {
                             op: {
                                 type: "string",
-                                description: "operation, value is not required if remove",
+                                description: "change type",
                                 enum: ["add", "update", "remove"],
                             },
                             path: {
                                 type: "string",
-                                description: "path of the target variable, use '/' separate. recursively create object if path not exist",
+                                description: "use '/' separate. recursively create object if path not exist.",
                             },
                             value: {
                                 anyOf: [
@@ -102,9 +108,8 @@ export const variableSetTool: LlmapiTool = {
                                     },
                                     {
                                         type: "object",
-                                        description: "any object struct value, set the whole object to value",
+                                        description: "any object struct value, set the whole object to target path.",
                                         additionalProperties: true,
-                                        properties: {},
                                         required: [],
                                     }
                                 ]
@@ -115,4 +120,19 @@ export const variableSetTool: LlmapiTool = {
             },
         };
     }
-};
+
+    async invoke({changes}: { changes: VariableChangeModel[] }) {
+        const history = getLastHistory(this.slot);
+        const currentOutput = getCurrentOutput(history);
+        if (currentOutput) {
+            // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
+            for (const change of changes) {
+                currentOutput.variables.push(change);
+            }
+        }
+        return "success";
+    }
+
+    model: LlmapiToolModel;
+}
+

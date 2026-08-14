@@ -1,35 +1,32 @@
 import {Editor} from "./editor";
-import {WebSearchConfigModel} from "../models";
+import {UrlFetchConfigModel} from "../models";
 import {Readability} from "@mozilla/readability";
-import {LlmapiTool, LlmapiToolContext} from "@/engines/tools/client/models";
+import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {joinAsString} from "@/utils";
 
-
-export const webSearchTool: LlmapiTool = {
-    id: 'web_search',
+export const urlFetchToolProvider: LlmapiToolProvider = {
+    id: "url_fetch",
     component: Editor,
-
-    getValue: (data: FormData): WebSearchConfigModel => {
+    getValue: (data: FormData): UrlFetchConfigModel => {
         return {
             maxResults: parseInt(data.get('max_result_count') as string),
             timeout: parseInt(data.get('timeout') as string),
             maxLength: parseInt(data.get('max_length') as string),
         };
     },
+    async create(config: LlmapiToolConfigModel) {
+        return [new UrlFetchTool(config.value)];
+    },
+};
 
-    model: (configModel: LlmapiToolConfigModel): LlmapiToolModel => {
-        const config: WebSearchConfigModel = configModel.value;
-
-        return {
-            name: 'webSearch',
-            description: `Fetch content from web pages. Use when you need real-time information or content from specific URLs.${
-                config.maxResults === 1
-                    ? ' For single URL fetch.'
-                    : ` Can fetch up to ${config.maxResults} URLs at once.`
-            }`,
+export class UrlFetchTool implements LlmapiTool {
+    constructor(private config: UrlFetchConfigModel) {
+        this.model = {
+            name: 'url_fetch',
+            description: `Fetch content and extract message from url(s). (max url count: ${config.maxResults})`,
             parameters: {
                 type: 'object',
                 additionalProperties: false,
@@ -45,29 +42,27 @@ export const webSearchTool: LlmapiTool = {
                     },
                 },
             },
-        };
-    },
+        }
+    }
 
-    invoke: async (
-        {urls}: { urls: string[] },
-        ctx: LlmapiToolContext
-    ) => {
-        const config: WebSearchConfigModel = ctx.config.value;
-
-        const targetUrls = urls.slice(0, config.maxResults);
+    async invoke({urls}: { urls: string[] }) {
+        const targetUrls = urls.slice(0, this.config.maxResults);
 
         const results = [];
 
         for (const url of targetUrls) {
-            results.push(await fetchUrl(url, config.timeout * 1000, config.maxLength));
+            results.push(await fetchUrl(url,
+                this.config.timeout * 1000,
+                this.config.maxLength));
         }
 
         return joinAsString(results, "\r\n\r\n", u => `${u.url}\r\n${u.content ?? u.error}`);
-    },
-};
+    }
+
+    model: LlmapiToolModel;
+}
 
 // ============ 简化版抓取 ============
-
 async function fetchUrl(url: string, timeout: number, maxLength: number) {
     try {
         const controller = new AbortController();
@@ -81,7 +76,7 @@ async function fetchUrl(url: string, timeout: number, maxLength: number) {
 
         clearTimeout(timeoutId);
 
-        console.debug("[web search](content type): ", contentType);
+        console.debug("[url fetch](content type): ", contentType);
         if (
             // html
             contentType.includes('html') ||
@@ -102,7 +97,7 @@ async function fetchUrl(url: string, timeout: number, maxLength: number) {
         if (error instanceof Error && error.name === 'AbortError') {
             return {url, success: false, error: 'Request timeout'};
         }
-        console.warn("[web search]", error);
+        console.warn("[url fetch]", error);
         return {
             url,
             success: false,
