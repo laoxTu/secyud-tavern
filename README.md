@@ -1,6 +1,6 @@
 # Secyud Tavern
 
-一个高度可定制化的 AI 角色扮演与互动叙事平台。没有繁杂的设定 — 一切由**预设**、**模型**、**故事**三个简洁的概念组成。
+一个高度可定制化的 AI 角色扮演与互动叙事平台。没有繁杂的设定 — 一切由 **预设**、 **模型**、 **故事**三个简洁的概念组成。
 
 A highly customizable AI role-playing and interactive storytelling platform. No clutter — everything revolves around
 three simple concepts: **Presets**, **Models**, and **Stories**.
@@ -32,3 +32,9 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
     * 若要禁用插件，可在manifest.json配置`"disabled": false`，然后重新调用start脚本即可。
 * [secyud-tavern-importer](https://github.com/laoxTu/secyud-tavern-importer)
   导入插件，可以导入SillyTavern格式的角色卡和预设。目前只可以导入文字描述之类的内容，不能复刻脚本，需要自行调整。
+
+## 免责声明
+
+* 使用时应当清楚包含但不限于.env，数据库等文件的保密重要性，任何使用过程中因拷贝，传播等行为造成的密钥泄露应当自行担责。
+* 使用时应当清楚当地的法律法规，任何因内容生成等使用方面造成的版权等等法律纠纷应当由内容创作者以及模型供应者承担责任。
+* 使用时应当清楚本项目是可以随意加载插件和外部代码的，由第三方插件或代码引发的问题应当由第三方承担责任。
