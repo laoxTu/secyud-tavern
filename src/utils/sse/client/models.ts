@@ -7,6 +7,6 @@ export interface SseConnection {
 export const useSseConnection =
     create<SseConnection>(() => {
         return {
-            eventSource: new EventSource("api/sse")
+            eventSource: new EventSource("/api/sse")
         }
     });
