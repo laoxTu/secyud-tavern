@@ -152,6 +152,7 @@
   "llmapi": {
     "apikey": "api key",
     "builder": "提示词构造器",
+    "max_iterations": "单回合最大轮次",
     "builder_default": "默认构造器",
     "builder_layered": "层级构造器",
     "extras": "额外参数",

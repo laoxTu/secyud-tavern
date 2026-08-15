@@ -1,6 +1,5 @@
 import {VariableConfigModel} from "@/engines/tools/variable/models";
-import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
-import {Input} from "@/components/ui/input";
+import {Field, FieldLabel} from "@/components/ui/field";
 import {Checkbox} from "@/components/ui/checkbox";
 import {LlmapiToolProps} from "@/engines/tools/client/models";
 import {useTranslations} from "next-intl";
