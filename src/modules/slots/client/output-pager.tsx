@@ -1,4 +1,5 @@
 ﻿import {
+    getCurrentHistory,
     getSlotAndHistories,
     invokeCallback,
     registerCallback,
@@ -10,8 +11,7 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
 import React, {RefObject, useEffect, useState} from "react";
-import {StoryHistory} from "@/modules/stories/models";
-import {conversationManager, generateCurrentVariables, getOpeningHistory} from "@/modules/slots/client/conversation";
+import {conversationManager, generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {renderData, RenderContext, generateRenderData} from "@/modules/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
@@ -71,13 +71,12 @@ export function OutputPagerButtonGroup() {
 
     const renderCurrentPage = async () => {
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
+            console.debug(`[slot](render page): start`);
+            const {slot} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             if (!iframe || !slot) return;
             const {page} = useHistoryPageState.getState();
-            // page 为 0 时实际是渲染开场白
-            const history: StoryHistory = page.cur === 0 ?
-                getOpeningHistory(slot) : histories[page.cur - 1];
+            const history = getCurrentHistory(slot, page.cur);
 
             const renderContext: RenderContext = {
                 content: {},
@@ -97,12 +96,10 @@ export function OutputPagerButtonGroup() {
         }
     };
 
-
     useEffect(() => {
         registerCallback(ctx, "handleOutputPageChange", handleOutputPageChange);
         if (prepare) {
             (async () => {
-                console.debug('[slot](output render): start');
                 setPrepare(false);
                 await renderCurrentPage();
             })();

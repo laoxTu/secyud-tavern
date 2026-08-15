@@ -5,7 +5,7 @@ import {
     SlotModel
 } from "@/modules/slots/models";
 import {Editor} from "./editor";
-import {getLastHistory} from "@/modules/slots/client/models";
+import {getCurrentHistory} from "@/modules/slots/client/models";
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {extract, Operation} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";
@@ -48,7 +48,7 @@ export class VariableGetTool implements LlmapiTool {
     }
 
     async invoke({path}: { path: string }) {
-        const history = getLastHistory(this.slot);
+        const history = getCurrentHistory(this.slot);
         // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
         const variables = generateCurrentVariables(history, true);
         const {previous, current, exists} = extract(variables, path, false);
@@ -155,7 +155,7 @@ export class VariableSetTool implements LlmapiTool {
     }
 
     async invoke({changes}: { changes: Operation[] }) {
-        const history = getLastHistory(this.slot);
+        const history = getCurrentHistory(this.slot);
         const currentOutput = getCurrentOutput(history);
         if (currentOutput) {
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。

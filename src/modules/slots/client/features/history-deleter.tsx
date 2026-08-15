@@ -1,6 +1,11 @@
 ﻿'use client';
 import {del} from "@/client";
-import {getSlotAndHistories, updateStoryHistory, useSlotContext} from "@/modules/slots/client/models";
+import {
+    getCurrentHistory,
+    getSlotAndHistories,
+    updateStoryHistory,
+    useSlotContext
+} from "@/modules/slots/client/models";
 import {useTranslations} from "next-intl";
 import React, {useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
@@ -28,7 +33,7 @@ export function HistoryDeleter() {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
-            const history = histories[page.cur - 1];
+            const history = getCurrentHistory(slot, page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
                 {params: {id: slot.story.id, entryType: 'history', entryId: history.id}})
             histories.splice(page.cur - 1, 1);
@@ -44,20 +49,19 @@ export function HistoryDeleter() {
         try {
             const {slot, histories} = getSlotAndHistories(ctx);
             const {page} = useHistoryPageState.getState();
-            let history = histories[page.cur - 1];
-            if (history.outputs.length > 0) {
+            let history = getCurrentHistory(slot, page.cur);
+            if (history.outputs.length) {
                 history.outputs.splice(history.outputId, 1);
+                history.outputId = Math.min(
+                    history.outputs.length - 1, history.outputId);
             }
-            if (history.outputs.length === 0 &&
+
+            if (!history.outputs.length &&
                 page.cur < histories.length) {
-                const current = history;
-                history = histories[page.cur];
-                history.summary ||= current.summary;
-                history.inputs = [...current.inputs, ...history.inputs];
-                for (const input of current.inputs) {
-                    input.variables.length = 0;
-                }
-                await updateStoryHistory(slot.story.id, history);
+                const current = histories[page.cur];
+                current.summary ||= history.summary;
+                current.inputs = [...history.inputs, ...current.inputs];
+                await updateStoryHistory(slot.story.id, current);
                 await deleteCurrentHistory();
             } else {
                 await updateStoryHistory(slot.story.id, history);

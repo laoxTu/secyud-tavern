@@ -11,7 +11,7 @@ import {
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {
-    getLastHistory,
+    getCurrentHistory,
     getSlotAndHistories,
     invokeCallback, registerCallback,
     SlotDataModel,
@@ -149,12 +149,12 @@ export function HistoryChatbox() {
                 return;
             }
             setOutput(true);
-            const history = getLastHistory(slot);
+            const history = getCurrentHistory(slot);
+
             await handleHistoryPageChange(ctx, {
                 curPage: histories.length,
-                curOutputPage: history.outputId
+                curOutputPage: Math.max(0, history.outputs.length - 1),
             });
-
             for await (const {} of requestLlmapiReply(
                 {
                     slot,
@@ -181,12 +181,11 @@ export function HistoryChatbox() {
                             provider.onRenderStream(streamContext));
                     renderData(streamContext, "content", streamContext.data);
                 }
-                await handleHistoryPageChange(ctx, {
-                    curPage: histories.length,
-                    curOutputPage: history.outputId
-                });
             }
-
+            await handleHistoryPageChange(ctx, {
+                curPage: histories.length,
+                curOutputPage: history.outputId
+            });
             const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
             // 解析输出，填充一些选项或处理，这里应该会缓存世界书
             await conversationManager.outputProcesser.use(provider =>

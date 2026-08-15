@@ -239,6 +239,7 @@
     "comfyui": "ComfyUI",
     "default": "默认",
     "rag": "向量库",
+    "default_llmapi": "默认模型",
     "theme": "主题"
   },
   "slot": {

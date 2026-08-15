@@ -17,6 +17,7 @@ import {modelState} from "./models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {createUseTabState} from "@/business/client/models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {useRemoteSettingState} from "@/modules/settings/client/models";
 
 export const useStoryTabState = createUseTabState(storyTabManager);
 
@@ -68,7 +69,8 @@ function Content() {
                     id: "",
                     name: data.get("name") as string,
                     requires: [],
-                    llmapi: null,
+                    llmapi: useRemoteSettingState
+                        .getState().llmapi,
                     content: {},
                 });
             },

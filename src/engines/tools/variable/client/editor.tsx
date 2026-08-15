@@ -16,20 +16,20 @@ export function Editor({entry}: LlmapiToolProps) {
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field orientation={"horizontal"}>
-                <FieldLabel htmlFor={`${entry.id}-disable_get`}>
-                    {t('variable.disable_get')}
-                </FieldLabel>
                 <Checkbox id={`${entry.id}-disable_get`}
                           name="disable_get"
                           defaultChecked={config.disableGet}/>
+                <FieldLabel htmlFor={`${entry.id}-disable_get`}>
+                    {t('variable.disable_get')}
+                </FieldLabel>
             </Field>
             <Field orientation={"horizontal"}>
-                <FieldLabel htmlFor={`${entry.id}-disable_set`}>
-                    {t('variable.disable_set')}
-                </FieldLabel>
                 <Checkbox id={`${entry.id}-disable_set`}
                           name="disable_set"
                           defaultChecked={config.disableSet}/>
+                <FieldLabel htmlFor={`${entry.id}-disable_set`}>
+                    {t('variable.disable_set')}
+                </FieldLabel>
             </Field>
 
         </div>

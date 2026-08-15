@@ -42,16 +42,12 @@ export function getSlotAndHistories(ctx: RefObject<SlotDataModel>) {
     return {slot, histories};
 }
 
-export function getLastHistory(slot: SlotModel) {
-    return tryGetLastItem(slot.story.histories ?? []) ?? getOpeningHistory(slot);
-}
-
-export function getHistory(slot: SlotModel, index: number) {
+export function getCurrentHistory(slot: SlotModel, index: number | null = null) {
     const histories = slot.story.histories ?? [];
-    if (histories.length > index && index >= 0) {
-        return histories[index];
-    }
-    return getLastHistory(slot);
+    // page 为 0 时实际是渲染开场白
+    if (index !== null && histories.length >= index && index >= 0)
+        return index ? histories[index - 1] : getOpeningHistory(slot);
+    return tryGetLastItem(histories) ?? getOpeningHistory(slot);
 }
 
 export const SlotContext = createContext<RefObject<SlotDataModel> | undefined>(undefined)

@@ -1,6 +1,6 @@
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {getLastHistory, getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
+import {getCurrentHistory, getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
 import {useState} from "react";
 import {
     Dialog, DialogClose,
@@ -40,7 +40,7 @@ export function InputViewer() {
             setLoading(true);
             const {slot, histories} = getSlotAndHistories(ctx);
             const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
-            const last = getLastHistory(slot);
+            const last = getCurrentHistory(slot);
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
             const history: StoryHistory = {
@@ -54,7 +54,7 @@ export function InputViewer() {
                     properties: {}
                 }],
                 name: "",
-                outputId: 0,
+                outputId: -1,
                 outputs: [],
                 summary: false,
                 variables: last ? generateCurrentVariables(last, true) : {},
