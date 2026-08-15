@@ -63,7 +63,7 @@ export const scriptConversationProvider:
         // 使用window的变量，以防window切换实例
         if (!window.__injectedScriptInitialized) {
             window.__injectedScriptInitialized = true;
-            console.info('[script]: start inject');
+            console.debug('[script]: start inject');
             const cache: ScriptConversationCache = getContent(ctx.slot, enginePlural);
 
             if (cache.importMap !== "{}") {

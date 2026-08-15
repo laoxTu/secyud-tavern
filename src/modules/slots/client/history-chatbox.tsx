@@ -71,7 +71,7 @@ export async function* requestLlmapiReply(
     const outputs: StoryOutputMessage[] = [];
     history.outputId = history.outputs.length;
     history.outputs.push(outputs);
-    let iterations = Math.max(2, llmapi.content.maxIterations);
+    let iterations = Math.max(2, llmapi.content.maxIterations ?? 20);
     while (iterations > 0) {
         const current = outputs.length > 0;
         const inputContext: LlmapiInputContext = {

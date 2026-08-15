@@ -32,7 +32,7 @@ export const styleConversationProvider:
         const window = (ctx.window as any);
         if (!window.__injectedStyleInitialized) {
             window.__injectedStyleInitialized = true;
-            console.info('[style]: start inject');
+            console.debug('[style]: start inject');
             const cache: StyleConversationCache = getContent(ctx.slot, enginePlural);
             const set = new Set<string>();
             for (const entry of cache.entries) {
