@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import {ReplaceAllIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
@@ -13,6 +13,7 @@ import {TemplateEntryList} from "@/business/client/template";
 import {entryState} from "./models";
 import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
+import {Checkbox} from "@/components/ui/checkbox";
 
 function Tab() {
     const t = useTranslations();
@@ -77,6 +78,7 @@ function Tab() {
                         value: data.get("value") as string,
                         code: data.get('code') as string,
                         name: data.get('name') as string,
+                        multiple: !!data.get('multiple')
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
@@ -97,6 +99,16 @@ function Tab() {
                             <Input name="key"
                                    id={`${engineName}-key-${entry.id}`}
                                    defaultValue={entry.key}/>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor={`${engineName}-multiple-${entry.id}`}>
+                                {t("macro.multiple")}
+                            </FieldLabel>
+                            <FieldContent>
+                                <Checkbox name="multiple"
+                                          id={`${engineName}-multiple-${entry.id}`}
+                                          defaultChecked={entry.multiple ?? false}/>
+                            </FieldContent>
                         </Field>
                     </div>
                     <Field>

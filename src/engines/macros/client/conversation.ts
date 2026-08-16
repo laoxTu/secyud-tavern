@@ -11,6 +11,7 @@ import {Eta} from 'eta/core';
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
+import {joinAsString} from "@/utils";
 
 const eta = new Eta({
     autoTrim: false,
@@ -21,7 +22,12 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
     const cache: MacroConversationCache = getContent(ctx.slot, enginePlural);
 
     return {
-        ...Object.fromEntries(Object.values(cache.macros).map(u => [u.key, u.models[u.select].value])),
+        ...Object.fromEntries(Object.values(cache.macros).map(u => {
+            return [u.key, joinAsString(
+                [u.models[u.select],
+                    ...u.models.filter(v => v.multiple && !v.disabled)
+                ], "", u => u.value)]
+        })),
         variables: generateCurrentVariables(ctx.history, false),
     }
 }

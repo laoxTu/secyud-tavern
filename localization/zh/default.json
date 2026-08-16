@@ -200,6 +200,7 @@
   },
   "macro": {
     "key": "键",
+    "multiple": "允许多选",
     "selector": "宏选择",
     "show_selector": "显示宏选择",
     "value": "值"
