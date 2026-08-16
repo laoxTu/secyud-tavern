@@ -1,6 +1,7 @@
 import {create} from "zustand";
 import {createJSONStorage, persist, StateStorage} from "zustand/middleware";
 import {get, put} from "@/client";
+import {RequireModel} from "@/modules/presets/models";
 
 export interface DefaultSettingState {
     author: string;
@@ -19,6 +20,27 @@ export const useDefaultSettingState = create<DefaultSettingState>()(
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 author: state.author,
+            }),
+        }
+    ));
+
+export interface RemoteSettingState {
+    llmapi: RequireModel | null;
+    setLlmapi: (llmapi: RequireModel | null) => void;
+}
+
+export const useRemoteSettingState = create<RemoteSettingState>()(
+    persist((set) => ({
+            llmapi: null,
+            setLlmapi(llmapi) {
+                set({llmapi});
+            }
+        }),
+        {
+            name: "defaultSettingState",
+            storage: createJSONStorage(() => remoteStorage),
+            partialize: (state) => ({
+                llmapi: state.llmapi,
             }),
         }
     ));

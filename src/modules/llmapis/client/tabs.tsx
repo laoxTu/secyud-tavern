@@ -83,6 +83,16 @@ function UpdateContent({model}: { model: LlmapiModel }) {
                        defaultValue={model.version}
                 />
             </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-max_iterations`}>
+                    {t("llmapi.max_iterations")}
+                </FieldLabel>
+                <Input name="max_iterations"
+                       id={`${moduleName}-max_iterations`}
+                       type="number" min={2} max={100} step={1}
+                       defaultValue={model.content.maxIterations ?? 0}
+                />
+            </Field>
         </div>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
@@ -115,6 +125,7 @@ function DefaultTab() {
                     {
                         content: {
                             config: llmapiProviderRegistry.records[provider]?.getValue(data),
+                            maxIterations: parseInt(data.get("max_iterations") as string),
                         },
                         provider: provider,
                         builder: builder,

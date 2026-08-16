@@ -125,7 +125,7 @@ export function HistoryEditor() {
                                     <FieldLabel className={history.outputId === i ? "text-red-600" : ""}>
                                         {`${t('slot.output')} ${i}`}
                                     </FieldLabel>
-                                    {u.map((v, vi) =>
+                                    {u.filter(v => !v.callings?.length || v.content).map((v, vi) =>
                                         <Textarea key={vi} defaultValue={v.content}
                                                   name={`history_output-${i}-${vi}`}
                                                   onKeyDown={submitTargetFormOnKey}/>)

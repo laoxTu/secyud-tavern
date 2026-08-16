@@ -2,7 +2,7 @@ import {describe, it, expect} from 'vitest';
 import {extractVariableChanges, StoryHistoryMessage} from '@/modules/slots/models';
 
 function makeHistory(): StoryHistoryMessage {
-    return {content: '原内容', variables: [{op: 'add', path: '/a'}], properties: {}};
+    return {content: '原内容', variables: [{op: 'add', path: '/a', value:{}}], properties: {}};
 }
 
 describe('extractVariableChanges', () => {

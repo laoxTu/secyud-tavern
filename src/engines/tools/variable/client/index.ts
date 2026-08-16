@@ -1,29 +1,30 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {
     getCurrentOutput,
-    getVariableValue,
     LlmapiToolModel,
-    SlotModel,
-    VariableChangeModel
+    SlotModel
 } from "@/modules/slots/models";
 import {Editor} from "./editor";
-import {getLastHistory} from "@/modules/slots/client/models";
+import {getCurrentHistory} from "@/modules/slots/client/models";
 import {generateCurrentVariables} from "@/modules/slots/client/conversation";
-import {UrlFetchConfigModel} from "@/engines/tools/url-fetch/models";
-import {LlmapiToolConfigModel} from "@/engines/tools/models";
+import {extract, Operation} from "@/utils/json-patch";
+import {VariableConfigModel} from "../models";
 
 export const variableToolProvider: LlmapiToolProvider = {
     id: "variable",
     component: Editor,
-    getValue: (data: FormData): UrlFetchConfigModel => {
+    getValue: (data: FormData): VariableConfigModel => {
         return {
-            maxResults: parseInt(data.get('max_result_count') as string),
-            timeout: parseInt(data.get('timeout') as string),
-            maxLength: parseInt(data.get('max_length') as string),
+            disableSet: !!data.get('disable_set'),
+            disableGet: !!data.get('disable_get'),
         };
     },
-    async create(config: LlmapiToolConfigModel, slot) {
-        return [new VariableGetTool(slot), new VariableSetTool(slot)];
+    async create(config, slot) {
+        const c: VariableConfigModel = config.value;
+        const res: LlmapiTool[] = [];
+        if (!c.disableGet) res.push(new VariableGetTool(slot));
+        if (!c.disableSet) res.push(new VariableSetTool(slot));
+        return res;
     },
 };
 
@@ -47,12 +48,12 @@ export class VariableGetTool implements LlmapiTool {
     }
 
     async invoke({path}: { path: string }) {
-        const history = getLastHistory(this.slot);
+        const history = getCurrentHistory(this.slot);
         // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
         const variables = generateCurrentVariables(history, true);
-        const {current, realPath, exists} = getVariableValue(variables, path, false);
+        const {previous, current, exists} = extract(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
-        return exists ? JSON.stringify(current) : `not exists, closest path: ${realPath}`;
+        return exists ? JSON.stringify(current.item) : `not exists, closest path: ${previous.path}`;
     }
 
     model: LlmapiToolModel;
@@ -72,57 +73,89 @@ export class VariableSetTool implements LlmapiTool {
                         type: "array",
                         description: "the change list",
                         items: {
-                            $ref: "change",
+                            anyOf: [
+                                {
+                                    type: "object",
+                                    additionalProperties: false,
+                                    required: ["value", "op", "path"],
+                                    properties: {
+                                        path: {
+                                            $ref: "$def/path"
+                                        },
+                                        op: {
+                                            description: "The operation to perform.",
+                                            type: "string",
+                                            enum: ["add", "replace", "test"]
+                                        },
+                                        value: {
+                                            anyOf: [
+                                                {
+                                                    type: "object",
+                                                    additionalProperties: true,
+                                                },
+                                                {
+                                                    type: "string",
+                                                },
+                                                {
+                                                    type: "number",
+                                                },
+                                                {
+                                                    type: "boolean",
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    type: "object",
+                                    additionalProperties: false,
+                                    required: ["op", "path"],
+                                    properties: {
+                                        path: {
+                                            $ref: "$def/path"
+                                        },
+                                        op: {
+                                            description: "The operation to perform.",
+                                            type: "string",
+                                            enum: ["remove"]
+                                        }
+                                    }
+                                },
+                                {
+                                    type: "object",
+                                    additionalProperties: false,
+                                    required: ["from", "op", "path"],
+                                    properties: {
+                                        path: {
+                                            $ref: "$def/path"
+                                        },
+                                        op: {
+                                            description: "The operation to perform.",
+                                            type: "string",
+                                            enum: ["move", "copy"]
+                                        },
+                                        from: {
+                                            $ref: "$def/path"
+                                        }
+                                    }
+                                }
+                            ]
                         },
                     }
                 },
                 $def: {
-                    change: {
-                        type: "object",
-                        description: "a JSON patch option",
-                        additionalProperties: false,
-                        required: ["op", "path", "value"],
-                        properties: {
-                            op: {
-                                type: "string",
-                                description: "change type",
-                                enum: ["add", "update", "remove"],
-                            },
-                            path: {
-                                type: "string",
-                                description: "use '/' separate. recursively create object if path not exist.",
-                            },
-                            value: {
-                                anyOf: [
-                                    {
-                                        type: "string",
-                                        description: "string value",
-                                    },
-                                    {
-                                        type: "number",
-                                        description: "number value",
-                                    },
-                                    {
-                                        type: "boolean",
-                                        description: "boolean value",
-                                    },
-                                    {
-                                        type: "object",
-                                        description: "any object struct value, set the whole object to target path.",
-                                        additionalProperties: true,
-                                        required: [],
-                                    }
-                                ]
-                            }
-                        },
+                    path: {
+                        type: "string",
+                        description: "A JSON Pointer path.",
+                        pattern: "^#?(|(/([^/~]|~[01])*)*)$",
                     },
                 },
             },
         };
     }
 
-    async invoke({changes}: { changes: VariableChangeModel[] }) {
-        const history = getLastHistory(this.slot);
+    async invoke({changes}: { changes: Operation[] }) {
+        const history = getCurrentHistory(this.slot);
         const currentOutput = getCurrentOutput(history);
         if (currentOutput) {
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。

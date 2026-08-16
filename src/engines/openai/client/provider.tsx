@@ -126,7 +126,12 @@ function Content() {
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
  */
-export async function generateOutput({output, content, message}: LlmapiOutputContext) {
+export async function generateOutput(context: LlmapiOutputContext) {
+    const {output, content, message} = context;
+    if (output?.finish_reason === "stop") {
+        context.stopped = true;
+    }
+
     if (output?.reasoning_content) {
         message.thought += output.reasoning_content;
     }

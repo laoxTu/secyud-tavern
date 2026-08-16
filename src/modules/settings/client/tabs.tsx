@@ -7,10 +7,11 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
 import {useTheme} from "next-themes";
-import {useDefaultSettingState} from "@/modules/settings/client/models";
+import {useDefaultSettingState, useRemoteSettingState} from "@/modules/settings/client/models";
 import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
 import {Selector} from "@/components/custom/selector";
+import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -19,11 +20,14 @@ function Tab() {
     const {theme, setTheme} = useTheme();
     const {handleError, handleSuccess} = useErrorHandler();
     const {author, setAuthor} = useDefaultSettingState();
+    const {llmapi, setLlmapi} = useRemoteSettingState();
 
     const handleSubmit = async (data: FormData) => {
         try {
             setTheme(data.get('theme') as string);
             setAuthor(data.get('author') as string);
+            const llmapi = data.get('llmapi') as string;
+            setLlmapi(llmapi ? JSON.parse(llmapi) : null);
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
             handleError(e);
@@ -50,6 +54,14 @@ function Tab() {
                                           id={`setting-theme`}
                                           defaultValue={theme ?? null}
                                           items={themes}/>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="setting-llmapi">
+                                    {t("setting.default_llmapi")}
+                                </FieldLabel>
+                                <LlmapiRequireField
+                                    defaultValue={llmapi}
+                                    prefix={'setting'}/>
                             </Field>
                         </div>
                     </FieldGroup>

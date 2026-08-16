@@ -23,7 +23,6 @@ export const scriptToolProvider: LlmapiToolProvider = {
         };
     },
     async create(config: LlmapiToolConfigModel) {
-
         return [new ScriptTool(config.code, config.value)];
     },
 };

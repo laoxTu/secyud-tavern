@@ -50,6 +50,7 @@ export interface LlmapiOutputContext extends SlotContextBase {
     // for openai it may be { content: string, tool_calls: [], ...}
     output: any,
     message: StoryOutputMessage,
+    stopped: boolean,
 }
 
 export interface LlmapiResultContext extends SlotContextBase {

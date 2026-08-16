@@ -93,6 +93,7 @@
     "en": "English",
     "enable": "启用",
     "enable_item": "已启用",
+    "ensure": "确定",
     "entity_not_found": "目标未找到（ID：{id}）",
     "export": "导出",
     "html": "Html",
@@ -107,6 +108,7 @@
     "layer": "层级",
     "link": "链接",
     "llmapi": "模型",
+    "llmapi_config_notfound": "未配置模型",
     "month": "月",
     "name": "名称",
     "preset": "预设",
@@ -157,6 +159,7 @@
     "extras": "额外参数",
     "frequency_penalty": "presence penalty (用词重复度 -2.0~2.0)",
     "logprobs": "logprobs (返回置信度)",
+    "max_iterations": "单回合最大轮次",
     "max_tokens": "max tokens (输出长度上限 0~max)",
     "model": "模型",
     "presence_penalty": "presence penalty (话题新颖度 -2.0~2.0)",
@@ -207,13 +210,15 @@
     "turn_to": "跳至{page}页"
   },
   "preset": {
+    "enter_description": "即将从预设直接创建故事",
+    "enter_title": "从预设进入",
     "input_author": "输入作者",
     "lorebook": "世界书",
     "macro": "宏",
     "regex": "正则",
-    "tool": "工具",
     "script": "脚本",
-    "style": "样式"
+    "style": "样式",
+    "tool": "工具"
   },
   "rag": {
     "embedding_generator": "向量生成器",
@@ -237,6 +242,8 @@
     "author": "作者",
     "comfyui": "ComfyUI",
     "default": "默认",
+    "default_llmapi": "默认模型",
+    "llmapi_required": "默认模型未设置，请在设置中进行设置。",
     "rag": "向量库",
     "theme": "主题"
   },
@@ -244,6 +251,8 @@
     "back_home_tip": "回到主页",
     "content_already_initialized": "插槽缓存已存在：{key}",
     "content_not_initialized": "插槽缓存未初始化：{key}",
+    "create_chat": "创建",
+    "create_chat_delete_origin": "创建并删除原会话",
     "current_history": "当前历史",
     "delete_history_tip": "删除当前历史",
     "delete_output_tip": "删除当前回复",
@@ -252,6 +261,9 @@
     "input": "用户输入",
     "input_viewer": "上下文",
     "input_viewer_tip": "查看上下文",
+    "new_chat_description": "确定要创建新的会话吗？",
+    "new_chat_title": "创建新会话",
+    "not_loaded": "存档加载失败。",
     "output": "AI输出",
     "pin_chatbox": "固定聊天框",
     "regenerate_reply_tip": "重新生成",
@@ -271,5 +283,9 @@
     "max_length": "长度返回限制",
     "max_results": "最大搜索数量",
     "timeout": "超时设置"
+  },
+  "variable": {
+    "disable_get": "禁止获取",
+    "disable_set": "禁止设置"
   }
 }

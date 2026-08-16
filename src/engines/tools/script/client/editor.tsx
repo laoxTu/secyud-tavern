@@ -12,7 +12,11 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 const defaultConfig: ScriptToolConfigModel = {
     description: "",
     script: "return input;",
-    schema: "{}",
+    schema: `
+{
+    "type": "object",
+    "additionalProperties": false
+}`,
 };
 
 export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {

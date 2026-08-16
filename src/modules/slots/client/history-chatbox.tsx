@@ -11,7 +11,7 @@ import {
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
 import {
-    getLastHistory,
+    getCurrentHistory,
     getSlotAndHistories,
     invokeCallback, registerCallback,
     SlotDataModel,
@@ -23,7 +23,7 @@ import {extractVariableChanges, SlotModel} from "@/modules/slots/models";
 import {post} from "@/client";
 import {
     generateRenderData,
-    LlmapiInputContext, LlmapiResultContext,
+    LlmapiInputContext, LlmapiOutputContext, LlmapiResultContext,
     RenderContext, renderData,
 } from "@/modules/slots/client/conversation-models";
 import {
@@ -67,12 +67,12 @@ export async function* requestLlmapiReply(
     },) {
     // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
     const llmapi = slot.llmapi;
-    let generate = true;
     const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
     const outputs: StoryOutputMessage[] = [];
     history.outputId = history.outputs.length;
     history.outputs.push(outputs);
-    while (generate) {
+    let iterations = Math.max(2, llmapi.content.maxIterations ?? 20);
+    while (iterations > 0) {
         const current = outputs.length > 0;
         const inputContext: LlmapiInputContext = {
             slot,
@@ -112,16 +112,19 @@ export async function* requestLlmapiReply(
                     console.warn('[HistoryChatbox] reply canceled');
                     break;
                 }
-                await llmapiProvider.generateOutput({
+                const context: LlmapiOutputContext = {
                     content: cache,
                     message: output,
                     output: chunk,
                     slot,
-                });
+                    stopped: false,
+                };
+                await llmapiProvider.generateOutput(context);
                 yield {outputs, output};
+                if (context.stopped) {
+                    iterations = 0;
+                }
             }
-            // 还有 toolCalls 就继续请求，current 置 true 续接当前输出。
-            generate = !!output.callings?.length;
         }
     }
 }
@@ -146,12 +149,12 @@ export function HistoryChatbox() {
                 return;
             }
             setOutput(true);
-            const history = getLastHistory(slot);
+            const history = getCurrentHistory(slot);
+
             await handleHistoryPageChange(ctx, {
                 curPage: histories.length,
-                curOutputPage: history.outputId
+                curOutputPage: Math.max(0, history.outputs.length - 1),
             });
-
             for await (const {} of requestLlmapiReply(
                 {
                     slot,
@@ -178,12 +181,11 @@ export function HistoryChatbox() {
                             provider.onRenderStream(streamContext));
                     renderData(streamContext, "content", streamContext.data);
                 }
-                await handleHistoryPageChange(ctx, {
-                    curPage: histories.length,
-                    curOutputPage: history.outputId
-                });
             }
-
+            await handleHistoryPageChange(ctx, {
+                curPage: histories.length,
+                curOutputPage: history.outputId
+            });
             const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
             // 解析输出，填充一些选项或处理，这里应该会缓存世界书
             await conversationManager.outputProcesser.use(provider =>

@@ -32,9 +32,12 @@ export async function generateOpenAIReadableStreamReply(
                         if (externalSignal.aborted) {
                             break;
                         }
-                        const delta = chunk.choices[0]?.delta;
-                        if (delta) {
-                            controller.enqueue(encode(delta));
+                        const choice = chunk.choices[0];
+                        if (choice.delta || choice.finish_reason) {
+                            controller.enqueue(encode({
+                                ...choice.delta,
+                                finish_reason: choice.finish_reason
+                            }));
                         }
                     }
                     controller.close();
@@ -61,13 +64,11 @@ export async function generateOpenAIReadableStreamReply(
             }, 300);
             try {
                 const completion = await openai.chat.completions.create(parameter as any);
-                const message = completion.choices[0]?.message ?? {
-                    content: ""
-                };
+                const choice = completion.choices[0];
 
                 clearInterval(heartbeatInterval);
 
-                controller.enqueue(encode(message));
+                controller.enqueue(encode({...choice.message, finish_reason: choice.finish_reason}));
                 controller.close();
 
             } catch (e) {

@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {
-    getHistory,
+    getCurrentHistory,
     getSlotAndHistories,
     useSlotContext
 } from "@/modules/slots/client/models";
@@ -90,7 +90,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     properties: {}
                 }],
                 outputs: [],
-                outputId: 0,
+                outputId: -1,
                 summary: false,
                 variables: [],
                 id: 0,
@@ -116,7 +116,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                         story: {
                             ...slot.story,
                             histories: [
-                                getHistory(slot, useHistoryPageState.getState().page.cur),
+                                getCurrentHistory(slot, useHistoryPageState.getState().page.cur),
                                 history,
                             ]
                         },
