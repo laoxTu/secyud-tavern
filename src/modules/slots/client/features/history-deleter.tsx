@@ -1,5 +1,5 @@
 ﻿'use client';
-import {del} from "@/client";
+import {del, post} from "@/client";
 import {
     getCurrentHistory,
     getSlotAndHistories,
@@ -17,15 +17,18 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {Button} from "@/components/ui/button";
-import {DeleteIcon, TrashIcon} from "lucide-react";
+import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState, handleHistoryPageChange} from "@/modules/slots/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {useRouter} from "next/navigation";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
     const ctx = useSlotContext();
     const {page} = useHistoryPageState();
+    const router = useRouter();
+    const [openReopen, setOpenReopen] = useState<boolean>(false);
     const [openRemove, setOpenRemove] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
 
@@ -74,6 +77,31 @@ export function HistoryDeleter() {
         }
     };
 
+    const cloneStoryHistory = async (remain: boolean) => {
+        try {
+            const entity = ctx.current.slot?.story;
+            if (!entity) return;
+            const {id} = await post("/stories", {
+                ...entity,
+                entries: {
+                    ...entity.entries,
+                    histories: undefined,
+                },
+                id: "",
+            });
+            if (!remain) {
+                await del("/stories/{id}", {
+                    params: {
+                        id: entity.id,
+                    }
+                })
+            }
+            router.push(`/business/stories/${id}`);
+        } catch (e) {
+            handleError(e);
+        }
+    }
+
     return (<>
         <AlertDialog open={openRemove} onOpenChange={setOpenRemove}>
             <AlertDialogTrigger render={<Tooltip/>}>
@@ -104,7 +132,6 @@ export function HistoryDeleter() {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-
         <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
             <AlertDialogTrigger render={<Tooltip/>}>
                 <TooltipTrigger onClick={() => setOpenDelete(true)}
@@ -130,6 +157,38 @@ export function HistoryDeleter() {
                     <AlertDialogAction onClick={() => deleteCurrentHistory()}
                                        variant={'destructive'}>
                         {t('default.delete')}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog open={openReopen} onOpenChange={setOpenReopen}>
+            <AlertDialogTrigger render={<Tooltip/>}>
+                <TooltipTrigger onClick={() => setOpenReopen(true)}
+                                render={<Button variant="destructive"/>}>
+                    <MessageCirclePlusIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{t('slot.new_chat_title')}</p>
+                </TooltipContent>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        {t('slot.new_chat_title', {target: t('slot.output')})}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {t('slot.new_chat_description', {target: t('slot.output')})}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => cloneStoryHistory(true)}
+                                       variant={'default'}>
+                        {t('slot.create_chat')}
+                    </AlertDialogAction>
+                    <AlertDialogAction onClick={() => cloneStoryHistory(false)}
+                                       variant={'destructive'}>
+                        {t('slot.create_chat_delete_origin')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

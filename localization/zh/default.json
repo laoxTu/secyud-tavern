@@ -264,6 +264,10 @@
     "regenerate_reply_tip": "重新生成",
     "unpin_chatbox": "取消固定聊天框",
     "variable": "变量",
+    "new_chat_title": "创建新会话",
+    "new_chat_description": "确定要创建新的会话吗？",
+    "create_chat": "创建",
+    "create_chat_delete_origin": "创建并删除原会话",
     "not_loaded": "存档加载失败。",
     "variable_invalid_json": "变量格式错误"
   },
