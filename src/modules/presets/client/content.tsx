@@ -8,7 +8,7 @@ import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {TabConfig} from "@/components/custom/tab";
 import {get, post, open, del, put} from "@/client";
-import {moduleName, PresetModel, RequireModel} from "../models";
+import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
 import {TemplateModelList} from "@/business/client/template";
@@ -23,9 +23,12 @@ import {
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
-import {FileDownIcon} from "lucide-react";
+import {FileDownIcon, SquareArrowRightEnterIcon} from "lucide-react";
 import {v4 as uuidv4} from "uuid";
 import {Checkbox} from "@/components/ui/checkbox";
+import {useRemoteSettingState} from "@/modules/settings/client/models";
+import {useRouter} from "next/navigation";
+import {BusinessError} from "@/handler/models";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
 
@@ -137,6 +140,64 @@ function PresetImportDialog() {
     </Dialog>);
 }
 
+function PresetToolbar({model}: { model: PresetModel }) {
+    const t = useTranslations();
+    const router = useRouter();
+    const {handleError} = useErrorHandler();
+    const [enterOpen, setEnterOpen] = useState(false);
+    const enterStory = async () => {
+        try {
+
+            const llmapi = useRemoteSettingState
+                .getState().llmapi;
+            if (!llmapi) {
+                handleError(new BusinessError("default llmapi is not set.", "setting.llmapi_required"));
+                return;
+            }
+            const {id} = await post("/stories", {
+                name: model.name,
+                requires: [convertToRequire(model)],
+                llmapi,
+                content: {},
+            });
+            router.push(`/business/stories/${id}`);
+        } catch (err) {
+            handleError(err);
+        }
+    };
+
+    return (<>
+        <Dialog open={enterOpen} onOpenChange={setEnterOpen}>
+            <DialogTrigger render={<Tooltip/>}>
+                <TooltipTrigger onClick={() => setEnterOpen(true)}
+                                render={<Button variant={'secondary'}/>}>
+                    <SquareArrowRightEnterIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{t('preset.enter_title')}</p>
+                </TooltipContent>
+            </DialogTrigger>
+            <DialogContent render={<form action={enterStory}/>}>
+                <DialogHeader>
+                    <DialogTitle>
+                        {t("preset.enter_title")}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {t("preset.enter_description")}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button type="submit">
+                        {t("default.ensure")}
+                    </Button>
+                    <DialogClose render={<Button variant="outline"/>}>
+                        {t("default.cancel")}
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </>);
+}
 
 function Content() {
     const t = useTranslations();
@@ -204,6 +265,7 @@ function Content() {
             }
         }}
         contentProps={{
+            toolbar: (model) => <PresetToolbar model={model}/>,
             cloneHandler:
                 async (model, data) => {
                     const entity = await get("/presets/{id}", {

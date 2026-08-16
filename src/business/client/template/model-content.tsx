@@ -26,6 +26,8 @@ export interface ModelContentProps<TModel> {
     cloneContent: (model: TModel) => React.ReactNode,
     // 根据原模型和表单克隆模型，返回克隆后的模型。注意传入模型不带详情。
     cloneHandler: (model: TModel, data: FormData) => Promise<TModel>,
+    // 克隆 FieldGroup 的内部内容
+    toolbar?: (model: TModel) => React.ReactNode,
     // 导出模型，一般用 window.open(`/api/${apiName}/${model.id}/export`)
     exportHandler: (model: TModel) => Promise<void>,
     // 删除模型
@@ -54,6 +56,7 @@ export function ModelContent<TModel>(
             exportHandler,
             deleteHandler,
             useTabState,
+            toolbar,
             tabManager,
         }
     }: Props<TModel>) {
@@ -86,7 +89,7 @@ export function ModelContent<TModel>(
     const handleClone = async (data: FormData) => {
         try {
             if (model) {
-                const result : TModel = await cloneHandler(model, data);
+                const result: TModel = await cloneHandler(model, data);
                 await refresh(result);
                 setCloneOpen(false);
                 handleSuccess(t("default.copy_successfully"));
@@ -188,6 +191,7 @@ export function ModelContent<TModel>(
                         <p>{t('default.export')}</p>
                     </TooltipContent>
                 </Tooltip>
+                {toolbar?.(model)}
             </div>
             {tabs.map((tab) => {
                 const Component = tab.component;

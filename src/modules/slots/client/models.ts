@@ -36,7 +36,7 @@ export function getSlotAndHistories(ctx: RefObject<SlotDataModel>) {
     const slot = ctx.current.slot;
     const histories = slot?.story.histories;
     if (!histories) {
-        throw new BusinessError("Slot is not load this time.");
+        throw new BusinessError("Slot is not load this time.", "slot.not_loaded");
     }
 
     return {slot, histories};

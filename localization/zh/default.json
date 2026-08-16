@@ -80,6 +80,7 @@
     "created_successfully": "创建成功",
     "ctrl_enter_submit": "按 Ctrl + Enter 发送消息，Enter 换行",
     "day": "日",
+    "ensure": "确定",
     "delete": "删除",
     "delete_description": "您确定要删除这个{target}吗？这个操作是不可逆的。",
     "delete_successfully": "删除成功",
@@ -108,6 +109,7 @@
     "link": "链接",
     "llmapi": "模型",
     "month": "月",
+    "llmapi_config_notfound": "未配置模型",
     "name": "名称",
     "preset": "预设",
     "priority": "优先级",
@@ -213,6 +215,8 @@
     "macro": "宏",
     "regex": "正则",
     "tool": "工具",
+    "enter_title": "从预设进入",
+    "enter_description": "即将从预设直接创建故事",
     "script": "脚本",
     "style": "样式"
   },
@@ -240,6 +244,7 @@
     "default": "默认",
     "rag": "向量库",
     "default_llmapi": "默认模型",
+    "llmapi_required": "默认模型未设置，请在设置中进行设置。",
     "theme": "主题"
   },
   "slot": {
@@ -259,6 +264,7 @@
     "regenerate_reply_tip": "重新生成",
     "unpin_chatbox": "取消固定聊天框",
     "variable": "变量",
+    "not_loaded": "存档加载失败。",
     "variable_invalid_json": "变量格式错误"
   },
   "story": {

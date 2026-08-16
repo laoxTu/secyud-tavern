@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
-import {EditIcon} from "lucide-react";
+import {Paintbrush2Icon} from "lucide-react";
 import {FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import React, {useRef, useState} from "react";
 import {useTranslations} from "next-intl";
@@ -67,7 +67,7 @@ export function ComfyUIGenerator() {
         <DialogTrigger render={<Tooltip/>}>
             <TooltipTrigger onClick={() => setOpen(true)}
                             render={<Button variant="outline"/>}>
-                <EditIcon/>
+                <Paintbrush2Icon/>
             </TooltipTrigger>
             <TooltipContent>
                 <p>{t('comfyui.generate_img')}</p>
