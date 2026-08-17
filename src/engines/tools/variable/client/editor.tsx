@@ -1,5 +1,5 @@
 import {VariableConfigModel} from "@/engines/tools/variable/models";
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {Checkbox} from "@/components/ui/checkbox";
 import {LlmapiToolProps} from "@/engines/tools/client/models";
 import {useTranslations} from "next-intl";
@@ -16,20 +16,24 @@ export function Editor({entry}: LlmapiToolProps) {
     return <>
         <div className="grid md:grid-cols-2 gap-4">
             <Field orientation={"horizontal"}>
-                <Checkbox id={`${entry.id}-disable_get`}
-                          name="disable_get"
-                          defaultChecked={config.disableGet}/>
                 <FieldLabel htmlFor={`${entry.id}-disable_get`}>
                     {t('variable.disable_get')}
                 </FieldLabel>
+                <FieldContent>
+                    <Checkbox name="disable_get"
+                              id={`${entry.id}-disable_get`}
+                              defaultChecked={config.disableGet}/>
+                </FieldContent>
             </Field>
             <Field orientation={"horizontal"}>
-                <Checkbox id={`${entry.id}-disable_set`}
-                          name="disable_set"
-                          defaultChecked={config.disableSet}/>
                 <FieldLabel htmlFor={`${entry.id}-disable_set`}>
                     {t('variable.disable_set')}
                 </FieldLabel>
+                <FieldContent>
+                    <Checkbox name="disable_set"
+                              id={`${entry.id}-disable_set`}
+                              defaultChecked={config.disableSet}/>
+                </FieldContent>
             </Field>
 
         </div>

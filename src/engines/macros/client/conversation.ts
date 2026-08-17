@@ -24,9 +24,9 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
     return {
         ...Object.fromEntries(Object.values(cache.macros).map(u => {
             return [u.key, joinAsString(
-                [u.models[u.select],
+                [u.select < 0 ? null : u.models[u.select],
                     ...u.models.filter(v => v.multiple && !v.disabled)
-                ], "", u => u.value)]
+                ], "", u => u?.value)]
         })),
         variables: generateCurrentVariables(ctx.history, false),
     }
@@ -71,13 +71,13 @@ export const macroConversationProvider:
             for (const entry of entries) {
                 const item = cache.macros[entry.key] ??= {
                     key: entry.key,
-                    select: 0,
+                    select: -1,
                     models: [],
                 };
+                if (!entry.disabled && !entry.multiple)
+                    item.select = item.models.length;
+
                 item.models.push(entry);
-                if (!entry.disabled) {
-                    item.select = item.models.length - 1;
-                }
             }
         }
         setContent(ctx.slot, enginePlural, cache);
