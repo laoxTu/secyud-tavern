@@ -1,5 +1,5 @@
 ﻿import {ToolboxIcon} from "lucide-react";
-import React from "react";
+import React, {RefObject, useState} from "react";
 import {del, get, post, put} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
 import {TemplateEntryList} from "@/business/client/template";
@@ -8,10 +8,13 @@ import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {engineName, LlmapiToolConfigModel} from "../models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
-import {EditorContent} from "./llmapi-tab";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {EntryState} from "@/business/client/models";
 import {modulePlural} from "@/modules/presets/models";
+import {useTranslations} from "next-intl";
+import {LlmapiToolProvider} from "@/engines/tools/client/models";
+import {Field, FieldLabel} from "@/components/ui/field";
+import {Selector} from "@/components/custom/selector";
 
 export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
     async options => {
@@ -21,6 +24,39 @@ export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel
 export const entryState: EntryState<LlmapiToolConfigModel> = {
     moduleName, modulePlural, usePagedItemsState, entryType: engineName
 };
+
+
+export function EditorContent({entry, formRef}: {
+    entry: LlmapiToolConfigModel,
+    formRef: RefObject<HTMLFormElement | null>
+}) {
+    const t = useTranslations();
+    const [editor, setEditor] = useState<LlmapiToolProvider | null>(
+        llmapiToolManager.records[entry.provider] ?? null);
+
+    return (
+        <>
+            <div className="grid md:grid-cols-2 gap-4">
+                <Field>
+                    <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
+                        {t("llmapi.tool_provider")}
+                    </FieldLabel>
+                    <Selector id={`llmapi-tool_provider-${entry.id}`}
+                              items={llmapiToolManager.getSorted()}
+                              name={'provider'}
+                              value={editor}
+                              onValueChange={setEditor}
+                              valueAccessor={u => u.id}
+                              labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
+                </Field>
+            </div>
+            {editor?.component && (() => {
+                const Component = editor.component;
+                return <Component defaultValue={entry.value} entry={entry} formRef={formRef}/>
+            })()}
+        </>
+    );
+}
 
 function Tab() {
     const {model} = useItemState();
