@@ -44,7 +44,8 @@ export function InputViewer() {
                 handleError(new BusinessError("is during output.", "slot.is_output_warning"));
                 return;
             }
-            const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
+            const llmapi = slot.llmapi;
+            const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
             const last = getCurrentHistory(slot);
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
@@ -78,7 +79,7 @@ export function InputViewer() {
                 history,
                 contentHandlers: [],
                 histories: [],
-                config: slot.llmapi.content.config,
+                config: llmapi.content.config,
                 current: false
             };
 
@@ -86,7 +87,7 @@ export function InputViewer() {
 
             await conversationManager.inputProcesser.use(provider =>
                 provider.onProcessInput(inputContext));
-            const {items} = await apiConfig.generateInput(inputContext);
+            const {items} = await llmapiProvider.generateInput(inputContext);
             setItems(items);
             setOpen(true);
         } catch (error) {
