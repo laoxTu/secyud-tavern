@@ -79,6 +79,7 @@ export class VariableSetTool implements LlmapiTool {
                             anyOf: [
                                 {
                                     type: "object",
+                                    description: "the operation for a change",
                                     additionalProperties: false,
                                     required: ["value", "op", "path"],
                                     properties: {
@@ -86,7 +87,7 @@ export class VariableSetTool implements LlmapiTool {
                                             $ref: "$def/path"
                                         },
                                         op: {
-                                            description: "The operation to perform.",
+                                            description: "The operation to perform. if replace, path should be exist, otherwise miss change.",
                                             type: "string",
                                             enum: ["add", "replace", "test"]
                                         },

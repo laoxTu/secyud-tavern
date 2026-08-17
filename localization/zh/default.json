@@ -96,6 +96,7 @@
     "ensure": "确定",
     "entity_not_found": "目标未找到（ID：{id}）",
     "export": "导出",
+    "hidden": "隐藏",
     "html": "Html",
     "id": "ID",
     "image": "图片",
