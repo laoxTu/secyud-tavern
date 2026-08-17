@@ -71,7 +71,6 @@ export async function* requestLlmapiReply(
     const outputs: StoryOutputMessage[] = [];
     history.outputId = history.outputs.length;
     history.outputs.push(outputs);
-    slot.content.isOutput = true;
     let iterations = Math.max(2, llmapi.content.maxIterations ?? 20);
     while (iterations > 0) {
         const current = outputs.length > 0;
@@ -128,7 +127,6 @@ export async function* requestLlmapiReply(
             }
         }
     }
-    slot.content.isOutput = false;
 }
 
 
@@ -143,14 +141,15 @@ export function HistoryChatbox() {
 
     // 生成回复，并持续渲染，直接调用将会新生成一个
     const generateLlmapiReply = async () => {
+        let {slot, histories} = getSlotAndHistories(ctx);
         try {
-            let {slot, histories} = getSlotAndHistories(ctx);
             const iframe = ctx.current.iframe.current;
             if (!iframe) {
                 console.error('[slot]: failed to get history or iframe');
                 return;
             }
             setOutput(true);
+            slot.content.isOutput = true;
             const history = getCurrentHistory(slot);
 
             await handleHistoryPageChange(ctx, {
@@ -202,6 +201,7 @@ export function HistoryChatbox() {
             handleError(err);
         } finally {
             await handleHistoryPageChange(ctx, {curPage: ctx.current.slot?.story.histories?.length ?? 0});
+            slot.content.isOutput = false;
             setOutput(false);
         }
     };
