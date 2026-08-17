@@ -1,7 +1,6 @@
 'use client';
 import {
-    StoryHistory,
-    StoryInputMessage
+    StoryHistory
 } from "@/modules/stories/models";
 import {
     extractVariableChanges,
@@ -82,7 +81,6 @@ export function getOpeningHistory(slot: SlotModel) {
     const key = 'openingHistory';
     let openingHistory = slot.content[key] as StoryHistory;
     if (!openingHistory) {
-
         let variables = {};
         for (const preset of slot.presets) {
             variables = mergeObjects(variables, preset.content.variables);
@@ -92,23 +90,30 @@ export function getOpeningHistory(slot: SlotModel) {
             code: "opening history",
             name: "0",
             disabled: false,
-            inputs: [],
+            inputs: [{
+                id: 0,
+                content: "",
+                variables: [],
+                properties: {}
+            }],
             summary: true,
             outputId: -1,
             outputs: [],
             variables
         };
-        for (const preset of slot.presets) {
-            if (!preset.content.opening) continue;
-            const openingMessage: StoryInputMessage = {
-                id: 0,
-                content: "",
-                variables: [],
-                properties: {},
-            };
-            extractVariableChanges(openingMessage, preset.content.opening);
-            openingHistory.inputs.push(openingMessage);
-        }
+        openingHistory.outputs.push(slot.presets
+            .map(u => u.content.opening?.trim())
+            .filter(u => u)
+            .map(v => {
+                const openingMessage = {
+                    thought: "",
+                    content: "",
+                    variables: [],
+                    properties: {}
+                };
+                extractVariableChanges(openingMessage, v);
+                return openingMessage;
+            }));
         // 懒生成写入，setContent 会检测同键重复初始化
         setContent(slot, key, openingHistory);
     }
