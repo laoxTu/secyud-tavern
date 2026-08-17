@@ -2,6 +2,7 @@ import {Registerable} from "@/utils/register";
 import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import React from "react";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
+import {StoryOutputCallingResult} from "@/modules/stories/models";
 
 export interface LlmapiToolProps {
     defaultValue?: any,
@@ -11,7 +12,7 @@ export interface LlmapiToolProps {
 
 export interface LlmapiTool {
     model: LlmapiToolModel,
-    invoke: (args: any) => Promise<string>,
+    invoke: (args: any) => Promise<StoryOutputCallingResult>,
 }
 
 export interface LlmapiToolProvider extends Registerable {

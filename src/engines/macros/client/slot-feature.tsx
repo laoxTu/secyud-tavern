@@ -19,6 +19,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {SlotFeature} from "@/modules/slots/client/feeature-models";
 import {Separator} from "@/components/ui/separator";
+import {Checkbox} from "@/components/ui/checkbox";
 
 
 export function MacroSelector() {
@@ -81,7 +82,11 @@ export function MacroSelector() {
                                     <Field key={i}>
                                         {i > 0 ? <Separator className={'my-1'}/> : null}
                                         <FieldContent className="flex-row p-2 rounded-md hover:bg-primary-foreground">
-                                            <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
+                                            {u.multiple ?
+                                                <Checkbox defaultChecked={!u.disabled}
+                                                          onCheckedChange={b => u.disabled = !b}/> :
+                                                <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
+                                            }
                                             <FieldLabel htmlFor={`macro-${u.key}-${i}`}
                                                         className="m-auto ml-2 flex-1">
                                                 {u.name}

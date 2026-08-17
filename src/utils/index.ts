@@ -91,7 +91,7 @@ export async function* readStream(stream: ReadableStream) {
 
 export function joinAsString<T>(
     arr: T[], separator: string,
-    value?: (t: T) => string | null) {
+    value?: (t: T) => string | null | undefined) {
     if (value) {
         return arr
             .map(u => value(u))
@@ -102,7 +102,7 @@ export function joinAsString<T>(
     // 检查数组中的元素是否为字符串
     if (arr.length > 0 && typeof arr[0] === 'string') {
         return arr
-            .filter(u => u !== null && u !== undefined)
+            .filter(u => u)
             .join(separator);
     }
 

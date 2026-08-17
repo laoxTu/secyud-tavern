@@ -53,7 +53,10 @@ export class VariableGetTool implements LlmapiTool {
         const variables = generateCurrentVariables(history, true);
         const {previous, current, exists} = extract(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
-        return exists ? JSON.stringify(current.item) : `not exists, closest path: ${previous.path}`;
+        return {
+            hidden: false,
+            content: exists ? JSON.stringify(current.item) : `not exists, closest path: ${previous.path}`
+        };
     }
 
     model: LlmapiToolModel;
@@ -76,6 +79,7 @@ export class VariableSetTool implements LlmapiTool {
                             anyOf: [
                                 {
                                     type: "object",
+                                    description: "the operation for a change",
                                     additionalProperties: false,
                                     required: ["value", "op", "path"],
                                     properties: {
@@ -83,7 +87,7 @@ export class VariableSetTool implements LlmapiTool {
                                             $ref: "$def/path"
                                         },
                                         op: {
-                                            description: "The operation to perform.",
+                                            description: "The operation to perform. if replace, path should be exist, otherwise miss change.",
                                             type: "string",
                                             enum: ["add", "replace", "test"]
                                         },
@@ -163,7 +167,10 @@ export class VariableSetTool implements LlmapiTool {
                 currentOutput.variables.push(change);
             }
         }
-        return "success";
+        return {
+            content: "success",
+            hidden: false,
+        };
     }
 
     model: LlmapiToolModel;

@@ -6,7 +6,7 @@ import {
     setContent,
     SlotInitializer
 } from "@/modules/slots/client/conversation-models";
-import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
+import {engineName, enginePlural} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {StoryOutputCalling} from "@/modules/stories/models";
 import {LlmapiTool} from "@/engines/tools/client/models";
@@ -27,12 +27,9 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        const entriesList: LlmapiToolConfigModel[][] = [
-            ...ctx.slot.presets.map(
-                u => u.entries?.[enginePlural] ?? []),
-            ctx.slot.llmapi.entries?.[enginePlural],
-        ];
-        for (const entries of entriesList) {
+        for (const preset of ctx.slot.presets) {
+            const entries = preset.entries?.[enginePlural];
+            if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled || !entry.provider) continue;
                 // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
@@ -71,20 +68,26 @@ export async function fillToolCallContent(
     const cache: ToolConversationCache = getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
-        if (toolCall.content !== undefined) continue;
+        if (toolCall.result) continue;
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
             const tool = cache.tools[toolCall.name];
             if (tool) {
                 console.debug(`[tool]: `, tool.model.name);
                 const args = JSON.parse(toolCall.arguments);
-                toolCall.content = await tool.invoke(args);
+                toolCall.result = await tool.invoke(args);
             } else {
-                toolCall.content = '';
+                toolCall.result = {
+                    hidden: false,
+                    content: "",
+                };
             }
         } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
-            toolCall.content = `error: ${err?.message ?? "unknown error"}`;
+            toolCall.result = {
+                hidden: false,
+                content: `error: ${err?.message ?? "unknown error"}`,
+            };
             console.error(err);
         }
     }

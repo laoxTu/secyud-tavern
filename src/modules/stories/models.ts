@@ -6,13 +6,17 @@ export interface StoryInputMessage extends StoryHistoryMessage {
     id: number;
 }
 
+export interface StoryOutputCallingResult {
+    content: string,
+    hidden: boolean,
+}
 
 export interface StoryOutputCalling {
     index: number,
     id: string,
     name: string,
     arguments: string,
-    content?: string,
+    result?: StoryOutputCallingResult
 }
 
 export interface StoryOutputMessage extends StoryHistoryMessage {

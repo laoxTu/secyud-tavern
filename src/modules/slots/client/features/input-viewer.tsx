@@ -23,6 +23,7 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {extractVariableChanges} from "@/modules/slots/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
+import {BusinessError} from "@/handler/models";
 
 
 export function InputViewer() {
@@ -39,6 +40,10 @@ export function InputViewer() {
         try {
             setLoading(true);
             const {slot, histories} = getSlotAndHistories(ctx);
+            if (slot.content.isOutput) {
+                handleError(new BusinessError("is during output.", "slot.is_output_warning"));
+                return;
+            }
             const apiConfig = llmapiProviderRegistry.records[slot.llmapi.provider!];
             const last = getCurrentHistory(slot);
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，

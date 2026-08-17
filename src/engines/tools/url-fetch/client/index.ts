@@ -56,7 +56,10 @@ export class UrlFetchTool implements LlmapiTool {
                 this.config.maxLength));
         }
 
-        return joinAsString(results, "\r\n\r\n", u => `${u.url}\r\n${u.content ?? u.error}`);
+        return {
+            content: joinAsString(results, "\r\n\r\n", u => `${u.url}\r\n${u.content ?? u.error}`),
+            hidden: false,
+        };
     }
 
     model: LlmapiToolModel;

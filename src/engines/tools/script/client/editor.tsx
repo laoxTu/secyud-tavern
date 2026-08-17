@@ -2,16 +2,18 @@
 import {useTranslations} from 'next-intl';
 import {mergeObjects} from "@/utils";
 import {LlmapiToolProps} from "@/engines/tools/client/models";
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {ScriptToolConfigModel} from "@/engines/tools/script/models";
 import {Textarea} from "@/components/ui/textarea";
 import {submitTargetFormOnKey} from "@/business/client";
 import React from "react";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {Checkbox} from "@/components/ui/checkbox";
 
 const defaultConfig: ScriptToolConfigModel = {
     description: "",
     script: "return input;",
+    hidden: false,
     schema: `
 {
     "type": "object",
@@ -24,6 +26,16 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
     const config: ScriptToolConfigModel = mergeObjects(defaultConfig, defaultValue);
 
     return (<>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-hidden`}>
+                {t('default.hidden')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="hidden"
+                          id={`${entry.id}-hidden`}
+                          defaultChecked={config.hidden}/>
+            </FieldContent>
+        </Field>
         <Field>
             <FieldLabel htmlFor={`${entry.id}-description`}>
                 {t('default.description')}

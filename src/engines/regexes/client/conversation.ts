@@ -7,7 +7,6 @@
     SlotStreamRenderer
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
-import {getCurrentOutput} from "@/modules/slots/models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 
 export interface RegexConversationCache {
@@ -28,15 +27,10 @@ export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
         const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
-        for (const message of ctx.histories) {
-            for (const input of message.inputs) {
-                input.content = applyRegexes(cache.inputs, input.content);
-            }
-            const output = getCurrentOutput(message);
-            if (output) {
-                output.content = applyRegexes(cache.inputs, output.content,);
-            }
-        }
+        const generate = async (str: string, role: string) => {
+            return role !== "tool" ? applyRegexes(cache.inputs, str,) : str;
+        };
+        ctx.contentHandlers.push(generate);
     },
 }
 

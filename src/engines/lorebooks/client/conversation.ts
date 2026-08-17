@@ -68,9 +68,9 @@ export const lorebookConversationProvider:
                 setActiveLorebooks(history, input, false);
             }
 
-            const lorebooks = history.properties[enginePlural];
+            const lorebooks = history.content[enginePlural];
             // 设置缓存，缓存的世界书来源可能不一样，如果前面设置过，需要合并。
-            history.properties[enginePlural] = [
+            history.content[enginePlural] = [
                 ...(lorebooks ?? []),
                 ...prepareLorebooks];
 

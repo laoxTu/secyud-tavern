@@ -17,6 +17,7 @@ export const scriptToolProvider: LlmapiToolProvider = {
                 .withValue("target", "default.schema")
         }
         return {
+            hidden: !!data.get('hidden'),
             script: data.get('script') as string,
             schema,
             description: data.get('description') as string,
@@ -35,14 +36,19 @@ export class ScriptTool implements LlmapiTool {
             description: config.description,
             parameters: JSON.parse(config.schema || "{}"),
         };
-        this.fn = new Function("input", config.script)
+        this.fn = new Function("input", config.script);
+        this.hidden = config.hidden;
     }
 
     fn: Function;
+    hidden: boolean;
 
     async invoke(args: any) {
         const result = this.fn(args);
-        return typeof result === "string" ? result : JSON.stringify(result);
+        return {
+            content: typeof result === "string" ? result : JSON.stringify(result),
+            hidden: this.hidden,
+        };
     }
 
     model: LlmapiToolModel;

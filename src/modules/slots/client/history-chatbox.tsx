@@ -71,6 +71,7 @@ export async function* requestLlmapiReply(
     const outputs: StoryOutputMessage[] = [];
     history.outputId = history.outputs.length;
     history.outputs.push(outputs);
+    slot.content.isOutput = true;
     let iterations = Math.max(2, llmapi.content.maxIterations ?? 20);
     while (iterations > 0) {
         const current = outputs.length > 0;
@@ -127,6 +128,7 @@ export async function* requestLlmapiReply(
             }
         }
     }
+    slot.content.isOutput = false;
 }
 
 

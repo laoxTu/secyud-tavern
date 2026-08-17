@@ -53,7 +53,7 @@ export async function generateInput(
     switch (builder.type) {
         case "layered":
             let lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
-            fillLorebooks(lorebooks, histories.map(u => u.properties[lorebookPlural]))
+            fillLorebooks(lorebooks, histories.map(u => u.content[lorebookPlural]))
 
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
@@ -72,7 +72,7 @@ export async function generateInput(
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
                 // 这里是api history 缓存，和message的properties不是同一实例
-                const lorebooks = history.properties[lorebookPlural] as PresetLorebookModel[];
+                const lorebooks = history.content[lorebookPlural] as PresetLorebookModel[];
                 if (i === 0)
                     fillLorebooks(lorebooks, [entries.before]);
                 else if (i === histories.length - 1)
@@ -132,38 +132,49 @@ export async function generateInput(
     }
 
     async function pushOutput(output: StoryOutputMessage, toolRole = "tool") {
-        const aiContent = await generateContent(output.content, "assistant", "output");
-        if (aiContent) items.push({content: aiContent, role: "assistant"});
+        const content = await generateContent(output.content, "assistant", "output");
+        if (content)
+            items.push({content, role: "assistant"});
         const message: OpenAI.ChatCompletionAssistantMessageParam = {
             role: "assistant",
-            content: aiContent ? aiContent : undefined,
-            tool_calls: output.callings ? [] : undefined,
+            content: content ? content : undefined,
+            tool_calls: output.callings ? await generateCallings() : undefined,
             refusal: null
         };
-        messages.push(message);
-        if (!output.callings?.length) return;
-        // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
-        await fillToolCallContent(output.callings, slot);
-        for (const calling of output.callings) {
-            message.tool_calls?.push({
-                id: calling.id,
-                type: "function",
-                function: {
-                    arguments: calling.arguments,
-                    name: calling.name,
-                },
-            });
 
-            const content = await generateContent(calling.content ?? "error", toolRole, "output");
-            items.push({
-                role: "tool",
-                content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
-            });
-            messages.push({
-                role: "tool",
-                tool_call_id: calling.id,
-                content,
-            });
+        if (message.content &&
+            message.tool_calls?.length)
+            messages.push(message);
+
+        async function generateCallings() {
+            if (!output.callings?.length) return undefined;
+            // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
+            await fillToolCallContent(output.callings, slot);
+            const callings: OpenAI.ChatCompletionMessageToolCall[] = [];
+            for (const calling of output.callings) {
+                if (calling.result?.hidden) continue;
+                callings.push({
+                    id: calling.id,
+                    type: "function",
+                    function: {
+                        arguments: calling.arguments,
+                        name: calling.name,
+                    },
+                });
+
+                const content = await generateContent(
+                    calling.result?.content ?? "error", toolRole, "output");
+                items.push({
+                    role: "tool",
+                    content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
+                });
+                messages.push({
+                    role: "tool",
+                    tool_call_id: calling.id,
+                    content,
+                });
+            }
+            return callings;
         }
     }
 
@@ -189,7 +200,10 @@ export async function generateInput(
                             id: `call_x${simCount}`,
                             name: virtualTool.function.name,
                             arguments: "{}",
-                            content: joinAsString(group.items, "\r\n", u => u.content),
+                            result: {
+                                content: joinAsString(group.items, "\r\n", u => u.content),
+                                hidden: false
+                            }
                         }
                     ]
                 }, "knowledge")
