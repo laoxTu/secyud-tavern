@@ -42,7 +42,10 @@ export class ScriptTool implements LlmapiTool {
 
     async invoke(args: any) {
         const result = this.fn(args);
-        return typeof result === "string" ? result : JSON.stringify(result);
+        return {
+            content: typeof result === "string" ? result : JSON.stringify(result),
+            hidden: false,
+        };
     }
 
     model: LlmapiToolModel;

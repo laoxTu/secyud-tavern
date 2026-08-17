@@ -71,20 +71,26 @@ export async function fillToolCallContent(
     const cache: ToolConversationCache = getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
-        if (toolCall.content !== undefined) continue;
+        if (toolCall.result) continue;
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
             const tool = cache.tools[toolCall.name];
             if (tool) {
                 console.debug(`[tool]: `, tool.model.name);
                 const args = JSON.parse(toolCall.arguments);
-                toolCall.content = await tool.invoke(args);
+                toolCall.result = await tool.invoke(args);
             } else {
-                toolCall.content = '';
+                toolCall.result = {
+                    hidden: false,
+                    content: "",
+                };
             }
         } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
-            toolCall.content = `error: ${err?.message ?? "unknown error"}`;
+            toolCall.result = {
+                hidden: false,
+                content: `error: ${err?.message ?? "unknown error"}`,
+            };
             console.error(err);
         }
     }
