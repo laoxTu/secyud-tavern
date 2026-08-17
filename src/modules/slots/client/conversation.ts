@@ -67,11 +67,7 @@ export function generateInputBuildContext(inputContext: LlmapiInputContext) {
     function map(storyHistory: StoryHistory): LlmapiHistory {
         return {
             ...storyHistory,
-            inputs: storyHistory.inputs
-                .map(u => ({...u})),
-            outputs: storyHistory.outputs
-                .map(u => u.map(v => ({...v}))),
-            properties: {}
+            content: {}
         }
     }
 }

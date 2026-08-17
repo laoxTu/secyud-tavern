@@ -15,7 +15,7 @@ export interface SlotInitializeContext extends SlotContextBase {
 }
 
 export interface LlmapiHistory extends StoryHistory {
-    properties: Record<string, any>;
+    content: Record<string, any>;
 }
 
 type ContentHandler = (str: string, role: string, type: string) => Promise<string>;

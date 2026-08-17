@@ -53,7 +53,7 @@ export async function generateInput(
     switch (builder.type) {
         case "layered":
             let lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
-            fillLorebooks(lorebooks, histories.map(u => u.properties[lorebookPlural]))
+            fillLorebooks(lorebooks, histories.map(u => u.content[lorebookPlural]))
 
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
@@ -72,7 +72,7 @@ export async function generateInput(
             for (let i = 0; i < histories.length; i++) {
                 const history = histories[i];
                 // 这里是api history 缓存，和message的properties不是同一实例
-                const lorebooks = history.properties[lorebookPlural] as PresetLorebookModel[];
+                const lorebooks = history.content[lorebookPlural] as PresetLorebookModel[];
                 if (i === 0)
                     fillLorebooks(lorebooks, [entries.before]);
                 else if (i === histories.length - 1)

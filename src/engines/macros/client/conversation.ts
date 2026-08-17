@@ -12,6 +12,7 @@ import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
 import {StoryHistory} from "@/modules/stories/models";
 import {joinAsString} from "@/utils";
+import {engineName as regexEngineName} from "@/engines/regexes/models"
 
 const eta = new Eta({
     autoTrim: false,
@@ -44,7 +45,7 @@ export interface MacroConversationCache {
 
 export const macroLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
-    requires: [],
+    requires: [regexEngineName],
     sequence: 1000,
     onProcessInput: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
