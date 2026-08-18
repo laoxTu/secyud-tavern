@@ -3,7 +3,8 @@
 export interface PresetMacroModel extends EntryModel {
     key: string,
     value: string,
-    multiple: boolean,
+    multiple?: boolean,
+    hidden?: boolean,
 }
 
 export const engineName = "macro";

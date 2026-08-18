@@ -133,48 +133,47 @@ export async function generateInput(
 
     async function pushOutput(output: StoryOutputMessage, toolRole = "tool") {
         const content = await generateContent(output.content, "assistant", "output");
+        // 检验工具是否触发
+        await fillToolCallContent(slot, output.callings);
+        if (!content && !output.callings?.some(
+            u => !u.result?.hidden))
+            return;
         if (content)
             items.push({content, role: "assistant"});
         const message: OpenAI.ChatCompletionAssistantMessageParam = {
             role: "assistant",
             content: content ? content : undefined,
-            tool_calls: output.callings ? await generateCallings() : undefined,
+            tool_calls: undefined,
             refusal: null
         };
 
-        if (message.content &&
-            message.tool_calls?.length)
-            messages.push(message);
+        messages.push(message);
 
-        async function generateCallings() {
-            if (!output.callings?.length) return undefined;
-            // 再次触发工具执行，fillToolCallContent 靠 content 已填去重。
-            await fillToolCallContent(output.callings, slot);
-            const callings: OpenAI.ChatCompletionMessageToolCall[] = [];
-            for (const calling of output.callings) {
-                if (calling.result?.hidden) continue;
-                callings.push({
-                    id: calling.id,
-                    type: "function",
-                    function: {
-                        arguments: calling.arguments,
-                        name: calling.name,
-                    },
-                });
+        if (!output.callings?.length) return;
 
-                const content = await generateContent(
-                    calling.result?.content ?? "error", toolRole, "output");
-                items.push({
-                    role: "tool",
-                    content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
-                });
-                messages.push({
-                    role: "tool",
-                    tool_call_id: calling.id,
-                    content,
-                });
-            }
-            return callings;
+        message.tool_calls = [];
+        for (const calling of output.callings) {
+            if (calling.result?.hidden) continue;
+            message.tool_calls.push({
+                id: calling.id,
+                type: "function",
+                function: {
+                    arguments: calling.arguments,
+                    name: calling.name,
+                },
+            });
+
+            const content = await generateContent(
+                calling.result?.content ?? "error", toolRole, "output");
+            items.push({
+                role: "tool",
+                content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
+            });
+            messages.push({
+                role: "tool",
+                tool_call_id: calling.id,
+                content,
+            });
         }
     }
 

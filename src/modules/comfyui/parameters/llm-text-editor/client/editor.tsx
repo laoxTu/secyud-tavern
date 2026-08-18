@@ -43,7 +43,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
                 <Input name={"node_name"} defaultValue={config?.nodeName}
                        id={`${engineName}-node_name-${entry.id}`}/>
             </Field>
-            <LlmapiRequireField defaultValue={config.llmapi}
+            <LlmapiRequireField defaultValue={config.llmapi ?? null}
                                 prefix={`${engineName}-${entry.id}`}/>
         </div>
         <Field>

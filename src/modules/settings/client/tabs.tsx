@@ -1,5 +1,5 @@
 'use client';
-import React from "react";
+import React, {useState} from "react";
 import {useTranslations} from "next-intl";
 import {Settings2Icon} from "lucide-react";
 import {TabManager} from "@/components/custom/tab";
@@ -7,7 +7,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
 import {useTheme} from "next-themes";
-import {useDefaultSettingState, useRemoteSettingState} from "@/modules/settings/client/models";
+import {useLocalSettingState, useRemoteSettingState} from "@/modules/settings/client/models";
 import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
 import {Selector} from "@/components/custom/selector";
@@ -19,15 +19,17 @@ function Tab() {
     const t = useTranslations();
     const {theme, setTheme} = useTheme();
     const {handleError, handleSuccess} = useErrorHandler();
-    const {author, setAuthor} = useDefaultSettingState();
-    const {llmapi, setLlmapi} = useRemoteSettingState();
+    const {author, setAuthor} = useLocalSettingState();
+    const [llmapi, setLlmapi] = useState(useRemoteSettingState.getState().llmapi);
 
     const handleSubmit = async (data: FormData) => {
         try {
             setTheme(data.get('theme') as string);
             setAuthor(data.get('author') as string);
-            const llmapi = data.get('llmapi') as string;
-            setLlmapi(llmapi ? JSON.parse(llmapi) : null);
+            console.debug("[setting](llmapi): ", llmapi);
+            useRemoteSettingState.setState({
+                llmapi,
+            });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
             handleError(e);
@@ -55,14 +57,10 @@ function Tab() {
                                           defaultValue={theme ?? null}
                                           items={themes}/>
                             </Field>
-                            <Field>
-                                <FieldLabel htmlFor="setting-llmapi">
-                                    {t("setting.default_llmapi")}
-                                </FieldLabel>
-                                <LlmapiRequireField
-                                    defaultValue={llmapi}
-                                    prefix={'setting'}/>
-                            </Field>
+                            <LlmapiRequireField
+                                value={llmapi}
+                                onValueChange={setLlmapi}
+                                prefix={'setting'}/>
                         </div>
                     </FieldGroup>
                 </FieldSet>

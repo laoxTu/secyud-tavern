@@ -64,6 +64,8 @@ export function generateInputBuildContext(inputContext: LlmapiInputContext) {
         inputContext.histories.push(map(histories[i]));
     }
 
+    console.log("[slot](input): ",inputContext);
+
     function map(storyHistory: StoryHistory): LlmapiHistory {
         return {
             ...storyHistory,
@@ -93,7 +95,7 @@ export function getOpeningHistory(slot: SlotModel) {
                 properties: {}
             }],
             summary: true,
-            outputId: -1,
+            outputId: 0,
             outputs: [],
             variables
         };
@@ -112,6 +114,7 @@ export function getOpeningHistory(slot: SlotModel) {
             }));
         // 懒生成写入，setContent 会检测同键重复初始化
         setContent(slot, key, openingHistory);
+        console.log("[slot](opening): ", openingHistory);
     }
     return openingHistory;
 }

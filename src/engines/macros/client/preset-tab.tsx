@@ -78,7 +78,8 @@ function Tab() {
                         value: data.get("value") as string,
                         code: data.get('code') as string,
                         name: data.get('name') as string,
-                        multiple: !!data.get('multiple')
+                        multiple: !!data.get('multiple'),
+                        hidden: !!data.get('hidden'),
                     }
                     await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
                         params: {
@@ -91,7 +92,6 @@ function Tab() {
                 },
                 updateContent: (entry) => (<>
                     <div className="grid md:grid-cols-2 gap-4">
-
                         <Field>
                             <FieldLabel htmlFor={`${engineName}-key-${entry.id}`}>
                                 {t("macro.key")}
@@ -108,6 +108,16 @@ function Tab() {
                                 <Checkbox name="multiple"
                                           id={`${engineName}-multiple-${entry.id}`}
                                           defaultChecked={entry.multiple ?? false}/>
+                            </FieldContent>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor={`${engineName}-hidden-${entry.id}`}>
+                                {t("macro.hidden")}
+                            </FieldLabel>
+                            <FieldContent>
+                                <Checkbox name="hidden"
+                                          id={`${engineName}-hidden-${entry.id}`}
+                                          defaultChecked={entry.hidden ?? false}/>
                             </FieldContent>
                         </Field>
                     </div>

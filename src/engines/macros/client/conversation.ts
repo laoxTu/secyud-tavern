@@ -25,8 +25,8 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
     return {
         ...Object.fromEntries(Object.values(cache.macros).map(u => {
             return [u.key, joinAsString(
-                [u.select < 0 ? null : u.models[u.select],
-                    ...u.models.filter(v => v.multiple && !v.disabled)
+                [u.select < 0 ? null : u.singles[u.select],
+                    ...u.multiples.filter(v => !v.disabled)
                 ], "", u => u?.value)]
         })),
         variables: generateCurrentVariables(ctx.history, false),
@@ -35,8 +35,10 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
 
 export interface MacroConversationCacheItem {
     key: string,
-    models: PresetMacroModel[],
+    singles: PresetMacroModel[],
+    multiples: PresetMacroModel[],
     select: number,
+    hidden: boolean,
 }
 
 export interface MacroConversationCache {
@@ -73,12 +75,18 @@ export const macroConversationProvider:
                 const item = cache.macros[entry.key] ??= {
                     key: entry.key,
                     select: -1,
-                    models: [],
+                    multiples: [],
+                    singles: [],
+                    hidden: true,
                 };
-                if (!entry.disabled && !entry.multiple)
-                    item.select = item.models.length;
-
-                item.models.push(entry);
+                if (!entry.hidden) item.hidden = false;
+                if (entry.multiple) {
+                    item.multiples.push(entry);
+                } else {
+                    if (!entry.disabled)
+                        item.select = item.singles.length;
+                    item.singles.push(entry);
+                }
             }
         }
         setContent(ctx.slot, enginePlural, cache);

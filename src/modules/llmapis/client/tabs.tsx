@@ -19,7 +19,18 @@ import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
 
-export function LlmapiRequireField({defaultValue, prefix}: { defaultValue?: RequireModel | null, prefix?: string }) {
+export function LlmapiRequireField(
+    {
+        defaultValue,
+        value,
+        onValueChange,
+        prefix
+    }: {
+        value?: RequireModel | null,
+        onValueChange?: (value: RequireModel | null) => void,
+        defaultValue?: RequireModel | null,
+        prefix?: string,
+    }) {
     const t = useTranslations();
     const {handleError} = useErrorHandler();
     return (<Field>
@@ -29,7 +40,9 @@ export function LlmapiRequireField({defaultValue, prefix}: { defaultValue?: Requ
 
         <RemoteSearchCombobox
             name={`llmapi`} id={`${prefix ?? moduleName}-llmapi`}
-            defaultValue={defaultValue ?? null}
+            onValueChange={onValueChange}
+            defaultValue={defaultValue}
+            value={value}
             comparer={(u, v) => u.code === v.code}
             labelAccessor={e => `${e.name}-${e.version}(${e.author})`}
             valueAccessor={e => JSON.stringify(e)}

@@ -40,7 +40,7 @@ function Tab() {
                         <Input name="name" id={`${moduleName}-name`}
                                defaultValue={model.name}/>
                     </Field>
-                    <LlmapiRequireField defaultValue={model.llmapi}/>
+                    <LlmapiRequireField defaultValue={model.llmapi ?? null}/>
                     <PresetRequiresField defaultValue={model.requires}/>
                 </div>
             </>)

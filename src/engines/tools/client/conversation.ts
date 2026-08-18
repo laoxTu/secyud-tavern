@@ -52,8 +52,7 @@ export const toolConversationProvider:
         const outputs = getCurrentOutputs(ctx.history);
         if (!outputs?.length) return;
         for (const output of outputs) {
-            if (!output?.callings?.length) continue;
-            await fillToolCallContent(output.callings, ctx.slot);
+            await fillToolCallContent(ctx.slot, output.callings);
         }
     }
 };
@@ -62,9 +61,10 @@ export const toolConversationProvider:
 // 在浏览器端执行模型请求的工具，结果写回 content。
 // 会被两处调用，靠 content 已填去重，避免重复执行。
 export async function fillToolCallContent(
-    toolCalls: StoryOutputCalling[],
     slot: SlotModel,
+    toolCalls?: StoryOutputCalling[],
 ) {
+    if (!toolCalls?.length) return;
     const cache: ToolConversationCache = getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
