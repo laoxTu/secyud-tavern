@@ -10,7 +10,7 @@ import {TabConfig} from "@/components/custom/tab";
 import {LlmapiModel, moduleName} from "../models";
 import {llmapiTabManager} from "./tabs";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
-import {TemplateModelList} from "@/business/client/template";
+import {ModelList} from "@/business/client/template/model-list";
 import {modelState} from "./models";
 import {createUseTabState} from "@/business/client/models";
 
@@ -18,7 +18,7 @@ export const useLlmapiTabState = createUseTabState(llmapiTabManager);
 
 function Content() {
     const t = useTranslations();
-    return <TemplateModelList<LlmapiModel>
+    return <ModelList<LlmapiModel>
         modelState={modelState}
         itemContent={(model) =>
             <>
@@ -106,7 +106,7 @@ function Content() {
             useTabState: useLlmapiTabState,
             tabManager: llmapiTabManager
         }}>
-    </TemplateModelList>;
+    </ModelList>;
 }
 
 

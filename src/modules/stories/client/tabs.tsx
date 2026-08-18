@@ -13,8 +13,6 @@ import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {getPresetRequires, PresetRequiresField} from "@/modules/presets/client/tabs";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
-import {GridField} from "@/components/custom/GridField";
-
 
 function Tab() {
     const t = useTranslations();
@@ -33,17 +31,15 @@ function Tab() {
                     });
             },
             updateContent: (model) => (<>
-                <GridField>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-name`}>
-                            {t("default.name")}
-                        </FieldLabel>
-                        <Input name="name" id={`${moduleName}-name`}
-                               defaultValue={model.name}/>
-                    </Field>
-                    <LlmapiRequireField defaultValue={model.llmapi ?? null}/>
-                    <PresetRequiresField defaultValue={model.requires}/>
-                </GridField>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-name`}>
+                        {t("default.name")}
+                    </FieldLabel>
+                    <Input name="name" id={`${moduleName}-name`}
+                           defaultValue={model.name}/>
+                </Field>
+                <LlmapiRequireField defaultValue={model.llmapi ?? null}/>
+                <PresetRequiresField defaultValue={model.requires}/>
             </>)
         }}/>
 }

@@ -9,18 +9,18 @@ import {moduleName} from "@/modules/presets/models";
 import {engineName, PresetMacroModel} from "../models";
 import {useItemState} from "@/modules/presets/client/models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {TemplateEntryList} from "@/business/client/template";
+import {EntryList} from "@/business/client/template/entry-list";
 import {entryState} from "./models";
 import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Checkbox} from "@/components/ui/checkbox";
-import {spanFull} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/GridField";
 
 function Tab() {
     const t = useTranslations();
     const {model} = useItemState();
     return (
-        <TemplateEntryList<PresetMacroModel>
+        <EntryList<PresetMacroModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{
@@ -92,6 +92,31 @@ function Tab() {
                     return result;
                 },
                 updateContent: (entry) => (<>
+                    <Field className={spanHalf + " row-span-8"}>
+                        <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
+                            {t("macro.value")}
+                        </FieldLabel>
+                        <Textarea name="value"
+                                  id={`${engineName}-value-${entry.id}`}
+                                  defaultValue={entry.value}
+                                  onKeyDown={submitTargetFormOnKey}/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                            {t("default.code")}
+                        </FieldLabel>
+                        <Input name="code"
+                               id={`${engineName}-code-${entry.id}`}
+                               defaultValue={entry.code ?? ""}/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                            {t("default.name")}
+                        </FieldLabel>
+                        <Input name="name"
+                               id={`${engineName}-name-${entry.id}`}
+                               defaultValue={entry.name ?? ""}/>
+                    </Field>
                     <Field>
                         <FieldLabel htmlFor={`${engineName}-key-${entry.id}`}>
                             {t("macro.key")}
@@ -112,22 +137,13 @@ function Tab() {
                     </Field>
                     <Field>
                         <FieldLabel htmlFor={`${engineName}-hidden-${entry.id}`}>
-                            {t("macro.hidden")}
+                            {t("default.hidden")}
                         </FieldLabel>
                         <FieldContent>
                             <Checkbox name="hidden"
                                       id={`${engineName}-hidden-${entry.id}`}
                                       defaultChecked={entry.hidden ?? false}/>
                         </FieldContent>
-                    </Field>
-                    <Field className={spanFull}>
-                        <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
-                            {t("macro.value")}
-                        </FieldLabel>
-                        <Textarea name="value"
-                                  id={`${engineName}-value-${entry.id}`}
-                                  defaultValue={entry.value}
-                                  onKeyDown={submitTargetFormOnKey}/>
                     </Field>
                 </>)
             }}/>

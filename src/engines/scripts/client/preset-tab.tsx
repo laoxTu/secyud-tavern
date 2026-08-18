@@ -5,7 +5,7 @@ import {del, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
-import {TemplateEntryList} from "@/business/client/template";
+import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
@@ -13,7 +13,7 @@ import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
-import {spanFull} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/GridField";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -33,6 +33,30 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
     })();
 
     return (<>
+        <Field className={spanHalf + " row-span-8"}>
+            <FieldLabel>
+                {t("default.content")}
+            </FieldLabel>
+            <MonacoEditor name={'content'}
+                          defaultValue={entry.content}
+                          language={language} formRef={formRef}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                {t("default.code")}
+            </FieldLabel>
+            <Input name="code"
+                   id={`${engineName}-code-${entry.id}`}
+                   defaultValue={entry.code ?? ""}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                {t("default.name")}
+            </FieldLabel>
+            <Input name="name"
+                   id={`${engineName}-name-${entry.id}`}
+                   defaultValue={entry.name ?? ""}/>
+        </Field>
         <Field>
             <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
                 {t("default.priority")}
@@ -50,21 +74,13 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                       value={type} onValueChange={setType}
                       items={scriptTypes}/>
         </Field>
-        <Field className={spanFull}>
-            <FieldLabel>
-                {t("default.content")}
-            </FieldLabel>
-            <MonacoEditor name={'content'}
-                          defaultValue={entry.content}
-                          language={language} formRef={formRef}/>
-        </Field>
     </>);
 }
 
 function Tab() {
     const {model} = useItemState();
     return (
-        <TemplateEntryList<PresetScriptModel>
+        <EntryList<PresetScriptModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{

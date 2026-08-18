@@ -2,7 +2,7 @@
 import React, {RefObject, useState} from "react";
 import {del, get, post, put} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
-import {TemplateEntryList} from "@/business/client/template";
+import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
@@ -15,6 +15,7 @@ import {useTranslations} from "next-intl";
 import {LlmapiToolProvider} from "@/engines/tools/client/models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Selector} from "@/components/custom/selector";
+import {Input} from "@/components/ui/input";
 
 export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
     async options => {
@@ -36,6 +37,22 @@ export function EditorContent({entry, formRef}: {
 
     return (
         <>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                    {t("default.code")}
+                </FieldLabel>
+                <Input name="code"
+                       id={`${engineName}-code-${entry.id}`}
+                       defaultValue={entry.code ?? ""}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                    {t("default.name")}
+                </FieldLabel>
+                <Input name="name"
+                       id={`${engineName}-name-${entry.id}`}
+                       defaultValue={entry.name ?? ""}/>
+            </Field>
             <Field>
                 <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
                     {t("llmapi.tool_provider")}
@@ -59,7 +76,7 @@ export function EditorContent({entry, formRef}: {
 function Tab() {
     const {model} = useItemState();
     return (
-        <TemplateEntryList<LlmapiToolConfigModel>
+        <EntryList<LlmapiToolConfigModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{

@@ -7,7 +7,7 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
-import {TemplateModelUpdate} from "@/business/client/template";
+import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {moduleName, ComfyUIWorkflowModel} from "../models";
 import {modelState} from "./models";
@@ -16,7 +16,7 @@ import {Button} from "@/components/ui/button";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {useErrorHandler} from "@/handler/client/error";
 import {submitTargetFormOnKey} from "@/business/client";
-import {GridField, spanFull} from "@/components/custom/GridField";
+import {spanFull} from "@/components/custom/GridField";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
@@ -35,52 +35,50 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
     };
 
     return (<>
-        <GridField>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-code`}>
-                    {t("default.code") + "*"}
-                </FieldLabel>
-                <Input id={`${moduleName}-code`} name="code"
-                       defaultValue={model.code} disabled/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-name`}>
-                    {t("default.name")}
-                </FieldLabel>
-                <Input name="name" id={`${moduleName}-name`}
-                       defaultValue={model.name}/>
-            </Field>
-            <Field className={spanFull}>
-                <FieldLabel htmlFor={`${moduleName}-workflow_content`}>
-                    {t("default.content")}
-                    <Tooltip>
-                        <TooltipTrigger onClick={generateParameter}
-                                        render={<Button variant={"ghost"} size={'icon'}/>}>
-                            <TriangleIcon/>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            {t("comfyui.generate_parameter")}
-                        </TooltipContent>
-                    </Tooltip>
-                </FieldLabel>
-                <MonacoEditor name={'workflow_content'}
-                              defaultValue={model?.content?.workflow}
-                              language={'json'} formRef={formRef}/>
-            </Field>
-            <Field className={spanFull}>
-                <FieldLabel htmlFor={`${moduleName}-description`}>
-                    {t("default.description")}
-                </FieldLabel>
-                <Textarea onKeyDown={submitTargetFormOnKey} name={'description'}
-                          id={`${moduleName}-description`}
-                          defaultValue={model.content.description}/>
-            </Field>
-        </GridField>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-code`}>
+                {t("default.code") + "*"}
+            </FieldLabel>
+            <Input id={`${moduleName}-code`} name="code"
+                   defaultValue={model.code} disabled/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-name`}>
+                {t("default.name")}
+            </FieldLabel>
+            <Input name="name" id={`${moduleName}-name`}
+                   defaultValue={model.name}/>
+        </Field>
+        <Field className={spanFull}>
+            <FieldLabel htmlFor={`${moduleName}-workflow_content`}>
+                {t("default.content")}
+                <Tooltip>
+                    <TooltipTrigger onClick={generateParameter}
+                                    render={<Button variant={"ghost"} size={'icon'}/>}>
+                        <TriangleIcon/>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {t("comfyui.generate_parameter")}
+                    </TooltipContent>
+                </Tooltip>
+            </FieldLabel>
+            <MonacoEditor name={'workflow_content'}
+                          defaultValue={model?.content?.workflow}
+                          language={'json'} formRef={formRef}/>
+        </Field>
+        <Field className={spanFull}>
+            <FieldLabel htmlFor={`${moduleName}-description`}>
+                {t("default.description")}
+            </FieldLabel>
+            <Textarea onKeyDown={submitTargetFormOnKey} name={'description'}
+                      id={`${moduleName}-description`}
+                      defaultValue={model.content.description}/>
+        </Field>
     </>);
 }
 
 export function DefaultTab() {
-    return <TemplateModelUpdate<ComfyUIWorkflowModel>
+    return <ModelUpdate<ComfyUIWorkflowModel>
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {

@@ -4,7 +4,7 @@ import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
-import {TemplateEntryList} from "@/business/client/template";
+import {EntryList} from "@/business/client/template/entry-list";
 import {del, post, put} from "@/client";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {ComfyUIParameterModel, moduleName, parameterEntryName as engineName} from "@/modules/comfyui/models";
@@ -20,6 +20,22 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
 
     return (
         <>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                    {t("default.code")}
+                </FieldLabel>
+                <Input name="code"
+                       id={`${engineName}-code-${entry.id}`}
+                       defaultValue={entry.code ?? ""}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                    {t("default.name")}
+                </FieldLabel>
+                <Input name="name"
+                       id={`${engineName}-name-${entry.id}`}
+                       defaultValue={entry.name ?? ""}/>
+            </Field>
             <Field>
                 <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
                     {t("default.priority")}
@@ -52,7 +68,7 @@ function Tab() {
     const editors = comfyUIParameterRegistry.records;
     const {model} = useItemState();
     return (
-        <TemplateEntryList<ComfyUIParameterModel>
+        <EntryList<ComfyUIParameterModel>
             entryState={parameterEntryState}
             modelId={model!.id}
             createProps={{

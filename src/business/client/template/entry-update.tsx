@@ -192,27 +192,13 @@ export function EntryUpdate<TEntry extends EntryModel>(
             </div>
             <CollapsibleContent render={<form action={handleUpdate} ref={formRef}/>}
                                 className={"p-1 h-full"}
-                                style={{minWidth: "86vw"}}>
+                                style={{
+                                    width: "72vw"
+                                }}>
                 <FieldGroup className={'flex flex-col h-full'}>
                     <FieldSet className={'flex-1 overflow-y-auto'}>
                         <FieldGroup>
                             <GridField>
-                                <Field>
-                                    <FieldLabel htmlFor={`${entryType}-code-${entry.id}`}>
-                                        {t("default.code")}
-                                    </FieldLabel>
-                                    <Input name="code"
-                                           id={`${entryType}-code-${entry.id}`}
-                                           defaultValue={entry.code ?? ""}/>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`${entryType}-name-${entry.id}`}>
-                                        {t("default.name")}
-                                    </FieldLabel>
-                                    <Input name="name"
-                                           id={`${entryType}-name-${entry.id}`}
-                                           defaultValue={entry.name ?? ""}/>
-                                </Field>
                                 {updateContent(entry, formRef)}
                             </GridField>
                         </FieldGroup>

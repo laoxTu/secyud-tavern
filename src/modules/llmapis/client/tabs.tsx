@@ -18,7 +18,6 @@ import {RequireModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
-import {GridField} from "@/components/custom/GridField";
 
 export function LlmapiRequireField(
     {
@@ -74,40 +73,38 @@ function UpdateContent({model}: { model: LlmapiModel }) {
     const [configEditor, setConfigEditor] = useState<LlmapiProvider | null>(
         llmapiProviderRegistry.records[model.provider ?? ""] ?? null);
     return <>
-        <GridField>
-            <Field>
-                <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
-                <Input id={`${moduleName}-code`} name="code"
-                       defaultValue={model.code} disabled/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-name`}>
-                    {t("default.name")}
-                </FieldLabel>
-                <Input name="name" id={`${moduleName}-name`}
-                       defaultValue={model.name}
-                />
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-version`}>
-                    {t("default.version")}
-                </FieldLabel>
-                <Input name="version"
-                       id={`${moduleName}-version`}
-                       defaultValue={model.version}
-                />
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-max_iterations`}>
-                    {t("llmapi.max_iterations")}
-                </FieldLabel>
-                <Input name="max_iterations"
-                       id={`${moduleName}-max_iterations`}
-                       type="number" min={2} max={100} step={1}
-                       defaultValue={model.content.maxIterations ?? 0}
-                />
-            </Field>
-        </GridField>
+        <Field>
+            <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
+            <Input id={`${moduleName}-code`} name="code"
+                   defaultValue={model.code} disabled/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-name`}>
+                {t("default.name")}
+            </FieldLabel>
+            <Input name="name" id={`${moduleName}-name`}
+                   defaultValue={model.name}
+            />
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-version`}>
+                {t("default.version")}
+            </FieldLabel>
+            <Input name="version"
+                   id={`${moduleName}-version`}
+                   defaultValue={model.version}
+            />
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-max_iterations`}>
+                {t("llmapi.max_iterations")}
+            </FieldLabel>
+            <Input name="max_iterations"
+                   id={`${moduleName}-max_iterations`}
+                   type="number" min={2} max={100} step={1}
+                   defaultValue={model.content.maxIterations ?? 0}
+            />
+        </Field>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
                 {t(`${moduleName}.provider`)}
