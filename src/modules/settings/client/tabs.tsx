@@ -1,5 +1,5 @@
 'use client';
-import React, {useState} from "react";
+import React from "react";
 import {useTranslations} from "next-intl";
 import {Settings2Icon} from "lucide-react";
 import {TabManager} from "@/components/custom/tab";
@@ -20,15 +20,15 @@ function Tab() {
     const {theme, setTheme} = useTheme();
     const {handleError, handleSuccess} = useErrorHandler();
     const {author, setAuthor} = useLocalSettingState();
-    const [llmapi, setLlmapi] = useState(useRemoteSettingState.getState().llmapi);
+    const {llmapi} = useRemoteSettingState();
 
     const handleSubmit = async (data: FormData) => {
         try {
             setTheme(data.get('theme') as string);
             setAuthor(data.get('author') as string);
-            console.debug("[setting](llmapi): ", llmapi);
+            const llmapi = data.get('llmapi') as string;
             useRemoteSettingState.setState({
-                llmapi,
+                llmapi: llmapi ? JSON.parse(llmapi) : null,
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
@@ -58,8 +58,7 @@ function Tab() {
                                           items={themes}/>
                             </Field>
                             <LlmapiRequireField
-                                value={llmapi}
-                                onValueChange={setLlmapi}
+                                defaultValue={llmapi}
                                 prefix={'setting'}/>
                         </div>
                     </FieldGroup>
