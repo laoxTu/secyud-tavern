@@ -16,6 +16,7 @@ import {entryState} from "@/engines/lorebooks/client/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
+import {spanFull} from "@/components/custom/GridField";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -33,61 +34,59 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                        {t("default.priority")}
-                    </FieldLabel>
-                    <Input name="priority" type={"number"}
-                           min={0} max={9999}
-                           id={`${engineName}-priority-${entry.id}`}
-                           defaultValue={entry.priority}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-layer-${entry.id}`}>
-                        {t("default.layer")}
-                    </FieldLabel>
-                    <Input name="layer" type={"number"}
-                           id={`${engineName}-layer-${entry.id}`}
-                           defaultValue={entry.layer}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`lorebook-role-${entry.id}`}>
-                        {t("lorebook.role")}
-                    </FieldLabel>
-                    <Selector name={'role'}
-                              id={`lorebook-role-${entry.id}`}
-                              defaultValue={entry.role}
-                              items={roles}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                        {t("default.type")}
-                    </FieldLabel>
-                    <Selector name={'type'}
-                              id={`${engineName}-type-${entry.id}`}
-                              value={type}
-                              onValueChange={setType}
-                              items={contentTypes}/>
-                </Field>
-                <Field>
-                    <FieldLabel id={`lorebook-match_type-${entry.id}`}>
-                        {t("lorebook.match_type")}
-                    </FieldLabel>
-                    <Selector id={`lorebook-match_type-${entry.id}`}
-                              items={lorebookMatcherRegistry.getSorted()}
-                              name={'matchType'}
-                              value={editor}
-                              onValueChange={setEditor}
-                              valueAccessor={u => u.id}
-                              labelAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
-                </Field>
-            </div>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                    {t("default.priority")}
+                </FieldLabel>
+                <Input name="priority" type={"number"}
+                       min={0} max={9999}
+                       id={`${engineName}-priority-${entry.id}`}
+                       defaultValue={entry.priority}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-layer-${entry.id}`}>
+                    {t("default.layer")}
+                </FieldLabel>
+                <Input name="layer" type={"number"}
+                       id={`${engineName}-layer-${entry.id}`}
+                       defaultValue={entry.layer}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`lorebook-role-${entry.id}`}>
+                    {t("lorebook.role")}
+                </FieldLabel>
+                <Selector name={'role'}
+                          id={`lorebook-role-${entry.id}`}
+                          defaultValue={entry.role}
+                          items={roles}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                    {t("default.type")}
+                </FieldLabel>
+                <Selector name={'type'}
+                          id={`${engineName}-type-${entry.id}`}
+                          value={type}
+                          onValueChange={setType}
+                          items={contentTypes}/>
+            </Field>
+            <Field>
+                <FieldLabel id={`lorebook-match_type-${entry.id}`}>
+                    {t("lorebook.match_type")}
+                </FieldLabel>
+                <Selector id={`lorebook-match_type-${entry.id}`}
+                          items={lorebookMatcherRegistry.getSorted()}
+                          name={'matchType'}
+                          value={editor}
+                          onValueChange={setEditor}
+                          valueAccessor={u => u.id}
+                          labelAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
+            </Field>
             {editor?.component && (() => {
                 const Component = editor.component;
                 return <Component defaultValue={entry.matchExpression} entry={entry}/>
             })()}
-            <Field>
+            <Field className={spanFull}>
                 <FieldLabel>
                     {t("default.content")}
                 </FieldLabel>

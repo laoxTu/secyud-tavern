@@ -13,6 +13,7 @@ import {entryState} from "./models";
 import {PresetScriptModel, engineName} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
+import {spanFull} from "@/components/custom/GridField";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -32,26 +33,24 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
     })();
 
     return (<>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                    {t("default.priority")}
-                </FieldLabel>
-                <Input name="priority" type={"number"}
-                       id={`${engineName}-priority-${entry.id}`}
-                       defaultValue={entry.priority}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                    {t("default.type")}
-                </FieldLabel>
-
-                <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
-                          value={type} onValueChange={setType}
-                          items={scriptTypes}/>
-            </Field>
-        </div>
         <Field>
+            <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                {t("default.priority")}
+            </FieldLabel>
+            <Input name="priority" type={"number"}
+                   id={`${engineName}-priority-${entry.id}`}
+                   defaultValue={entry.priority}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                {t("default.type")}
+            </FieldLabel>
+
+            <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
+                      value={type} onValueChange={setType}
+                      items={scriptTypes}/>
+        </Field>
+        <Field className={spanFull}>
             <FieldLabel>
                 {t("default.content")}
             </FieldLabel>

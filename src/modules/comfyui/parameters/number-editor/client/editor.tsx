@@ -13,23 +13,21 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as NumberEditorConfig;
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
-                    {t("comfyui.node_id")}
-                </FieldLabel>
-                <Input name={"node_id"} defaultValue={config?.nodeId}
-                       id={`${engineName}-node_id-${entry.id}`}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
-                    {t("comfyui.node_name")}
-                </FieldLabel>
-                <Input name={"node_name"} defaultValue={config?.nodeName}
-                       id={`${engineName}-node_name-${entry.id}`}/>
-            </Field>
-            <InputComponent entry={entry} formRef={formRef}/>
-        </div>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+                {t("comfyui.node_id")}
+            </FieldLabel>
+            <Input name={"node_id"} defaultValue={config?.nodeId}
+                   id={`${engineName}-node_id-${entry.id}`}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+                {t("comfyui.node_name")}
+            </FieldLabel>
+            <Input name={"node_name"} defaultValue={config?.nodeName}
+                   id={`${engineName}-node_name-${entry.id}`}/>
+        </Field>
+        <InputComponent entry={entry} formRef={formRef}/>
     </>;
 }
 

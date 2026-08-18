@@ -11,7 +11,7 @@ import {ComfyUIParameterModel, moduleName, parameterEntryName as engineName} fro
 import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
-import { Selector} from "@/components/custom/selector";
+import {Selector} from "@/components/custom/selector";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
@@ -20,28 +20,26 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                        {t("default.priority")}
-                    </FieldLabel>
-                    <Input name="priority" type={"number"}
-                           id={`${engineName}-priority-${entry.id}`}
-                           defaultValue={entry.priority}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                        {t("comfyui.parameter_type")}
-                    </FieldLabel>
-                    <Selector id={`${engineName}-type-${entry.id}`}
-                              items={comfyUIParameterRegistry.getSorted()}
-                              name={'type'}
-                              value={editor}
-                              onValueChange={setEditor}
-                              labelAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
-                              valueAccessor={e => e.id}/>
-                </Field>
-            </div>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                    {t("default.priority")}
+                </FieldLabel>
+                <Input name="priority" type={"number"}
+                       id={`${engineName}-priority-${entry.id}`}
+                       defaultValue={entry.priority}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                    {t("comfyui.parameter_type")}
+                </FieldLabel>
+                <Selector id={`${engineName}-type-${entry.id}`}
+                          items={comfyUIParameterRegistry.getSorted()}
+                          name={'type'}
+                          value={editor}
+                          onValueChange={setEditor}
+                          labelAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
+                          valueAccessor={e => e.id}/>
+            </Field>
             {editor?.editorComponent && (() => {
                 const Component = editor.editorComponent;
                 return <Component formRef={formRef} entry={entry}/>

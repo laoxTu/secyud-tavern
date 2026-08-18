@@ -10,16 +10,14 @@ export function Editor() {
     const {embeddingGeneratorConfig} = useRagSettingState();
 
     return (<>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor="transformers-model">
-                    {t("rag.embedding_generator_model")}
-                </FieldLabel>
+        <Field>
+            <FieldLabel htmlFor="transformers-model">
+                {t("rag.embedding_generator_model")}
+            </FieldLabel>
 
-                <Selector name={'model'} id={`transformers-model`}
-                          defaultValue={embeddingGeneratorConfig["model"] ?? null}
-                          items={Object.keys(transformerModels)}/>
-            </Field>
-        </div>
+            <Selector name={'model'} id={`transformers-model`}
+                      defaultValue={embeddingGeneratorConfig["model"] ?? null}
+                      items={Object.keys(transformerModels)}/>
+        </Field>
     </>);
 }

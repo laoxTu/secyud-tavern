@@ -23,37 +23,35 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-fitCount-${entry.id}`}>
-                        {t("lorebook.fit_count")}
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-fitCount-${entry.id}`}>
+                    {t("lorebook.fit_count")}
+                </FieldLabel>
+                <Input id={`${engineName}-fitCount-${entry.id}`} type={"number"}
+                       min={1} max={Math.max(keywordsLength, 1)} step={1}
+                       defaultValue={model.fitCount} name={"fitCount"}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-keywordsLength-${entry.id}`}>
+                    {t("lorebook.keywords_groups_length")}
+                </FieldLabel>
+                <Input id={`${engineName}-keywordsLength-${entry.id}`} type={"number"}
+                       min={1} max={maxLength} step={1}
+                       value={keywordsLength}
+                       onChange={e =>
+                           setKeywordsLength(clamp(parseInt(e.target.value), 1, maxLength))}
+                       name={"keywordsLength"}/>
+            </Field>
+            {Array.from({length: keywordsLength}).map((_, index) => (
+                <Field key={index}>
+                    <FieldLabel htmlFor={`${engineName}-keywords-${entry.id}-${index}`}>
+                        {`${t("lorebook.include_any_word")} ${index + 1}`}
                     </FieldLabel>
-                    <Input id={`${engineName}-fitCount-${entry.id}`} type={"number"}
-                           min={1} max={Math.max(keywordsLength, 1)} step={1}
-                           defaultValue={model.fitCount} name={"fitCount"}/>
+                    <TagBox id={`${engineName}-keywords-${entry.id}-${index}`}
+                            name={`keywords-${index}`}
+                            defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
                 </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-keywordsLength-${entry.id}`}>
-                        {t("lorebook.keywords_groups_length")}
-                    </FieldLabel>
-                    <Input id={`${engineName}-keywordsLength-${entry.id}`} type={"number"}
-                           min={1} max={maxLength} step={1}
-                           value={keywordsLength}
-                           onChange={e =>
-                               setKeywordsLength(clamp(parseInt(e.target.value), 1, maxLength))}
-                           name={"keywordsLength"}/>
-                </Field>
-                {Array.from({length: keywordsLength}).map((_, index) => (
-                    <Field key={index}>
-                        <FieldLabel htmlFor={`${engineName}-keywords-${entry.id}-${index}`}>
-                            {`${t("lorebook.include_any_word")} ${index + 1}`}
-                        </FieldLabel>
-                        <TagBox id={`${engineName}-keywords-${entry.id}-${index}`}
-                                name={`keywords-${index}`}
-                                defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
-                    </Field>
-                ))}
-            </div>
+            ))}
         </>
     );
 }

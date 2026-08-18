@@ -42,6 +42,7 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
+import {GridField} from "@/components/custom/GridField";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -512,7 +513,7 @@ function Content() {
                 </Dialog>
             </div>
             <form action={applySearch}>
-                <div className="grid md:grid-cols-2 gap-4">
+                <GridField>
                     <TagBox defaultValue={[]}
                             name={"type"}
                             placeholder={t("default.types")}
@@ -531,7 +532,7 @@ function Content() {
                             </InputGroupButton>
                         </InputGroupAddon>
                     </InputGroup>
-                </div>
+                </GridField>
             </form>
         </div>
         <div className={'flex-1 flex flex-col overflow-hidden'}>

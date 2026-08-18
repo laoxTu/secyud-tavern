@@ -22,31 +22,30 @@ import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {StoryHistory} from "@/modules/stories/models";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {getReplyAbortController, requestLlmapiReply} from "@/modules/slots/client/history-chatbox";
+import {spanFull} from "@/components/custom/GridField";
 
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as LlmTextEditorConfig;
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
-                    {t("comfyui.node_id")}
-                </FieldLabel>
-                <Input name={"node_id"} defaultValue={config?.nodeId}
-                       id={`${engineName}-node_id-${entry.id}`}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
-                    {t("comfyui.node_name")}
-                </FieldLabel>
-                <Input name={"node_name"} defaultValue={config?.nodeName}
-                       id={`${engineName}-node_name-${entry.id}`}/>
-            </Field>
-            <LlmapiRequireField defaultValue={config.llmapi ?? null}
-                                prefix={`${engineName}-${entry.id}`}/>
-        </div>
         <Field>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+                {t("comfyui.node_id")}
+            </FieldLabel>
+            <Input name={"node_id"} defaultValue={config?.nodeId}
+                   id={`${engineName}-node_id-${entry.id}`}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+                {t("comfyui.node_name")}
+            </FieldLabel>
+            <Input name={"node_name"} defaultValue={config?.nodeName}
+                   id={`${engineName}-node_name-${entry.id}`}/>
+        </Field>
+        <LlmapiRequireField defaultValue={config.llmapi ?? null}
+                            prefix={`${engineName}-${entry.id}`}/>
+        <Field className={spanFull}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {t("comfyui.text_prompt")}
             </FieldLabel>

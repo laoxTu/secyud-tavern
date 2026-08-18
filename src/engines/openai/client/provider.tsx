@@ -15,6 +15,7 @@ import {StoryOutputCalling} from "@/modules/stories/models";
 import {extractVariableChanges} from "@/modules/slots/models";
 import {LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
 import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
+import {spanFull} from "@/components/custom/GridField";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -41,75 +42,73 @@ function Content() {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-url`}>
-                        {t(`${moduleName}.url`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-url`} name={"url"}
-                           defaultValue={config.url}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-model`}>
-                        {t(`${moduleName}.model`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-model`} name={"model"}
-                           defaultValue={config.parameters.model}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-apikey`}>
-                        {t(`${moduleName}.apikey`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-apikey`}
-                           name={"apikey"}
-                           type={"password"}
-                           autoComplete={'off'}
-                           defaultValue={model?.key}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-stream`}>
-                        {t(`${moduleName}.stream`)}
-                    </FieldLabel>
-                    <FieldContent>
-                        <Checkbox id={`${moduleName}-stream`} name={"stream"}
-                                  defaultChecked={config.parameters.stream}/>
-                    </FieldContent>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-temperature`}>
-                        {t(`${moduleName}.temperature`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-temperature`} name={"temperature"}
-                           type={"number"} max={2} min={0} step={0.05}
-                           defaultValue={config.parameters.temperature}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-top_p`}>
-                        {t(`${moduleName}.top_p`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-top_p`} name={"top_p"}
-                           type={"number"} max={2} min={0} step={0.05}
-                           defaultValue={config.parameters.top_p}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-presence_penalty`}>
-                        {t(`${moduleName}.presence_penalty`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-presence_penalty`} name={"presence_penalty"}
-                           type={"number"} max={2} min={-2} step={0.05}
-                           defaultValue={config.parameters.presence_penalty}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-frequency_penalty`}>
-                        {t(`${moduleName}.frequency_penalty`)}
-                    </FieldLabel>
-                    <Input id={`${moduleName}-frequency_penalty`} name={"frequency_penalty"}
-                           type={"number"} max={2} min={-2} step={0.05}
-                           defaultValue={config.parameters.frequency_penalty}/>
-                </Field>
-                <BuilderContent config={config.inputBuilder}/>
-            </div>
             <Field>
+                <FieldLabel htmlFor={`${moduleName}-url`}>
+                    {t(`${moduleName}.url`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-url`} name={"url"}
+                       defaultValue={config.url}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-model`}>
+                    {t(`${moduleName}.model`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-model`} name={"model"}
+                       defaultValue={config.parameters.model}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-apikey`}>
+                    {t(`${moduleName}.apikey`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-apikey`}
+                       name={"apikey"}
+                       type={"password"}
+                       autoComplete={'off'}
+                       defaultValue={model?.key}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-stream`}>
+                    {t(`${moduleName}.stream`)}
+                </FieldLabel>
+                <FieldContent>
+                    <Checkbox id={`${moduleName}-stream`} name={"stream"}
+                              defaultChecked={config.parameters.stream}/>
+                </FieldContent>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-temperature`}>
+                    {t(`${moduleName}.temperature`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-temperature`} name={"temperature"}
+                       type={"number"} max={2} min={0} step={0.05}
+                       defaultValue={config.parameters.temperature}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-top_p`}>
+                    {t(`${moduleName}.top_p`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-top_p`} name={"top_p"}
+                       type={"number"} max={2} min={0} step={0.05}
+                       defaultValue={config.parameters.top_p}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-presence_penalty`}>
+                    {t(`${moduleName}.presence_penalty`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-presence_penalty`} name={"presence_penalty"}
+                       type={"number"} max={2} min={-2} step={0.05}
+                       defaultValue={config.parameters.presence_penalty}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-frequency_penalty`}>
+                    {t(`${moduleName}.frequency_penalty`)}
+                </FieldLabel>
+                <Input id={`${moduleName}-frequency_penalty`} name={"frequency_penalty"}
+                       type={"number"} max={2} min={-2} step={0.05}
+                       defaultValue={config.parameters.frequency_penalty}/>
+            </Field>
+            <BuilderContent config={config.inputBuilder}/>
+            <Field className={spanFull}>
                 <FieldLabel htmlFor={`${moduleName}-extras`}>
                     {t(`${moduleName}.extras`)}
                 </FieldLabel>

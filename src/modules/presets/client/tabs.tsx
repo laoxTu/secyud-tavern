@@ -18,6 +18,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {GridField} from "@/components/custom/GridField";
 
 export function getPresetRequires(data: FormData) {
     return data.getAll("require")
@@ -120,7 +121,7 @@ export function DefaultTab() {
                                        changed.current = true;
                                    }}/>
                 </Field>
-                <div className="grid md:grid-cols-2 gap-4">
+                <GridField>
                     <Field>
                         <FieldLabel htmlFor={`${moduleName}-code`}>
                             {t("default.code")}
@@ -157,7 +158,7 @@ export function DefaultTab() {
                                 id={`${moduleName}-tags`} items={defaultTags}/>
                     </Field>
                     <PresetRequiresField defaultValue={model.requires}/>
-                </div>
+                </GridField>
                 <Field>
                     <FieldLabel>
                         {t("default.variables")}

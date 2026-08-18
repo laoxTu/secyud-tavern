@@ -18,7 +18,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
     const config: UrlFetchConfigModel = mergeObjects(defaultConfig, defaultValue);
 
     return (
-        <div className="grid md:grid-cols-2 gap-4">
+        <>
             <Field>
                 <FieldLabel htmlFor={`${entry.id}-maxResults`}>
                     {t('url_fetch.max_results')}
@@ -65,6 +65,6 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                     step={1}
                 />
             </Field>
-        </div>
+        </>
     );
 }

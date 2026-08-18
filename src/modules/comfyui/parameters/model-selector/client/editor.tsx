@@ -18,37 +18,35 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const config = entry.config as ModelSelectorConfig;
     const [type, setType] = React.useState<string | null>(config?.type ?? null);
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
-                    {t("comfyui.node_id")}
-                </FieldLabel>
-                <Input name={"node_id"} defaultValue={config?.nodeId}
-                       id={`${engineName}-node_id-${entry.id}`}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
-                    {t("comfyui.node_name")}
-                </FieldLabel>
-                <Input name={"node_name"} defaultValue={config?.nodeName}
-                       id={`${engineName}-node_name-${entry.id}`}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-model_type-${entry.id}`}>
-                    {t("comfyui.model_type")}
-                </FieldLabel>
-                <Selector name={'model_type'}
-                          id={`${engineName}-model_type-${entry.id}`}
-                          value={type} onValueChange={setType}
-                          items={modelTypes}/>
-            </Field>
-            <InputComponent entry={{
-                ...entry, config: {
-                    ...config,
-                    type: type,
-                }
-            }} formRef={formRef}/>
-        </div>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+                {t("comfyui.node_id")}
+            </FieldLabel>
+            <Input name={"node_id"} defaultValue={config?.nodeId}
+                   id={`${engineName}-node_id-${entry.id}`}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+                {t("comfyui.node_name")}
+            </FieldLabel>
+            <Input name={"node_name"} defaultValue={config?.nodeName}
+                   id={`${engineName}-node_name-${entry.id}`}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-model_type-${entry.id}`}>
+                {t("comfyui.model_type")}
+            </FieldLabel>
+            <Selector name={'model_type'}
+                      id={`${engineName}-model_type-${entry.id}`}
+                      value={type} onValueChange={setType}
+                      items={modelTypes}/>
+        </Field>
+        <InputComponent entry={{
+            ...entry, config: {
+                ...config,
+                type: type,
+            }
+        }} formRef={formRef}/>
     </>;
 }
 

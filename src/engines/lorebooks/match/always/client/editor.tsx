@@ -15,20 +15,17 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-
-                    <FieldLabel htmlFor={`${engineName}-lastMessage-${entry.id}`}>
-                        {t("lorebook.last_message")}
-                    </FieldLabel>
-                    <FieldContent>
-                        <Checkbox name={"lastMessage"}
-                                  key={model.lastMessage ? 1 : 0}
-                                  id={`${engineName}-lastMessage-${entry.id}`}
-                                  defaultChecked={model.lastMessage}/>
-                    </FieldContent>
-                </Field>
-            </div>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-lastMessage-${entry.id}`}>
+                    {t("lorebook.last_message")}
+                </FieldLabel>
+                <FieldContent>
+                    <Checkbox name={"lastMessage"}
+                              key={model.lastMessage ? 1 : 0}
+                              id={`${engineName}-lastMessage-${entry.id}`}
+                              defaultChecked={model.lastMessage}/>
+                </FieldContent>
+            </Field>
         </>
     );
 }

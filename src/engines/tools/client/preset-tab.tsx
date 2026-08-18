@@ -36,20 +36,18 @@ export function EditorContent({entry, formRef}: {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
-                        {t("llmapi.tool_provider")}
-                    </FieldLabel>
-                    <Selector id={`llmapi-tool_provider-${entry.id}`}
-                              items={llmapiToolManager.getSorted()}
-                              name={'provider'}
-                              value={editor}
-                              onValueChange={setEditor}
-                              valueAccessor={u => u.id}
-                              labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
-                </Field>
-            </div>
+            <Field>
+                <FieldLabel htmlFor={`llmapi-tool_provider-${entry.id}`}>
+                    {t("llmapi.tool_provider")}
+                </FieldLabel>
+                <Selector id={`llmapi-tool_provider-${entry.id}`}
+                          items={llmapiToolManager.getSorted()}
+                          name={'provider'}
+                          value={editor}
+                          onValueChange={setEditor}
+                          valueAccessor={u => u.id}
+                          labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
+            </Field>
             {editor?.component && (() => {
                 const Component = editor.component;
                 return <Component defaultValue={entry.value} entry={entry} formRef={formRef}/>

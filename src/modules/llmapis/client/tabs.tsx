@@ -18,6 +18,7 @@ import {RequireModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
+import {GridField} from "@/components/custom/GridField";
 
 export function LlmapiRequireField(
     {
@@ -73,7 +74,7 @@ function UpdateContent({model}: { model: LlmapiModel }) {
     const [configEditor, setConfigEditor] = useState<LlmapiProvider | null>(
         llmapiProviderRegistry.records[model.provider ?? ""] ?? null);
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
+        <GridField>
             <Field>
                 <Label htmlFor={`${moduleName}-code`}>{t("default.code") + "*"}</Label>
                 <Input id={`${moduleName}-code`} name="code"
@@ -106,7 +107,7 @@ function UpdateContent({model}: { model: LlmapiModel }) {
                        defaultValue={model.content.maxIterations ?? 0}
                 />
             </Field>
-        </div>
+        </GridField>
         <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
                 {t(`${moduleName}.provider`)}

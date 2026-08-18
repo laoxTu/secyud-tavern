@@ -12,6 +12,7 @@ import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
 import {Selector} from "@/components/custom/selector";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
+import {GridField} from "@/components/custom/GridField";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -40,7 +41,7 @@ function Tab() {
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <GridField>
                             <Field>
                                 <FieldLabel htmlFor="setting-author">
                                     {t("setting.author")}
@@ -60,7 +61,7 @@ function Tab() {
                             <LlmapiRequireField
                                 defaultValue={llmapi}
                                 prefix={'setting'}/>
-                        </div>
+                        </GridField>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

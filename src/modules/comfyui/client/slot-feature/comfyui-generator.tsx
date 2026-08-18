@@ -25,6 +25,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {BusinessError} from "@/handler/models";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
+import {GridField} from "@/components/custom/GridField";
 
 export function ComfyUIGenerator() {
     const t = useTranslations();
@@ -129,7 +130,9 @@ export function ComfyUIGenerator() {
                     parameters.map(u => {
                         const editor = comfyUIParameterRegistry.records[u.type];
                         const Component = editor.inputComponent;
-                        return Component ? <Component key={u.id} formRef={formRef} entry={u}/> : null;
+                        return Component ? <GridField key={u.id}>
+                            <Component formRef={formRef} entry={u}/>
+                        </GridField> : null;
                     })
                 }
             </FieldSet>

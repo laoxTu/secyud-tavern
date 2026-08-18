@@ -14,6 +14,7 @@ import {PresetRegexModel, engineName} from "../models";
 import {Textarea} from "@/components/ui/textarea";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Selector} from "@/components/custom/selector";
+import {spanFull, spanHalf} from "@/components/custom/GridField";
 
 const regexTargets = ["both", "input", "output"]
 
@@ -94,18 +95,16 @@ function Tab() {
                 },
                 updateContent: (entry) => (
                     <>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <Field>
-                                <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
-                                    {t("regex.target")}
-                                </FieldLabel>
-                                <Selector name={'target'} id={`${engineName}-target-${entry.id}`}
-                                          defaultValue={entry.target ?? null}
-                                          items={regexTargets}
-                                          labelAccessor={e => t(`regex.target_${e}`)}/>
-                            </Field>
-                        </div>
                         <Field>
+                            <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
+                                {t("regex.target")}
+                            </FieldLabel>
+                            <Selector name={'target'} id={`${engineName}-target-${entry.id}`}
+                                      defaultValue={entry.target ?? null}
+                                      items={regexTargets}
+                                      labelAccessor={e => t(`regex.target_${e}`)}/>
+                        </Field>
+                        <Field className={spanHalf}>
                             <FieldLabel htmlFor={`${engineName}-pattern-${entry.id}`}>
                                 {t("regex.pattern")}
                             </FieldLabel>
@@ -113,7 +112,7 @@ function Tab() {
                                    id={`${engineName}-pattern-${entry.id}`}
                                    defaultValue={entry.pattern}/>
                         </Field>
-                        <Field>
+                        <Field className={spanFull}>
                             <FieldLabel htmlFor={`${engineName}-replacement-${entry.id}`}>
                                 {t("regex.replacement")}
                             </FieldLabel>

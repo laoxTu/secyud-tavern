@@ -13,6 +13,7 @@ import {entryState} from "./models";
 import {PresetStyleModel, engineName} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
+import {spanFull} from "@/components/custom/GridField";
 
 const styleTypes = ["", "link", "text/css"];
 
@@ -30,25 +31,23 @@ function Editor({entry, formRef}: { entry: PresetStyleModel, formRef: RefObject<
     })();
 
     return (<>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                    {t("default.priority")}
-                </FieldLabel>
-                <Input name="priority" type={"number"}
-                       id={`${engineName}-priority-${entry.id}`}
-                       defaultValue={entry.priority}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                    {t("default.type")}
-                </FieldLabel>
-                <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
-                          value={type} onValueChange={setType}
-                          items={styleTypes}/>
-            </Field>
-        </div>
         <Field>
+            <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                {t("default.priority")}
+            </FieldLabel>
+            <Input name="priority" type={"number"}
+                   id={`${engineName}-priority-${entry.id}`}
+                   defaultValue={entry.priority}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                {t("default.type")}
+            </FieldLabel>
+            <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
+                      value={type} onValueChange={setType}
+                      items={styleTypes}/>
+        </Field>
+        <Field className={spanFull}>
             <FieldLabel>
                 {t("default.content")}
             </FieldLabel>

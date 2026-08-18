@@ -8,6 +8,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {useComfyUISettingState} from "@/modules/comfyui/client/models";
 import {moduleName} from "@/modules/comfyui/models";
 import {Input} from "@/components/ui/input";
+import {GridField} from "@/components/custom/GridField";
 
 function Tab() {
     const t = useTranslations();
@@ -31,7 +32,7 @@ function Tab() {
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <GridField>
                             <Field>
                                 <FieldLabel htmlFor="setting-comfyui-base_url">
                                     {t("default.base_url")}
@@ -53,7 +54,7 @@ function Tab() {
                                 <Input id="setting-comfyui-model_dir" name={'model_dir'}
                                        defaultValue={modelDir ?? "/data"}/>
                             </Field>
-                        </div>
+                        </GridField>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">
