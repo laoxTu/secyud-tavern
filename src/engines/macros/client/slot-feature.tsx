@@ -68,25 +68,54 @@ export function MacroSelector() {
                 <DialogTitle>{t('macro.selector')}</DialogTitle>
             </DialogHeader>
             <div className={'overflow-auto p-2 flex-1'}>
-                {cache && Object.values(cache.macros).map(item => (
-                    <FieldSet key={item.key}
-                              className="border rounded-lg bg-card/50 p-4">
-                        <FieldLegend className="text-sm font-semibold mb-2">
-                            {item.key}
-                        </FieldLegend>
-                        <RadioGroup defaultValue={item.select ?? 0}
-                                    onValueChange={i => handleSelectChange(item.key, i)}
-                                    className="flex flex-col gap-1">
+                {cache && Object.values(cache.macros)
+                    .filter(u => !u.hidden)
+                    .map(item => (
+                        <FieldSet key={item.key}
+                                  className="border rounded-lg bg-card/50 p-4">
+                            <FieldLegend className="text-sm font-semibold mb-2">
+                                {item.key}
+                            </FieldLegend>
+                            <RadioGroup defaultValue={item.select ?? 0}
+                                        onValueChange={i => handleSelectChange(item.key, i)}
+                                        className="flex flex-col gap-1">
+                                {
+                                    item.singles.map((u, i) => (
+                                        <Field key={i}>
+                                            {i > 0 ? <Separator className={'my-1'}/> : null}
+                                            <FieldContent className="flex-row p-2">
+                                                <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
+                                                <FieldLabel htmlFor={`macro-${u.key}-${i}`}
+                                                            className="m-auto ml-2 flex-1">
+                                                    {u.name}
+                                                </FieldLabel>
+                                            </FieldContent>
+                                            <FieldDescription>
+                                                {u.value.substring(0, 32)}
+                                                {u.value?.length > 32 ?
+                                                    <Tooltip>
+                                                        <TooltipTrigger
+                                                            className="cursor-pointer ml-2 inline-block text-center size-5 m-auto rounded-full border hover:border-primary hover:text-primary"
+                                                            render={<span/>}>
+                                                            ⋯
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{u.value}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip> : null
+                                                }
+                                            </FieldDescription>
+                                        </Field>))
+                                }
+                            </RadioGroup>
                             {
-                                item.models.map((u, i) => (
+                                item.multiples.map((u, i) => (
                                     <Field key={i}>
                                         {i > 0 ? <Separator className={'my-1'}/> : null}
-                                        <FieldContent className="flex-row p-2 rounded-md hover:bg-primary-foreground">
-                                            {u.multiple ?
-                                                <Checkbox defaultChecked={!u.disabled}
-                                                          onCheckedChange={b => u.disabled = !b}/> :
-                                                <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
-                                            }
+                                        <FieldContent
+                                            className="flex-row p-2 rounded-md hover:bg-primary-foreground">
+                                            <Checkbox defaultChecked={!u.disabled}
+                                                      onCheckedChange={b => u.disabled = !b}/>
                                             <FieldLabel htmlFor={`macro-${u.key}-${i}`}
                                                         className="m-auto ml-2 flex-1">
                                                 {u.name}
@@ -107,11 +136,9 @@ export function MacroSelector() {
                                                 </Tooltip> : null
                                             }
                                         </FieldDescription>
-
                                     </Field>))
                             }
-                        </RadioGroup>
-                    </FieldSet>))}
+                        </FieldSet>))}
             </div>
         </DialogContent>
     </Dialog>);

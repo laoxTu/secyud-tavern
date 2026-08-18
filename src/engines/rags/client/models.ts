@@ -2,7 +2,7 @@ import {Orama, Vector} from "@orama/orama";
 import {StoryHistoryMessage} from "@/modules/slots/models";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
-import {remoteStorage} from "@/modules/settings/client/models";
+import {remoteStorage} from "@/modules/settings/client/storage";
 import {Registerable} from "@/utils/register";
 
 export const ragVectorSchema = {

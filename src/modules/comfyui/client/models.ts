@@ -12,7 +12,7 @@ import {
 import {modulePlural} from "@/modules/presets/models";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
-import {remoteStorage} from "@/modules/settings/client/models";
+import {remoteStorage} from "@/modules/settings/client/storage";
 
 /**
  * comfyui 我们主要关注的是工作流的联动

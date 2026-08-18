@@ -1,4 +1,10 @@
-﻿export interface SettingModel {
+﻿import {RequireModel} from "@/modules/presets/models";
+
+export interface RemoteSettingState {
+    llmapi: RequireModel | null;
+}
+
+export interface SettingModel {
     id: string,
     data: string | null,
 }
