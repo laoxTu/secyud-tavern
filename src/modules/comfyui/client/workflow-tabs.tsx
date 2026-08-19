@@ -9,7 +9,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {moduleName, ComfyUIWorkflowModel} from "../models";
+import {ComfyUIWorkflowModel, moduleName} from "../models";
 import {modelState} from "./models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";

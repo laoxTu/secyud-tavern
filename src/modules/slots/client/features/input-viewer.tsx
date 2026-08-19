@@ -1,93 +1,75 @@
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {getCurrentHistory, getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
 import {useState} from "react";
+import {ViewIcon} from "lucide-react";
 import {
-    Dialog, DialogClose,
-    DialogContent, DialogFooter, DialogHeader, DialogTitle,
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
-import {ViewIcon} from "lucide-react";
-import {LlmapiInputContext} from "@/modules/slots/client/conversation-models";
-import {
-    conversationManager,
-    generateCurrentVariables,
-    generateInputBuildContext
-} from "@/modules/slots/client/conversation";
-import {StoryHistory} from "@/modules/stories/models";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
+import {conversationManager,} from "@/modules/slots/client/conversation";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
-import {extractVariableChanges} from "@/modules/slots/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
 import {BusinessError} from "@/handler/models";
+import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
+import {useSlotState} from "@/modules/slots/client/models";
+import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
 
 
 export function InputViewer() {
-
     const {handleError} = useErrorHandler();
     const t = useTranslations();
-    const ctx = useSlotContext();
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState<LlmapiInputItem[] | undefined>();
 
     const handleDialogOpen = async () => {
+        const {slot, histories, getHistory} = useSlotState.getState();
+        if (!slot || !histories) {
+            console.error('[slot]: failed to get slot');
+            return;
+        }
+        setLoading(true);
         try {
-            setLoading(true);
-            const {slot, histories} = getSlotAndHistories(ctx);
-            if (slot.content.isOutput) {
+            if (useStoryChatboxState.getState().generating) {
                 handleError(new BusinessError("is during output.", "slot.is_output_warning"));
                 return;
             }
-            const llmapi = slot.llmapi;
-            const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
-            const last = getCurrentHistory(slot);
+            const last = getHistory();
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
-            const history: StoryHistory = {
+            const history: SlotHistory = {
                 code: "",
                 disabled: false,
                 id: 0,
-                inputs: [{
-                    id: 0,
-                    content: "",
-                    variables: [],
-                    properties: {}
-                }],
+                inputs: [
+                    messageUtils.setContent({
+                        content: "",
+                        variables: [],
+                        properties: {}
+                    }, useStoryChatboxState.getState().content)
+                ],
                 name: "",
                 outputId: -1,
                 outputs: [],
                 summary: false,
-                variables: last ? generateCurrentVariables(last, true) : {},
+                variables: last ? historyUtils.getVariables(last, true) : {},
             };
-            const inputElement = document.getElementById('slot-user-input') as HTMLInputElement;
-            extractVariableChanges(history.inputs[0], inputElement?.value);
-            const inputContext: LlmapiInputContext = {
-                slot: {
+
+            const {items} = await conversationManager.inputProcesser
+                .processInput(history, false, {
                     ...slot,
-                    story: {
-                        ...slot.story,
-                        histories: [...histories, history]
-                    }
-                },
-                content: {},
-                history,
-                contentHandlers: [],
-                histories: [],
-                config: llmapi.content.config,
-                current: false
-            };
-
-            generateInputBuildContext(inputContext);
-
-            await conversationManager.inputProcesser.use(provider =>
-                provider.onProcessInput(inputContext));
-            const {items} = await llmapiProvider.generateInput(inputContext);
+                    histories: [...histories, history]
+                });
             setItems(items);
             setOpen(true);
         } catch (error) {

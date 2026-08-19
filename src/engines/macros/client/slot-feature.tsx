@@ -3,16 +3,8 @@ import {Button} from "@/components/ui/button";
 import React from "react";
 import {useTranslations} from "next-intl";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet} from "@/components/ui/field";
-import {getSlotAndHistories, useSlotContext} from "@/modules/slots/client/models";
-import {getContent} from "@/modules/slots/client/conversation-models";
 import {enginePlural} from "@/engines/macros/models";
 import {MacroConversationCache} from "@/engines/macros/client/conversation";
 import {useErrorHandler} from "@/handler/client/error";
@@ -20,19 +12,24 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {SlotFeature} from "@/modules/slots/client/feeature-models";
 import {Separator} from "@/components/ui/separator";
 import {Checkbox} from "@/components/ui/checkbox";
+import {slotUtils} from "@/modules/slots/client/conversation-models";
+import {useSlotState} from "@/modules/slots/client/models";
 
 
 export function MacroSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
     const [cache, setCache] = React.useState<MacroConversationCache | null>(null);
-    const ctx = useSlotContext();
     const {handleError} = useErrorHandler();
 
     const handleDialogOpen = () => {
+        const {slot} = useSlotState.getState();
+        if (!slot) {
+            console.error('[slot]: failed to get slot');
+            return;
+        }
         try {
-            const {slot} = getSlotAndHistories(ctx);
-            const cache: MacroConversationCache = getContent(slot, enginePlural);
+            const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
             setCache(cache);
             setOpen(true);
         } catch (error) {
@@ -40,9 +37,13 @@ export function MacroSelector() {
         }
     };
     const handleSelectChange = (key: string, index: number) => {
+        const {slot} = useSlotState.getState();
+        if (!slot) {
+            console.error('[slot]: failed to get slot');
+            return;
+        }
         try {
-            const {slot} = getSlotAndHistories(ctx);
-            const cache: MacroConversationCache = getContent(slot, enginePlural);
+            const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
             const item = cache.macros[key];
             item.select = index;
             setCache(cache);

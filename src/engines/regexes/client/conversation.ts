@@ -1,10 +1,9 @@
 ﻿import {
-    getContent,
     LlmapiInputProcesser,
-    setContent,
     SlotContentRenderer,
     SlotInitializer,
-    SlotStreamRenderer
+    SlotStreamRenderer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
@@ -26,7 +25,7 @@ export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
-        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
+        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
         const generate = async (str: string, role: string) => {
             return role !== "tool" ? applyRegexes(cache.inputs, str,) : str;
         };
@@ -59,20 +58,20 @@ export const regexConversationProvider:
                 }
             }
         }
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
-        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
-        const data = ctx.data;
-        data.output = applyRegexes(cache.outputs, data.output);
+        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
+        const generate = async (str: string) => {
+            return applyRegexes(cache.outputs, str);
+        };
+        ctx.contentHandlers.push(generate);
     },
     onRenderContent: async (ctx) => {
-        const cache: RegexConversationCache = getContent(ctx.slot, enginePlural)
-        const data = ctx.data;
-        const inputs = data.inputs;
-        for (let i = 0; i < inputs.length; i++) {
-            inputs[i] = applyRegexes(cache.outputs, inputs[i]);
-        }
-        data.output = applyRegexes(cache.outputs, data.output);
+        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
+        const generate = async (str: string) => {
+            return applyRegexes(cache.outputs, str);
+        };
+        ctx.contentHandlers.push(generate);
     }
 };

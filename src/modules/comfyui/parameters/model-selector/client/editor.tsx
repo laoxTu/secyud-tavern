@@ -11,6 +11,7 @@ import {get} from "@/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {ComfyUIHoverableItem} from "@/modules/comfyui/client/components";
+import {spanHalf} from "@/components/custom/GridField";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
@@ -56,7 +57,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const path = config?.defaultValue;
 
     return <>
-        <Field>
+        <Field className={spanHalf}>
             <FieldLabel htmlFor={`${engineName}-model-${entry.id}`}>
                 {entry.name}
             </FieldLabel>

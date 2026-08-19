@@ -4,18 +4,17 @@ import React from "react";
 import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {moduleName} from "@/modules/llmapis/models";
-import {LlmapiProvider} from "@/modules/llmapis/client/provider-models";
-import {OpenAIConfigModel, engineName} from "../models";
+import {LlmapiOutputContext, LlmapiProvider} from "@/modules/llmapis/client/provider-models";
+import {engineName, OpenAIConfigModel} from "../models";
 import {mergeObjects} from "@/utils";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
-import {StoryOutputCalling} from "@/modules/stories/models";
-import {extractVariableChanges} from "@/modules/slots/models";
-import {LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
 import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
 import {spanFull} from "@/components/custom/GridField";
+import {messageUtils} from "@/modules/models";
+import {SlotCalling} from "@/modules/models/calling";
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
@@ -137,7 +136,7 @@ export async function generateOutput(context: LlmapiOutputContext) {
     if (output?.content) {
         content.content ??= "";
         content.content += output.content;
-        extractVariableChanges(message, content.content);
+        messageUtils.setContent(message, content.content);
     }
     // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
     if (output?.tool_calls) {
@@ -160,7 +159,7 @@ export async function generateOutput(context: LlmapiOutputContext) {
             id: toolCall.id,
             name: toolCall.function?.name,
             arguments: toolCall.function?.arguments ?? "",
-        } as StoryOutputCalling;
+        } as SlotCalling;
         message.callings?.push(current)
         return current;
     }

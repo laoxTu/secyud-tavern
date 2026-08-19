@@ -1,7 +1,4 @@
-import {
-    RagEmbeddingGeneratorProvider,
-    useRagSettingState
-} from "@/engines/rags/client/models";
+import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/client/models";
 import {Editor} from "./editor";
 import {env, pipeline} from "@huggingface/transformers";
 

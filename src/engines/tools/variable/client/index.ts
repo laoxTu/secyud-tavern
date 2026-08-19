@@ -1,14 +1,9 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {
-    getCurrentOutput,
-    LlmapiToolModel,
-    SlotModel
-} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import {Editor} from "./editor";
-import {getCurrentHistory} from "@/modules/slots/client/models";
-import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {extract, Operation} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";
+import {historyUtils} from "@/modules/models";
 
 export const variableToolProvider: LlmapiToolProvider = {
     id: "variable",
@@ -29,6 +24,8 @@ export const variableToolProvider: LlmapiToolProvider = {
 };
 
 export class VariableGetTool implements LlmapiTool {
+    model: LlmapiToolModel;
+
     constructor(private slot: SlotModel) {
         this.model = {
             name: "get_variable",
@@ -48,9 +45,9 @@ export class VariableGetTool implements LlmapiTool {
     }
 
     async invoke({path}: { path: string }) {
-        const history = getCurrentHistory(this.slot);
+        const history = this.slot.histories.at(-1);
         // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
-        const variables = generateCurrentVariables(history, true);
+        const variables = history ? historyUtils.getVariables(history, true) : {};
         const {previous, current, exists} = extract(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
         return {
@@ -58,11 +55,11 @@ export class VariableGetTool implements LlmapiTool {
             content: exists ? JSON.stringify(current.item) : `not exists, closest path: ${previous.path}`
         };
     }
-
-    model: LlmapiToolModel;
 }
 
 export class VariableSetTool implements LlmapiTool {
+    model: LlmapiToolModel;
+
     constructor(private slot: SlotModel) {
         this.model = {
             name: "set_variable",
@@ -159,8 +156,8 @@ export class VariableSetTool implements LlmapiTool {
     }
 
     async invoke({changes}: { changes: Operation[] }) {
-        const history = getCurrentHistory(this.slot);
-        const currentOutput = getCurrentOutput(history);
+        const history = this.slot.histories.at(-1);
+        const currentOutput = history ? historyUtils.getOutput(history) : null;
         if (currentOutput) {
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
             for (const change of changes) {
@@ -172,7 +169,5 @@ export class VariableSetTool implements LlmapiTool {
             hidden: false,
         };
     }
-
-    model: LlmapiToolModel;
 }
 

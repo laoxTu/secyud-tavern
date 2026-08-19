@@ -1,6 +1,6 @@
 ﻿import {OpenAI} from "openai";
 import {LlmapiProvider, LlmapiRequestContext} from "@/modules/llmapis/server/provider-models";
-import {OpenAIConfigModel, engineName} from "../models";
+import {engineName, OpenAIConfigModel} from "../models";
 import {Stream} from "openai/streaming";
 
 export async function generateOpenAIReadableStreamReply(

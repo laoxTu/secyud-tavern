@@ -1,26 +1,24 @@
 ﻿import {engineName, enginePlural, PresetMacroModel} from "../models";
 import {
-    getContent,
     LlmapiInputProcesser,
-    setContent,
     SlotContentRenderer,
     SlotInitializer,
-    SlotStreamRenderer
+    SlotStreamRenderer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
 import {Eta} from 'eta/core';
-import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
-import {StoryHistory} from "@/modules/stories/models";
 import {joinAsString} from "@/utils";
 import {engineName as regexEngineName} from "@/engines/regexes/models"
+import {historyUtils, SlotHistory} from "@/modules/models";
 
 const eta = new Eta({
     autoTrim: false,
     rmWhitespace: false,
 });
 
-function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
-    const cache: MacroConversationCache = getContent(ctx.slot, enginePlural);
+function buildMacroObject(ctx: { slot: SlotModel, history: SlotHistory }) {
+    const cache: MacroConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
 
     return {
         ...Object.fromEntries(Object.values(cache.macros).map(u => {
@@ -29,7 +27,7 @@ function buildMacroObject(ctx: { slot: SlotModel, history: StoryHistory }) {
                     ...u.multiples.filter(v => !v.disabled)
                 ], "", u => u?.value)]
         })),
-        variables: generateCurrentVariables(ctx.history, false),
+        variables: historyUtils.getVariables(ctx.history, false),
     }
 }
 
@@ -64,6 +62,7 @@ export const macroConversationProvider:
     & SlotStreamRenderer
     = {
     id: engineName,
+    requires: [regexEngineName],
     onInitialize: async (ctx) => {
         const cache: MacroConversationCache = {
             macros: {}
@@ -89,19 +88,20 @@ export const macroConversationProvider:
                 }
             }
         }
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
-        const data = ctx.data;
-        data.output = await eta.renderStringAsync(data.output, buildMacroObject(ctx));
+        const macroObject = buildMacroObject(ctx);
+        const generate = async (str: string) => {
+            return await eta.renderStringAsync(str, macroObject);
+        };
+        ctx.contentHandlers.push(generate);
     },
     onRenderContent: async (ctx) => {
         const macroObject = buildMacroObject(ctx);
-        const data = ctx.data;
-        const inputs = data.inputs;
-        for (let i = 0; i < inputs.length; i++) {
-            inputs[i] = await eta.renderStringAsync(inputs[i], macroObject);
-        }
-        data.output = await eta.renderStringAsync(data.output, macroObject);
+        const generate = async (str: string) => {
+            return await eta.renderStringAsync(str, macroObject);
+        };
+        ctx.contentHandlers.push(generate);
     }
 };

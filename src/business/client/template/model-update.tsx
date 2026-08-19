@@ -12,7 +12,7 @@ export interface ModelUpdateProps<TModel extends BaseModel> {
     // 根据原模型和表单更新模型，返回更新后的模型。
     updateHandler: (model: TModel, data: FormData) => Promise<TModel>;
     // 编辑 FieldGroup 的内部内容。
-    updateContent: (model: TModel, formRef:  RefObject<HTMLFormElement | null>) => React.ReactNode;
+    updateContent: (model: TModel, formRef: RefObject<HTMLFormElement | null>) => React.ReactNode;
 }
 
 interface Props<TModel extends BaseModel> {

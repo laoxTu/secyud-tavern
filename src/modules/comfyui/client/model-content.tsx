@@ -2,12 +2,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {TabConfig} from "@/components/custom/tab";
-import {
-    ComfyUIModelContentModel,
-    ComfyUIModelModel,
-    modelTypes,
-    moduleName,
-} from "../models";
+import {ComfyUIModelContentModel, ComfyUIModelModel, modelTypes, moduleName,} from "../models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {PaginationWrapper} from "@/components/custom/pager";
 import {useModelPagedItemsState} from "@/modules/comfyui/client/models";
@@ -15,9 +10,11 @@ import {Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemHeader, 
 import Image from "next/image";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    Dialog, DialogClose,
+    Dialog,
+    DialogClose,
     DialogContent,
-    DialogDescription, DialogFooter,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger

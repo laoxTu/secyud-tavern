@@ -1,4 +1,4 @@
-﻿import {moduleName, ComfyUIModelModel, ComfyUIWorkflowModel} from "../models";
+﻿import {ComfyUIModelModel, ComfyUIWorkflowModel, moduleName} from "../models";
 import {ModelStorage} from "@/business/server/storage";
 
 export const comfyuiModelStorage = ModelStorage.getInstance<ComfyUIModelModel>(moduleName + "Model",)

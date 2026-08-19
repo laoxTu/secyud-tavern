@@ -1,4 +1,3 @@
-
 export interface LoraConfig {
     on: boolean;
     lora: string;

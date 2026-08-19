@@ -1,21 +1,16 @@
-﻿import {
-    engineName,
-    enginePlural,
-    PresetLorebookModel,
-} from "../models";
+﻿import {engineName, enginePlural, PresetLorebookModel,} from "../models";
 import {matchName} from "../match/always/models";
-import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {tryFillActiveLorebooks} from "@/engines/lorebooks/client/match";
 import {
-    getContent,
     LlmapiHistory,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
-    setContent,
-    SlotInitializer
+    SlotInitializer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
-import {getCurrentOutput, getCurrentOutputs, StoryHistoryMessage} from "@/modules/slots/models";
+import {historyUtils} from "@/modules/models";
+import {SlotMessageBase} from "@/modules/models/message";
 
 
 export interface LorebookConversationCache {
@@ -55,10 +50,11 @@ export const lorebookConversationProvider:
                 }
             }
         }
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
-        const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
+        const cache: LorebookConversationCache =
+            slotUtils.getContent(ctx.slot, enginePlural);
 
         const prepareLorebooks: PresetLorebookModel[] = [];
         // 遍历历史：逐条输入/输出触发匹配，激活的世界书先积攒再合并进该条历史的 properties，供后续拼装提示词
@@ -76,18 +72,19 @@ export const lorebookConversationProvider:
 
             prepareLorebooks.length = 0;
 
-            const output = getCurrentOutput(history);
+            // 每轮output添加时都会解析，所以只找最新的
+            const output = historyUtils.getOutput(history);
             if (output) {
                 setActiveLorebooks(history, output, true);
             }
         }
 
-        function setActiveLorebooks(history: LlmapiHistory, message: StoryHistoryMessage, includeOutput: boolean) {
+        function setActiveLorebooks(history: LlmapiHistory, message: SlotMessageBase, includeOutput: boolean) {
             // 从持久化数据中设置/读取 string[]
             const lorebookNames = message.properties[enginePlural] ??
                 tryFillActiveLorebooks(cache.entries, {
                     history, message,
-                    variables: generateCurrentVariables(ctx.history, includeOutput)
+                    variables: historyUtils.getVariables(ctx.history, includeOutput)
                 });
             for (const lorebookName of lorebookNames) {
                 const lorebook = cache.entries[lorebookName];
@@ -98,13 +95,13 @@ export const lorebookConversationProvider:
         }
     },
     onProcessOutput: async (ctx) => {
-        const outputs = getCurrentOutputs(ctx.history);
+        const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs) return;
-        const cache: LorebookConversationCache = getContent(ctx.slot, enginePlural);
+        const cache: LorebookConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
         for (const output of outputs) {
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message: output,
-                variables: generateCurrentVariables(ctx.history, true)
+                variables: historyUtils.getVariables(ctx.history, true)
             });
         }
     }

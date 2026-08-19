@@ -11,7 +11,7 @@ import {ComfyUIHoverableItem} from "@/modules/comfyui/client/components";
 import {get} from "@/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
-import {GridField, spanFull} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/GridField";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
@@ -36,7 +36,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const {handleError} = useErrorHandler();
 
     return <>
-        <Field>
+        <Field className={spanHalf}>
             <FieldLabel htmlFor={`${engineName}-count-${entry.id}`}>
                 {`${entry.name} ${t("comfyui.lora_count")}`}
             </FieldLabel>
@@ -52,7 +52,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 config.defaultValue[index] : null;
             const path = lora?.lora;
             return (
-                <GridField className={spanFull} key={index}>
+                <React.Fragment key={index}>
                     <Field key={`${index}-lora`}>
                         <FieldLabel htmlFor={`${engineName}-lora-${entry.id}-${index}`}>
                             {`${entry.name} ${t("comfyui.lora")} ${index + 1}`}
@@ -100,7 +100,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                                min={-10} max={10} step={0.05}
                                id={`${engineName}-lora_strength-${entry.id}-${index}`}/>
                     </Field>
-                </GridField>
+                </React.Fragment>
             );
         })}
     </>;

@@ -1,5 +1,5 @@
-
 import promise from "fs/promises";
+
 export async function pathExists(path: string) {
     try {
         await promise.access(path);

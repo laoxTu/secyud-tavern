@@ -1,12 +1,11 @@
 import {TemplateConfig} from "@/app/api/template";
-import {and, eq, like, not, or, inArray, SQL} from "drizzle-orm";
-import {validate} from "uuid";
+import {and, eq, inArray, like, not, or, SQL} from "drizzle-orm";
+import {v4 as uuidv4, validate} from "uuid";
 import {BusinessError, Check} from "@/handler/models";
 import {comfyuiModelRepository as repository} from "@/modules/comfyui/server/repository";
 import {ComfyUIModelModel} from "@/modules/comfyui/models";
 import {splitPNGAndDataUniversal} from "@/utils/png";
 import {imageRepository} from "@/business/server/image-repository";
-import {v4 as uuidv4} from "uuid";
 
 export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
     repository: repository,

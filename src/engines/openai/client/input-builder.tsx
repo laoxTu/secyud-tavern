@@ -1,14 +1,7 @@
 ﻿import {useTranslations} from "next-intl";
 import React from "react";
-import {
-    compareLorebook,
-    enginePlural as lorebookPlural,
-    PresetLorebookModel
-} from "@/engines/lorebooks/models";
-import {
-    getCurrentOutputs,
-} from "@/modules/slots/models";
-import {getContent, handleContent, LlmapiHistory, LlmapiInputContext} from "@/modules/slots/client/conversation-models";
+import {compareLorebook, enginePlural as lorebookPlural, PresetLorebookModel} from "@/engines/lorebooks/models";
+import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
@@ -19,7 +12,8 @@ import {OpenAI} from "openai";
 import {joinAsString, sequenceGroupBy} from "@/utils";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {StoryOutputMessage} from "@/modules/stories/models";
+import {historyUtils} from "@/modules/models";
+import {SlotMessageOutput} from "@/modules/models/message";
 
 const virtualTool: OpenAI.ChatCompletionFunctionTool = {
     type: "function",
@@ -31,12 +25,12 @@ const virtualTool: OpenAI.ChatCompletionFunctionTool = {
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
-    {histories, slot, config, current, contentHandlers}: LlmapiInputContext) {
+    {histories, slot, current, contentHandlers}: LlmapiInputContext) {
     const messages: OpenAI.ChatCompletionMessageParam[] = [];
     const visitedLorebooks = new Set<string>();
-    const entries = getContent<LorebookConversationCache>(slot, lorebookPlural);
+    const entries = slotUtils.getContent<LorebookConversationCache>(slot, lorebookPlural);
     const tools: OpenAI.ChatCompletionTool[] = Object
-        .values(getContent<ToolConversationCache>(slot, toolPlural).tools)
+        .values(slotUtils.getContent<ToolConversationCache>(slot, toolPlural).tools)
         .map((u) => ({
             type: "function",
             function: {
@@ -47,10 +41,10 @@ export async function generateInput(
         }));
     tools.push(virtualTool);
     const items: LlmapiInputItem[] = [];
-    const builder: OpenAIInputBuilderConfigModel = config.inputBuilder;
+    const builder: string = slot.llmapi.content.config?.inputBuilder?.type;
     let simCount = 0;
 
-    switch (builder.type) {
+    switch (builder) {
         case "layered":
             let lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
             fillLorebooks(lorebooks, histories.map(u => u.content[lorebookPlural]))
@@ -123,7 +117,7 @@ export async function generateInput(
     }
 
     async function pushOutputs(history: LlmapiHistory) {
-        const outputs = getCurrentOutputs(history);
+        const outputs = historyUtils.getOutputs(history);
         if (outputs) {
             for (const output of outputs) {
                 await pushOutput(output);
@@ -131,7 +125,7 @@ export async function generateInput(
         }
     }
 
-    async function pushOutput(output: StoryOutputMessage, toolRole = "tool") {
+    async function pushOutput(output: SlotMessageOutput, toolRole = "tool") {
         const content = await generateContent(output.content, "assistant", "output");
         // 检验工具是否触发
         await fillToolCallContent(slot, output.callings);
@@ -219,7 +213,7 @@ export async function generateInput(
     }
 
     async function generateContent(str: string, role: string, type: string) {
-        return await handleContent(contentHandlers, {str, role, type});
+        return await slotUtils.handleContent(contentHandlers, {str, role, type});
     }
 }
 

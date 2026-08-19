@@ -29,6 +29,10 @@ export const scriptToolProvider: LlmapiToolProvider = {
 };
 
 export class ScriptTool implements LlmapiTool {
+    fn: Function;
+    hidden: boolean;
+    model: LlmapiToolModel;
+
     constructor(name: string,
                 config: ScriptToolConfigModel) {
         this.model = {
@@ -40,9 +44,6 @@ export class ScriptTool implements LlmapiTool {
         this.hidden = config.hidden;
     }
 
-    fn: Function;
-    hidden: boolean;
-
     async invoke(args: any) {
         const result = this.fn(args);
         return {
@@ -50,6 +51,4 @@ export class ScriptTool implements LlmapiTool {
             hidden: this.hidden,
         };
     }
-
-    model: LlmapiToolModel;
 }

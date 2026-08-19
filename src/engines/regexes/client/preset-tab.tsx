@@ -10,7 +10,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
-import {PresetRegexModel, engineName} from "../models";
+import {engineName, PresetRegexModel} from "../models";
 import {Textarea} from "@/components/ui/textarea";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Selector} from "@/components/custom/selector";

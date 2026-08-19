@@ -1,5 +1,5 @@
 import {Orama, Vector} from "@orama/orama";
-import {StoryHistoryMessage} from "@/modules/slots/models";
+import {SlotMessageBase} from "@/modules/models/message";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {remoteStorage} from "@/modules/settings/client/storage";
@@ -20,7 +20,7 @@ interface RagConversationCacheBase {
 export type RagConversationCache = RagConversationCacheBase | { disabled: true }
 
 export interface RagSearchContext extends RagConversationCacheBase {
-    message: StoryHistoryMessage;
+    message: SlotMessageBase;
 }
 
 export interface RagEmbeddingContext {

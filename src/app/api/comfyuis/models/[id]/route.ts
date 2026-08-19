@@ -1,10 +1,6 @@
 ﻿import {interceptor} from "@/handler/server/interceptor";
 import {apiConfig} from "../models";
-import {
-    apiDeleteModel,
-    apiGetModel,
-    apiUpdateModel
-} from "@/app/api/template";
+import {apiDeleteModel, apiGetModel, apiUpdateModel} from "@/app/api/template";
 
 /**
  * @pathParams { id:string }

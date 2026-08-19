@@ -1,6 +1,6 @@
 ﻿import {EntryModel} from "@/business/models";
 
-export interface PresetRegexModel extends EntryModel{
+export interface PresetRegexModel extends EntryModel {
     pattern: string,
     replacement: string,
     target: string,

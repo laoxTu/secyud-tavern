@@ -1,6 +1,7 @@
-﻿import {StoryHistory} from "@/modules/stories/models";
+﻿import React from "react";
+import {SlotHistory} from "@/modules/models";
+import {SlotMessageBase} from "@/modules/models/message";
 import {PresetLorebookModel} from "@/engines/lorebooks/models";
-import {StoryHistoryMessage} from "@/modules/slots/models";
 import {Registerable} from "@/utils/register";
 
 export interface MatcherProps {
@@ -9,8 +10,8 @@ export interface MatcherProps {
 }
 
 export interface MatcherMatchContext {
-    history: StoryHistory;
-    message: StoryHistoryMessage;
+    history: SlotHistory;
+    message: SlotMessageBase;
     expression?: any;
     variables: any;
 }

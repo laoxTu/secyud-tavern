@@ -1,5 +1,5 @@
 import {ComfyUIParameter} from "@/modules/comfyui/client/parameter-model";
-import { EditorComponent, InputComponent} from "./editor";
+import {EditorComponent, InputComponent} from "./editor";
 import {ModelSelectorConfig} from "../model";
 
 export const modelSelector: ComfyUIParameter =

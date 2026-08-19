@@ -1,18 +1,8 @@
 ﻿import React, {useEffect, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FolderOpenIcon, SearchIcon, XIcon} from "lucide-react";
-import {
-    Empty,
-    EmptyContent,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle
-} from "@/components/ui/empty";
-import {
-    InputGroup, InputGroupAddon,
-    InputGroupButton, InputGroupInput
-} from "@/components/ui/input-group";
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
+import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {EntryModel} from "@/business/models";
 import {PaginationWrapper} from "@/components/custom/pager/component";
 import {EntryState} from "@/business/client/models";

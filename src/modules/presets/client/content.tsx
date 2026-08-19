@@ -7,7 +7,7 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {TabConfig} from "@/components/custom/tab";
-import {get, post, open, del, put} from "@/client";
+import {del, get, open, post, put} from "@/client";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
@@ -18,8 +18,14 @@ import {createUseTabState} from "@/business/client/models";
 import {TagBox} from "@/components/custom/combobox";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    Dialog, DialogTrigger,
-    DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";

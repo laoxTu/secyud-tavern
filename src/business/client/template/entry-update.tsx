@@ -7,13 +7,13 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/
 import {EntryModel} from "@/business/models";
 import {
     Dialog,
-    DialogTrigger,
+    DialogClose,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {ChevronsDownIcon, ChevronsUpIcon, CopyIcon, PlayIcon, PlayOffIcon} from "lucide-react";

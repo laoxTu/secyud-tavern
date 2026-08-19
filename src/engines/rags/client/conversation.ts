@@ -1,15 +1,10 @@
-﻿import {
-    engineName,
-    enginePlural,
-} from "../models";
+﻿import {engineName, enginePlural,} from "../models";
 import {
-    getContent,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
-    setContent,
-    SlotInitializer
+    SlotInitializer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
-import {getCurrentOutput, getCurrentOutputs, StoryHistoryMessage} from "@/modules/slots/models";
 import {
     RagConversationCache,
     RagSearchContext,
@@ -18,12 +13,12 @@ import {
     useRagSettingState
 } from "@/engines/rags/client/models";
 import {create, insert, search} from "@orama/orama";
-import {
-    PresetLorebookModel, enginePlural as lorebookEnginePlural
-} from "@/engines/lorebooks/models";
+import {enginePlural as lorebookEnginePlural, PresetLorebookModel} from "@/engines/lorebooks/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
 import {matchName} from "@/engines/lorebooks/match/vector/models";
+import {historyUtils} from "@/modules/models";
+import {SlotMessageBase} from "@/modules/models/message";
 
 export async function tryFillActiveVectors({lorebookDb, message, generator}: RagSearchContext) {
     if (!generator || !lorebookDb) {
@@ -63,7 +58,7 @@ export const ragConversationProvider:
         const provider =
             manager.records[state.embeddingGenerator];
         if (state.disabled || !provider) {
-            setContent(ctx.slot, enginePlural, {
+            slotUtils.setContent(ctx.slot, enginePlural, {
                 disabled: true
             });
             return;
@@ -96,17 +91,18 @@ export const ragConversationProvider:
                 })
             }
         }
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
         // 缓存可选：RAG 未启用时 onInitialize 不会写入，这里用守卫而非 getContent；
         // cache.disabled 用于收窄联合类型到完整缓存分支
         const cache: RagConversationCache =
-            getContent(ctx.slot, enginePlural);
+            slotUtils.getContent(ctx.slot, enginePlural);
         if (cache.disabled) return;
 
         // 世界书缓存必定初始化，跨引擎读取走 getContent
-        const lorebookCache: LorebookConversationCache = getContent(ctx.slot, lorebookEnginePlural);
+        const lorebookCache = slotUtils
+            .getContent<LorebookConversationCache>(ctx.slot, lorebookEnginePlural);
         const prepareLorebooks: PresetLorebookModel[] = [];
         for (const history of ctx.histories) {
             for (const input of history.inputs) {
@@ -121,11 +117,11 @@ export const ragConversationProvider:
 
             prepareLorebooks.length = 0;
 
-            const output = getCurrentOutput(history);
+            const output = historyUtils.getOutput(history);
             if (output) await setActiveVectors(output);
         }
 
-        async function setActiveVectors(message: StoryHistoryMessage) {
+        async function setActiveVectors(message: SlotMessageBase) {
             if (cache.disabled) return;
             const lorebookNames = message.properties[enginePlural] ?? await tryFillActiveVectors({
                 message, ...cache
@@ -142,9 +138,9 @@ export const ragConversationProvider:
     },
     onProcessOutput: async (ctx) => {
         // 同 onProcessInput，RAG 缓存可选，用守卫
-        const cache: RagConversationCache = getContent(ctx.slot, enginePlural);
+        const cache: RagConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
         if (cache.disabled) return;
-        const outputs = getCurrentOutputs(ctx.history);
+        const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs?.length) return;
         for (const output of outputs) {
             await tryFillActiveVectors({

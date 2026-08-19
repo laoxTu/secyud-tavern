@@ -1,46 +1,47 @@
 ﻿'use client';
 import {del, post} from "@/client";
-import {
-    getCurrentHistory,
-    getSlotAndHistories,
-    updateStoryHistory,
-    useSlotContext
-} from "@/modules/slots/client/models";
 import {useTranslations} from "next-intl";
 import React, {useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {Button} from "@/components/ui/button";
 import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
-import {useHistoryPageState, handleHistoryPageChange} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRouter} from "next/navigation";
+import {useSlotState} from "@/modules/slots/client/models";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
-    const ctx = useSlotContext();
-    const {page} = useHistoryPageState();
+    const {page, setPage} = useHistoryPageState();
     const router = useRouter();
     const [openReopen, setOpenReopen] = useState<boolean>(false);
     const [openRemove, setOpenRemove] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
 
     const deleteCurrentHistory = async () => {
+        const {slot, histories, getHistory} = useSlotState.getState();
+        if (!slot || !histories) {
+            console.error('[slot]: failed to get slot');
+            return;
+        }
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
-            const {page} = useHistoryPageState.getState();
-            const history = getCurrentHistory(slot, page.cur);
+            const history = getHistory(page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
-                {params: {id: slot.story.id, entryType: 'history', entryId: history.id}})
+                {params: {id: slot.id, entryType: 'history', entryId: history.id}})
             histories.splice(page.cur - 1, 1);
-            await handleHistoryPageChange(ctx, {curPage: page.cur,});
+            await setPage();
         } catch (error) {
             handleError(error);
         } finally {
@@ -49,10 +50,13 @@ export function HistoryDeleter() {
     };
 
     const deleteCurrentOutput = async () => {
+        const {slot, histories, getHistory, setHistory} = useSlotState.getState();
+        if (!slot || !histories) {
+            console.error('[slot]: failed to get slot');
+            return;
+        }
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
-            const {page} = useHistoryPageState.getState();
-            let history = getCurrentHistory(slot, page.cur);
+            let history = getHistory(page.cur);
             if (history.outputs.length) {
                 history.outputs.splice(history.outputId, 1);
                 history.outputId = Math.min(
@@ -64,11 +68,11 @@ export function HistoryDeleter() {
                 const current = histories[page.cur];
                 current.summary ||= history.summary;
                 current.inputs = [...history.inputs, ...current.inputs];
-                await updateStoryHistory(slot.story.id, current);
+                await setHistory(page.cur + 1);
                 await deleteCurrentHistory();
             } else {
-                await updateStoryHistory(slot.story.id, history);
-                await handleHistoryPageChange(ctx, {curPage: page.cur});
+                await setHistory(page.cur);
+                await setPage();
             }
         } catch (error) {
             handleError(error);
@@ -79,20 +83,26 @@ export function HistoryDeleter() {
 
     const cloneStoryHistory = async (remain: boolean) => {
         try {
-            const entity = ctx.current.slot?.story;
-            if (!entity) return;
+            const {slot} = useSlotState.getState();
+            if (!slot) return;
+            const llmapi = slot.llmapi;
             const {id} = await post("/stories", {
-                ...entity,
-                entries: {
-                    ...entity.entries,
-                    histories: undefined,
+                ...slot,
+                llmapi: {
+                    code: llmapi.code,
+                    name: llmapi.name,
+                    author: llmapi.content.author,
+                    version: llmapi.version,
                 },
+                presets: undefined,
+                histories: undefined,
+                content: {},
                 id: "",
             });
             if (!remain) {
                 await del("/stories/{id}", {
                     params: {
-                        id: entity.id,
+                        id: slot.id,
                     }
                 })
             }

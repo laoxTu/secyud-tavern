@@ -1,5 +1,4 @@
-﻿
-export const locales: string[] = ["zh", "en"];
+﻿export const locales: string[] = ["zh", "en"];
 export const defaultLocale = 'zh';
 
 export const timeZones: Record<string, string> = {

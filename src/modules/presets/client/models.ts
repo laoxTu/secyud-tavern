@@ -1,7 +1,7 @@
 ﻿import {createUseItemState, ModelState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
-import {PresetModel, moduleName} from "../models";
+import {moduleName, PresetModel} from "../models";
 
 export const useItemState =
     createUseItemState<PresetModel>()

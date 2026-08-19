@@ -1,5 +1,6 @@
-﻿import {getContent, setContent, SlotContentRenderer, SlotInitializer} from "@/modules/slots/client/conversation-models";
-import {PresetStyleModel, engineName, enginePlural} from "../models";
+﻿import {SlotContentRenderer, SlotInitializer, slotUtils} from "@/modules/slots/client/conversation-models";
+import {engineName, enginePlural, PresetStyleModel} from "../models";
+import {useSlotState} from "@/modules/slots/client/models";
 
 const prefix = "injected-style";
 
@@ -26,14 +27,18 @@ export const styleConversationProvider:
             }
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onRenderContent: async (ctx) => {
-        const window = (ctx.window as any);
-        if (!window.__injectedStyleInitialized) {
+        const {contentWindow: window, contentDocument: document}: {
+            contentWindow: any,
+            contentDocument: HTMLDocument | null
+        } = useSlotState.getState().iframe!;
+
+        if (!window.__injectedStyleInitialized && document) {
             window.__injectedStyleInitialized = true;
             console.debug('[style]: start inject');
-            const cache: StyleConversationCache = getContent(ctx.slot, enginePlural);
+            const cache: StyleConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
             const set = new Set<string>();
             for (const entry of cache.entries) {
                 const id = `${prefix}-${entry.code}`;
@@ -41,16 +46,16 @@ export const styleConversationProvider:
                 set.add(id);
                 if (entry.type === 'link') {
                     // style 的链接用的是link[rel='stylesheet']的href
-                    const link = ctx.document.createElement("link");
+                    const link = document.createElement("link");
                     link.id = id;
                     link.rel = "stylesheet";
                     link.href = entry.content.trim();
-                    ctx.document.head.appendChild(link)
+                    document.head.appendChild(link)
                 } else {
-                    const style = ctx.document.createElement("style");
+                    const style = document.createElement("style");
                     style.id = id;
                     style.innerHTML = entry.content;
-                    ctx.document.head.appendChild(style)
+                    document.head.appendChild(style)
                 }
             }
         }

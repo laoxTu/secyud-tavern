@@ -1,12 +1,12 @@
 import {NormalMatchModel} from "@/engines/lorebooks/match/normal/models";
 
-export interface EventDate{
+export interface EventDate {
     year: number;
     month: number;
     day: number;
 }
 
-export interface EventMatchModel extends NormalMatchModel{
+export interface EventMatchModel extends NormalMatchModel {
     maxDate: EventDate,
     minDate: EventDate,
 }

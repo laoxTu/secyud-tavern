@@ -10,7 +10,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
-import {PresetScriptModel, engineName} from "../models";
+import {engineName, PresetScriptModel} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/GridField";

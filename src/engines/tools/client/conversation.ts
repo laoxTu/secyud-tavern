@@ -1,15 +1,15 @@
-import {getCurrentOutputs, SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/slots/models";
 import {
-    getContent,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
-    setContent,
-    SlotInitializer
+    SlotInitializer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
-import {StoryOutputCalling} from "@/modules/stories/models";
 import {LlmapiTool} from "@/engines/tools/client/models";
+import {SlotCalling} from "@/modules/models/calling";
+import {historyUtils} from "@/modules/models";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -44,12 +44,12 @@ export const toolConversationProvider:
                 }
             }
         }
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async () => {
     },
     onProcessOutput: async (ctx) => {
-        const outputs = getCurrentOutputs(ctx.history);
+        const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs?.length) return;
         for (const output of outputs) {
             await fillToolCallContent(ctx.slot, output.callings);
@@ -62,10 +62,10 @@ export const toolConversationProvider:
 // 会被两处调用，靠 content 已填去重，避免重复执行。
 export async function fillToolCallContent(
     slot: SlotModel,
-    toolCalls?: StoryOutputCalling[],
+    toolCalls?: SlotCalling[],
 ) {
     if (!toolCalls?.length) return;
-    const cache: ToolConversationCache = getContent(slot, enginePlural);
+    const cache: ToolConversationCache = slotUtils.getContent(slot, enginePlural);
     for (const toolCall of toolCalls) {
         // 已执行过则跳过。
         if (toolCall.result) continue;

@@ -1,2 +1,1 @@
-﻿
-export const matchName = 'vector';
+﻿export const matchName = 'vector';
