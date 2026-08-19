@@ -85,7 +85,10 @@ export const useSlotState =
                 get().postMessage("variables", historyUtils.getVariables(history));
             },
             postMessageContent: async (history, handler) => {
-                const outputs = historyUtils.getOutputs(history) ?? [];
+                const outputs = historyUtils
+                    .getOutputs(history)
+                    // 有工具调用的不显示 目前所有AI工具调用内容都非正文。
+                    ?.filter(u => !u.callings?.length) ?? [];
                 const res = {
                     inputs: await Promise.all(history.inputs
                         .filter(u => u.content)
