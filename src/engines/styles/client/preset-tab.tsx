@@ -5,14 +5,15 @@ import {del, post, put} from "@/client";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {TabConfig} from "@/components/custom/tab";
-import {TemplateEntryList} from "@/business/client/template";
+import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
-import {PresetStyleModel, engineName} from "../models";
+import {engineName, PresetStyleModel} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
+import {spanHalf} from "@/components/custom/GridField";
 
 const styleTypes = ["", "link", "text/css"];
 
@@ -30,25 +31,7 @@ function Editor({entry, formRef}: { entry: PresetStyleModel, formRef: RefObject<
     })();
 
     return (<>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
-                    {t("default.priority")}
-                </FieldLabel>
-                <Input name="priority" type={"number"}
-                       id={`${engineName}-priority-${entry.id}`}
-                       defaultValue={entry.priority}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
-                    {t("default.type")}
-                </FieldLabel>
-                <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
-                          value={type} onValueChange={setType}
-                          items={styleTypes}/>
-            </Field>
-        </div>
-        <Field>
+        <Field className={spanHalf + " row-span-8"}>
             <FieldLabel>
                 {t("default.content")}
             </FieldLabel>
@@ -56,13 +39,45 @@ function Editor({entry, formRef}: { entry: PresetStyleModel, formRef: RefObject<
                           defaultValue={entry.content}
                           language={language} formRef={formRef}/>
         </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                {t("default.code")}
+            </FieldLabel>
+            <Input name="code"
+                   id={`${engineName}-code-${entry.id}`}
+                   defaultValue={entry.code ?? ""}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                {t("default.name")}
+            </FieldLabel>
+            <Input name="name"
+                   id={`${engineName}-name-${entry.id}`}
+                   defaultValue={entry.name ?? ""}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                {t("default.priority")}
+            </FieldLabel>
+            <Input name="priority" type={"number"}
+                   id={`${engineName}-priority-${entry.id}`}
+                   defaultValue={entry.priority}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                {t("default.type")}
+            </FieldLabel>
+            <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
+                      value={type} onValueChange={setType}
+                      items={styleTypes}/>
+        </Field>
     </>);
 }
 
 function Tab() {
     const {model} = useItemState();
     return (
-        <TemplateEntryList<PresetStyleModel>
+        <EntryList<PresetStyleModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{

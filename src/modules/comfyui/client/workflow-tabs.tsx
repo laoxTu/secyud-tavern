@@ -7,15 +7,16 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
-import {TemplateModelUpdate} from "@/business/client/template";
+import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
-import {moduleName, ComfyUIWorkflowModel} from "../models";
+import {ComfyUIWorkflowModel, moduleName} from "../models";
 import {modelState} from "./models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {useErrorHandler} from "@/handler/client/error";
 import {submitTargetFormOnKey} from "@/business/client";
+import {spanFull} from "@/components/custom/GridField";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
@@ -34,23 +35,21 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
     };
 
     return (<>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-code`}>
-                    {t("default.code") + "*"}
-                </FieldLabel>
-                <Input id={`${moduleName}-code`} name="code"
-                       defaultValue={model.code} disabled/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-name`}>
-                    {t("default.name")}
-                </FieldLabel>
-                <Input name="name" id={`${moduleName}-name`}
-                       defaultValue={model.name}/>
-            </Field>
-        </div>
         <Field>
+            <FieldLabel htmlFor={`${moduleName}-code`}>
+                {t("default.code") + "*"}
+            </FieldLabel>
+            <Input id={`${moduleName}-code`} name="code"
+                   defaultValue={model.code} disabled/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${moduleName}-name`}>
+                {t("default.name")}
+            </FieldLabel>
+            <Input name="name" id={`${moduleName}-name`}
+                   defaultValue={model.name}/>
+        </Field>
+        <Field className={spanFull}>
             <FieldLabel htmlFor={`${moduleName}-workflow_content`}>
                 {t("default.content")}
                 <Tooltip>
@@ -67,7 +66,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
                           defaultValue={model?.content?.workflow}
                           language={'json'} formRef={formRef}/>
         </Field>
-        <Field>
+        <Field className={spanFull}>
             <FieldLabel htmlFor={`${moduleName}-description`}>
                 {t("default.description")}
             </FieldLabel>
@@ -79,7 +78,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
 }
 
 export function DefaultTab() {
-    return <TemplateModelUpdate<ComfyUIWorkflowModel>
+    return <ModelUpdate<ComfyUIWorkflowModel>
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {

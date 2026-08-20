@@ -11,15 +11,13 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as ImageCallbackConfig;
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
-                    {t("comfyui.node_id")}
-                </FieldLabel>
-                <Input name={"node_id"} defaultValue={config?.nodeId}
-                       id={`${engineName}-node_id-${entry.id}`}/>
-            </Field>
-        </div>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+                {t("comfyui.node_id")}
+            </FieldLabel>
+            <Input name={"node_id"} defaultValue={config?.nodeId}
+                   id={`${engineName}-node_id-${entry.id}`}/>
+        </Field>
     </>;
 }
 

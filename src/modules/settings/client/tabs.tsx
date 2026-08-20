@@ -1,5 +1,5 @@
 'use client';
-import React, {useState} from "react";
+import React from "react";
 import {useTranslations} from "next-intl";
 import {Settings2Icon} from "lucide-react";
 import {TabManager} from "@/components/custom/tab";
@@ -12,6 +12,7 @@ import {Input} from "@/components/ui/input";
 import {useErrorHandler} from "@/handler/client/error";
 import {Selector} from "@/components/custom/selector";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
+import {GridField} from "@/components/custom/GridField";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -20,15 +21,15 @@ function Tab() {
     const {theme, setTheme} = useTheme();
     const {handleError, handleSuccess} = useErrorHandler();
     const {author, setAuthor} = useLocalSettingState();
-    const [llmapi, setLlmapi] = useState(useRemoteSettingState.getState().llmapi);
+    const {llmapi} = useRemoteSettingState();
 
     const handleSubmit = async (data: FormData) => {
         try {
             setTheme(data.get('theme') as string);
             setAuthor(data.get('author') as string);
-            console.debug("[setting](llmapi): ", llmapi);
+            const llmapi = data.get('llmapi') as string;
             useRemoteSettingState.setState({
-                llmapi,
+                llmapi: llmapi ? JSON.parse(llmapi) : null,
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {
@@ -40,7 +41,7 @@ function Tab() {
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <GridField>
                             <Field>
                                 <FieldLabel htmlFor="setting-author">
                                     {t("setting.author")}
@@ -58,10 +59,9 @@ function Tab() {
                                           items={themes}/>
                             </Field>
                             <LlmapiRequireField
-                                value={llmapi}
-                                onValueChange={setLlmapi}
+                                defaultValue={llmapi}
                                 prefix={'setting'}/>
-                        </div>
+                        </GridField>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

@@ -174,6 +174,7 @@
     "tool": "工具",
     "tool_provider": "工具类型",
     "tool_provider_script": "脚本",
+    "tool_provider_sub_agent": "子Agent",
     "tool_provider_url_fetch": "联网搜索",
     "tool_provider_variable": "变量工具",
     "top_logprobs": "top logprobs (最大返回置信词数)",
@@ -239,6 +240,8 @@
     "unlimit_description": "-1表示不限制"
   },
   "script": {
+    "enable_doc": "访问iframe",
+    "enable_variable": "访问变量"
   },
   "setting": {
     "author": "作者",
@@ -281,6 +284,12 @@
     "opening_remarks": "开场白"
   },
   "style": {
+  },
+  "sub_agent": {
+    "disable_preset": "禁用预设",
+    "disable_tags": "禁用标签",
+    "max_length": "最大长度",
+    "prompt": "提示词"
   },
   "url_fetch": {
     "max_length": "长度返回限制",

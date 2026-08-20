@@ -4,7 +4,7 @@ import {storyTabManager} from "@/modules/stories/client/tabs";
 import {tabConfig} from "@/modules/stories/client/image-tab";
 
 
-export function registerStoryClient(){
+export function registerStoryClient() {
     businessNavigationManager.register(
         storyNavigationContent,
     );

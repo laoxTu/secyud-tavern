@@ -139,16 +139,21 @@ export function RemoteSearchCombobox<T>(
         return () => clearTimeout(timer);
     }, [searchMark, searchText]);
 
+    const key = !multiple && defaultValue && valueAccessor ?
+        valueAccessor(defaultValue) : null
     return (
-        <Combobox multiple={multiple} autoHighlight name={name} id={id}
-                  defaultValue={defaultValue}
-                  value={value}
-                  onValueChange={onValueChange as any}
-                  isItemEqualToValue={comparer}
-                  itemToStringValue={valueAccessor}
-                  itemToStringLabel={labelAccessor}
-                  onInputValueChange={e => handleSearch(e)}
-                  items={searchItems}>
+        <Combobox
+            key={key}
+            multiple={multiple}
+            autoHighlight name={name} id={id}
+            defaultValue={defaultValue}
+            value={value}
+            onValueChange={onValueChange as any}
+            isItemEqualToValue={comparer}
+            itemToStringValue={valueAccessor}
+            itemToStringLabel={labelAccessor}
+            onInputValueChange={e => handleSearch(e)}
+            items={searchItems}>
             <ComboboxChips ref={anchor} className="w-full">
                 {
                     multiple ?

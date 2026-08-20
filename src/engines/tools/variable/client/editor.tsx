@@ -13,29 +13,26 @@ const defaultConfig: VariableConfigModel = {
 export function Editor({entry}: LlmapiToolProps) {
     const t = useTranslations();
     const config: VariableConfigModel = mergeObjects(defaultConfig, entry.value);
-    return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field orientation={"horizontal"}>
-                <FieldLabel htmlFor={`${entry.id}-disable_get`}>
-                    {t('variable.disable_get')}
-                </FieldLabel>
-                <FieldContent>
-                    <Checkbox name="disable_get"
-                              id={`${entry.id}-disable_get`}
-                              defaultChecked={config.disableGet}/>
-                </FieldContent>
-            </Field>
-            <Field orientation={"horizontal"}>
-                <FieldLabel htmlFor={`${entry.id}-disable_set`}>
-                    {t('variable.disable_set')}
-                </FieldLabel>
-                <FieldContent>
-                    <Checkbox name="disable_set"
-                              id={`${entry.id}-disable_set`}
-                              defaultChecked={config.disableSet}/>
-                </FieldContent>
-            </Field>
-
-        </div>
-    </>;
+    return (<>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-disable_get`}>
+                {t('variable.disable_get')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="disable_get"
+                          id={`${entry.id}-disable_get`}
+                          defaultChecked={config.disableGet}/>
+            </FieldContent>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-disable_set`}>
+                {t('variable.disable_set')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="disable_set"
+                          id={`${entry.id}-disable_set`}
+                          defaultChecked={config.disableSet}/>
+            </FieldContent>
+        </Field>
+    </>);
 }

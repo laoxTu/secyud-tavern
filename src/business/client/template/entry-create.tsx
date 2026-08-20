@@ -4,13 +4,13 @@ import {useErrorHandler} from "@/handler/client/error";
 import {EntryState} from "@/business/client/models";
 import {
     Dialog,
-    DialogTrigger,
+    DialogClose,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
@@ -65,32 +65,32 @@ export function EntryCreate<TEntry>(
                 </TooltipContent>
             </DialogTrigger>
             <DialogContent render={<form action={handleCreate}/>}>
-                    <DialogHeader>
-                        <DialogTitle>
-                            {t("default.create_title", {target: t(`${moduleName}.${entryType}`)})}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {t("default.create_description", {target: t(`${moduleName}.${entryType}`)})}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <FieldGroup>
-                        <Field>
-                            <FieldLabel htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</FieldLabel>
-                            <Input id={`${entryType}-code`} name="code" required/>
-                        </Field>
-                        <Field>
-                            <FieldLabel htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</FieldLabel>
-                            <Input id={`${entryType}-name`} name="name" required/>
-                        </Field>
-                    </FieldGroup>
-                    <DialogFooter>
-                        <Button type="submit">
-                            {t("default.create")}
-                        </Button>
-                        <DialogClose render={<Button variant="outline"/>}>
-                            {t("default.cancel")}
-                        </DialogClose>
-                    </DialogFooter>
+                <DialogHeader>
+                    <DialogTitle>
+                        {t("default.create_title", {target: t(`${moduleName}.${entryType}`)})}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {t("default.create_description", {target: t(`${moduleName}.${entryType}`)})}
+                    </DialogDescription>
+                </DialogHeader>
+                <FieldGroup>
+                    <Field>
+                        <FieldLabel htmlFor={`${entryType}-code`}>{t("default.code") + "*"}</FieldLabel>
+                        <Input id={`${entryType}-code`} name="code" required/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${entryType}-name`}>{t("default.name") + "*"}</FieldLabel>
+                        <Input id={`${entryType}-name`} name="name" required/>
+                    </Field>
+                </FieldGroup>
+                <DialogFooter>
+                    <Button type="submit">
+                        {t("default.create")}
+                    </Button>
+                    <DialogClose render={<Button variant="outline"/>}>
+                        {t("default.cancel")}
+                    </DialogClose>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

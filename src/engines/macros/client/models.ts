@@ -3,8 +3,7 @@ import {EntryState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {moduleName, modulePlural} from "@/modules/presets/models";
-import {PresetMacroModel} from "../models";
-import {engineName} from "../models";
+import {engineName, PresetMacroModel} from "../models";
 
 export const usePagedItemsState = createUsePagedItemsState<PresetMacroModel>(
     async options => {

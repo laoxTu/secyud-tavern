@@ -2,7 +2,7 @@
 import {settingNavigationContent} from "./content";
 
 
-export function registerSettingClient(){
+export function registerSettingClient() {
     businessNavigationManager.register(
         settingNavigationContent,
     )

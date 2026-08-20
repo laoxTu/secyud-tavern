@@ -4,7 +4,8 @@ import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {
     ComfyUIModelModel,
-    ComfyUIParameterModel, ComfyUISettingState,
+    ComfyUIParameterModel,
+    ComfyUISettingState,
     ComfyUIWorkflowModel,
     moduleName,
     parameterEntryName
@@ -48,7 +49,6 @@ export const useParameterPagedItemsState = createUsePagedItemsState<ComfyUIParam
 export const parameterEntryState: EntryState<ComfyUIParameterModel> = {
     moduleName, modulePlural, usePagedItemsState: useParameterPagedItemsState, entryType: parameterEntryName
 };
-
 
 
 export const useComfyUISettingState = create<ComfyUISettingState>()(

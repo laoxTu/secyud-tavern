@@ -30,24 +30,22 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
 
     return (
         <>
-            <div className="grid md:grid-cols-2 gap-4">
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-min-date-${entry.id}`}>
-                        {t("lorebook.min_date")}
-                    </FieldLabel>
-                    <DateEditor id={`${engineName}-min-date-${entry.id}`}
-                                defaultValue={model.minDate}
-                                name={`min-date`}/>
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${engineName}-max-date-${entry.id}`}>
-                        {t("lorebook.max_date")}
-                    </FieldLabel>
-                    <DateEditor id={`${engineName}-max-date-${entry.id}`}
-                                defaultValue={model.maxDate}
-                                name={`max-date`}/>
-                </Field>
-            </div>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-min-date-${entry.id}`}>
+                    {t("lorebook.min_date")}
+                </FieldLabel>
+                <DateEditor id={`${engineName}-min-date-${entry.id}`}
+                            defaultValue={model.minDate}
+                            name={`min-date`}/>
+            </Field>
+            <Field>
+                <FieldLabel htmlFor={`${engineName}-max-date-${entry.id}`}>
+                    {t("lorebook.max_date")}
+                </FieldLabel>
+                <DateEditor id={`${engineName}-max-date-${entry.id}`}
+                            defaultValue={model.maxDate}
+                            name={`max-date`}/>
+            </Field>
             <NormalMatchEditor defaultValue={defaultValue} entry={entry}/>
         </>
     );

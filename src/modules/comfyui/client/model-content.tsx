@@ -2,12 +2,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {TabConfig} from "@/components/custom/tab";
-import {
-    ComfyUIModelContentModel,
-    ComfyUIModelModel,
-    modelTypes,
-    moduleName,
-} from "../models";
+import {ComfyUIModelContentModel, ComfyUIModelModel, modelTypes, moduleName,} from "../models";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {PaginationWrapper} from "@/components/custom/pager";
 import {useModelPagedItemsState} from "@/modules/comfyui/client/models";
@@ -15,9 +10,11 @@ import {Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemHeader, 
 import Image from "next/image";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    Dialog, DialogClose,
+    Dialog,
+    DialogClose,
     DialogContent,
-    DialogDescription, DialogFooter,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger
@@ -42,6 +39,7 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
+import {GridField} from "@/components/custom/GridField";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -512,7 +510,7 @@ function Content() {
                 </Dialog>
             </div>
             <form action={applySearch}>
-                <div className="grid md:grid-cols-2 gap-4">
+                <GridField>
                     <TagBox defaultValue={[]}
                             name={"type"}
                             placeholder={t("default.types")}
@@ -531,7 +529,7 @@ function Content() {
                             </InputGroupButton>
                         </InputGroupAddon>
                     </InputGroup>
-                </div>
+                </GridField>
             </form>
         </div>
         <div className={'flex-1 flex flex-col overflow-hidden'}>

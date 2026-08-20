@@ -1,16 +1,14 @@
 'use client';
 import {
-    getContent,
-    renderData,
-    setContent,
     SlotContentRenderer,
     SlotInitializer,
-    SlotStreamRenderer
+    SlotStreamRenderer,
+    slotUtils
 } from "@/modules/slots/client/conversation-models";
-import {PresetScriptModel, engineName, enginePlural} from "../models";
+import {engineName, enginePlural, PresetScriptModel} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
-import {generateCurrentVariables} from "@/modules/slots/client/conversation";
 import {mergeObjects} from "@/utils";
+import {slotContext} from "@/modules/slots/client/context";
 
 const prefix = "injected-script";
 
@@ -53,25 +51,24 @@ export const scriptConversationProvider:
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
         cache.importMap = JSON.stringify(cache.importMap);
-        setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
-    onRenderStream: async (ctx) => {
-        renderData(ctx, "variables", generateCurrentVariables(ctx.history));
+    onRenderStream: async () => {
     },
     onRenderContent: async (ctx) => {
-        const window = (ctx.window as any);
+        const {window, document} = slotContext.iframeData;
         // 使用window的变量，以防window切换实例
-        if (!window.__injectedScriptInitialized) {
+        if (!window.__injectedScriptInitialized && document) {
             window.__injectedScriptInitialized = true;
             console.debug('[script]: start inject');
-            const cache: ScriptConversationCache = getContent(ctx.slot, enginePlural);
+            const cache: ScriptConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
 
             if (cache.importMap !== "{}") {
-                const script = ctx.document.createElement("script");
+                const script = document.createElement("script");
                 script.id = `${prefix}-import-map`;
                 script.type = "importmap";
                 script.innerHTML = cache.importMap;
-                ctx.document.head.appendChild(script);
+                document.head.appendChild(script);
             }
 
             const set = new Set<string>();
@@ -79,7 +76,7 @@ export const scriptConversationProvider:
                 const id = `${prefix}-${entry.code}`;
                 if (set.has(id)) continue;
                 set.add(id);
-                const script = ctx.document.createElement("script");
+                const script = document.createElement("script");
                 script.id = id;
                 // link 类型意味着链接：await onload 保证按优先级顺序依次加载；
                 // 内联脚本则同步执行
@@ -89,16 +86,15 @@ export const scriptConversationProvider:
                     await new Promise((resolve, reject) => {
                         script.onload = resolve;
                         script.onerror = reject;
-                        ctx.document.body.appendChild(script);
+                        document.body.appendChild(script);
                     });
                 } else {
                     script.async = false;
                     script.type = entry.type ?? "";
                     script.textContent = entry.content;
-                    ctx.document.body.appendChild(script);
+                    document.body.appendChild(script);
                 }
             }
         }
-        renderData(ctx, "variables", generateCurrentVariables(ctx.history));
     }
 };

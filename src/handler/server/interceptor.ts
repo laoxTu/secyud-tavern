@@ -1,4 +1,4 @@
-﻿import {ServerRegistry, getInstance} from "@/plugins/server";
+﻿import {getInstance, ServerRegistry} from "@/plugins/server";
 import {NextRequest, NextResponse} from "next/server";
 import {registerServerPlugins} from "@/server-registerer";
 import {InterceptorModels, NextContext, NextRecord} from "./interceptor-models";
@@ -37,6 +37,10 @@ class Interceptor extends ServerRegistry<InterceptorModels> {
         super(name);
     }
 
+    static getInstance() {
+        return getInstance("interceptors", (u) => new Interceptor(u));
+    }
+
     createRoute(route: NextHandler): NextHandlerResult {
         return async (request: NextRequest, context: NextContext) => {
             await registerServerPlugins();
@@ -68,10 +72,6 @@ class Interceptor extends ServerRegistry<InterceptorModels> {
             };
             return dispatch(0);
         };
-    }
-
-    static getInstance() {
-        return getInstance("interceptors", (u) => new Interceptor(u));
     }
 }
 

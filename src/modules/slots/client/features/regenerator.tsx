@@ -1,20 +1,18 @@
-﻿import {Button} from "@/components/ui/button";
-import {RotateCcwIcon} from "lucide-react";
-import React from "react";
-import {generateLlmapiReply} from "@/modules/slots/client/history-chatbox";
-import {useSlotContext} from "@/modules/slots/client/models";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+﻿import React from "react";
 import {useTranslations} from "next-intl";
+import {RotateCcwIcon} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
 
 
 export function Regenerator() {
-    const ctx = useSlotContext();
     const t = useTranslations();
     const {page} = useHistoryPageState();
     return (
         <Tooltip>
-            <TooltipTrigger onClick={() => generateLlmapiReply(ctx)}
+            <TooltipTrigger onClick={() => useStoryChatboxState.getState().generate()}
                             render={<Button disabled={page.max === 0} variant="outline"/>}>
                 <RotateCcwIcon/>
             </TooltipTrigger>

@@ -10,6 +10,7 @@ import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/
 import {useErrorHandler} from "@/handler/client/error";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Selector} from "@/components/custom/selector";
+import {GridField} from "@/components/custom/GridField";
 
 function Tab() {
     const t = useTranslations();
@@ -35,7 +36,7 @@ function Tab() {
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <GridField>
                             <Field>
                                 <FieldLabel htmlFor="setting-rag-disabled">
                                     {t("default.disable")}
@@ -58,11 +59,11 @@ function Tab() {
                                           labelAccessor={e => e.id}
                                           valueAccessor={e => e.id}/>
                             </Field>
-                        </div>
-                        {editor?.component && (() => {
-                            const Component = editor.component;
-                            return <Component/>
-                        })()}
+                            {editor?.component && (() => {
+                                const Component = editor.component;
+                                return <Component/>
+                            })()}
+                        </GridField>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

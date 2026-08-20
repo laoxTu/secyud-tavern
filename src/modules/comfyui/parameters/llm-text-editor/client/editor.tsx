@@ -6,11 +6,6 @@ import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
-import {
-    getCurrentHistory,
-    getSlotAndHistories,
-    useSlotContext
-} from "@/modules/slots/client/models";
 import {joinAsString} from "@/utils";
 import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
@@ -19,34 +14,51 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
-import {StoryHistory} from "@/modules/stories/models";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
-import {getReplyAbortController, requestLlmapiReply} from "@/modules/slots/client/history-chatbox";
+import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {slotContext} from "@/modules/slots/client/context";
+import {SlotHistory} from "@/modules/models";
+import {conversationManager} from "@/modules/slots/client/conversation";
+import {create} from "zustand";
 
+export interface LlmTextEditorState {
+    signal?: AbortController,
+    setSignal: (signal?: AbortController, reason?: string) => void,
+}
+
+export const useLlmTextEditorState =
+    create<LlmTextEditorState>((set, get) =>
+        ({
+            setSignal: (signal, reason) => {
+                const origin = get().signal;
+                if (origin) {
+                    origin.abort(reason ?? "reset");
+                }
+                set({signal});
+            },
+        }));
 
 export function EditorComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as LlmTextEditorConfig;
     return <>
-        <div className="grid md:grid-cols-2 gap-4">
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
-                    {t("comfyui.node_id")}
-                </FieldLabel>
-                <Input name={"node_id"} defaultValue={config?.nodeId}
-                       id={`${engineName}-node_id-${entry.id}`}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
-                    {t("comfyui.node_name")}
-                </FieldLabel>
-                <Input name={"node_name"} defaultValue={config?.nodeName}
-                       id={`${engineName}-node_name-${entry.id}`}/>
-            </Field>
-            <LlmapiRequireField defaultValue={config.llmapi ?? null}
-                                prefix={`${engineName}-${entry.id}`}/>
-        </div>
         <Field>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+                {t("comfyui.node_id")}
+            </FieldLabel>
+            <Input name={"node_id"} defaultValue={config?.nodeId}
+                   id={`${engineName}-node_id-${entry.id}`}/>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+                {t("comfyui.node_name")}
+            </FieldLabel>
+            <Input name={"node_name"} defaultValue={config?.nodeName}
+                   id={`${engineName}-node_name-${entry.id}`}/>
+        </Field>
+        <LlmapiRequireField defaultValue={config.llmapi ?? null}
+                            prefix={`${engineName}-${entry.id}`}/>
+        <Field className={spanFull}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {t("comfyui.text_prompt")}
             </FieldLabel>
@@ -58,14 +70,10 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     </>;
 }
 
-export const signalName = 'ComfyUIAbortController';
-
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const t = useTranslations();
     const config = entry.config as LlmTextEditorConfig;
     const {handleError} = useErrorHandler();
-
-    const ctx = useSlotContext();
     const [prompt, setPrompt] = useState(config?.textPrompt);
     const [text, setText] = useState("");
     const [output, setOutput] = useState(false);
@@ -73,18 +81,14 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
     // 生成提示词
     const generateLlmapiPrompt = async () => {
+        setOutput(true);
         try {
-            const {slot} = getSlotAndHistories(ctx);
-            const iframe = ctx.current.iframe.current;
-            if (!iframe) {
-                console.error('[slot]: failed to get history or iframe');
-                return;
-            }
-            setOutput(true);
+            const {
+                slotData: {slot}, getHistory,
+            } = slotContext;
 
-            const history: StoryHistory = {
+            const history: SlotHistory = {
                 inputs: [{
-                    id: 0,
                     content: prompt,
                     variables: [],
                     properties: {}
@@ -109,21 +113,18 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
             let thought = "";
             let content = "";
-            for await (const {output, outputs} of requestLlmapiReply(
+            for await (const {output, outputs} of conversationManager.inputProcesser.requestReply(
+                history,
+                async (signal) => {
+                    useLlmTextEditorState.getState().setSignal(signal);
+                },
                 {
-                    slot: {
-                        ...slot,
-                        story: {
-                            ...slot.story,
-                            histories: [
-                                getCurrentHistory(slot, useHistoryPageState.getState().page.cur),
-                                history,
-                            ]
-                        },
-                        llmapi,
-                    },
-                    history,
-                    signal: signalName,
+                    ...slot,
+                    histories: [
+                        getHistory(useHistoryPageState.getState().page.cur),
+                        history,
+                    ],
+                    llmapi,
                 })) {
                 if (output.thought === thought) {
                     setThinking(false);
@@ -149,7 +150,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     };
 
     return <>
-        <Field>
+        <Field className={spanHalf}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {`${entry.name} ${t("comfyui.text_prompt")}`}
             </FieldLabel>
@@ -159,16 +160,15 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                       onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setPrompt(e.target.value)}/>
         </Field>
-        <Field>
+        <Field className={spanHalf}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {entry.name}
                 {
                     output ?
                         <Button disabled={false}
                                 onClick={() => {
-                                    const controller = getReplyAbortController(
-                                        ctx.current.slot!, signalName);
-                                    controller.abort("user canceled.");
+                                    useLlmTextEditorState.getState()
+                                        .setSignal(undefined, "user canceled.");
                                 }}>
                             <SquareStopIcon/>
                         </Button> :

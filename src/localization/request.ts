@@ -1,5 +1,5 @@
 ﻿// src/localization/request.ts
-import {defaultLocale, timeZones, locales} from "@/localization/config";
+import {defaultLocale, locales, timeZones} from "@/localization/config";
 import {getRequestConfig, RequestConfig} from "next-intl/server";
 import {notFound} from "next/navigation";
 import path from "path";

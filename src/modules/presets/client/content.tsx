@@ -7,19 +7,25 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ItemContent, ItemDescription, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {TabConfig} from "@/components/custom/tab";
-import {get, post, open, del, put} from "@/client";
+import {del, get, open, post, put} from "@/client";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {presetTabManager} from "./tabs";
 import {getAuthor} from "@/business/client/author";
-import {TemplateModelList} from "@/business/client/template";
+import {ModelList} from "@/business/client/template/model-list";
 import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {defaultTags, modelState} from "@/modules/presets/client/models";
 import {createUseTabState} from "@/business/client/models";
 import {TagBox} from "@/components/custom/combobox";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    Dialog, DialogTrigger,
-    DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
@@ -201,7 +207,7 @@ function PresetToolbar({model}: { model: PresetModel }) {
 
 function Content() {
     const t = useTranslations();
-    return <TemplateModelList<PresetModel>
+    return <ModelList<PresetModel>
         modelState={modelState}
         searchAccessor={data => ({
             tags: data.getAll("tag") as string[]
@@ -311,7 +317,7 @@ function Content() {
             useTabState: usePresetTabState,
             tabManager: presetTabManager
         }}>
-    </TemplateModelList>;
+    </ModelList>;
 }
 
 

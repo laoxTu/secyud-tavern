@@ -1,322 +1,216 @@
-﻿import React, {useState, RefObject, useEffect, useRef} from "react";
-import {
-    CornerDownLeftIcon,
-    SquareStopIcon
-} from "lucide-react";
+﻿import React, {useCallback, useEffect, useRef} from "react";
+import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {
     InputGroup,
-    InputGroupAddon, InputGroupButton, InputGroupText,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupText,
     InputGroupTextarea
 } from "@/components/ui/input-group";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
-import {
-    getCurrentHistory,
-    getSlotAndHistories,
-    invokeCallback, registerCallback,
-    SlotDataModel,
-    updateStoryHistory,
-    useSlotContext
-} from "@/modules/slots/client/models";
-import {StoryHistory, StoryInputMessage, StoryOutputMessage} from "@/modules/stories/models";
-import {extractVariableChanges, SlotModel} from "@/modules/slots/models";
+import {slotContext,} from "@/modules/slots/client/context";
 import {post} from "@/client";
-import {
-    generateRenderData,
-    LlmapiInputContext, LlmapiOutputContext, LlmapiResultContext,
-    RenderContext, renderData,
-} from "@/modules/slots/client/conversation-models";
-import {
-    conversationManager,
-    generateCurrentVariables,
-    generateInputBuildContext,
-    getOpeningHistory
-} from "@/modules/slots/client/conversation";
+import {conversationManager,} from "@/modules/slots/client/conversation";
 import {useTranslations} from "next-intl";
-import {readStream, tryGetLastItem} from "@/utils";
+import {tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
-import {handleHistoryPageChange, useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
-import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
+import {create} from "zustand";
+import {historyUtils, messageUtils} from "@/modules/models";
+import {slotUtils} from "@/modules/slots/client/conversation-models";
+import {SlotMessageInput} from "@/modules/models/message";
 
-export const signalName = "ReplyAbortController";
 
-export function getReplyAbortController(slot: SlotModel, signal: string) {
-    return slot.content[signal] as AbortController
+export interface StoryChatboxState {
+    content: string,
+    setContent: (content: string) => void,
+    summary: boolean,
+    setSummary: (summary: boolean) => void,
+    signal?: AbortController,
+    setSignal: (signal?: AbortController, reason?: string) => void,
+    generating: boolean,
+    generate: () => Promise<void>,
+    create: () => Promise<void>,
 }
 
-export function setReplyAbortController(slot: SlotModel, signal: string) {
-    let controller = getReplyAbortController(slot, signal);
-    if (controller) {
-        controller.abort("reset");
-    }
-    controller = new AbortController();
-    slot.content[signal] = controller;
-    return controller;
-}
-
-export async function generateLlmapiReply(ctx: RefObject<SlotDataModel>) {
-    await invokeCallback(ctx, "generateLlmapiReply");
-}
-
-export async function* requestLlmapiReply(
-    {slot, history, signal}: {
-        slot: SlotModel,
-        history: StoryHistory,
-        signal: string,
-    },) {
-    // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
-    const llmapi = slot.llmapi;
-    const llmapiProvider = llmapiProviderRegistry.records[llmapi.provider!];
-    const outputs: StoryOutputMessage[] = [];
-    history.outputId = history.outputs.length;
-    history.outputs.push(outputs);
-    let iterations = Math.max(2, llmapi.content.maxIterations ?? 20);
-    while (iterations > 0) {
-        const current = outputs.length > 0;
-        const inputContext: LlmapiInputContext = {
-            slot,
-            content: {},
-            history,
-            histories: [],
-            contentHandlers: [],
-            current,
-            config: llmapi.content.config,
-        };
-
-        generateInputBuildContext(inputContext);
-
-        await conversationManager.inputProcesser.use(provider =>
-            provider.onProcessInput(inputContext));
-
-        const reply = setReplyAbortController(slot, signal);
-        const {input} = await llmapiProvider.generateInput(inputContext);
-        const response: Response = await post(`/llmapis/{id}/chat`, input,
-            {
-                params: {id: llmapi.id},
-                signal: reply.signal
-            }
-        );
-
-        const output: StoryOutputMessage = {
+export const useStoryChatboxState =
+    create<StoryChatboxState>((set, get) =>
+        ({
             content: "",
-            thought: "",
-            variables: [],
-            properties: {}
-        };
-        if (response.body) {
-            outputs?.push(output);
-            const cache: Record<string, any> = {};
-            for await (const chunk of readStream(response.body)) {
-                if (reply.signal.aborted) {
-                    console.warn('[HistoryChatbox] reply canceled');
-                    break;
+            setContent: (content: string) => set({content}),
+            summary: false,
+            setSummary: (summary: boolean) => set({summary}),
+            setSignal: (signal, reason) => {
+                const origin = get().signal;
+                if (origin) {
+                    origin.abort(reason ?? "reset");
                 }
-                const context: LlmapiOutputContext = {
-                    content: cache,
-                    message: output,
-                    output: chunk,
-                    slot,
-                    stopped: false,
-                };
-                await llmapiProvider.generateOutput(context);
-                yield {outputs, output};
-                if (context.stopped) {
-                    iterations = 0;
+                set({signal});
+            },
+            generating: false,
+            generate: async () => {
+                const {
+                    slotData: {histories},
+                    getHistory, setHistory,
+                } = slotContext;
+                set({generating: true});
+                try {
+                    const history = getHistory();
+                    const {setPage} = useHistoryPageState.getState();
+                    const setHistoryPage = async () => {
+                        history.outputId = history.outputs.length - 1;
+                        await setPage(histories.length);
+                    }
+                    for await (const {} of conversationManager.inputProcesser
+                        .requestReply(history, async signal => {
+                            await setHistoryPage();
+                            set({signal});
+                        })) {
+                        // 流式渲染条件
+                        // 故事页面为最新，输出页面为最新
+                        const {page} = useHistoryPageState.getState();
+                        if (page.cur === histories.length &&
+                            history.outputId === history.outputs.length - 1) {
+                            await conversationManager.streamRenderer
+                                .renderStream(history);
+                        }
+                    }
+                    await setHistoryPage();
+                    // 解析输出，填充一些选项或处理，这里应该会缓存世界书
+                    await conversationManager.outputProcesser
+                        .processOutput(history);
+                    await setHistory(histories.length);
+                } catch (err) {
+                    if (err instanceof Error && err.name === 'AbortError') {
+                        console.log('user abort reply');
+                    } else throw err;
+                } finally {
+                    await useHistoryPageState.getState()
+                        .setPage(histories.length);
+                    set({generating: false});
                 }
-            }
-        }
-    }
-}
+            },
+            create: async () => {
+                try {
+                    const {
+                        slotData: {slot, histories}, iframeData: {iframe},
+                    } = slotContext;
+                    const {generating, content, summary} = get();
+                    if (generating || !content.trim()) return;
+                    let variables = undefined;
+                    let input = content.trim();
+                    if (iframe.contentWindow) {
+                        const window = iframe.contentWindow as any;
+                        (window?.userInput?.inputBuilders as {
+                            id: string, sequence?: number,
+                            build: (text: string) => string,
+                        }[])
+                            ?.sort((a, b) =>
+                                (a.sequence ?? 0) - (b.sequence ?? 0))
+                            .forEach((builder) => {
+                                input = builder.build(input);
+                            });
+                    }
+
+                    // 如果上一个历史还未输出，合并到上一个历史。
+                    // 如果上一个历史已经输出，创建新的历史。
+                    // 如果还没有历史，使用开场白变量。
+                    let history = tryGetLastItem(histories)!;
+                    if (history) {
+                        if (history.outputs.length > 0) {
+                            variables = historyUtils.getVariables(history);
+                        }
+                    } else {
+                        const openingHistory = slotUtils.getOpening(slot);
+                        variables = historyUtils.getVariables(openingHistory);
+                    }
+                    if (variables) {
+                        history = {
+                            outputId: -1,
+                            id: 0,
+                            disabled: false,
+                            code: input.substring(0, 10),
+                            name: "0",
+                            inputs: [],
+                            outputs: [],
+                            summary,
+                            variables: variables
+                        };
+                        histories.push(history);
+                    }
+
+                    const message: SlotMessageInput = {
+                        content: '',
+                        variables: [],
+                        properties: {}
+                    };
+                    messageUtils.setContent(message, input);
+                    history.inputs.push(message);
+                    // 用户输入后立即跳转到最新页面，先渲染用户输入。
+                    await useHistoryPageState.getState()
+                        .setPage(histories.length);
+                    if (variables) {
+                        const {id} = await post('/stories/{id}/entries/{entryType}', history,
+                            {params: {id: slot.id, entryType: 'history'}}
+                        );
+                        history.id = id;
+                        history.name = String(id);
+                    }
+                } finally {
+                    set({summary: false, content: ""});
+                }
+                // 创建并保存历史后需要生成回复
+                await get().generate();
+            },
+        })
+    );
 
 
 export function HistoryChatbox() {
-    const [output, setOutput] = useState(false);
+    const {
+        create,
+        generating, setSignal,
+        content, setContent,
+        summary, setSummary
+    } = useStoryChatboxState();
     const {handleError} = useErrorHandler();
-    const ctx = useSlotContext();
     const t = useTranslations();
-    const [inputText, setInputText] = useState("");
-    const [summary, setSummary] = useState(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    // 生成回复，并持续渲染，直接调用将会新生成一个
-    const generateLlmapiReply = async () => {
-        let {slot, histories} = getSlotAndHistories(ctx);
+    // 发送输入内容，并尝试创建新历史
+    const triggerCreate = useCallback(async () => {
         try {
-            const iframe = ctx.current.iframe.current;
-            if (!iframe) {
-                console.error('[slot]: failed to get history or iframe');
-                return;
-            }
-            setOutput(true);
-            slot.content.isOutput = true;
-            const history = getCurrentHistory(slot);
-
-            await handleHistoryPageChange(ctx, {
-                curPage: histories.length,
-                curOutputPage: Math.max(0, history.outputs.length - 1),
-            });
-            for await (const {} of requestLlmapiReply(
-                {
-                    slot,
-                    history,
-                    signal: signalName,
-                })) {
-
-                // 流式渲染条件
-                // 故事页面为最新，输出页面为最新
-                const {page} = useHistoryPageState.getState();
-                if (page.cur === histories.length &&
-                    history.outputId === history.outputs.length - 1) {
-                    const streamContext: RenderContext = {
-                        content: {},
-                        data: generateRenderData(history),
-                        window: iframe.contentWindow!,
-                        document: iframe.contentDocument!,
-                        history: history,
-                        slot: slot,
-                        variables: generateCurrentVariables(history)
-                    };
-                    await conversationManager.streamRenderer
-                        .use(provider =>
-                            provider.onRenderStream(streamContext));
-                    renderData(streamContext, "content", streamContext.data);
-                }
-            }
-            await handleHistoryPageChange(ctx, {
-                curPage: histories.length,
-                curOutputPage: history.outputId
-            });
-            const outputContext: LlmapiResultContext = {content: {}, history: history, slot: slot};
-            // 解析输出，填充一些选项或处理，这里应该会缓存世界书
-            await conversationManager.outputProcesser.use(provider =>
-                provider.onProcessOutput(outputContext));
-            await updateStoryHistory(slot.story.id, history);
-        } catch
-            (err) {
-            if (err instanceof Error && err.name === 'AbortError') {
-                console.log('user abort reply');
-                return; // 或者不处理
-            }
-            handleError(err);
-        } finally {
-            await handleHistoryPageChange(ctx, {curPage: ctx.current.slot?.story.histories?.length ?? 0});
-            slot.content.isOutput = false;
-            setOutput(false);
-        }
-    };
-
-// 发送输入内容，并尝试创建新历史
-    const createStoryHistory = async () => {
-        try {
-            if (output || !inputText?.trim()) return;
-            const {slot, histories} = getSlotAndHistories(ctx);
-            const iframe = ctx.current.iframe.current;
-            if (!iframe) {
-                console.error('[HistoryChatbox] failed to get iframe');
-                return;
-            }
-            let variables = undefined;
-            let input = inputText.trim();
-            if (iframe.contentWindow) {
-                const window = iframe.contentWindow as any;
-                (window?.userInput?.inputBuilders as {
-                    id: string, sequence?: number,
-                    build: (text: string) => string,
-                }[])
-                    ?.sort((a, b) =>
-                        (a.sequence ?? 0) - (b.sequence ?? 0))
-                    .forEach((builder) => {
-                        input = builder.build(input);
-                    });
-            }
-
-            // 如果上一个历史还未输出，合并到上一个历史。
-            // 如果上一个历史已经输出，创建新的历史。
-            // 如果还没有历史，使用开场白变量。
-            let history = tryGetLastItem(histories)!;
-            if (history) {
-                if (history.outputs.length > 0) {
-                    variables = generateCurrentVariables(history);
-                }
-            } else {
-                const openingHistory = getOpeningHistory(slot);
-                variables = generateCurrentVariables(openingHistory);
-            }
-            if (variables) {
-                history = {
-                    id: 0,
-                    disabled: false,
-                    code: input.substring(0, 10),
-                    name: "0",
-                    inputs: [],
-                    summary: summary,
-                    outputId: -1,
-                    outputs: [],
-                    variables: variables
-                };
-                histories.push(history);
-            }
-
-            const inputs = history.inputs;
-            const message: StoryInputMessage = {
-                id: (tryGetLastItem(inputs)?.id ?? 0) + 1,
-                content: '',
-                variables: [],
-                properties: {}
-            };
-            extractVariableChanges(message, input);
-            inputs.push(message);
-
-            // 用户输入后立即跳转到最新页面，先渲染用户输入。
-            await handleHistoryPageChange(ctx, {curPage: histories.length});
-
-            if (variables) {
-                const {id} = await post('/stories/{id}/entries/{entryType}', history,
-                    {params: {id: slot.story.id, entryType: 'history'}}
-                );
-                history.id = id;
-                history.name = String(id);
-            }
+            await create();
         } catch (err) {
             handleError(err);
         }
-        setSummary(false);
-        setInputText("");
-        // 创建并保存历史后需要生成回复
-        await generateLlmapiReply();
-    };
+    }, [handleError]);
 
     useEffect(() => {
-        registerCallback(ctx, "generateLlmapiReply", generateLlmapiReply);
-        registerCallback(ctx, "createStoryHistory", createStoryHistory);
-    }, []);
-
-    useEffect(() => {
-        const iframe = ctx.current.iframe.current;
-        const window = iframe?.contentWindow as any;
-
+        const window = slotContext.iframeData.window;
         if (!window) return;
         window.userInput = {
             text: {
                 element: () => inputRef.current,
-                get: () => inputText,
-                set: (value: any) => setInputText(value)
+                get: () => content,
+                set: (value: any) => setContent(value)
             },
             summary: {get: () => summary, set: (value: any) => setSummary(value)},
             inputBuilders: [], // { id: string, sequence?: number, build: (text: string) => string }
         };
 
-    }, [setInputText, setSummary]);
+    }, [inputRef]);
 
     return (
-        <form action={createStoryHistory}>
+        <form action={triggerCreate}>
             <InputGroup className={"bg-white"}>
                 <InputGroupTextarea ref={inputRef}
                                     id='slot-user-input'
                                     name='slot-user-input'
-                                    value={inputText}
-                                    onChange={(e) => setInputText(e.target.value)}
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
                                     placeholder={t('default.ctrl_enter_submit')}
                                     onKeyDown={submitTargetFormOnKey}/>
                 <InputGroupAddon align="inline-end">
@@ -328,13 +222,11 @@ export function HistoryChatbox() {
                 </InputGroupAddon>
                 <InputGroupAddon align={'inline-end'}>
                     {
-                        output ?
+                        generating ?
                             <InputGroupButton type="button" disabled={false}
                                               onClick={(e) => {
                                                   e.stopPropagation();
-                                                  const controller = getReplyAbortController(
-                                                      ctx.current.slot!, signalName);
-                                                  controller.abort("user canceled.");
+                                                  setSignal(undefined, "user canceled")
                                               }}>
                                 <SquareStopIcon/>
                             </InputGroupButton> :

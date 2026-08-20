@@ -13,6 +13,10 @@ export interface IModelStorage<TModel> {
 
 export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> implements IModelStorage<T> {
 
+    static getInstance<T>(name: string) {
+        return getInstance(name + "Storage", u => new ModelStorage<T>(u));
+    }
+
     async loadModel(model: T): Promise<void> {
         await this.use(async provider => {
             await provider.loadModel(model);
@@ -35,9 +39,5 @@ export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> imp
     bindSorter(type: string, entry: any) {
         const provider = this.records[type];
         return provider?.bindSorter(entry) ?? `${entry?.name}${entry.code}`;
-    }
-
-    static getInstance<T>(name: string) {
-        return getInstance(name + "Storage", u => new ModelStorage<T>(u));
     }
 }

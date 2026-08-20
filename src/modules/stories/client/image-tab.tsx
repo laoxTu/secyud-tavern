@@ -9,22 +9,18 @@ import {Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemHeader, 
 import Image from "next/image";
 import {useErrorHandler} from "@/handler/client/error";
 import {
-    Dialog, DialogClose,
+    Dialog,
+    DialogClose,
     DialogContent,
-    DialogDescription, DialogFooter,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button, buttonVariants} from "@/components/ui/button";
-import {
-    FilePlusIcon, ImagesIcon,
-    LinkIcon,
-    SearchIcon,
-    SquarePenIcon,
-    XIcon
-} from "lucide-react";
+import {FilePlusIcon, ImagesIcon, LinkIcon, SearchIcon, SquarePenIcon, XIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {del, post, put} from "@/client";

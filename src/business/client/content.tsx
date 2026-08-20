@@ -20,7 +20,7 @@ import {useTranslations} from 'next-intl';
 import {locales} from "@/localization/config";
 import Cookies from 'js-cookie';
 import {create} from "zustand";
-import {persist, createJSONStorage} from 'zustand/middleware'
+import {createJSONStorage, persist} from 'zustand/middleware'
 import {useClientUtils} from "@/utils/client";
 
 export interface BusinessTabState {

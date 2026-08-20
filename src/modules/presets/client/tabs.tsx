@@ -10,7 +10,7 @@ import {TabManager} from "@/components/custom/tab";
 import {RemoteSearchCombobox, TagBox} from "@/components/custom/combobox";
 import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
-import {TemplateModelUpdate} from "@/business/client/template";
+import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {defaultTags, modelState} from "./models";
@@ -18,6 +18,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {spanFull, spanHalf} from "@/components/custom/GridField";
 
 export function getPresetRequires(data: FormData) {
     return data.getAll("require")
@@ -58,7 +59,7 @@ export function DefaultTab() {
     const t = useTranslations();
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const changed = useRef(false);
-    return <TemplateModelUpdate<PresetModel>
+    return <ModelUpdate<PresetModel>
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
@@ -108,7 +109,7 @@ export function DefaultTab() {
                     });
             },
             updateContent: (model, formRef) => (<>
-                <Field>
+                <Field className={"row-span-4"}>
                     <FieldLabel htmlFor={`${moduleName}-cover`}>
                         {t("default.cover")}
                     </FieldLabel>
@@ -120,45 +121,51 @@ export function DefaultTab() {
                                        changed.current = true;
                                    }}/>
                 </Field>
-                <div className="grid md:grid-cols-2 gap-4">
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-code`}>
-                            {t("default.code")}
-                        </FieldLabel>
-                        <Input name="code" id={`${moduleName}-code`}
-                               disabled defaultValue={model.code}/>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-author`}>
-                            {t("default.author")}
-                        </FieldLabel>
-                        <Input disabled name="author" id={`${moduleName}-author`}
-                               defaultValue={model.content.author}/>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-name`}>
-                            {t("default.name")}
-                        </FieldLabel>
-                        <Input name="name" id={`${moduleName}-name`}
-                               defaultValue={model.name}/>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-version`}>
-                            {t("default.version")}
-                        </FieldLabel>
-                        <Input name="version" id={`${moduleName}-version`}
-                               defaultValue={model.version}/>
-                    </Field>
-                    <Field>
-                        <FieldLabel htmlFor={`${moduleName}-tags`}>
-                            {t("default.tags")}
-                        </FieldLabel>
-                        <TagBox defaultValue={model.tags} name={"tag"}
-                                id={`${moduleName}-tags`} items={defaultTags}/>
-                    </Field>
-                    <PresetRequiresField defaultValue={model.requires}/>
-                </div>
                 <Field>
+                    <FieldLabel htmlFor={`${moduleName}-code`}>
+                        {t("default.code")}
+                    </FieldLabel>
+                    <Input name="code" id={`${moduleName}-code`}
+                           disabled defaultValue={model.code}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-author`}>
+                        {t("default.author")}
+                    </FieldLabel>
+                    <Input disabled name="author" id={`${moduleName}-author`}
+                           defaultValue={model.content.author}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-name`}>
+                        {t("default.name")}
+                    </FieldLabel>
+                    <Input name="name" id={`${moduleName}-name`}
+                           defaultValue={model.name}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-version`}>
+                        {t("default.version")}
+                    </FieldLabel>
+                    <Input name="version" id={`${moduleName}-version`}
+                           defaultValue={model.version}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-tags`}>
+                        {t("default.tags")}
+                    </FieldLabel>
+                    <TagBox defaultValue={model.tags} name={"tag"}
+                            id={`${moduleName}-tags`} items={defaultTags}/>
+                </Field>
+                <PresetRequiresField defaultValue={model.requires}/>
+                <Field className={spanFull}>
+                    <FieldLabel htmlFor={`${moduleName}-description`}>
+                        {t("default.description")}
+                    </FieldLabel>
+                    <Textarea name="description" id={`${moduleName}-description`}
+                              defaultValue={model.content.description ?? ""}
+                              onKeyDown={submitTargetFormOnKey}/>
+                </Field>
+                <Field className={spanHalf}>
                     <FieldLabel>
                         {t("default.variables")}
                     </FieldLabel>
@@ -166,7 +173,7 @@ export function DefaultTab() {
                                   defaultValue={JSON.stringify(model.content.variables ?? undefined)}
                                   language={'json'} formRef={formRef}/>
                 </Field>
-                <Field>
+                <Field className={spanHalf}>
                     <FieldLabel htmlFor={`${moduleName}-opening`}>
                         {t("story.opening_remarks")}
                     </FieldLabel>
@@ -174,14 +181,6 @@ export function DefaultTab() {
                               defaultValue={model.content.opening ?? ""}
                               onKeyDown={submitTargetFormOnKey}
                     />
-                </Field>
-                <Field>
-                    <FieldLabel htmlFor={`${moduleName}-description`}>
-                        {t("default.description")}
-                    </FieldLabel>
-                    <Textarea name="description" id={`${moduleName}-description`}
-                              defaultValue={model.content.description ?? ""}
-                              onKeyDown={submitTargetFormOnKey}/>
                 </Field>
             </>)
         }}/>

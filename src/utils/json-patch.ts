@@ -120,8 +120,9 @@ export function patchOne(obj: any, change: Operation) {
             return true;
         }
         case "replace": {
-            const {previous, current, exists} = extract(obj, change.path, false);
-            if (!exists) return false;
+            // ai 总是会用replace，导致行为不符合预期，所以没有用JSON Patch的标准。
+            // JSON Patch 标准：只有目标值存在才会被替换
+            const {previous, current} = extract(obj, change.path, true);
             if (Array.isArray(previous.item) && /^\d+$/.test(current.key)) {
                 const index = parseInt(current.key, 10);
                 if (index === previous.item.length) {

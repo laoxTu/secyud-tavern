@@ -1,9 +1,6 @@
 import {interceptor} from "@/handler/server/interceptor";
 import {apiConfig} from "../../../../models";
-import {
-    apiDeleteEntry, apiGetEntry,
-    apiUpdateEntry
-} from "@/app/api/template";
+import {apiDeleteEntry, apiGetEntry, apiUpdateEntry} from "@/app/api/template";
 
 /**
  * 更新条目

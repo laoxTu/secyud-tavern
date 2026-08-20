@@ -1,2 +1,1 @@
-
 export const importerName = "civitai";

@@ -1,4 +1,4 @@
 ﻿import {ModelStorage} from "@/business/server/storage";
-import {StoryModel, moduleName} from "../models";
+import {moduleName, StoryModel} from "../models";
 
 export const storyStorage = ModelStorage.getInstance<StoryModel>(moduleName,)

@@ -23,6 +23,8 @@ export const urlFetchToolProvider: LlmapiToolProvider = {
 };
 
 export class UrlFetchTool implements LlmapiTool {
+    model: LlmapiToolModel;
+
     constructor(private config: UrlFetchConfigModel) {
         this.model = {
             name: 'url_fetch',
@@ -61,8 +63,6 @@ export class UrlFetchTool implements LlmapiTool {
             hidden: false,
         };
     }
-
-    model: LlmapiToolModel;
 }
 
 // ============ 简化版抓取 ============

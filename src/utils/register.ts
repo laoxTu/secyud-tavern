@@ -6,8 +6,8 @@
 
 export class Registry<T extends Registerable> {
     records: Record<string, T> = {};
-    private sorted: T[] | null = null;
     protected readonly name: string;
+    private sorted: T[] | null = null;
 
     protected constructor(name: string) {
         this.name = name;
@@ -54,13 +54,6 @@ export class Registry<T extends Registerable> {
     }
 
     /**
-     * 清空缓存
-     */
-    protected invalidateCache(): void {
-        this.sorted = null;
-    }
-
-    /**
      * 获取所有已注册的 registerable IDs
      */
     getIds(): string[] {
@@ -72,6 +65,13 @@ export class Registry<T extends Registerable> {
      */
     has(id: string): boolean {
         return id in this.records;
+    }
+
+    /**
+     * 清空缓存
+     */
+    protected invalidateCache(): void {
+        this.sorted = null;
     }
 
     /**

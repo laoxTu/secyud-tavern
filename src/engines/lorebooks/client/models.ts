@@ -3,8 +3,7 @@ import {EntryState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {moduleName, modulePlural} from "@/modules/presets/models";
-import {PresetLorebookModel} from "../models";
-import {engineName} from "../models";
+import {engineName, PresetLorebookModel} from "../models";
 
 export const usePagedItemsState = createUsePagedItemsState<PresetLorebookModel>(
     async options => {

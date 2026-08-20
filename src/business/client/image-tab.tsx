@@ -9,9 +9,7 @@ import Image from "next/image";
 import {useErrorHandler} from "@/handler/client/error";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {buttonVariants} from "@/components/ui/button";
-import {
-    LinkIcon,
-} from "lucide-react";
+import {LinkIcon,} from "lucide-react";
 import {del} from "@/client";
 import Link from "next/link";
 import {DeleteDialog} from "@/components/custom/delete-dialog";

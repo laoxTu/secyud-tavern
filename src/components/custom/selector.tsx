@@ -25,7 +25,9 @@ export function Selector<T>(
         labelAccessor,
         valueAccessor,
     }: SelectorProps<T>) {
-    return (<Select name={name}
+    const key = defaultValue && valueAccessor ?
+        valueAccessor(defaultValue) : defaultValue as string;
+    return (<Select key={key} name={name}
                     itemToStringLabel={labelAccessor}
                     itemToStringValue={valueAccessor}
                     defaultValue={defaultValue}

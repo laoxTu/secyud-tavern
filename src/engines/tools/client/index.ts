@@ -1,4 +1,3 @@
-
 import {tabConfig} from "./preset-tab";
 import {toolConversationProvider} from "./conversation";
 import {llmapiToolManager} from "./manager";
@@ -7,6 +6,7 @@ import {variableToolProvider} from "@/engines/tools/variable/client";
 import {urlFetchToolProvider} from "@/engines/tools/url-fetch/client";
 import {scriptToolProvider} from "@/engines/tools/script/client";
 import {presetTabManager} from "@/modules/presets/client/tabs";
+import {subAgentToolProvider} from "@/engines/tools/sub-agent/client";
 
 export function registerToolsClient() {
     presetTabManager.register(tabConfig);
@@ -14,6 +14,7 @@ export function registerToolsClient() {
         urlFetchToolProvider,
         variableToolProvider,
         scriptToolProvider,
+        subAgentToolProvider,
     );
     conversationManager.initializer.register(toolConversationProvider);
     conversationManager.outputProcesser.register(toolConversationProvider);

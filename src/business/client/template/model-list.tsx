@@ -2,19 +2,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {FolderOpenIcon, FoldHorizontalIcon, SearchIcon, XIcon} from "lucide-react";
-import {
-    Empty, EmptyContent,
-    EmptyDescription, EmptyHeader,
-    EmptyMedia, EmptyTitle
-} from "@/components/ui/empty";
-import {
-    InputGroup, InputGroupAddon,
-    InputGroupButton, InputGroupInput
-} from "@/components/ui/input-group";
-import {
-    ResizableHandle, ResizablePanel,
-    ResizablePanelGroup
-} from "@/components/ui/resizable";
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
+import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
+import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import {Item, ItemGroup} from "@/components/ui/item";
 import {Skeleton} from "@/components/ui/skeleton";
 import {PaginationWrapper} from "@/components/custom/pager";
@@ -22,7 +12,7 @@ import {BaseModel} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {ModelState, useGlobalState} from "../models";
 import {ModelCreate, ModelCreateProps} from "./model-create";
-import {ModelContentProps, ModelContent} from "./model-content";
+import {ModelContent, ModelContentProps} from "./model-content";
 import {PanelImperativeHandle} from "react-resizable-panels";
 import {Button} from "@/components/ui/button";
 

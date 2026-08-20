@@ -1,7 +1,18 @@
 ﻿'use client'
 import {Registerable} from "@/utils/register";
 import React from "react";
-import {LlmapiInputContext, LlmapiOutputContext} from "@/modules/slots/client/conversation-models";
+import {LlmapiInputContext, SlotContextBase} from "@/modules/slots/client/conversation-models";
+import {SlotMessageOutput} from "@/modules/models/message";
+
+export interface LlmapiOutputContext extends SlotContextBase {
+    // output is the origin output of llm chunk
+    // for OpenAI, it will be { content: string, tool_calls: [], ...}
+    output: any,
+    // the output message to set
+    message: SlotMessageOutput,
+    // if stopped, this message is the last message
+    stopped: boolean,
+}
 
 export interface LlmapiInputItem {
     role: string,

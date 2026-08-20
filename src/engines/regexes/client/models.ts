@@ -3,8 +3,7 @@ import {EntryState} from "@/business/client/models";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {moduleName, modulePlural} from "@/modules/presets/models";
-import {PresetRegexModel} from "../models";
-import {engineName} from "../models";
+import {engineName, PresetRegexModel} from "../models";
 
 export const usePagedItemsState = createUsePagedItemsState<PresetRegexModel>(
     async options => {

@@ -1,7 +1,7 @@
 ﻿import {matchName, NormalMatchModel} from "../models";
 import {MatchEditor} from "./editor";
 import {Matcher, MatcherMatchContext} from "@/engines/lorebooks/client/match-models";
-import {StoryHistoryMessage} from "@/modules/slots/models";
+import {SlotMessageBase} from "@/modules/models/message";
 
 export function getNormalModel(data: FormData): NormalMatchModel {
     const keywordsLength = parseInt(data.get('keywordsLength') as string);
@@ -16,7 +16,7 @@ export function getNormalModel(data: FormData): NormalMatchModel {
     };
 }
 
-export function normalMatch(message: StoryHistoryMessage, expression?: NormalMatchModel) {
+export function normalMatch(message: SlotMessageBase, expression?: NormalMatchModel) {
     if (!expression || expression.keywordsLength === 0) return false;
     let fitCount = 0;
     for (const keywords of expression.keywords) {

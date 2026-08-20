@@ -6,12 +6,13 @@ import {Button} from "@/components/ui/button";
 import {useErrorHandler} from "@/handler/client/error";
 import {BaseModel} from "@/business/models";
 import {ModelState} from "@/business/client/models";
+import {GridField} from "@/components/custom/GridField";
 
 export interface ModelUpdateProps<TModel extends BaseModel> {
     // 根据原模型和表单更新模型，返回更新后的模型。
     updateHandler: (model: TModel, data: FormData) => Promise<TModel>;
     // 编辑 FieldGroup 的内部内容。
-    updateContent: (model: TModel, formRef:  RefObject<HTMLFormElement | null>) => React.ReactNode;
+    updateContent: (model: TModel, formRef: RefObject<HTMLFormElement | null>) => React.ReactNode;
 }
 
 interface Props<TModel extends BaseModel> {
@@ -63,7 +64,9 @@ export function ModelUpdate<TModel extends BaseModel>(
             <FieldGroup className={"flex flex-col h-full"}>
                 <FieldSet className={"flex-1 p-2 overflow-auto"}>
                     <FieldGroup>
-                        {updateContent(model, formRef)}
+                        <GridField>
+                            {updateContent(model, formRef)}
+                        </GridField>
                     </FieldGroup>
                 </FieldSet>
                 <Field orientation="horizontal">

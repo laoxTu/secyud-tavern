@@ -1,8 +1,46 @@
 import {TemplateConfig} from "@/app/api/template";
 import {StoryModel} from "@/modules/stories/models";
-import {and, like, SQL} from "drizzle-orm";
-import {Check} from "@/handler/models";
+import {and, eq, like, SQL} from "drizzle-orm";
+import {BusinessError, Check} from "@/handler/models";
 import {storyRepository} from "@/modules/stories/server/repository";
+import {SlotModel} from "@/modules/slots/models";
+import {llmapiRepository} from "@/modules/llmapis/server/repository";
+import {SlotHistory} from "@/modules/models";
+import {EntryModel} from "@/business/models";
+import type {PresetModel} from "@/modules/presets/models";
+import {presetRepository} from "@/modules/presets/server/repository";
+
+export async function getSlot(story: StoryModel): Promise<SlotModel> {
+    if (!story.llmapi) {
+        throw new BusinessError(
+            'story has no llmapi config',
+            "default.story_lack_config_llmapi")
+            .withValue("id", story.id);
+    }
+
+    const llmapi = await llmapiRepository.get(
+        story.llmapi.code, true,
+        table => eq(table.code, story.llmapi?.code));
+
+    if (!llmapi) {
+        throw new BusinessError('llmapi config not found', "default.llmapi_config_notfound")
+            .withValue("id", story.id);
+    }
+
+    const histories = (await storyRepository.entry.getList(story.id, "history")).data as (SlotHistory & EntryModel)[];
+    histories.sort((a, b) => a.id - b.id);
+
+    const presets: PresetModel[] = await presetRepository
+        .getWithRequires(story.requires.map(u => u.code));
+
+    return {
+        ...story,
+        histories,
+        llmapi,
+        presets,
+        context: {}
+    };
+}
 
 export const apiConfig: TemplateConfig<StoryModel> = {
     repository: storyRepository,

@@ -1,4 +1,3 @@
-
 export interface ModelSelectorConfig {
     type: string;
     nodeId: string;

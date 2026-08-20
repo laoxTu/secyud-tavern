@@ -9,11 +9,13 @@ import {submitTargetFormOnKey} from "@/business/client";
 import React from "react";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Checkbox} from "@/components/ui/checkbox";
+import {spanFull, spanHalf} from "@/components/custom/GridField";
 
 const defaultConfig: ScriptToolConfigModel = {
     description: "",
     script: "return input;",
     hidden: false,
+    enableDoc: false,
     schema: `
 {
     "type": "object",
@@ -37,6 +39,26 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
             </FieldContent>
         </Field>
         <Field>
+            <FieldLabel htmlFor={`${entry.id}-enable_doc`}>
+                {t('script.enable_doc')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="enable_doc"
+                          id={`${entry.id}-enable_doc`}
+                          defaultChecked={config.enableDoc ?? false}/>
+            </FieldContent>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-enable_variable`}>
+                {t('script.enable_variable')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="enable_variable"
+                          id={`${entry.id}-enable_variable`}
+                          defaultChecked={config.enableVariable ?? false}/>
+            </FieldContent>
+        </Field>
+        <Field className={spanFull}>
             <FieldLabel htmlFor={`${entry.id}-description`}>
                 {t('default.description')}
             </FieldLabel>
@@ -45,28 +67,25 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                       defaultValue={config.description}
                       onKeyDown={submitTargetFormOnKey}/>
         </Field>
-        <div className="grid md:grid-cols-2 gap-4">
-
-            <Field>
-                <FieldLabel htmlFor={`${entry.id}-script`}>
-                    {t('default.script')}
-                </FieldLabel>
-                <MonacoEditor name={"script"}
-                              defaultValue={config.script}
-                              language={"javascript"}
-                              formRef={formRef}
-                />
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${entry.id}-schema`}>
-                    {t('default.schema')}
-                </FieldLabel>
-                <MonacoEditor name={"schema"}
-                              defaultValue={config.schema}
-                              language={"json"}
-                              formRef={formRef}
-                />
-            </Field>
-        </div>
+        <Field className={spanHalf}>
+            <FieldLabel htmlFor={`${entry.id}-script`}>
+                {t('default.script')}
+            </FieldLabel>
+            <MonacoEditor name={"script"}
+                          defaultValue={config.script}
+                          language={"javascript"}
+                          formRef={formRef}
+            />
+        </Field>
+        <Field className={spanHalf}>
+            <FieldLabel htmlFor={`${entry.id}-schema`}>
+                {t('default.schema')}
+            </FieldLabel>
+            <MonacoEditor name={"schema"}
+                          defaultValue={config.schema}
+                          language={"json"}
+                          formRef={formRef}
+            />
+        </Field>
     </>);
 }

@@ -9,7 +9,7 @@ import {BusinessError} from "@/handler/models";
  */
 export const POST = interceptor.createRoute(
     async (request) => {
-        const {url, method = 'GET'} =  await request.json();
+        const {url, method = 'GET'} = await request.json();
         if (!url) throw new BusinessError("missing url");
         const response = await fetch(url, {
             method,

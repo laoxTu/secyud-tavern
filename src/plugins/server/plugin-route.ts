@@ -13,9 +13,8 @@ export interface PluginRoute extends Registerable, PluginRouteItem {
 class PluginRouteManager extends ServerRegistry<PluginRoute> {
     private routeTree?: any;
 
-    protected invalidateCache() {
-        super.invalidateCache();
-        this.routeTree = null;
+    static getInstance() {
+        return getInstance("pluginRoute", u => new PluginRouteManager(u));
     }
 
     getRouteTree() {
@@ -56,8 +55,9 @@ class PluginRouteManager extends ServerRegistry<PluginRoute> {
         }
     }
 
-    static getInstance() {
-        return getInstance("pluginRoute", u => new PluginRouteManager(u));
+    protected invalidateCache() {
+        super.invalidateCache();
+        this.routeTree = null;
     }
 }
 

@@ -1,9 +1,5 @@
 import {Content} from "@/modules/stories/client/image-tab";
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger
-} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {ImagesIcon} from "lucide-react";

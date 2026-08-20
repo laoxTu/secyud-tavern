@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {TabConfig} from "@/components/custom/tab";
 import {useRouter} from "next/navigation";
 import {CornerDownLeftIcon} from "lucide-react";
-import {TemplateModelList} from "@/business/client/template";
+import {ModelList} from "@/business/client/template/model-list";
 import {moduleName, StoryModel} from "../models";
 import {storyTabManager} from "./tabs";
 import {modelState} from "./models";
@@ -25,7 +25,7 @@ function Content() {
     const t = useTranslations();
     const router = useRouter();
 
-    return <TemplateModelList<StoryModel>
+    return <ModelList<StoryModel>
         modelState={modelState}
         itemContent={(model) => (<>
             <ItemContent className={'flex-1 truncate'}>
@@ -113,7 +113,7 @@ function Content() {
             useTabState: useStoryTabState,
             tabManager: storyTabManager
         }}>
-    </TemplateModelList>;
+    </ModelList>;
 }
 
 export const storyNavigationContent: TabConfig = {

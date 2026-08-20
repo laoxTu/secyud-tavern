@@ -1,113 +1,115 @@
-﻿import {
-    getCurrentHistory,
-    getSlotAndHistories,
-    invokeCallback,
-    registerCallback,
-    SlotDataModel,
-    updateStoryHistory,
-    useSlotContext
-} from "@/modules/slots/client/models";
-import {ButtonGroup} from "@/components/ui/button-group";
-import {Button} from "@/components/ui/button";
+﻿import React, {useEffect} from "react";
+import {create} from "zustand";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
-import React, {RefObject, useEffect, useState} from "react";
-import {conversationManager, generateCurrentVariables} from "@/modules/slots/client/conversation";
-import {renderData, RenderContext, generateRenderData} from "@/modules/slots/client/conversation-models";
 import {useErrorHandler} from "@/handler/client/error";
 import {PageState} from "@/business/models";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {ButtonGroup} from "@/components/ui/button-group";
+import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import {slotContext} from "@/modules/slots/client/context";
+import {conversationManager} from "@/modules/slots/client/conversation";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 
-export async function handleOutputPageChange(ctx: RefObject<SlotDataModel>, curPage: number) {
-    await invokeCallback(ctx, "handleOutputPageChange", curPage);
+export interface StoryOutputPageState {
+    page: PageState,
+    // 准备渲染标志，设置为true则需要重渲染
+    prepare: boolean,
+    setPrepare: (prepare: boolean) => void,
+    // 默认不更改页面，只重渲染
+    setPage: (cur?: number) => Promise<void>,
+    render: () => Promise<void>,
+    init: () => void,
 }
+
+export const useOutputPageState =
+    create<StoryOutputPageState>((set) => ({
+        page: {max: 0, cur: -1},
+        prepare: false,
+        setPrepare: prepare => set({prepare}),
+        setPage: async (cur) => {
+            const {
+                slotData: {slot, histories},
+                setHistory, getHistory
+            } = slotContext;
+            const {page} = useHistoryPageState.getState();
+            if (!slot || !histories ||
+                histories?.length < page.cur) return;
+            let max = 0;
+            if (page.cur > 0) {
+                const history = getHistory(page.cur);
+                max = history.outputs.length;
+                cur ??= history.outputId;
+                if (cur >= max)
+                    cur = max - 1;
+                if (history.outputId != cur) {
+                    history.outputId = cur;
+                    await setHistory(page.cur);
+                }
+            } else {
+                cur = -1;
+            }
+            console.debug(`[slot](output page): ${cur}/${max}`);
+            set({page: {max, cur}, prepare: true});
+        },
+        init: () => {
+            const {page} = useHistoryPageState.getState();
+            const {slot} = slotContext.slotData;
+            if (slot?.histories.length && page.cur > 0) {
+                const current = slot.histories[page.cur - 1];
+                set({page: {cur: current.outputId, max: current.outputs.length}})
+            }
+        },
+        render: async () => {
+            console.debug(`[slot](render page): start`);
+            const {
+                slotData: {slot},
+                iframeData: {iframe},
+                getHistory,
+            } = slotContext;
+            if (!iframe || !slot) return;
+            const {page} = useHistoryPageState.getState();
+            const history = getHistory(page.cur);
+            await conversationManager.contentRenderer
+                .renderContent(history);
+        },
+    }));
 
 export function OutputPagerButtonGroup() {
     const {handleError} = useErrorHandler();
-    const ctx = useSlotContext();
-    const outstate: PageState = {
-        max: 0, cur: -1,
-    };
-    try {
-        const {page} = useHistoryPageState();
-        const {histories} = getSlotAndHistories(ctx);
-        if (histories.length > 0 && page.cur > 0) {
-            const current = histories[page.cur - 1];
-            outstate.max = current.outputs.length;
-            outstate.cur = current.outputId;
-        }
-    } catch (error) {
-        console.error("[slot](output error): ", error);
-    }
-    const [page, setPage] = useState<PageState>(outstate);
+    const {page, prepare, init, setPrepare, setPage, render} = useOutputPageState();
 
-    const [prepare, setPrepare] = useState<boolean>(true);
-
-    const handleOutputPageChange = async (curPage: number) => {
+    const changePage = async (curPage: number) => {
         try {
-            const {slot, histories} = getSlotAndHistories(ctx);
-            const {page} = useHistoryPageState.getState();
-            if (!histories || histories.length < page.cur) return;
-            let maxPage = 0;
-            if (page.cur > 0) {
-                const history = histories[page.cur - 1];
-                maxPage = history.outputs.length;
-                if (curPage >= maxPage)
-                    curPage = maxPage - 1;
-                if (history.outputId != curPage) {
-                    history.outputId = curPage;
-                    await updateStoryHistory(slot.story.id, history);
-                }
-            } else {
-                curPage = -1;
-            }
-            console.debug(`[slot](output page): ${curPage}/${maxPage}`);
-            setPage({max: maxPage, cur: curPage});
-            setPrepare(true);
+            await setPage(curPage);
         } catch (error) {
             handleError(error);
         }
     };
 
-    const renderCurrentPage = async () => {
+    useEffect(() => {
         try {
-            console.debug(`[slot](render page): start`);
-            const {slot} = getSlotAndHistories(ctx);
-            const iframe = ctx.current.iframe.current;
-            if (!iframe || !slot) return;
-            const {page} = useHistoryPageState.getState();
-            const history = getCurrentHistory(slot, page.cur);
-
-            const renderContext: RenderContext = {
-                content: {},
-                data: generateRenderData(history),
-                variables: generateCurrentVariables(history),
-                document: iframe.contentDocument!,
-                window: iframe.contentWindow!,
-                history: history,
-                slot: slot,
-            };
-            await conversationManager.contentRenderer
-                .use(provider =>
-                    provider.onRenderContent(renderContext));
-            renderData(renderContext, "content", renderContext.data);
-        } catch (err) {
-            handleError(err);
+            init();
+        } catch (error) {
+            console.error("[slot](output error): ", error);
+            handleError(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        registerCallback(ctx, "handleOutputPageChange", handleOutputPageChange);
         if (prepare) {
             (async () => {
                 setPrepare(false);
-                await renderCurrentPage();
+                try {
+                    await render();
+                } catch (err) {
+                    handleError(err);
+                }
             })();
         }
     }, [prepare]);
 
     return (<ButtonGroup className={"  bg-white rounded-md"}>
-        <Button onClick={() => handleOutputPageChange(page.cur - 1)}
+        <Button onClick={() => changePage(page.cur - 1)}
                 disabled={page.cur <= 0} variant="outline">
             <ChevronLeftIcon/>
         </Button>
@@ -115,7 +117,7 @@ export function OutputPagerButtonGroup() {
                disabled
                value={`${page.cur + 1}/${page.max}`}>
         </Input>
-        <Button onClick={() => handleOutputPageChange(page.cur + 1)}
+        <Button onClick={() => changePage(page.cur + 1)}
                 disabled={page.cur + 1 >= page.max} variant="outline">
             <ChevronRightIcon/>
         </Button>

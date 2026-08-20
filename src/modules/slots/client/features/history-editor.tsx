@@ -1,7 +1,6 @@
-import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {getSlotAndHistories, updateStoryHistory, useSlotContext} from "@/modules/slots/client/models";
-import {handleHistoryPageChange, useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useErrorHandler} from "@/handler/client/error";
+import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {
     Dialog,
     DialogClose,
@@ -15,27 +14,28 @@ import {Button} from "@/components/ui/button";
 import {EditIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import React, {useRef, useState} from "react";
-import {StoryHistory} from "@/modules/stories/models";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Textarea} from "@/components/ui/textarea";
-import {toast} from "sonner";
 import {submitTargetFormOnKey} from "@/business/client";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
-import {generateCurrentVariables} from "@/modules/slots/client/conversation";
+import {BusinessError} from "@/handler/models";
+import {historyUtils, SlotHistory} from "@/modules/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
-    const ctx = useSlotContext();
     const {page} = useHistoryPageState();
-    const [history, setHistory] = useState<StoryHistory | undefined>(undefined);
+    const [history, setHistory] = useState<SlotHistory | undefined>(undefined);
     const [open, setOpen] = useState<boolean>(false);
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleDialogOpen = () => {
         try {
-            const {histories} = getSlotAndHistories(ctx);
-            const history = histories[useHistoryPageState.getState().page.cur - 1];
+            const {getHistory} = slotContext;
+            const {page} = useHistoryPageState.getState();
+            if (page.cur <= 0) return;
+            const history = getHistory(page.cur);
             setHistory(history);
             setOpen(true);
         } catch (error) {
@@ -45,16 +45,17 @@ export function HistoryEditor() {
 
     const handleHistoryUpdate = async (data: FormData) => {
         try {
-            const {histories, slot} = getSlotAndHistories(ctx);
-            const index = useHistoryPageState.getState().page.cur - 1;
-            const history = histories[index];
+            const {getHistory, setHistory,} = slotContext;
+            const {page, setPage} = useHistoryPageState.getState();
+            if (page.cur <= 0) return;
+            const history = getHistory(page.cur);
             const variablesText = data.get('variables') as string;
             try {
                 history.variables = JSON.parse(variablesText);
             } catch (error) {
                 if (error instanceof Error) {
                     console.error(error);
-                    toast.error(t("slot.variable_invalid_json") + '\r\n' + error.message);
+                    handleError(new BusinessError(error.message, "slot.variable_invalid_json", error));
                     return;
                 }
             }
@@ -69,8 +70,8 @@ export function HistoryEditor() {
                     output.content = data.get(`history_output-${i}-${j}`) as string;
                 }
             }
-            await updateStoryHistory(slot.story.id, history);
-            await handleHistoryPageChange(ctx, {curPage: page.cur})
+            await setHistory(page.cur);
+            await setPage();
             setOpen(false);
         } catch (e) {
             handleError(e);
@@ -106,7 +107,7 @@ export function HistoryEditor() {
                                               defaultValue={JSON.stringify(history.variables)}
                                               language={'json'} formRef={formRef}/>
                                 <Textarea disabled
-                                          defaultValue={JSON.stringify(generateCurrentVariables(history, true))}/>
+                                          defaultValue={JSON.stringify(historyUtils.getVariables(history))}/>
                             </Field>
                         </FieldGroup>
                         <FieldGroup className={'p-1'}>

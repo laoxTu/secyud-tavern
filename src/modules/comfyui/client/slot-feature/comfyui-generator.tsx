@@ -10,7 +10,7 @@ import {
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Paintbrush2Icon} from "lucide-react";
-import {FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
+import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import React, {useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {
@@ -25,6 +25,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {BusinessError} from "@/handler/models";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
+import {GridField, spanFull} from "@/components/custom/GridField";
 
 export function ComfyUIGenerator() {
     const t = useTranslations();
@@ -81,57 +82,63 @@ export function ComfyUIGenerator() {
             </DialogHeader>
             <FieldSet className={'overflow-auto p-2 flex-1'}>
                 <FieldGroup>
-                    <FieldLabel>
-                        {t("comfyui.workflow")}
-                    </FieldLabel>
-                    <RemoteSearchCombobox
-                        name={`workflow`} id={`workflow-select`}
-                        value={workflow}
-                        comparer={(u, v) => u.id === v.id}
-                        onValueChange={async (workflow) => {
-                            try {
-                                if (!workflow) return;
-                                workflow = await get('/comfyuis/workflows/{id}', {
-                                    params: {
-                                        id: workflow.id, withDetails: true
-                                    },
-                                }) as ComfyUIWorkflowModel;
-                                if (workflow && workflow.entries && workflow.entries[parameterEntryPlural]) {
-                                    const parameters =
-                                        (workflow.entries[parameterEntryPlural] as ComfyUIParameterModel[])
-                                            .filter(u => !u.disabled)
-                                            .sort((a, b) => a.priority - b.priority);
-                                    setParameters(parameters);
-                                }
-                                setWorkflow(workflow);
-                            } catch (error) {
-                                handleError(error);
-                            }
-                        }}
-                        labelAccessor={e => `${e.code}-${e.name}`}
-                        valueAccessor={e => `${e.code}-${e.name}`}
-                        searchHandler={async (search: string | null) => {
-                            try {
-                                const res = await get("/comfyuis/workflows", {
-                                    params: {
-                                        search: {
-                                            fuzzy: search,
-                                        },
+                    <GridField>
+                        <Field className={spanFull}>
+                            <FieldLabel>
+                                {t("comfyui.workflow")}
+                            </FieldLabel>
+                            <RemoteSearchCombobox
+                                name={`workflow`} id={`workflow-select`}
+                                value={workflow}
+                                comparer={(u, v) => u.id === v.id}
+                                onValueChange={async (workflow) => {
+                                    try {
+                                        if (!workflow) return;
+                                        workflow = await get('/comfyuis/workflows/{id}', {
+                                            params: {
+                                                id: workflow.id, withDetails: true
+                                            },
+                                        }) as ComfyUIWorkflowModel;
+                                        if (workflow && workflow.entries && workflow.entries[parameterEntryPlural]) {
+                                            const parameters =
+                                                (workflow.entries[parameterEntryPlural] as ComfyUIParameterModel[])
+                                                    .filter(u => !u.disabled)
+                                                    .sort((a, b) => a.priority - b.priority);
+                                            setParameters(parameters);
+                                        }
+                                        setWorkflow(workflow);
+                                    } catch (error) {
+                                        handleError(error);
                                     }
-                                }) as PagedResult<ComfyUIWorkflowModel>;
-                                return res.data;
-                            } catch (e) {
-                                handleError(e);
-                            }
-                        }}/>
+                                }}
+                                labelAccessor={e => `${e.code}-${e.name}`}
+                                valueAccessor={e => `${e.code}-${e.name}`}
+                                searchHandler={async (search: string | null) => {
+                                    try {
+                                        const res = await get("/comfyuis/workflows", {
+                                            params: {
+                                                search: {
+                                                    fuzzy: search,
+                                                },
+                                            }
+                                        }) as PagedResult<ComfyUIWorkflowModel>;
+                                        return res.data;
+                                    } catch (e) {
+                                        handleError(e);
+                                    }
+                                }}/>
+                        </Field>
+                        {
+                            parameters.map(u => {
+                                const editor = comfyUIParameterRegistry.records[u.type];
+                                const Component = editor.inputComponent;
+                                return Component ?
+                                    <Component key={u.id} formRef={formRef} entry={u}/>
+                                    : null;
+                            })
+                        }
+                    </GridField>
                 </FieldGroup>
-                {
-                    parameters.map(u => {
-                        const editor = comfyUIParameterRegistry.records[u.type];
-                        const Component = editor.inputComponent;
-                        return Component ? <Component key={u.id} formRef={formRef} entry={u}/> : null;
-                    })
-                }
             </FieldSet>
             <DialogFooter>
                 <Button type="submit">{t('comfyui.generate')}</Button>

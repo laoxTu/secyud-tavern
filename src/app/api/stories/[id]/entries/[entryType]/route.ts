@@ -1,9 +1,6 @@
 import {interceptor} from "@/handler/server/interceptor";
 import {apiConfig} from "../../../models";
-import {
-    apiCreateEntry,
-    apiGetEntryList
-} from "@/app/api/template";
+import {apiCreateEntry, apiGetEntryList} from "@/app/api/template";
 
 /**
  * 获取条目分页列表
