@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {BusinessError} from "@/handler/models";
-import {storyRepository} from "@/modules/stories/server/repository";
 import {interceptor} from "@/handler/server/interceptor";
+import {StoryModel} from "@/modules/stories/models";
 import {getSlot} from "@/app/api/stories/models";
 
 /**
@@ -12,15 +12,13 @@ import {getSlot} from "@/app/api/stories/models";
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const {id} = await records.params;
-
-        const story = await storyRepository.get(id, true);
+        const story = await records.params as StoryModel;
 
         if (!story) {
             throw new BusinessError(
                 'entity not found',
                 "default.entity_not_found")
-                .withValue("id", id);
+                .withValue("id", "input");
         }
 
         const result = await getSlot(story);

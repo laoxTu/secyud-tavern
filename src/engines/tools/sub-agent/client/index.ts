@@ -107,7 +107,12 @@ export class SubAgentTool implements LlmapiTool {
         for await (const {output} of conversationManager.inputProcesser
             .requestReply(history, setSignal, {
                 ...this.slot,
-                histories: [...(maxLength ? histories.slice(-maxLength) : histories), history]
+                histories: [...(maxLength ? histories.slice(-maxLength) : histories)
+                    .map(u => ({
+                        ...u, outputs: u.outputs.map(v => v
+                            .filter(w => !w
+                                .callings?.some(x => !x.result)))
+                    })), history]
             })) {
             result = output.content;
         }
