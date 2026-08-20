@@ -160,8 +160,8 @@ export async function generateInput(
             const content = await generateContent(
                 calling.result?.content ?? "error", toolRole, "output");
             items.push({
-                role: "tool",
-                content: `${calling.id}\r\nname: ${calling.name}\r\narguments: ${calling.arguments}\r\nresponse: ${content}`,
+                role: `tool: ${calling.name}`,
+                content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
             });
             messages.push({
                 role: "tool",

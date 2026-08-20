@@ -102,17 +102,15 @@ export class SubAgentTool implements LlmapiTool {
             variables: historyUtils.getVariables(slotContext.getHistory())
         };
         let result: string = "error: empty content";
-        const histories = this.slot.histories;
-        const maxLength = this.config.maxLength;
+        // 深拷贝待解析副本，防止不必要的变化，例如工具冲突。
+        // 主agent可能已经设置了工具调用
+        // 去掉最后一个，数组至少存在一个
+        const maxLength = this.config.maxLength ? this.config.maxLength + 1 : 0;
+        const histories = structuredClone(this.slot.histories.slice(-maxLength, -1));
         for await (const {output} of conversationManager.inputProcesser
             .requestReply(history, setSignal, {
                 ...this.slot,
-                histories: [...(maxLength ? histories.slice(-maxLength) : histories)
-                    .map(u => ({
-                        ...u, outputs: u.outputs.map(v => v
-                            .filter(w => !w
-                                .callings?.some(x => !x.result)))
-                    })), history]
+                histories: [...histories, history]
             })) {
             result = output.content;
         }

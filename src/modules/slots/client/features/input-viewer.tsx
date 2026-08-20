@@ -107,7 +107,7 @@ export function InputViewer() {
                             {items && items.map((u, i) => (
                                 <AccordionItem value={`${i}`} key={i}>
                                     <AccordionTrigger>
-                                        <span className={'w-32'}>{u.role}</span>
+                                        <span className={'w-48'}>{u.role}</span>
                                         <span>
                                             {`${t("default.chars")}: ${u.content.length}`}
                                         </span>
