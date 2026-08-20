@@ -87,7 +87,7 @@ export function HistoryDeleter() {
                 },
                 presets: undefined,
                 histories: undefined,
-                content: {},
+                context: undefined,
                 id: "",
             });
             if (!remain) {

@@ -44,7 +44,6 @@ export interface LlmapiInputContext extends SlotContextBase {
     contentHandlers: ContentHandler[],
 }
 
-
 export interface LlmapiResultContext extends SlotContextBase {
     sessionId?: string;
     history: SlotHistory,
@@ -82,7 +81,7 @@ export interface SlotStreamRenderer extends Registerable {
 
 // 读取初始化好的缓存；未初始化说明漏了 initialize，直接报错而不是拿到 undefined 往下传。
 function getContent<T>(slot: SlotModel, key: string): T {
-    const value = slot.content[key];
+    const value = slot.context[key];
     if (value === undefined) {
         throw new BusinessError(`slot content "${key}" is not initialized`,
             "slot.content_not_initialized")
@@ -93,18 +92,18 @@ function getContent<T>(slot: SlotModel, key: string): T {
 
 // 初始化缓存；同键禁止重复初始化，防止两个引擎/插件意外共用同一 key 互相覆盖。
 function setContent(slot: SlotModel, key: string, value: any) {
-    if (slot.content[key] !== undefined || value === undefined) {
+    if (slot.context[key] !== undefined || value === undefined) {
         throw new BusinessError(`slot content "${key}" already initialized`,
             "slot.content_already_initialized")
             .withValue("key", key);
     }
-    slot.content[key] = value;
+    slot.context[key] = value;
 }
 
 // 生成虚拟开场历史：把各预设 opening 解析为输入消息，作为变量的初始来源（懒生成并缓存）。
 function getOpening(slot: SlotModel) {
     const key = 'openingHistory';
-    let openingHistory = slot.content[key] as SlotHistory;
+    let openingHistory = slot.context[key] as SlotHistory;
     if (!openingHistory) {
         let variables = {};
         for (const preset of slot.presets) {

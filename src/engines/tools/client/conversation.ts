@@ -66,9 +66,9 @@ export async function fillToolCallContent(
 ) {
     if (!toolCalls?.length) return;
     const cache: ToolConversationCache = slotUtils.getContent(slot, enginePlural);
-    for (const toolCall of toolCalls) {
-        // 已执行过则跳过。
-        if (toolCall.result) continue;
+
+    // TODO 异步锁
+    await Promise.all(toolCalls.filter(u => !u.result).map(async (toolCall) => {
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
             const tool = cache.tools[toolCall.name];
@@ -90,5 +90,5 @@ export async function fillToolCallContent(
             };
             console.error(err);
         }
-    }
+    }));
 }

@@ -54,7 +54,8 @@ export const GET = interceptor.createRoute(
             ...story,
             histories,
             llmapi,
-            presets
+            presets,
+            context: {}
         };
 
         return NextResponse.json(slot);

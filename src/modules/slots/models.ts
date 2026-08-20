@@ -8,6 +8,7 @@ export interface SlotModel extends StoryModel {
     llmapi: LlmapiModel,
     histories: SlotHistory[],
     presets: PresetModel[],
+    context: Record<string, any>,
 }
 
 export interface LlmapiToolModel {
