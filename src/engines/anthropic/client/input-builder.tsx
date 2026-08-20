@@ -142,10 +142,6 @@ export async function generateInput(
 
         if (!output.callings?.length) return;
         message.content = [];
-        if (content) message.content.push({
-            type: "text",
-            text: content,
-        });
 
         const contents: Anthropic.ContentBlockParam[] = [];
         messages.push({
@@ -171,6 +167,17 @@ export async function generateInput(
                 type: "tool_result",
                 tool_use_id: calling.id,
                 content
+            })
+        }
+        if (content) message.content.push({
+            type: "text",
+            text: content,
+        });
+        if (output.properties["signature"]) {
+            message.content.push({
+                type: "thinking",
+                thinking: output.thought,
+                signature: output.properties["signature"],
             })
         }
     }

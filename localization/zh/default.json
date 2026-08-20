@@ -167,6 +167,7 @@
     "provider": "供应者",
     "provider_deepseek": "Deepseek",
     "provider_openai": "Open AI",
+    "provider_anthropic": "Anthropic",
     "reasoning_effort": "reasoning effort (思考强度)",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
