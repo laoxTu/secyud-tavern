@@ -7,6 +7,8 @@ import {conversationManager} from "@/modules/slots/client/conversation";
 import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
 import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
 import {slotContext} from "@/modules/slots/client/context";
+import {tryParseJson} from "@/utils";
+import {slotUtils} from "@/modules/slots/client/conversation-models";
 
 export const subAgentToolProvider: LlmapiToolProvider = {
     id: "sub_agent",
@@ -20,25 +22,21 @@ export const subAgentToolProvider: LlmapiToolProvider = {
             prompt: data.get('prompt') as string,
             disablePreset: !!data.get('disable_preset'),
             maxLength: parseInt(data.get('max_length') as string),
+            llmapi: tryParseJson(data.get('llmapi') as string),
         };
     },
     async create(config: LlmapiToolConfigModel, slot) {
         const configValue: SubAgentConfigModel = config.value;
         const disableTags = new Set(configValue.disableTags);
         const subSlot: SlotModel = {
-            id: slot.id,
-            name: slot.name,
-            requires: slot.requires,
-            get content() {
-                return slot.content;
-            },
-            get llmapi() {
-                return slot.llmapi;
-            },
+            ...slot,
+            llmapi: await slotUtils.getLlmapi(configValue.llmapi, slot),
             get histories() {
                 return slot.histories;
             },
-            presets: configValue.disablePreset ? [] : slot.presets.filter(u => u.tags.every(v => !disableTags.has(v))),
+            presets: configValue.disablePreset ? [] :
+                slot.presets.filter(u => u.tags
+                    .every(v => !disableTags.has(v))),
             context: {}
         }
         await conversationManager.initializer.initialize(subSlot);

@@ -1,6 +1,7 @@
 'use client';
 import {SlotModel} from "@/modules/slots/models";
 import {
+    check,
     LlmapiHistory,
     LlmapiInputContext,
     LlmapiInputProcesser,
@@ -11,7 +12,7 @@ import {
     SlotInitializeContext,
     SlotInitializer,
     SlotStreamRenderer,
-    slotUtils
+    slotUtils,
 } from "./conversation-models";
 import {ClientRegistry} from "@/plugins/client";
 import {slotContext} from "@/modules/slots/client/context";
@@ -24,11 +25,6 @@ import {SlotMessageOutput} from "@/modules/models/message";
 import {post} from "@/client";
 import {LlmapiModel} from "@/modules/llmapis/models";
 
-const check = {
-    slot: (slot?: SlotModel | null) => {
-        return slot ?? slotContext.slotData.slot;
-    }
-}
 
 class SlotInitializerRegistry extends ClientRegistry<SlotInitializer> {
     constructor() {

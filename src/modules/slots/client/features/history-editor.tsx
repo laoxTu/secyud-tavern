@@ -49,7 +49,7 @@ export function HistoryEditor() {
             const {page, setPage} = useHistoryPageState.getState();
             if (page.cur <= 0) return;
             const history = getHistory(page.cur);
-            const variablesText = data.get('variables') as string;
+            const variablesText = data.get("variables") as string;
             try {
                 history.variables = JSON.parse(variablesText);
             } catch (error) {

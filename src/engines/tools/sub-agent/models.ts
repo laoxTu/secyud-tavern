@@ -1,3 +1,5 @@
+import {RequireModel} from "@/modules/presets/models";
+
 export interface SubAgentConfigModel {
     // 禁用tags，子agent必须依附于主agent，
     // 只可以禁用其中一些预设
@@ -7,4 +9,5 @@ export interface SubAgentConfigModel {
     prompt: string,
     maxLength: number,
     disablePreset: boolean,
+    llmapi: RequireModel | null,
 }

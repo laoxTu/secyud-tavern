@@ -1,6 +1,6 @@
-﻿export function tryParseJson(str: string, defaultValue: any = null) {
+﻿export function tryParseJson(str?: string | null, defaultValue: any = null) {
     try {
-        return JSON.parse(str);
+        return str ? JSON.parse(str) : defaultValue;
     } catch (e) {
         console.warn(`[json](parse error): `, e);
         return defaultValue;

@@ -26,6 +26,7 @@ import {BusinessError} from "@/handler/models";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
 import {GridField, spanFull} from "@/components/custom/GridField";
+import {tryParseJson} from "@/utils";
 
 export function ComfyUIGenerator() {
     const t = useTranslations();
@@ -36,18 +37,16 @@ export function ComfyUIGenerator() {
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleImageGenerate = async (data: FormData) => {
-        if (!workflow) {
-            handleError(new BusinessError("workflow is not selected", "comfyui.workflow_need"));
-            return;
-        }
-        let input: ComfyUIWorkflowInput = {};
         try {
-            input = JSON.parse(workflow.content.workflow);
-        } catch (err) {
-            handleError(new BusinessError(String(err), "comfyui.workflow_invalid"));
-        }
-
-        try {
+            if (!workflow) {
+                handleError(new BusinessError("workflow is not selected", "comfyui.workflow_need"));
+                return;
+            }
+            const input: ComfyUIWorkflowInput | null = tryParseJson(workflow.content.workflow);
+            if (!input) {
+                handleError(new BusinessError("workflow is not serializable", "comfyui.workflow_invalid"));
+                return;
+            }
             for (const parameter of parameters) {
                 const editor = comfyUIParameterRegistry.records[parameter.type];
                 if (!editor) {

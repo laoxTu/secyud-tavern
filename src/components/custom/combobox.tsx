@@ -6,12 +6,13 @@ import {
     ComboboxChipsInput,
     ComboboxContent,
     ComboboxEmpty,
+    ComboboxInput,
     ComboboxItem,
     ComboboxList,
     ComboboxValue,
     useComboboxAnchor
 } from "@/components/ui/combobox";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useTranslations} from "next-intl";
 import {ComboboxRoot} from "@base-ui/react";
 
@@ -120,7 +121,7 @@ export function RemoteSearchCombobox<T>(
         customItemRender,
     }: RemoteSearchComboboxMultipleProps<T> | RemoteSearchComboboxSingleProps<T>) {
     const t = useTranslations();
-    const anchor = useComboboxAnchor();
+    const anchor = multiple ? useComboboxAnchor() : undefined;
     const [searchItems, setSearchItems] = useState<T[]>([]);
     const [searchMark, setSearchMark] = useState(true);
     const [searchText, setSearchText] = useState<string | null>(null);
@@ -154,9 +155,9 @@ export function RemoteSearchCombobox<T>(
             itemToStringLabel={labelAccessor}
             onInputValueChange={e => handleSearch(e)}
             items={searchItems}>
-            <ComboboxChips ref={anchor} className="w-full">
-                {
-                    multiple ?
+            {
+                multiple ?
+                    <ComboboxChips ref={anchor} className="w-full">
                         <ComboboxValue>
                             {(values?: T[] | null) => (
                                 <>
@@ -168,10 +169,10 @@ export function RemoteSearchCombobox<T>(
                                     <ComboboxChipsInput/>
                                 </>
                             )}
-                        </ComboboxValue> :
-                        <ComboboxChipsInput/>
-                }
-            </ComboboxChips>
+                        </ComboboxValue>
+                    </ComboboxChips> :
+                    <ComboboxInput showClear/>
+            }
             <ComboboxContent anchor={anchor}>
                 <ComboboxEmpty>{t("default.empty_items")}</ComboboxEmpty>
                 <ComboboxList>

@@ -16,7 +16,7 @@ export const POST = interceptor.createRoute(
     async (request, records) => {
         const {id, name, code} = await records.params;
         const formData = await request.formData();
-        const imageFile = formData.get('image') as File | null;
+        const imageFile = formData.get("image") as File | null;
         if (imageFile) {
             const mimeType = imageFile.type;
             const bytes = await imageFile.arrayBuffer();

@@ -3,7 +3,15 @@ import {BusinessError} from "@/handler/models";
 import {SlotModel} from "@/modules/slots/models";
 import {messageUtils, SlotHistory} from "@/modules/models";
 import {mergeObjects} from "@/utils";
+import {RequireModel} from "@/modules/presets/models";
+import {get} from "@/client";
+import {slotContext} from "@/modules/slots/client/context";
 
+export const check = {
+    slot: (slot?: SlotModel | null) => {
+        return slot ?? slotContext.slotData.slot;
+    }
+}
 
 type ContentHandler = (str: string, role: string, type: string) => Promise<string>;
 
@@ -141,4 +149,16 @@ function getOpening(slot: SlotModel) {
     return openingHistory;
 }
 
-export const slotUtils = {getContent, setContent, getOpening, handleContent};
+async function getLlmapi(llmapi?: RequireModel | null, slot?: SlotModel) {
+    slot = check.slot(slot);
+    return llmapi ?
+        await get(`/llmapis/{id}`, {
+            params: {
+                id: llmapi.code,
+                withDetails: true,
+            }
+        }) :
+        slot.llmapi;
+}
+
+export const slotUtils = {getContent, setContent, getOpening, handleContent, getLlmapi};

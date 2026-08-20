@@ -13,6 +13,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {Selector} from "@/components/custom/selector";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {GridField} from "@/components/custom/GridField";
+import {tryParseJson} from "@/utils";
 
 const themes = ['system', 'dark', 'light'];
 
@@ -25,11 +26,10 @@ function Tab() {
 
     const handleSubmit = async (data: FormData) => {
         try {
-            setTheme(data.get('theme') as string);
-            setAuthor(data.get('author') as string);
-            const llmapi = data.get('llmapi') as string;
+            setTheme(data.get("theme") as string);
+            setAuthor(data.get("author") as string);
             useRemoteSettingState.setState({
-                llmapi: llmapi ? JSON.parse(llmapi) : null,
+                llmapi: tryParseJson(data.get("llmapi") as string),
             });
             handleSuccess(t("default.saved_successfully"));
         } catch (e) {

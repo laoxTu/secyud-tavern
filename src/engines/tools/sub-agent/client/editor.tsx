@@ -11,11 +11,15 @@ import {spanFull} from "@/components/custom/GridField";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {submitTargetFormOnKey} from "@/business/client";
+import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
+import {parameterEntryName as engineName} from "@/modules/comfyui/models";
+import React from "react";
 
 const defaultConfig: SubAgentConfigModel = {
     disablePreset: false, maxLength: 0,
     description: "", disableTags: [],
-    prompt: ""
+    prompt: "",
+    llmapi: null
 };
 
 export function Editor({defaultValue, entry}: LlmapiToolProps) {
@@ -43,6 +47,8 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                            defaultValue={config.maxLength}/>
                 </FieldContent>
             </Field>
+            <LlmapiRequireField defaultValue={config.llmapi ?? null}
+                                prefix={`${engineName}-${entry.id}`}/>
             <Field className={spanFull}>
                 <FieldLabel htmlFor={`${entry.id}-disable_tags`}>
                     {t('sub_agent.disable_tags')}
