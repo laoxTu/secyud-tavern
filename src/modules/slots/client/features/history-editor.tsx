@@ -20,7 +20,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {BusinessError} from "@/handler/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -32,7 +32,7 @@ export function HistoryEditor() {
 
     const handleDialogOpen = () => {
         try {
-            const {getHistory} = useSlotState.getState();
+            const {getHistory} = slotContext;
             const {page} = useHistoryPageState.getState();
             if (page.cur <= 0) return;
             const history = getHistory(page.cur);
@@ -44,14 +44,8 @@ export function HistoryEditor() {
     };
 
     const handleHistoryUpdate = async (data: FormData) => {
-        const {
-            slot, getHistory, setHistory,
-        } = useSlotState.getState();
-        if (!slot) {
-            console.error('[slot]: failed to get slot or iframe');
-            return;
-        }
         try {
+            const {getHistory, setHistory,} = slotContext;
             const {page, setPage} = useHistoryPageState.getState();
             if (page.cur <= 0) return;
             const history = getHistory(page.cur);

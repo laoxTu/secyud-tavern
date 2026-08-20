@@ -20,7 +20,7 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
 
 
@@ -33,13 +33,9 @@ export function InputViewer() {
     const [items, setItems] = useState<LlmapiInputItem[] | undefined>();
 
     const handleDialogOpen = async () => {
-        const {slot, histories, getHistory} = useSlotState.getState();
-        if (!slot || !histories) {
-            console.error('[slot]: failed to get slot');
-            return;
-        }
         setLoading(true);
         try {
+            const {slotData: {slot, histories}, getHistory} = slotContext;
             if (useStoryChatboxState.getState().generating) {
                 handleError(new BusinessError("is during output.", "slot.is_output_warning"));
                 return;

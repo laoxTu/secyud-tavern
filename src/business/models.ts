@@ -26,9 +26,9 @@ export interface EntryModel {
     id: number,
     disabled: boolean,
     // 编码，同预设下唯一
-    code: string;
+    code: string,
     // 名称
-    name: string;
+    name: string,
 }
 
 export interface ImageFile {

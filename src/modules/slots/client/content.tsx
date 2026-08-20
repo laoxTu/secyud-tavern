@@ -8,7 +8,7 @@ import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {conversationManager,} from "@/modules/slots/client/conversation";
 import {SlotModel} from "@/modules/slots/models";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 import {HistoryPagerButtonGroup, useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {OutputPagerButtonGroup} from "@/modules/slots/client/output-pager";
 import {HistoryChatbox} from "@/modules/slots/client/history-chatbox";
@@ -53,7 +53,6 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     });
     const iframe = useRef<HTMLIFrameElement>(null);
 
-    const {setIframe, setSlot} = useSlotState();
     const {setPage} = useHistoryPageState();
     const {pinned, setPinned} = useSlotControlState();
 
@@ -64,7 +63,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
             }));
             const {id} = await params;
             const slot = await get("/stories/{id}/slot", {params: {id}}) as SlotModel;
-            setSlot(slot);
+            slotContext.slotData.slot = slot;
             await conversationManager.initializer.initialize();
             await setPage(slot.histories?.length ?? 0);
             setLoadingState(u => ({
@@ -92,7 +91,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     }, [loadingState.started]);
 
     useEffect(() => {
-        setIframe(iframe);
+        slotContext.iframeData.iframeRef = iframe;
     }, [iframe]);
 
     if (loadingState.loading || !loadingState.started) return (

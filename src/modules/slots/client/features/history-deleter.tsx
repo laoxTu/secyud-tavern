@@ -19,7 +19,7 @@ import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRouter} from "next/navigation";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
@@ -31,12 +31,8 @@ export function HistoryDeleter() {
     const [openDelete, setOpenDelete] = useState<boolean>(false);
 
     const deleteCurrentHistory = async () => {
-        const {slot, histories, getHistory} = useSlotState.getState();
-        if (!slot || !histories) {
-            console.error('[slot]: failed to get slot');
-            return;
-        }
         try {
+            const {slotData: {slot, histories}, getHistory} = slotContext;
             const history = getHistory(page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
                 {params: {id: slot.id, entryType: 'history', entryId: history.id}})
@@ -50,12 +46,8 @@ export function HistoryDeleter() {
     };
 
     const deleteCurrentOutput = async () => {
-        const {slot, histories, getHistory, setHistory} = useSlotState.getState();
-        if (!slot || !histories) {
-            console.error('[slot]: failed to get slot');
-            return;
-        }
         try {
+            const {slotData: {histories}, getHistory, setHistory} = slotContext;
             let history = getHistory(page.cur);
             if (history.outputs.length) {
                 history.outputs.splice(history.outputId, 1);
@@ -83,8 +75,7 @@ export function HistoryDeleter() {
 
     const cloneStoryHistory = async (remain: boolean) => {
         try {
-            const {slot} = useSlotState.getState();
-            if (!slot) return;
+            const {slot} = slotContext.slotData;
             const llmapi = slot.llmapi;
             const {id} = await post("/stories", {
                 ...slot,

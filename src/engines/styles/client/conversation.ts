@@ -1,6 +1,6 @@
 ﻿import {SlotContentRenderer, SlotInitializer, slotUtils} from "@/modules/slots/client/conversation-models";
 import {engineName, enginePlural, PresetStyleModel} from "../models";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 const prefix = "injected-style";
 
@@ -30,10 +30,7 @@ export const styleConversationProvider:
         slotUtils.setContent(ctx.slot, enginePlural, cache);
     },
     onRenderContent: async (ctx) => {
-        const {contentWindow: window, contentDocument: document}: {
-            contentWindow: any,
-            contentDocument: HTMLDocument | null
-        } = useSlotState.getState().iframe!;
+        const {window, document} = slotContext.iframeData;
 
         if (!window.__injectedStyleInitialized && document) {
             window.__injectedStyleInitialized = true;

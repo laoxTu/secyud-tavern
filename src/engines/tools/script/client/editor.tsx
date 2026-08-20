@@ -15,6 +15,7 @@ const defaultConfig: ScriptToolConfigModel = {
     description: "",
     script: "return input;",
     hidden: false,
+    enableDoc: false,
     schema: `
 {
     "type": "object",
@@ -35,6 +36,26 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                 <Checkbox name="hidden"
                           id={`${entry.id}-hidden`}
                           defaultChecked={config.hidden}/>
+            </FieldContent>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-enable_doc`}>
+                {t('script.enable_doc')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="enable_doc"
+                          id={`${entry.id}-enable_doc`}
+                          defaultChecked={config.enableDoc ?? false}/>
+            </FieldContent>
+        </Field>
+        <Field>
+            <FieldLabel htmlFor={`${entry.id}-enable_variable`}>
+                {t('script.enable_variable')}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox name="enable_variable"
+                          id={`${entry.id}-enable_variable`}
+                          defaultChecked={config.enableVariable ?? false}/>
             </FieldContent>
         </Field>
         <Field className={spanFull}>

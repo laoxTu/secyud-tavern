@@ -239,6 +239,8 @@
     "unlimit_description": "-1表示不限制"
   },
   "script": {
+    "enable_doc": "访问iframe",
+    "enable_variable": "访问变量"
   },
   "setting": {
     "author": "作者",

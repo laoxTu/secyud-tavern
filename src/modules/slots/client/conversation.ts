@@ -14,7 +14,7 @@ import {
     slotUtils
 } from "./conversation-models";
 import {ClientRegistry} from "@/plugins/client";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 import {SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
@@ -26,7 +26,7 @@ import {LlmapiModel} from "@/modules/llmapis/models";
 
 const check = {
     slot: (slot?: SlotModel | null) => {
-        return slot ?? useSlotState.getState().slot;
+        return slot ?? slotContext.slotData.slot;
     }
 }
 
@@ -196,7 +196,7 @@ class SlotContentRendererRegistry extends ClientRegistry<SlotContentRenderer> {
         const {
             postMessageContent,
             postMessageVariables,
-        } = useSlotState.getState();
+        } = slotContext;
         const context: RenderContext = {
             content: {},
             history,
@@ -231,7 +231,7 @@ class SlotStreamRendererRegistry extends ClientRegistry<SlotStreamRenderer> {
         };
         const {
             postMessageContent,
-        } = useSlotState.getState();
+        } = slotContext;
         await conversationManager.streamRenderer
             .use(provider =>
                 provider.onRenderStream(context));

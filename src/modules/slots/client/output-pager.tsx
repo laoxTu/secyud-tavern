@@ -6,7 +6,7 @@ import {PageState} from "@/business/models";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 import {conversationManager} from "@/modules/slots/client/conversation";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 
@@ -27,7 +27,10 @@ export const useOutputPageState =
         prepare: false,
         setPrepare: prepare => set({prepare}),
         setPage: async (cur) => {
-            const {slot, histories, setHistory, getHistory} = useSlotState.getState();
+            const {
+                slotData: {slot, histories},
+                setHistory, getHistory
+            } = slotContext;
             const {page} = useHistoryPageState.getState();
             if (!slot || !histories ||
                 histories?.length < page.cur) return;
@@ -50,7 +53,7 @@ export const useOutputPageState =
         },
         init: () => {
             const {page} = useHistoryPageState.getState();
-            const {slot} = useSlotState.getState();
+            const {slot} = slotContext.slotData;
             if (slot?.histories.length && page.cur > 0) {
                 const current = slot.histories[page.cur - 1];
                 set({page: {cur: current.outputId, max: current.outputs.length}})
@@ -59,8 +62,10 @@ export const useOutputPageState =
         render: async () => {
             console.debug(`[slot](render page): start`);
             const {
-                slot, iframe, getHistory,
-            } = useSlotState.getState();
+                slotData: {slot},
+                iframeData: {iframe},
+                getHistory,
+            } = slotContext;
             if (!iframe || !slot) return;
             const {page} = useHistoryPageState.getState();
             const history = getHistory(page.cur);

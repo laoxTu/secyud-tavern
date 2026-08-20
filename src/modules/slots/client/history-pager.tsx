@@ -1,4 +1,4 @@
-﻿import {useSlotState} from "@/modules/slots/client/models";
+﻿import {slotContext} from "@/modules/slots/client/context";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
@@ -18,8 +18,7 @@ export const useHistoryPageState =
     create<StoryHistoryPageState>((set, get) => ({
         page: {max: 0, cur: 0},
         setPage: async (curPage) => {
-            const {histories} = useSlotState.getState();
-            if (!histories) return;
+            const {histories} = slotContext.slotData;
             const maxPage = histories.length;
             curPage ??= get().page.cur;
             if (curPage > maxPage)

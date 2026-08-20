@@ -16,7 +16,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {spanFull, spanHalf} from "@/components/custom/GridField";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 import {SlotHistory} from "@/modules/models";
 import {conversationManager} from "@/modules/slots/client/conversation";
 import {create} from "zustand";
@@ -81,15 +81,11 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
     // 生成提示词
     const generateLlmapiPrompt = async () => {
-        const {
-            slot, getHistory,
-        } = useSlotState.getState();
-        if (!slot) {
-            console.error('[slot]: failed to get slot or iframe');
-            return;
-        }
+        setOutput(true);
         try {
-            setOutput(true);
+            const {
+                slotData: {slot}, getHistory,
+            } = slotContext;
 
             const history: SlotHistory = {
                 inputs: [{

@@ -13,7 +13,7 @@ import {SlotFeature} from "@/modules/slots/client/feeature-models";
 import {Separator} from "@/components/ui/separator";
 import {Checkbox} from "@/components/ui/checkbox";
 import {slotUtils} from "@/modules/slots/client/conversation-models";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 
 export function MacroSelector() {
@@ -23,12 +23,8 @@ export function MacroSelector() {
     const {handleError} = useErrorHandler();
 
     const handleDialogOpen = () => {
-        const {slot} = useSlotState.getState();
-        if (!slot) {
-            console.error('[slot]: failed to get slot');
-            return;
-        }
         try {
+            const {slot} = slotContext.slotData;
             const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
             setCache(cache);
             setOpen(true);
@@ -37,12 +33,8 @@ export function MacroSelector() {
         }
     };
     const handleSelectChange = (key: string, index: number) => {
-        const {slot} = useSlotState.getState();
-        if (!slot) {
-            console.error('[slot]: failed to get slot');
-            return;
-        }
         try {
+            const {slot} = slotContext.slotData;
             const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
             const item = cache.macros[key];
             item.select = index;

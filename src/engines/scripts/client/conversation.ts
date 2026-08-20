@@ -8,7 +8,7 @@ import {
 import {engineName, enginePlural, PresetScriptModel} from "../models";
 import {engineName as regexEngineName} from "../../regexes/models";
 import {mergeObjects} from "@/utils";
-import {useSlotState} from "@/modules/slots/client/models";
+import {slotContext} from "@/modules/slots/client/context";
 
 const prefix = "injected-script";
 
@@ -56,10 +56,7 @@ export const scriptConversationProvider:
     onRenderStream: async () => {
     },
     onRenderContent: async (ctx) => {
-        const {contentWindow: window, contentDocument: document}: {
-            contentWindow: any,
-            contentDocument: HTMLDocument | null
-        } = useSlotState.getState().iframe!;
+        const {window, document} = slotContext.iframeData;
         // 使用window的变量，以防window切换实例
         if (!window.__injectedScriptInitialized && document) {
             window.__injectedScriptInitialized = true;

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/input-group";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
-import {useSlotState,} from "@/modules/slots/client/models";
+import {slotContext,} from "@/modules/slots/client/context";
 import {post} from "@/client";
 import {conversationManager,} from "@/modules/slots/client/conversation";
 import {useTranslations} from "next-intl";
@@ -52,13 +52,9 @@ export const useStoryChatboxState =
             generating: false,
             generate: async () => {
                 const {
-                    slot, histories, iframe,
+                    slotData: {histories},
                     getHistory, setHistory,
-                } = useSlotState.getState();
-                if (!slot || !histories || !iframe) {
-                    console.error('[slot]: failed to get slot or iframe');
-                    return;
-                }
+                } = slotContext;
                 set({generating: true});
                 try {
                     const history = getHistory();
@@ -97,14 +93,10 @@ export const useStoryChatboxState =
                 }
             },
             create: async () => {
-                const {
-                    slot, histories, iframe,
-                } = useSlotState.getState();
-                if (!slot || !histories || !iframe) {
-                    console.error('[slot]: failed to get slot or iframe');
-                    return;
-                }
                 try {
+                    const {
+                        slotData: {slot, histories}, iframeData: {iframe},
+                    } = slotContext;
                     const {generating, content, summary} = get();
                     if (generating || !content.trim()) return;
                     let variables = undefined;
@@ -183,7 +175,6 @@ export function HistoryChatbox() {
         content, setContent,
         summary, setSummary
     } = useStoryChatboxState();
-    const {iframe} = useSlotState();
     const {handleError} = useErrorHandler();
     const t = useTranslations();
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -198,7 +189,7 @@ export function HistoryChatbox() {
     }, [handleError]);
 
     useEffect(() => {
-        const window = iframe?.contentWindow as any;
+        const window = slotContext.iframeData.window;
         if (!window) return;
         window.userInput = {
             text: {
@@ -210,7 +201,7 @@ export function HistoryChatbox() {
             inputBuilders: [], // { id: string, sequence?: number, build: (text: string) => string }
         };
 
-    }, [inputRef, iframe]);
+    }, [inputRef]);
 
     return (
         <form action={triggerCreate}>
