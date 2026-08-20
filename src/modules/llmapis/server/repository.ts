@@ -12,6 +12,7 @@ export const llmapiRepository =
             key: model.key,
             iv: model.iv,
             provider: model.provider,
+            stream: model.stream,
             builder: model.builder,
         }),
         (entity): Partial<LlmapiModel> => ({
@@ -20,6 +21,7 @@ export const llmapiRepository =
             key: entity.key,
             iv: entity.iv,
             provider: entity.provider,
+            stream: entity.stream,
             builder: entity.builder,
         })
     )

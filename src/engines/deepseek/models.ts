@@ -8,7 +8,6 @@ export interface DeepseekConfigModel {
         },
         // 思考强度控制
         reasoning_effort: string, // high/max
-        stream: boolean,
         temperature: number,// [0,2]
         top_p: number,// [0,1]
         max_tokens: number,// [0, ...]

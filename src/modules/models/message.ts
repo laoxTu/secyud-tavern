@@ -21,7 +21,7 @@ export interface SlotMessageOutput extends SlotMessageBase {
 }
 
 // 解析 AI 输出中的 <variable_changes> 块为变量变更并移除标签，非法 JSON 只跳过该块。
-export function setContent<T extends SlotMessageBase>(message: T, text?: string) {
+export function setContent<T extends SlotMessageBase>(message: T, text?: string | null) {
     if (!text || text.trim() == '') {
         message.variables = [];
         message.content = '';

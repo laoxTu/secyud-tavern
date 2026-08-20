@@ -1,20 +1,22 @@
 ﻿import {OpenAI} from "openai";
-import {LlmapiProvider, LlmapiRequestContext} from "@/modules/llmapis/server/provider-models";
+import {LlmapiProvider} from "@/modules/llmapis/server/provider-models";
 import {DeepseekConfigModel, engineName} from "../models";
-import {generateOpenAIReadableStreamReply, mapToOpenAIMessage} from "@/engines/openai/server/provider";
+import {packSseStream} from "@/utils";
 
+export const deepseekProvider: LlmapiProvider = {
+    id: engineName,
 
-export class DeepseekProvider implements LlmapiProvider {
-    readonly id: string = engineName;
-
-    async run(context: LlmapiRequestContext) {
+    async run(context, stream) {
         const config: DeepseekConfigModel = context.config;
-        const openai = new OpenAI({
+        const client = new OpenAI({
             baseURL: 'https://api.deepseek.com',
             apiKey: context.apiKey,
         });
-        const parameter = mapToOpenAIMessage(context);
-
+        const parameter: OpenAI.ChatCompletionCreateParams = {
+            ...context.config.parameters,
+            ...context.input,
+            stream,
+        };
         if (!config.parameters.logprobs) {
             parameter.top_logprobs = undefined;
         }
@@ -24,7 +26,9 @@ export class DeepseekProvider implements LlmapiProvider {
         if (config.parameters.thinking.type === "disabled") {
             parameter.reasoning_effort = undefined;
         }
-
-        return await generateOpenAIReadableStreamReply(context, parameter, openai);
+        const result =
+            await client.chat.completions.create(
+                parameter, {signal: context.signal,});
+        return stream ? packSseStream(result as any) : result;
     }
 }

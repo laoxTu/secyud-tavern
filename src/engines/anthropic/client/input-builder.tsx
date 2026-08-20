@@ -7,42 +7,40 @@ import {moduleName} from "@/modules/llmapis/models";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 import {fillToolCallContent, ToolConversationCache} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
-import {OpenAIInputBuilderConfigModel} from "../models";
-import {OpenAI} from "openai";
-import {joinAsString, sequenceGroupBy} from "@/utils";
+import {AnthropicInputBuilderConfigModel} from "../models";
+import {joinAsString, sequenceGroupBy, tryParseJson} from "@/utils";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import {historyUtils} from "@/modules/models";
 import {SlotMessageOutput} from "@/modules/models/message";
+import Anthropic from '@anthropic-ai/sdk';
 
-const virtualTool: OpenAI.ChatCompletionFunctionTool = {
-    type: "function",
-    function: {
-        name: "getLorebook",
-        description: "get lorebook. return empty if current lorebook is requested. ",
+const virtualTool: Anthropic.ToolUnion = {
+    name: "getLorebook",
+    description: "get lorebook. return empty if current lorebook is requested. ",
+    input_schema: {
+        type: 'object',
     }
 }
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
     {histories, slot, current, contentHandlers}: LlmapiInputContext) {
-    const messages: OpenAI.ChatCompletionMessageParam[] = [];
+    const messages: Anthropic.MessageParam[] = [];
     const visitedLorebooks = new Set<string>();
     const entries = slotUtils.getContent<LorebookConversationCache>(slot, lorebookPlural);
-    const tools: OpenAI.ChatCompletionTool[] = Object
+    const tools: Anthropic.ToolUnion[] = Object
         .values(slotUtils.getContent<ToolConversationCache>(slot, toolPlural).tools)
         .map((u) => ({
-            type: "function",
-            function: {
-                name: u.model.name,
-                parameters: u.model.parameters as any,
-                description: u.model.description,
-            }
+            name: u.model.name,
+            input_schema: u.model.parameters as any,
+            description: u.model.description,
         }));
     tools.push(virtualTool);
     const items: LlmapiInputItem[] = [];
     const builder: string = slot.llmapi.content.config?.inputBuilder?.type;
     let simCount = 0;
+    const systemPrompts: string[] = [];
 
     switch (builder) {
         case "layered":
@@ -90,7 +88,8 @@ export async function generateInput(
             break;
     }
 
-    const input: Partial<OpenAI.ChatCompletionCreateParams> = {
+    const input: Partial<Anthropic.MessageCreateParams> = {
+        system: joinAsString(systemPrompts, "\n"),
         messages,
         tools: tools.length > 0 ? tools : undefined,
     }
@@ -135,27 +134,31 @@ export async function generateInput(
             return;
         if (content)
             items.push({content, role: "assistant"});
-        const message: OpenAI.ChatCompletionAssistantMessageParam = {
+        const message: Anthropic.MessageParam = {
             role: "assistant",
-            content: content ? content : undefined,
-            tool_calls: undefined,
-            refusal: null
+            content: content,
         };
-
         messages.push(message);
 
         if (!output.callings?.length) return;
+        message.content = [];
+        if (content) message.content.push({
+            type: "text",
+            text: content,
+        });
 
-        message.tool_calls = [];
+        const contents: Anthropic.ContentBlockParam[] = [];
+        messages.push({
+            role: "user",
+            content: contents,
+        });
         for (const calling of output.callings) {
             if (calling.result?.hidden) continue;
-            message.tool_calls.push({
+            message.content.push({
                 id: calling.id,
-                type: "function",
-                function: {
-                    arguments: calling.arguments,
-                    name: calling.name,
-                },
+                type: "tool_use",
+                input: tryParseJson(calling.arguments),
+                name: calling.name,
             });
 
             const content = await generateContent(
@@ -164,11 +167,11 @@ export async function generateInput(
                 role: `tool: ${calling.name}`,
                 content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
             });
-            messages.push({
-                role: "tool",
-                tool_call_id: calling.id,
-                content,
-            });
+            contents.push({
+                type: "tool_result",
+                tool_use_id: calling.id,
+                content
+            })
         }
     }
 
@@ -192,7 +195,7 @@ export async function generateInput(
                         {
                             index: 0,
                             id: `call_x${simCount}`,
-                            name: virtualTool.function.name,
+                            name: virtualTool.name,
                             arguments: "{}",
                             result: {
                                 content: joinAsString(group.items, "\r\n", u => u.content),
@@ -201,8 +204,14 @@ export async function generateInput(
                         }
                     ]
                 }, "knowledge")
+            } else if (group.key === 'system') {
+                for (const item of group.items) {
+                    const text = await generateContent(item.content, group.key, "lorebook");
+                    items.push({role: group.key, content: text});
+                    systemPrompts.push(text);
+                }
             } else {
-                const content: OpenAI.ChatCompletionContentPartText[] = [];
+                const content: Anthropic.TextBlockParam[] = [];
                 for (const item of group.items) {
                     const text = await generateContent(item.content, group.key, "lorebook");
                     items.push({role: group.key, content: text});
@@ -218,7 +227,7 @@ export async function generateInput(
     }
 }
 
-export function BuilderContent({config}: { config: OpenAIInputBuilderConfigModel }) {
+export function BuilderContent({config}: { config: AnthropicInputBuilderConfigModel }) {
     const t = useTranslations();
 
     return (
@@ -236,7 +245,7 @@ export function BuilderContent({config}: { config: OpenAIInputBuilderConfigModel
 }
 
 export function getInputBuilderConfig(data: FormData) {
-    const res: OpenAIInputBuilderConfigModel = {
+    const res: AnthropicInputBuilderConfigModel = {
         type: data.get('builder-type') as string,
     };
     return res;

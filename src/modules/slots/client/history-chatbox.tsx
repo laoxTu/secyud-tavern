@@ -81,15 +81,15 @@ export const useStoryChatboxState =
                     // 解析输出，填充一些选项或处理，这里应该会缓存世界书
                     await conversationManager.outputProcesser
                         .processOutput(history);
-                    await setHistory(histories.length);
                 } catch (err) {
                     if (err instanceof Error && err.name === 'AbortError') {
                         console.log('user abort reply');
                     } else throw err;
                 } finally {
+                    set({generating: false});
                     await useHistoryPageState.getState()
                         .setPage(histories.length);
-                    set({generating: false});
+                    await setHistory(histories.length);
                 }
             },
             create: async () => {

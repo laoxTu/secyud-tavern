@@ -19,7 +19,7 @@ import {slotContext} from "@/modules/slots/client/context";
 import {SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
-import {readStream} from "@/utils";
+import {readSseStream} from "@/utils";
 import {LlmapiOutputContext} from "@/modules/llmapis/client/provider-models";
 import {SlotMessageOutput} from "@/modules/models/message";
 import {post} from "@/client";
@@ -72,8 +72,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         if (!providerName) {
             throw new BusinessError(`[slot](input): llmapi provider is not set. (${llmapi.code})`);
         }
-        const provider = llmapiProviderRegistry
-            .records[providerName];
+        const provider = llmapiProviderRegistry.records[providerName];
         if (!provider) {
             throw new BusinessError(`[slot](input): llmapi provider is not registered. (${providerName})`);
         }
@@ -101,40 +100,53 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
 
             const reply = new AbortController();
             await signal(reply);
-            const response: Response = await post(`/llmapis/{id}/chat`, input,
+            const response = await post(`/llmapis/{id}/chat`, input,
                 {
                     params: {id: llmapi.id},
                     signal: reply.signal
                 }
             );
-
             const output: SlotMessageOutput = {
                 content: "",
                 thought: "",
                 variables: [],
                 properties: {}
             };
-            if (response.body) {
-                outputs?.push(output);
-                const cache: Record<string, any> = {};
-                for await (const chunk of readStream(response.body)) {
-                    if (reply.signal.aborted) {
-                        console.warn('[HistoryChatbox] reply canceled');
-                        break;
-                    }
-                    const context: LlmapiOutputContext = {
-                        content: cache,
-                        message: output,
-                        output: chunk,
-                        slot,
-                        stopped: false,
-                    };
-                    await provider.generateOutput(context);
-                    yield {outputs, output};
-                    if (context.stopped) {
-                        iterations = 0;
+            outputs.push(output);
+            const content: Record<string, any> = {};
+            if (slot.llmapi.stream) {
+                if (response.body) {
+                    for await (const chunk of readSseStream(response.body)) {
+                        if (reply.signal.aborted) {
+                            console.warn('[HistoryChatbox] reply canceled');
+                            break;
+                        }
+                        const context: LlmapiOutputContext = {
+                            content,
+                            message: output,
+                            output: chunk,
+                            stream: true,
+                            slot,
+                            stopped: false,
+                        };
+                        await provider.generateOutput(context);
+                        yield {outputs, output};
+                        if (context.stopped) {
+                            iterations = 0;
+                        }
                     }
                 }
+            } else {
+                const context: LlmapiOutputContext = {
+                    content,
+                    message: output,
+                    output: response,
+                    slot,
+                    stream: false,
+                    stopped: false,
+                };
+                await provider.generateOutput(context);
+                yield {outputs, output};
             }
         }
     }

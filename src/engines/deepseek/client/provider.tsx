@@ -23,7 +23,6 @@ const defaultConfig: DeepseekConfigModel = {
             type: "enabled"
         },
         reasoning_effort: "high",
-        stream: true,
         temperature: 1,
         top_p: 1,
         logprobs: false,
@@ -72,15 +71,6 @@ function Content() {
                     <Checkbox id={`${moduleName}-thinking`} name={"thinking"}
                               checked={thinking}
                               onCheckedChange={e => setThinking(e)}/>
-                </FieldContent>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-stream`}>
-                    {t(`${moduleName}.stream`)}
-                </FieldLabel>
-                <FieldContent>
-                    <Checkbox id={`${moduleName}-stream`} name={"stream"}
-                              defaultChecked={config.parameters.stream}/>
                 </FieldContent>
             </Field>
             <Field>
@@ -152,7 +142,6 @@ export const provider: LlmapiProvider =
                         type: data.get('thinking') ? "enabled" : "disabled",
                     },
                     reasoning_effort: data.get('reasoning_effort') as string,
-                    stream: !!data.get('stream'),
                     temperature: Number(data.get('temperature')),
                     max_tokens: Math.trunc(Number(data.get('max_tokens'))),
                     top_p: Number(data.get('top_p')),

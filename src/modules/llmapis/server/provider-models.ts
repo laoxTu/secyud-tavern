@@ -1,13 +1,13 @@
 ﻿import {Registerable} from "@/utils/register";
 
 export interface LlmapiRequestContext {
+    signal: AbortSignal,
     type: string,
     config: any,
-    signal: AbortSignal,
     apiKey: string,
     input: any,
 }
 
 export interface LlmapiProvider extends Registerable {
-    run: (context: LlmapiRequestContext) => Promise<ReadableStream>;
+    run(context: LlmapiRequestContext, stream: boolean): Promise<any>,
 }

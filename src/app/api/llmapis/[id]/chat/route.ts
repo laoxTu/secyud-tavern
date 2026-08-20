@@ -36,9 +36,9 @@ export const POST = interceptor.createRoute(
                     content: {
                         config: entity.content.config,
                     },
+                    stream: entity.stream,
                 };
             }, {minute: 5});
-
 
         const provider = llmapi.provider as string;
         const engine = llmapiProviderRegistry.records[provider];
@@ -52,20 +52,20 @@ export const POST = interceptor.createRoute(
 
         const config = llmapi.content.config ?? {};
 
-        const stream = await engine.run({
+        const response = await engine.run({
             type: provider,
             config,
             apiKey,
             signal: request.signal,
             input,
-        });
+        }, llmapi.stream);
 
-        return new NextResponse(stream, {
+        return llmapi.stream ? new NextResponse(response, {
             headers: {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
             },
-        });
+        }) : NextResponse.json(response);
     }
 );

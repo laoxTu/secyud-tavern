@@ -5,7 +5,6 @@
 export interface OpenAIConfigModel {
     parameters: {
         model: string,
-        stream: boolean,
         presence_penalty: number, // [-2, 2]
         frequency_penalty: number, // [-2, 2]
         temperature: number, // [0,2]

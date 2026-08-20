@@ -5,26 +5,24 @@ import {useTranslations} from "next-intl";
 import {Input} from "@/components/ui/input";
 import {moduleName} from "@/modules/llmapis/models";
 import {LlmapiOutputContext, LlmapiProvider} from "@/modules/llmapis/client/provider-models";
-import {engineName, OpenAIConfigModel} from "../models";
+import {AnthropicConfigModel, engineName} from "../models";
 import {mergeObjects} from "@/utils";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
 import {spanFull} from "@/components/custom/GridField";
+import Anthropic from "@anthropic-ai/sdk";
 import {messageUtils} from "@/modules/models";
-import {SlotCalling} from "@/modules/models/calling";
-import {OpenAI} from "openai";
 
-const defaultConfig: OpenAIConfigModel = {
+const defaultConfig: AnthropicConfigModel = {
     url: "",
     extras: {},
     parameters: {
         model: "",
         temperature: 1,
         top_p: 1,
-        presence_penalty: 0,
-        frequency_penalty: 0
+        max_tokens: 8192,
     },
     inputBuilder: {
         type: "default",
@@ -35,7 +33,7 @@ const defaultConfig: OpenAIConfigModel = {
 function Content() {
     const t = useTranslations();
     const {model} = useItemState();
-    const config: OpenAIConfigModel = mergeObjects(
+    const config: AnthropicConfigModel = mergeObjects(
         defaultConfig, model?.content["config"]);
 
     return (
@@ -81,20 +79,12 @@ function Content() {
                        defaultValue={config.parameters.top_p}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${moduleName}-presence_penalty`}>
-                    {t(`${moduleName}.presence_penalty`)}
+                <FieldLabel htmlFor={`${moduleName}-max_tokens`}>
+                    {t(`${moduleName}.max_tokens`)}
                 </FieldLabel>
-                <Input id={`${moduleName}-presence_penalty`} name={"presence_penalty"}
-                       type={"number"} max={2} min={-2} step={0.05}
-                       defaultValue={config.parameters.presence_penalty}/>
-            </Field>
-            <Field>
-                <FieldLabel htmlFor={`${moduleName}-frequency_penalty`}>
-                    {t(`${moduleName}.frequency_penalty`)}
-                </FieldLabel>
-                <Input id={`${moduleName}-frequency_penalty`} name={"frequency_penalty"}
-                       type={"number"} max={2} min={-2} step={0.05}
-                       defaultValue={config.parameters.frequency_penalty}/>
+                <Input id={`${moduleName}-max_tokens`} name={"max_tokens"}
+                       type={"number"} min={1} step={1}
+                       defaultValue={config.parameters.max_tokens}/>
             </Field>
             <BuilderContent config={config.inputBuilder}/>
             <Field className={spanFull}>
@@ -118,65 +108,73 @@ export async function generateOutput(context: LlmapiOutputContext) {
     const {output, content, message, stream} = context;
     if (!output) return;
     if (stream) {
-        const chunk: OpenAI.ChatCompletionChunk = output;
-        const choice = chunk.choices[0];
-        const delta = choice.delta;
-        if (choice.finish_reason === "stop") {
+        const chunk: Anthropic.RawMessageStreamEvent = output;
+        if (chunk.type === "message_delta" &&
+            chunk.delta.stop_reason === "end_turn") {
             context.stopped = true;
         }
-        // 偷懒，deepseek的思考直接放这里了
-        const thought: string = (delta as any).reasoning_content;
-        message.thought += thought ?? "";
-        if (delta.content) {
-            content.content ??= "";
-            content.content += delta.content;
-            messageUtils.setContent(message, content.content);
-        }
-        // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
-        if (delta.tool_calls?.length) {
-            message.callings ??= [];
-            for (const tool_call of delta.tool_calls) {
-                const index = message.callings
-                    .findIndex(u => u.index === tool_call.index);let calling: SlotCalling | null = null;
-                if (index < 0) {
-                    calling = {
-                        index: tool_call.index,
-                        id: tool_call.id,
-                        name: tool_call.function?.name,
-                        arguments: tool_call.function?.arguments ?? "",
-                    } as SlotCalling;
-                    message.callings.push(calling);
-                } else {
-                    calling = message.callings[index];
-                }
-                calling.id ??= tool_call.id ?? "";
-                calling.name ??= tool_call.function?.name ?? "";
-                if (tool_call.function?.arguments)
-                    calling.arguments += tool_call.function.arguments;
+
+        if (chunk.type === "content_block_start") {
+            if (chunk.content_block.type === "tool_use") {
+                const delta = chunk.content_block;
+                message.callings ??= [];
+                message.callings.push({
+                    index: message.callings.length,
+                    id: delta.id,
+                    name: delta.name,
+                    arguments: "",
+                });
+            }
+        } else if (chunk.type === "content_block_delta") {
+            const delta = chunk.delta;
+
+            switch (delta.type) {
+                case "text_delta":
+                    content.content ??= "";
+                    content.content += delta.text;
+                    messageUtils.setContent(message, content.content);
+                    break;
+                case "signature_delta":
+                    message.properties["signature"] += delta.signature;
+                    break;
+                case "thinking_delta":
+                    message.thought += delta.thinking;
+                    break;
+                case "input_json_delta":
+                    if (message.callings) {
+                        const calling = message.callings.at(-1)!;
+                        calling.arguments += delta.partial_json;
+                    }
+                    break;
+
             }
         }
     } else {
-        const chunk: OpenAI.ChatCompletion = output;
-        const choice = chunk.choices[0];
-        const delta = choice.message;
-        if (choice.finish_reason === "stop") {
+        const chunk: Anthropic.Message = output;
+        if (chunk.stop_reason === "end_turn") {
             context.stopped = true;
         }
-        const thought: string = (delta as any).reasoning_content;
-        message.thought += thought ?? "";
-        messageUtils.setContent(message, delta.content);
-        if (delta.tool_calls)
-            for (let i = 0; i < delta.tool_calls.length; i++) {
-                const tool_call = delta.tool_calls[i];
-                if (tool_call.type === "function") {
-                    message.callings?.push({
-                        index: i,
-                        id: tool_call.id,
-                        name: tool_call.function?.name,
-                        arguments: tool_call.function?.arguments ?? "",
+        let toolIndex = 0;
+        for (const delta of chunk.content) {
+            switch (delta.type) {
+                case "text":
+                    message.content += delta.text;
+                    break;
+                case "thinking":
+                    message.thought += delta.thinking;
+                    message.properties["signature"] = delta.signature;
+                    break;
+                case "tool_use":
+                    message.callings ??= [];
+                    message.callings.push({
+                        index: toolIndex++,
+                        id: delta.id,
+                        name: delta.name,
+                        arguments: JSON.stringify(delta.input ?? {}),
                     });
-                }
+                    break;
             }
+        }
     }
 }
 
@@ -185,7 +183,7 @@ export const provider: LlmapiProvider =
     {
         id: engineName,
         component: Content,
-        getValue: (data): OpenAIConfigModel => {
+        getValue: (data): AnthropicConfigModel => {
             let extras: any = data.get('extras') as string;
             try {
                 extras = JSON.parse(extras);
@@ -197,8 +195,7 @@ export const provider: LlmapiProvider =
                     model: data.get('model') as string,
                     temperature: Number(data.get('temperature')),
                     top_p: Number(data.get('top_p')),
-                    presence_penalty: Number(data.get('presence_penalty')),
-                    frequency_penalty: Number(data.get('frequency_penalty')),
+                    max_tokens: Number(data.get('max_tokens')),
                 },
                 inputBuilder: getInputBuilderConfig(data),
                 url: data.get('url') as string,
