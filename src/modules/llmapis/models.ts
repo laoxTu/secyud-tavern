@@ -3,6 +3,7 @@
 export interface LlmapiModel extends BaseModel {
     code: string,
     version: string,
+    stream: boolean,
     // 模型供应者
     provider?: string,
     // api key secret

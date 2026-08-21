@@ -1,9 +1,10 @@
 # Secyud Tavern
 
-一个高度可定制化的 AI 角色扮演与互动叙事平台。没有繁杂的设定 — 一切由 **预设**、 **模型**、 **故事**三个简洁的概念组成。
+一个高度可定制化的 AI 角色扮演与互动叙事平台。
 
-A highly customizable AI role-playing and interactive storytelling platform. No clutter — everything revolves around
-three simple concepts: **Presets**, **Models**, and **Stories**.
+A highly customizable AI role-playing and interactive storytelling platform.
+
+🔗 [详细文档](https://github.com/laoxTu/secyud-tavern-docs)
 
 ---
 
@@ -20,9 +21,6 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
 ## 开源 / License
 
 项目已开源，随意学习，禁止商用。Open source. Free to study, commercial use prohibited.
-
-🔗 [项目地址](https://github.com/laoxTu/secyud-tavern)
-🔗 [使用指南](https://github.com/laoxTu/secyud-tavern-docs)
 
 ## 插件
 

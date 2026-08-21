@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import {FileIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {TabManager} from "@/components/custom/tab";
@@ -18,6 +18,7 @@ import {RequireModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
+import {Checkbox} from "@/components/ui/checkbox";
 
 export function LlmapiRequireField(
     {
@@ -106,6 +107,15 @@ function UpdateContent({model}: { model: LlmapiModel }) {
             />
         </Field>
         <Field>
+            <FieldLabel htmlFor={`${moduleName}-stream`}>
+                {t(`${moduleName}.stream`)}
+            </FieldLabel>
+            <FieldContent>
+                <Checkbox id={`${moduleName}-stream`} name={"stream"}
+                          defaultChecked={model.stream}/>
+            </FieldContent>
+        </Field>
+        <Field>
             <FieldLabel htmlFor={`${moduleName}-provider`}>
                 {t(`${moduleName}.provider`)}
             </FieldLabel>
@@ -142,6 +152,7 @@ function DefaultTab() {
                         builder: builder,
                         name: data.get("name") as string,
                         code: model.code,
+                        stream: !!data.get("stream"),
                         version: data.get("version") as string,
                         key: model.key === key || !key || key === '' ? undefined : key,
                     } as Partial<LlmapiModel>,

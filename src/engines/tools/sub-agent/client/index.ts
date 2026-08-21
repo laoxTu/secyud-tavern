@@ -5,43 +5,56 @@ import {LlmapiToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
 import {conversationManager} from "@/modules/slots/client/conversation";
 import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
-import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
-import {slotContext} from "@/modules/slots/client/context";
+import {checkJson, tryParseJson} from "@/utils";
+import {getPresetRequires} from "@/modules/presets/client/tabs";
+import {get} from "@/client";
+import {StoryModel} from "@/modules/stories/models";
+import {BusinessError} from "@/handler/models";
 
 export const subAgentToolProvider: LlmapiToolProvider = {
     id: "sub_agent",
     component: Editor,
     getValue: (data: FormData): SubAgentConfigModel => {
+        const schema = data.get('schema') as string;
+        if (!checkJson(schema))
+            throw new BusinessError("json invalid", "default.json_invalid")
+                .withValue("target", "default.schema");
         return {
+            schema,
             disableTags: data
                 .getAll('disable_tags')
                 .map(u => String(u)),
+            presets: getPresetRequires(data),
             description: data.get('description') as string,
-            prompt: data.get('prompt') as string,
             disablePreset: !!data.get('disable_preset'),
             maxLength: parseInt(data.get('max_length') as string),
+            llmapi: tryParseJson(data.get('llmapi') as string),
         };
     },
     async create(config: LlmapiToolConfigModel, slot) {
         const configValue: SubAgentConfigModel = config.value;
         const disableTags = new Set(configValue.disableTags);
+        const story: StoryModel = {
+            id: "sub_agent",
+            name: "sub_agent",
+            requires: [...(configValue.presets ?? []), ...slot.requires,],
+            llmapi: configValue.llmapi ?? slot.llmapi,
+            content: {},
+        };
+        const result: SlotModel = await get("/stories/slot", {
+            params: story
+        })
         const subSlot: SlotModel = {
-            id: slot.id,
-            name: slot.name,
-            requires: slot.requires,
-            get content() {
-                return slot.content;
-            },
-            get llmapi() {
-                return slot.llmapi;
-            },
+            ...result,
             get histories() {
                 return slot.histories;
             },
-            presets: configValue.disablePreset ? [] : slot.presets.filter(u => u.tags.every(v => !disableTags.has(v))),
-            context: {}
+            presets: configValue.disablePreset ? [] :
+                result.presets.filter(u => u.tags
+                    .every(v => !disableTags.has(v))),
+            properties: {}
         }
-        await conversationManager.initializer.initialize(subSlot);
+        await conversationManager.initializer.initialize({slot: subSlot});
         return [new SubAgentTool(config.code, configValue, subSlot)];
     },
 };
@@ -56,25 +69,16 @@ export class SubAgentTool implements LlmapiTool {
         this.model = {
             name: name,
             description: config.description,
-            parameters: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                    prompt: {
-                        type: 'string',
-                        description: `the prompt for sub agent`,
-                    },
-                },
-            },
+            parameters: tryParseJson(config.schema),
         }
     }
 
-    async invoke({prompt}: { prompt: string }) {
+    async invoke(args: any) {
         let instance: {
             abort: () => void,
         } | null = null;
 
-        const setSignal = async (signal: AbortController | null) => {
+        const signal = async (signal: AbortController | null) => {
             if (instance) {
                 instance.abort();
             }
@@ -88,29 +92,34 @@ export class SubAgentTool implements LlmapiTool {
                 instance = {abort};
             }
         }
-        const history: SlotHistory = {
-            code: "",
-            disabled: false,
-            id: 0,
-            inputs: [messageUtils.setContent({
-                content: "", properties: {}, variables: []
-            }, `${this.config.prompt}${prompt}`)],
-            name: "",
-            outputId: 0,
-            outputs: [],
-            summary: false,
-            variables: historyUtils.getVariables(slotContext.getHistory())
-        };
         let result: string = "error: empty content";
         // 深拷贝待解析副本，防止不必要的变化，例如工具冲突。
         // 主agent可能已经设置了工具调用
-        // 去掉最后一个，数组至少存在一个
-        const maxLength = this.config.maxLength ? this.config.maxLength + 1 : 0;
-        const histories = structuredClone(this.slot.histories.slice(-maxLength, -1));
+        const histories = structuredClone(this.slot.histories.slice(-this.config.maxLength));
+        if (!histories.length) {
+            histories.push({
+                code: "",
+                disabled: false,
+                id: 0,
+                inputs: [],
+                name: "",
+                outputId: 0,
+                outputs: [],
+                summary: false,
+                variables: {}
+            })
+        }
+        const history = histories.at(-1)!;
+        history.outputs = [];
+        history.outputId = -1;
+
         for await (const {output} of conversationManager.inputProcesser
-            .requestReply(history, setSignal, {
-                ...this.slot,
-                histories: [...histories, history]
+            .requestReply({
+                history, signal,
+                slot: {
+                    ...this.slot, histories,
+                },
+                args
             })) {
             result = output.content;
         }

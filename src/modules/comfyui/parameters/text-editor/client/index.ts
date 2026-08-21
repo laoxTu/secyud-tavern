@@ -8,8 +8,8 @@ export const textEditor: ComfyUIParameter =
         editorComponent: EditorComponent,
         getEditorValue({data, entry}): TextEditorConfig {
             return {
-                nodeId: data.get('node_id') as string,
-                nodeName: data.get('node_name') as string,
+                nodeId: data.get("node_id") as string,
+                nodeName: data.get("node_name") as string,
                 defaultValue: data.get(`text_${entry.id}`) as string,
             };
         },

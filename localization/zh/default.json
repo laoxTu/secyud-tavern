@@ -158,6 +158,7 @@
     "builder_default": "默认构造器",
     "builder_layered": "层级构造器",
     "extras": "额外参数",
+    "format": "格式",
     "frequency_penalty": "presence penalty (用词重复度 -2.0~2.0)",
     "logprobs": "logprobs (返回置信度)",
     "max_iterations": "单回合最大轮次",
@@ -167,6 +168,7 @@
     "provider": "供应者",
     "provider_deepseek": "Deepseek",
     "provider_openai": "Open AI",
+    "provider_anthropic": "Anthropic",
     "reasoning_effort": "reasoning effort (思考强度)",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
@@ -290,6 +292,9 @@
     "disable_tags": "禁用标签",
     "max_length": "最大长度",
     "prompt": "提示词"
+  },
+  "tool": {
+    "create_failed": "工具创建失败({entry})"
   },
   "url_fetch": {
     "max_length": "长度返回限制",

@@ -1,6 +1,6 @@
 {
   "name": "secyud-tavern",
-  "version": "1.2.0.9",
+  "version": "1.2.0.13",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,6 +13,7 @@
     "gen-db-migrate": "npx drizzle-kit generate & npx tsx database/migrate.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
     "@base-ui/react": "^1.7.0",
     "@huggingface/transformers": "^4.2.0",
     "@libsql/client": "^0.17.4",

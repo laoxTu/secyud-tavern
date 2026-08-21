@@ -1,6 +1,5 @@
 import {EntryModel} from "@/business/models";
 import {setContent, SlotMessageInput, SlotMessageOutput} from "@/modules/models/message";
-import {tryGetLastItem} from "@/utils";
 import {patch} from "@/utils/json-patch";
 
 export interface SlotHistory extends EntryModel {
@@ -11,15 +10,10 @@ export interface SlotHistory extends EntryModel {
     outputs: SlotMessageOutput[][];
 }
 
-function getOutputs(history: SlotHistory) {
-    if (history.outputs.length === 0) return null;
+function getOutputs(history?: SlotHistory | null) {
+    if (!history?.outputs.length) return null;
     const outputId = Math.min(history.outputs.length - 1, history.outputId);
     return history.outputs[outputId];
-}
-
-function getOutput(history: SlotHistory) {
-    const outputs = getOutputs(history);
-    return outputs ? tryGetLastItem(outputs) : null;
 }
 
 /**
@@ -44,7 +38,6 @@ function getVariables(history: SlotHistory, output: boolean = true) {
 
 export const historyUtils = {
     getOutputs,
-    getOutput,
     getVariables,
 };
 

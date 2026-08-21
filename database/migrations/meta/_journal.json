@@ -43,6 +43,13 @@
       "when": 1785207894379,
       "tag": "0005_living_the_santerians",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1787221063993,
+      "tag": "0006_mixed_amphibian",
+      "breakpoints": true
     }
   ]
 }

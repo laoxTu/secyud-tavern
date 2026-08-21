@@ -1,219 +1,156 @@
 ﻿import {useTranslations} from "next-intl";
 import React from "react";
-import {compareLorebook, enginePlural as lorebookPlural, PresetLorebookModel} from "@/engines/lorebooks/models";
-import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
+import {LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
-import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
-import {fillToolCallContent, ToolConversationCache} from "@/engines/tools/client/conversation";
+import {ToolConversationCache} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
 import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
-import {joinAsString, sequenceGroupBy} from "@/utils";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {historyUtils} from "@/modules/models";
-import {SlotMessageOutput} from "@/modules/models/message";
+import {generateMessageWithBuilder, getLorebookTool} from "@/modules/llmapis/client/input-builder";
+import {joinAsString} from "@/utils";
 
-const virtualTool: OpenAI.ChatCompletionFunctionTool = {
-    type: "function",
-    function: {
-        name: "getLorebook",
-        description: "get lorebook. return empty if current lorebook is requested. ",
-    }
-}
-
-// 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
-export async function generateInput(
-    {histories, slot, current, contentHandlers}: LlmapiInputContext) {
-    const messages: OpenAI.ChatCompletionMessageParam[] = [];
-    const visitedLorebooks = new Set<string>();
-    const entries = slotUtils.getContent<LorebookConversationCache>(slot, lorebookPlural);
-    const tools: OpenAI.ChatCompletionTool[] = Object
-        .values(slotUtils.getContent<ToolConversationCache>(slot, toolPlural).tools)
-        .map((u) => ({
-            type: "function",
-            function: {
+export async function generateInput(context: LlmapiInputContext) {
+    const items: LlmapiInputItem[] = [];
+    if (context.slot.llmapi.content.config?.format === "responses") {
+        const messages: OpenAI.Responses.ResponseInputItem[] = [];
+        const tools: OpenAI.Responses.Tool[] = Object
+            .values(slotUtils.getProperty<ToolConversationCache>(
+                context.slot, toolPlural).tools)
+            .map((u) => ({
+                type: "function",
                 name: u.model.name,
                 parameters: u.model.parameters as any,
                 description: u.model.description,
+                strict: false,
+            }));
+        tools.push({
+            type: "function",
+            ...getLorebookTool,
+            parameters: {},
+            strict: false,
+        });
+        const systemPrompts: string[] = [];
+        await generateMessageWithBuilder(context, {
+            builder: context.slot.llmapi.content
+                .config?.inputBuilder?.type,
+            toolName: i => `call_x${i}`,
+            pushUserMessage: (content) => {
+                items.push({content, role: "user"});
+                messages.push({role: "user", content,});
+            },
+            pushAiMessage: (content) => {
+                items.push({content, role: "assistant"});
+                messages.push({role: "assistant", content,});
+            },
+            pushSystemMessage: (content) => {
+                items.push({content, role: "system"});
+                messages.push({role: "system", content,});
+            },
+            pushToolMessage: (callings, content) => {
+                if (content) {
+                    items.push({content, role: "assistant"});
+                    messages.push({role: "assistant", content});
+                }
+                for (const calling of callings) {
+                    messages.push({
+                        type: "function_call",
+                        call_id: calling.id,
+                        arguments: calling.arguments,
+                        name: calling.name,
+                    });
+                    items.push({
+                        role: `tool: ${calling.name}`,
+                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
+                    });
+                }
+                for (const calling of callings) {
+                    messages.push({
+                        type: "function_call_output",
+                        call_id: calling.id,
+                        output: calling.result?.content ?? "error",
+                    });
+                }
             }
-        }));
-    tools.push(virtualTool);
-    const items: LlmapiInputItem[] = [];
-    const builder: string = slot.llmapi.content.config?.inputBuilder?.type;
-    let simCount = 0;
-
-    switch (builder) {
-        case "layered":
-            let lorebooks: PresetLorebookModel[] = [...entries.before, ...entries.after];
-            fillLorebooks(lorebooks, histories.map(u => u.content[lorebookPlural]))
-
-            for (let i = 0; i < histories.length; i++) {
-                const history = histories[i];
-                await pushInputs(history);
-                const index = lorebooks.findIndex(
-                    u => u.layer + histories.length >= i + 100);
-                const splitIndex = index < 0 ? lorebooks.length : index;
-                const items = lorebooks.slice(0, splitIndex);
-                lorebooks = lorebooks.slice(splitIndex);
-                await pushLorebooks(items);
-                if (i < histories.length - 1 || current)
-                    await pushOutputs(history);
-            }
-            break;
-        default:
-            for (let i = 0; i < histories.length; i++) {
-                const history = histories[i];
-                // 这里是api history 缓存，和message的properties不是同一实例
-                const lorebooks = history.content[lorebookPlural] as PresetLorebookModel[];
-                if (i === 0)
-                    fillLorebooks(lorebooks, [entries.before]);
-                else if (i === histories.length - 1)
-                    fillLorebooks(lorebooks, [entries.after]);
-
-                const index = lorebooks
-                    .findIndex(u => u.layer >= 100);
-                const splitIndex = index < 0 ? lorebooks.length : index;
-
-                // 添加user前世界书
-                await pushLorebooks(lorebooks.slice(0, splitIndex))
-
-                await pushInputs(history);
-
-                // 添加user后世界书
-                await pushLorebooks(lorebooks.slice(splitIndex, lorebooks.length))
-
-                if (i < histories.length - 1 || current)
-                    await pushOutputs(history);
-            }
-            break;
-    }
-
-    return {
-        input: {
-            messages,
-            tools: tools.length > 0 ? tools : undefined
-        },
-        items,
-    };
-
-    function fillLorebooks(lorebooks: PresetLorebookModel[], groups: PresetLorebookModel[][]) {
-        for (const group of groups) {
-            for (const item of group) {
-                lorebooks.push(item);
-            }
+        });
+        const instructions = joinAsString(systemPrompts, "\n");
+        items.unshift({content: instructions, role: "system"});
+        const input: Partial<OpenAI.Responses.ResponseCreateParams> = {
+            input: messages, instructions,
+            tools: tools.length > 0 ? tools : undefined,
         }
-        lorebooks.sort(compareLorebook);
-    }
-
-    async function pushInputs(history: LlmapiHistory) {
-        if (history.inputs.length) {
-            const input = joinAsString(history.inputs, "\r\n", u => u.content);
-            const content = await generateContent(input, "user", "input");
-            items.push({content, role: "user"});
-            messages.push({role: "user", content,});
-        }
-    }
-
-    async function pushOutputs(history: LlmapiHistory) {
-        const outputs = historyUtils.getOutputs(history);
-        if (outputs) {
-            for (const output of outputs) {
-                await pushOutput(output);
-            }
-        }
-    }
-
-    async function pushOutput(output: SlotMessageOutput, toolRole = "tool") {
-        const content = await generateContent(output.content, "assistant", "output");
-        // 检验工具是否触发
-        await fillToolCallContent(slot, output.callings);
-        if (!content && !output.callings?.some(
-            u => !u.result?.hidden))
-            return;
-        if (content)
-            items.push({content, role: "assistant"});
-        const message: OpenAI.ChatCompletionAssistantMessageParam = {
-            role: "assistant",
-            content: content ? content : undefined,
-            tool_calls: undefined,
-            refusal: null
+        return {
+            input,
+            items,
         };
-
-        messages.push(message);
-
-        if (!output.callings?.length) return;
-
-        message.tool_calls = [];
-        for (const calling of output.callings) {
-            if (calling.result?.hidden) continue;
-            message.tool_calls.push({
-                id: calling.id,
+    } else {
+        const messages: OpenAI.ChatCompletionMessageParam[] = [];
+        const tools: OpenAI.ChatCompletionTool[] = Object
+            .values(slotUtils.getProperty<ToolConversationCache>(
+                context.slot, toolPlural).tools)
+            .map((u) => ({
                 type: "function",
                 function: {
-                    arguments: calling.arguments,
-                    name: calling.name,
-                },
-            });
-
-            const content = await generateContent(
-                calling.result?.content ?? "error", toolRole, "output");
-            items.push({
-                role: `tool: ${calling.name}`,
-                content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
-            });
-            messages.push({
-                role: "tool",
-                tool_call_id: calling.id,
-                content,
-            });
-        }
-    }
-
-    async function pushLorebooks(inputs: PresetLorebookModel[]) {
-        const lorebooks: PresetLorebookModel[] = [];
-        for (const lorebook of inputs) {
-            if (visitedLorebooks.has(lorebook.code)) continue;
-            visitedLorebooks.add(lorebook.code);
-            lorebooks.push(lorebook);
-        }
-        const groups = sequenceGroupBy(lorebooks, u => u.role);
-        for (const group of groups) {
-            if (group.key === 'knowledge') {
-                simCount += 1;
-                await pushOutput({
-                    content: "",
-                    properties: {},
-                    thought: "",
-                    variables: [],
-                    callings: [
-                        {
-                            index: 0,
-                            id: `call_x${simCount}`,
-                            name: virtualTool.function.name,
-                            arguments: "{}",
-                            result: {
-                                content: joinAsString(group.items, "\r\n", u => u.content),
-                                hidden: false
-                            }
-                        }
-                    ]
-                }, "knowledge")
-            } else {
-                const content: OpenAI.ChatCompletionContentPartText[] = [];
-                for (const item of group.items) {
-                    const text = await generateContent(item.content, group.key, "lorebook");
-                    items.push({role: group.key, content: text});
-                    content.push({text, type: "text"});
+                    name: u.model.name,
+                    parameters: u.model.parameters as any,
+                    description: u.model.description,
                 }
-                messages.push({role: group.key as any, content,});
+            }));
+        tools.push({
+            type: "function",
+            function: getLorebookTool
+        });
+        await generateMessageWithBuilder(context, {
+            builder: context.slot.llmapi.content
+                .config?.inputBuilder?.type,
+            toolName: i => `call_x${i}`,
+            pushUserMessage: (content) => {
+                items.push({content, role: "user"});
+                messages.push({role: "user", content,});
+            },
+            pushAiMessage: (content) => {
+                items.push({content, role: "assistant"});
+                messages.push({role: "assistant", content,});
+            },
+            pushSystemMessage: (content) => {
+                items.push({content, role: "system"});
+                messages.push({role: "system", content,});
+            },
+            pushToolMessage: (callings, content) => {
+                if (content) items.push({content, role: "assistant"});
+                const tool_calls: OpenAI.ChatCompletionMessageToolCall[] = [];
+                messages.push({role: "assistant", content, tool_calls});
+                for (const calling of callings) {
+                    tool_calls.push({
+                        id: calling.id,
+                        type: "function",
+                        function: {
+                            arguments: calling.arguments,
+                            name: calling.name,
+                        },
+                    });
+                    items.push({
+                        role: `tool: ${calling.name}`,
+                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
+                    });
+                    messages.push({
+                        role: "tool",
+                        tool_call_id: calling.id,
+                        content: calling.result?.content ?? "error",
+                    });
+                }
             }
+        });
+        const input: Partial<OpenAI.ChatCompletionCreateParams> = {
+            messages,
+            tools: tools.length > 0 ? tools : undefined,
         }
-    }
-
-    async function generateContent(str: string, role: string, type: string) {
-        return await slotUtils.handleContent(contentHandlers, {str, role, type});
+        return {
+            input,
+            items,
+        };
     }
 }
 

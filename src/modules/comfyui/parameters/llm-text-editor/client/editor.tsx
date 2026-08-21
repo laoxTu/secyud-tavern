@@ -7,7 +7,6 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {joinAsString} from "@/utils";
-import {get} from "@/client";
 import {useErrorHandler} from "@/handler/client/error";
 import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
@@ -20,6 +19,7 @@ import {slotContext} from "@/modules/slots/client/context";
 import {SlotHistory} from "@/modules/models";
 import {conversationManager} from "@/modules/slots/client/conversation";
 import {create} from "zustand";
+import {slotUtils} from "@/modules/slots/client/conversation-models";
 
 export interface LlmTextEditorState {
     signal?: AbortController,
@@ -102,29 +102,23 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 code: "",
                 name: ""
             };
-            const llmapi = config?.llmapi ?
-                await get(`/llmapis/{id}`, {
-                    params: {
-                        id: config.llmapi.code,
-                        withDetails: true,
-                    }
-                }) :
-                slot.llmapi;
 
             let thought = "";
             let content = "";
             for await (const {output, outputs} of conversationManager.inputProcesser.requestReply(
-                history,
-                async (signal) => {
-                    useLlmTextEditorState.getState().setSignal(signal);
-                },
                 {
-                    ...slot,
-                    histories: [
-                        getHistory(useHistoryPageState.getState().page.cur),
-                        history,
-                    ],
-                    llmapi,
+                    history,
+                    signal: async (signal) => {
+                        useLlmTextEditorState.getState().setSignal(signal);
+                    },
+                    slot: {
+                        ...slot,
+                        histories: [
+                            getHistory(useHistoryPageState.getState().page.cur),
+                            history,
+                        ],
+                        llmapi: await slotUtils.getLlmapi(config?.llmapi, slot),
+                    }
                 })) {
                 if (output.thought === thought) {
                     setThinking(false);

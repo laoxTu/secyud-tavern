@@ -27,7 +27,7 @@ export const styleConversationProvider:
             }
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onRenderContent: async (ctx) => {
         const {window, document} = slotContext.iframeData;
@@ -35,7 +35,7 @@ export const styleConversationProvider:
         if (!window.__injectedStyleInitialized && document) {
             window.__injectedStyleInitialized = true;
             console.debug('[style]: start inject');
-            const cache: StyleConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
+            const cache: StyleConversationCache = slotUtils.getProperty(ctx.slot, enginePlural);
             const set = new Set<string>();
             for (const entry of cache.entries) {
                 const id = `${prefix}-${entry.code}`;

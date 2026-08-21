@@ -20,6 +20,7 @@ import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRouter} from "next/navigation";
 import {slotContext} from "@/modules/slots/client/context";
+import {StoryModel} from "@/modules/stories/models";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
@@ -77,19 +78,19 @@ export function HistoryDeleter() {
         try {
             const {slot} = slotContext.slotData;
             const llmapi = slot.llmapi;
-            const {id} = await post("/stories", {
-                ...slot,
+            const story: StoryModel = {
+                id: "",
+                content: slot.content,
+                name: slot.name,
+                requires: slot.requires,
                 llmapi: {
                     code: llmapi.code,
                     name: llmapi.name,
                     author: llmapi.content.author,
                     version: llmapi.version,
-                },
-                presets: undefined,
-                histories: undefined,
-                context: undefined,
-                id: "",
-            });
+                }
+            }
+            const {id} = await post("/stories", story);
             if (!remain) {
                 await del("/stories/{id}", {
                     params: {

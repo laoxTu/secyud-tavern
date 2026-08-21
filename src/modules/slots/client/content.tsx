@@ -64,7 +64,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
             const {id} = await params;
             const slot = await get("/stories/{id}/slot", {params: {id}}) as SlotModel;
             slotContext.slotData.slot = slot;
-            await conversationManager.initializer.initialize();
+            await conversationManager.initializer.initialize({});
             await setPage(slot.histories?.length ?? 0);
             setLoadingState(u => ({
                 ...u, success: true

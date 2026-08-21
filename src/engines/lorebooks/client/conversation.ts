@@ -11,6 +11,7 @@ import {
 import {engineName as ragEngineName} from '@/engines/rags/models';
 import {historyUtils} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
+import {tryParseJson} from "@/utils";
 
 
 export interface LorebookConversationCache {
@@ -38,6 +39,10 @@ export const lorebookConversationProvider:
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
+                if (entry.type === "json") {
+                    entry.content = JSON.stringify(tryParseJson(entry.content));
+                }
+
                 const id = `${preset.code}-${entry.code}`;
                 // 替换code，唯一标识
                 entry.code = id;
@@ -50,11 +55,11 @@ export const lorebookConversationProvider:
                 }
             }
         }
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
         const cache: LorebookConversationCache =
-            slotUtils.getContent(ctx.slot, enginePlural);
+            slotUtils.getProperty(ctx.slot, enginePlural);
 
         const prepareLorebooks: PresetLorebookModel[] = [];
         // 遍历历史：逐条输入/输出触发匹配，激活的世界书先积攒再合并进该条历史的 properties，供后续拼装提示词
@@ -73,7 +78,8 @@ export const lorebookConversationProvider:
             prepareLorebooks.length = 0;
 
             // 每轮output添加时都会解析，所以只找最新的
-            const output = historyUtils.getOutput(history);
+            const output =
+                historyUtils.getOutputs(history)?.at(-1);
             if (output) {
                 setActiveLorebooks(history, output, true);
             }
@@ -97,7 +103,7 @@ export const lorebookConversationProvider:
     onProcessOutput: async (ctx) => {
         const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs) return;
-        const cache: LorebookConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
+        const cache: LorebookConversationCache = slotUtils.getProperty(ctx.slot, enginePlural);
         for (const output of outputs) {
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message: output,

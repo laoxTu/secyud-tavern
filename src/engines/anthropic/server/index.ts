@@ -1,8 +1,8 @@
 ﻿import {llmapiProviderRegistry} from "@/modules/llmapis/server/provider";
-import {openAIProvider} from "./provider";
+import {anthropicProvider} from "./provider";
 
-export function registerOpenAIServer() {
+export function registerAnthropicServer() {
     llmapiProviderRegistry.register(
-        openAIProvider
+        anthropicProvider
     );
 }

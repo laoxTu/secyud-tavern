@@ -3,7 +3,15 @@ import {BusinessError} from "@/handler/models";
 import {SlotModel} from "@/modules/slots/models";
 import {messageUtils, SlotHistory} from "@/modules/models";
 import {mergeObjects} from "@/utils";
+import {RequireModel} from "@/modules/presets/models";
+import {get} from "@/client";
+import {slotContext} from "@/modules/slots/client/context";
 
+export const check = {
+    slot: (slot?: SlotModel | null) => {
+        return slot ?? slotContext.slotData.slot;
+    }
+}
 
 type ContentHandler = (str: string, role: string, type: string) => Promise<string>;
 
@@ -22,7 +30,7 @@ async function handleContent(
 }
 
 export interface SlotContextBase {
-    content: Record<string, any>,
+    properties: Record<string, any>,
     slot: SlotModel,
 }
 
@@ -80,8 +88,8 @@ export interface SlotStreamRenderer extends Registerable {
 }
 
 // 读取初始化好的缓存；未初始化说明漏了 initialize，直接报错而不是拿到 undefined 往下传。
-function getContent<T>(slot: SlotModel, key: string): T {
-    const value = slot.context[key];
+function getProperty<T>(slot: SlotModel, key: string): T {
+    const value = slot.properties[key];
     if (value === undefined) {
         throw new BusinessError(`slot content "${key}" is not initialized`,
             "slot.content_not_initialized")
@@ -91,19 +99,19 @@ function getContent<T>(slot: SlotModel, key: string): T {
 }
 
 // 初始化缓存；同键禁止重复初始化，防止两个引擎/插件意外共用同一 key 互相覆盖。
-function setContent(slot: SlotModel, key: string, value: any) {
-    if (slot.context[key] !== undefined || value === undefined) {
+function setProperty(slot: SlotModel, key: string, value: any) {
+    if (slot.properties[key] !== undefined || value === undefined) {
         throw new BusinessError(`slot content "${key}" already initialized`,
             "slot.content_already_initialized")
             .withValue("key", key);
     }
-    slot.context[key] = value;
+    slot.properties[key] = value;
 }
 
 // 生成虚拟开场历史：把各预设 opening 解析为输入消息，作为变量的初始来源（懒生成并缓存）。
 function getOpening(slot: SlotModel) {
     const key = 'openingHistory';
-    let openingHistory = slot.context[key] as SlotHistory;
+    let openingHistory = slot.properties[key] as SlotHistory;
     if (!openingHistory) {
         let variables = {};
         for (const preset of slot.presets) {
@@ -135,10 +143,22 @@ function getOpening(slot: SlotModel) {
                     properties: {}
                 }, v)));
         // 懒生成写入，setContent 会检测同键重复初始化
-        setContent(slot, key, openingHistory);
+        setProperty(slot, key, openingHistory);
         console.log("[slot](opening): ", openingHistory);
     }
     return openingHistory;
 }
 
-export const slotUtils = {getContent, setContent, getOpening, handleContent};
+async function getLlmapi(llmapi?: RequireModel | null, slot?: SlotModel) {
+    slot = check.slot(slot);
+    return llmapi ?
+        await get(`/llmapis/{id}`, {
+            params: {
+                id: llmapi.code,
+                withDetails: true,
+            }
+        }) :
+        slot.llmapi;
+}
+
+export const slotUtils = {getProperty, setProperty, getOpening, handleContent, getLlmapi};

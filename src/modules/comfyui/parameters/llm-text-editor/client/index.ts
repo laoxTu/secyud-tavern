@@ -1,6 +1,7 @@
 import {ComfyUIParameter} from "@/modules/comfyui/client/parameter-model";
 import {EditorComponent, InputComponent} from "./editor";
 import {LlmTextEditorConfig} from "../model";
+import {tryParseJson} from "@/utils";
 
 export const llmTextEditor: ComfyUIParameter =
     {
@@ -11,7 +12,7 @@ export const llmTextEditor: ComfyUIParameter =
                 nodeId: data.get('node_id') as string,
                 nodeName: data.get('node_name') as string,
                 textPrompt: data.get(`text_prompt`) as string,
-                llmapi: JSON.parse(data.get(`llmapi`) as string),
+                llmapi: tryParseJson(data.get(`llmapi`) as string),
             };
         },
         inputComponent: InputComponent,

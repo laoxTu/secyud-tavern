@@ -17,6 +17,8 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
 import {spanHalf} from "@/components/custom/GridField";
+import {BusinessError} from "@/handler/models";
+import {checkJson} from "@/utils";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -176,12 +178,18 @@ function Tab() {
                 },
                 updateHandler: async (entry, data) => {
                     const matchType = data.get("matchType") as string;
+                    const content = data.get("content") as string;
+                    const type = data.get("type") as string;
+                    if (type === "json") {
+                        if (!checkJson(content))
+                            throw new BusinessError("json is invalid",
+                                "default.json_invalid")
+                                .withValue("target", "default.lorebook");
+                    }
                     const result: PresetLorebookModel = {
                         ...entry,
-                        matchType: matchType,
+                        matchType, content, type,
                         matchExpression: matchEditors[matchType]?.getValue(data),
-                        content: data.get("content") as string,
-                        type: data.get("type") as string,
                         priority: parseInt(data.get("priority") as string),
                         layer: parseInt(data.get("layer") as string),
                         role: data.get("role") as any,

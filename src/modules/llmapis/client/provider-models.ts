@@ -12,6 +12,7 @@ export interface LlmapiOutputContext extends SlotContextBase {
     message: SlotMessageOutput,
     // if stopped, this message is the last message
     stopped: boolean,
+    stream: boolean,
 }
 
 export interface LlmapiInputItem {

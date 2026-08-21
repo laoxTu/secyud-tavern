@@ -1,0 +1,1 @@
+ALTER TABLE `llmapi` ADD `stream` integer DEFAULT false NOT NULL;

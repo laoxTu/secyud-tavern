@@ -5,10 +5,11 @@ import {LlmapiModel} from "@/modules/llmapis/models";
 import {StoryModel} from "@/modules/stories/models";
 
 export interface SlotModel extends StoryModel {
+    initialized?: boolean;
     llmapi: LlmapiModel,
     histories: SlotHistory[],
     presets: PresetModel[],
-    context: Record<string, any>,
+    properties: Record<string, any>,
 }
 
 export interface LlmapiToolModel {

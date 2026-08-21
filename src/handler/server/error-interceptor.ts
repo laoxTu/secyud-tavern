@@ -1,11 +1,11 @@
 ﻿import {NextRequest, NextResponse} from "next/server";
 import {BusinessError} from "../models";
-import {InterceptorModels} from "./interceptor-models";
+import {InterceptorModels, NextRecord} from "./interceptor-models";
 
 class ErrorInterceptor implements InterceptorModels {
     id: string = "errors interceptor";
 
-    async handle(request: NextRequest, records: Record<string, any>, next: () => Promise<NextResponse>): Promise<NextResponse> {
+    async handle(request: NextRequest, records: NextRecord, next: () => Promise<NextResponse>): Promise<NextResponse> {
         try {
             return await next();
         } catch (error) {

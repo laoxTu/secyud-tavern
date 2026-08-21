@@ -11,6 +11,7 @@ import {registerServerPlugin} from "@/plugins/server/registerer";
 import {registerComfyUIServer} from "@/modules/comfyui/server";
 import {registerStoryServer} from "@/modules/stories/server";
 import {registerToolsServer} from "@/engines/tools/server";
+import {registerAnthropicServer} from "@/engines/anthropic/server";
 
 export async function registerServerPlugins() {
     const global = globalThis as { __initialized?: boolean };
@@ -24,6 +25,7 @@ export async function registerServerPlugins() {
 
     registerDeepseekServer();
     registerOpenAIServer();
+    registerAnthropicServer();
 
     registerLorebooksServer();
     registerRegexesServer();
