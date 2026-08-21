@@ -79,8 +79,8 @@ export function HistoryDeleter() {
             const {slot} = slotContext.slotData;
             const llmapi = slot.llmapi;
             const story: StoryModel = {
+                id: "",
                 content: slot.content,
-                id: slot.id,
                 name: slot.name,
                 requires: slot.requires,
                 llmapi: {
