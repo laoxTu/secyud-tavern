@@ -63,7 +63,7 @@ export async function generateInput(context: LlmapiInputContext) {
                     });
                     items.push({
                         role: `tool: ${calling.name}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
+                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
                     });
                 }
                 for (const calling of callings) {
@@ -133,7 +133,7 @@ export async function generateInput(context: LlmapiInputContext) {
                     });
                     items.push({
                         role: `tool: ${calling.name}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
+                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
                     });
                     messages.push({
                         role: "tool",

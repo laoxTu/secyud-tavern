@@ -5,11 +5,12 @@ import {
     SlotInitializer,
     slotUtils
 } from "@/modules/slots/client/conversation-models";
-import {engineName, enginePlural} from "@/engines/tools/models";
+import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {LlmapiTool} from "@/engines/tools/client/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {historyUtils} from "@/modules/models";
+import {BusinessError} from "@/handler/models";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -28,7 +29,7 @@ export const toolConversationProvider:
             tools: {},
         };
         for (const preset of ctx.slot.presets) {
-            const entries = preset.entries?.[enginePlural];
+            const entries: LlmapiToolConfigModel[] = preset.entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled || !entry.provider) continue;
@@ -38,9 +39,14 @@ export const toolConversationProvider:
                     console.warn(`[tool]: provider missing(${entry.provider})`);
                     continue;
                 }
-                const tools = await provider.create(entry, ctx.slot);
-                for (const tool of tools) {
-                    cache.tools[tool.model.name] = tool;
+                try {
+                    const tools = await provider.create(entry, ctx.slot);
+                    for (const tool of tools) {
+                        cache.tools[tool.model.name] = tool;
+                    }
+                } catch (error) {
+                    throw new BusinessError("tool create failed", "tool.create_failed")
+                        .withValue("entry", entry.code);
                 }
             }
         }

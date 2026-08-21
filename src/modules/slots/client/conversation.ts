@@ -42,6 +42,8 @@ class SlotInitializerRegistry extends ClientRegistry<SlotInitializer> {
         }
         await this.use(provider =>
             provider.onInitialize(context));
+        console.debug("[slot]: ", slot);
+        slot.initialized = true;
     }
 }
 
@@ -191,7 +193,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
             context.histories.push(map(histories[i]));
         }
 
-        console.log("[slot](input): ", context);
+        console.debug("[slot](input): ", context);
 
         await conversationManager.inputProcesser.use(provider =>
             provider.onProcessInput(context));
@@ -219,6 +221,9 @@ class SlotContentRendererRegistry extends ClientRegistry<SlotContentRenderer> {
             slot?: SlotModel
         }) {
         slot = check.slot(slot);
+        if (!slot.initialized) {
+            return;
+        }
         const {
             postMessageContent,
             postMessageVariables,

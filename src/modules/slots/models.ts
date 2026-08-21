@@ -5,6 +5,7 @@ import {LlmapiModel} from "@/modules/llmapis/models";
 import {StoryModel} from "@/modules/stories/models";
 
 export interface SlotModel extends StoryModel {
+    initialized?: boolean;
     llmapi: LlmapiModel,
     histories: SlotHistory[],
     presets: PresetModel[],
