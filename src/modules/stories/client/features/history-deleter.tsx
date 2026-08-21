@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import {Button} from "@/components/ui/button";
 import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRouter} from "next/navigation";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {StoryModel} from "@/modules/stories/models";
 
 export function HistoryDeleter() {

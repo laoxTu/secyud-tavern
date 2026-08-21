@@ -1,11 +1,11 @@
 ﻿import {Registerable} from "@/utils/register";
 import {BusinessError} from "@/handler/models";
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {messageUtils, SlotHistory} from "@/modules/models";
 import {mergeObjects} from "@/utils";
 import {RequireModel} from "@/modules/presets/models";
 import {get} from "@/client";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 
 export const check = {
     slot: (slot?: SlotModel | null) => {

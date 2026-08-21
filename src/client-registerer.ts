@@ -10,7 +10,6 @@ import {registerLlmapiClient} from "@/modules/llmapis/client";
 import {registerStoryClient} from "@/modules/stories/client";
 import {registerPresetClient} from "@/modules/presets/client";
 import {registerMacrosClient} from "@/engines/macros/client";
-import {registerSlotClient} from "@/modules/slots/client";
 import {registerBusinessClient} from "@/business/client";
 import {registerOpenAIClient} from "@/engines/openai/client";
 import {registerClientPlugin} from "@/plugins/client/registerer";
@@ -22,7 +21,6 @@ import {registerAnthropicClient} from "@/engines/anthropic/client";
 
 async function loadClientPlugins() {
     registerBusinessClient();
-    registerSlotClient();
     registerStoryClient();
     registerPresetClient();
     registerLlmapiClient();

@@ -1,7 +1,7 @@
 ﻿'use client'
 import {Registerable} from "@/utils/register";
 import React from "react";
-import {LlmapiInputContext, SlotContextBase} from "@/modules/slots/client/conversation-models";
+import {LlmapiInputContext, SlotContextBase} from "@/modules/stories/client/conversation-models";
 import {SlotMessageOutput} from "@/modules/models/message";
 
 export interface LlmapiOutputContext extends SlotContextBase {

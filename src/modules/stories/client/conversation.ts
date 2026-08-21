@@ -1,5 +1,5 @@
 'use client';
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {
     check,
     LlmapiHistory,
@@ -15,7 +15,7 @@ import {
     slotUtils,
 } from "./conversation-models";
 import {ClientRegistry} from "@/plugins/client";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
@@ -222,6 +222,8 @@ class SlotContentRendererRegistry extends ClientRegistry<SlotContentRenderer> {
         }) {
         slot = check.slot(slot);
         if (!slot.initialized) {
+            // 副作用问题, 开发模式会渲染两次, 第一次渲染会读到第二次设置的slot.
+            // 它还未初始化就会引发错误, 这里直接停止第一次渲染. 让第二次渲染自己渲染.
             return;
         }
         const {

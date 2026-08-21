@@ -6,7 +6,7 @@ import {
     SlotInitializer,
     SlotStreamRenderer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {Eta} from 'eta/core';
 import {joinAsString} from "@/utils";
 import {engineName as regexEngineName} from "@/engines/regexes/models"

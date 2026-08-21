@@ -7,7 +7,7 @@ import {
     LlmapiOutputProcesser,
     SlotInitializer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
 import {historyUtils} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";

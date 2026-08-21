@@ -4,7 +4,7 @@ import {comfyuiModelNavigationContent} from "./model-content";
 import {comfyuiWorkflowTabManager} from "./workflow-tabs";
 import {tabConfig as parameterTab} from "./parameter-tab";
 import {comfyuiFeature} from "./slot-feature/comfyui-feature";
-import {slotFeatureManager} from "@/modules/slots/client/feature";
+import {slotFeatureManager} from "@/modules/stories/client/feature";
 import {settingTabManager} from "@/modules/settings/client/tabs";
 import {settingTab} from "./setting-tab";
 import {comfyUIParameterRegistry} from "./parameter";

@@ -1,4 +1,4 @@
-import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
+import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotCalling} from "@/modules/models/calling";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 import {compareLorebook, enginePlural as lorebookPlural, PresetLorebookModel} from "@/engines/lorebooks/models";

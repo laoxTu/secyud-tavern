@@ -3,7 +3,7 @@ import {UrlFetchConfigModel} from "../models";
 import {Readability} from "@mozilla/readability";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
-import {LlmapiToolModel} from "@/modules/slots/models";
+import {LlmapiToolModel} from "@/modules/stories/models";
 import {post} from "@/client";
 import {joinAsString} from "@/utils";
 

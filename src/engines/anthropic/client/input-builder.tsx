@@ -1,6 +1,6 @@
 ﻿import {useTranslations} from "next-intl";
 import React from "react";
-import {LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
+import {LlmapiInputContext, slotUtils} from "@/modules/stories/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
 import {ToolConversationCache} from "@/engines/tools/client/conversation";

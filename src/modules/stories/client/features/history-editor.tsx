@@ -1,6 +1,6 @@
 import {useTranslations} from "next-intl";
 import {useErrorHandler} from "@/handler/client/error";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {
     Dialog,
     DialogClose,
@@ -20,7 +20,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {BusinessError} from "@/handler/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {tryParseJson} from "@/utils";
 
 export function HistoryEditor() {

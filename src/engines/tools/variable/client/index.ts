@@ -1,5 +1,5 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {Editor} from "./editor";
 import {extract, Operation} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";

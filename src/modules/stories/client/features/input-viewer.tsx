@@ -15,12 +15,12 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
-import {conversationManager,} from "@/modules/slots/client/conversation";
+import {conversationManager,} from "@/modules/stories/client/conversation";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import {BusinessError} from "@/handler/models";
-import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
-import {slotContext} from "@/modules/slots/client/context";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
+import {slotContext} from "@/modules/stories/client/context";
 import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
 
 

@@ -1,10 +1,10 @@
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
     SlotInitializer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {LlmapiTool} from "@/engines/tools/client/models";

@@ -1,5 +1,5 @@
 import {Registerable} from "@/utils/register";
-import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import React from "react";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
 import {SlotCallingResult} from "@/modules/models/calling";
