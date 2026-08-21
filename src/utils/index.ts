@@ -6,6 +6,15 @@
         return defaultValue;
     }
 }
+export function checkJson(str?: string | null) {
+    try {
+        return !!(str && JSON.parse(str));
+    } catch (e) {
+        return false;
+    }
+}
+
+
 
 // 原生实现（支持嵌套对象合并）
 export function mergeObjects(target: any, source: any) {

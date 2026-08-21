@@ -11,6 +11,7 @@ import {
 import {engineName as ragEngineName} from '@/engines/rags/models';
 import {historyUtils} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
+import {tryParseJson} from "@/utils";
 
 
 export interface LorebookConversationCache {
@@ -38,6 +39,10 @@ export const lorebookConversationProvider:
             if (!entries) continue;
             for (const entry of entries) {
                 if (entry.disabled) continue;
+                if (entry.type === "json") {
+                    entry.content = JSON.stringify(tryParseJson(entry.content));
+                }
+
                 const id = `${preset.code}-${entry.code}`;
                 // 替换code，唯一标识
                 entry.code = id;

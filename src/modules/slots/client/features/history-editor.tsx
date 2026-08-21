@@ -21,6 +21,7 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {BusinessError} from "@/handler/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {slotContext} from "@/modules/slots/client/context";
+import {tryParseJson} from "@/utils";
 
 export function HistoryEditor() {
     const {handleError} = useErrorHandler();
@@ -50,15 +51,9 @@ export function HistoryEditor() {
             if (page.cur <= 0) return;
             const history = getHistory(page.cur);
             const variablesText = data.get("variables") as string;
-            try {
-                history.variables = JSON.parse(variablesText);
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.error(error);
-                    handleError(new BusinessError(error.message, "slot.variable_invalid_json", error));
-                    return;
-                }
-            }
+            history.variables = tryParseJson(variablesText);
+            if (!history.variables)
+                new BusinessError("json invalid", "slot.variable_invalid_json")
             for (let i = 0; i < history.inputs.length; i++) {
                 const input = history.inputs[i];
                 input.content = data.get(`history_input-${i}`) as string;

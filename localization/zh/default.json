@@ -158,6 +158,7 @@
     "builder_default": "默认构造器",
     "builder_layered": "层级构造器",
     "extras": "额外参数",
+    "format": "格式",
     "frequency_penalty": "presence penalty (用词重复度 -2.0~2.0)",
     "logprobs": "logprobs (返回置信度)",
     "max_iterations": "单回合最大轮次",

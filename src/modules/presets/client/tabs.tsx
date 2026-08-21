@@ -19,6 +19,7 @@ import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {tryParseJson} from "@/utils";
 
 export function getPresetRequires(data: FormData) {
     return data.getAll("require")
@@ -78,25 +79,21 @@ export function DefaultTab() {
                     });
                     coverId = id;
                 }
-                const getVariables = () => {
-                    const variablesText = data.get("variables") as string;
-                    if (!variablesText.trim()) return null;
-                    try {
-                        return JSON.parse(variablesText);
-                    } catch (e) {
-                        throw new BusinessError("variable deserialize failed.",
-                            'default.json_invalid', e)
-                            .withValue("target", "default.variables");
-                    }
-                }
+                const variablesText = (data.get("variables") as string)?.trim();
+                const variables = variablesText ? tryParseJson(variablesText) : null;
+                if (!variables)
+                    throw new BusinessError("variable deserialize failed.",
+                        'default.json_invalid')
+                        .withValue("target", "default.variables");
+
 
                 return await put("/presets/{id}",
                     {
                         content: {
                             opening: data.get("opening"),
                             description: data.get("description"),
-                            variables: getVariables(),
-                            coverId
+                            variables,
+                            coverId,
                         },
                         version: data.get("version") as string,
                         name: data.get("name") as string,
