@@ -21,6 +21,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRouter} from "next/navigation";
 import {slotContext} from "@/modules/stories/client/context";
 import {StoryModel} from "@/modules/stories/models";
+import {convertToRequire} from "@/modules/llmapis/models";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
@@ -83,12 +84,7 @@ export function HistoryDeleter() {
                 content: slot.content,
                 name: slot.name,
                 requires: slot.requires,
-                llmapi: {
-                    code: llmapi.code,
-                    name: llmapi.name,
-                    author: llmapi.content.author,
-                    version: llmapi.version,
-                }
+                llmapi: convertToRequire(llmapi)
             }
             const {id} = await post("/stories", story);
             if (!remain) {

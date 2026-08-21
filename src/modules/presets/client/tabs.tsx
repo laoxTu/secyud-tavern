@@ -81,7 +81,7 @@ export function DefaultTab() {
                 }
                 const variablesText = (data.get("variables") as string)
                     ?.trim() ?? "{}";
-                const variables = tryParseJson(variablesText);
+                const variables = variablesText ? tryParseJson(variablesText) : {};
                 if (!variables)
                     throw new BusinessError("variable deserialize failed.",
                         'default.json_invalid')

@@ -8,7 +8,7 @@ import {Label} from "@/components/ui/label";
 import {TabManager} from "@/components/custom/tab";
 import {get, put} from "@/client";
 import {ModelUpdate} from "@/business/client/template/model-update";
-import {LlmapiModel, moduleName} from "../models";
+import {convertToRequire, LlmapiModel, moduleName} from "../models";
 import {llmapiProviderRegistry} from "./provider";
 import {modelState} from './models';
 import {EntryTabHeader} from "@/business/client/template/tab-header";
@@ -56,12 +56,7 @@ export function LlmapiRequireField(
                             },
                         }
                     }) as PagedResult<LlmapiModel>;
-                    return res.data.map(u => ({
-                        code: u.code,
-                        name: u.name,
-                        author: u.provider,
-                        version: u.version,
-                    }));
+                    return res.data.map(convertToRequire);
                 } catch (e) {
                     handleError(e);
                 }
