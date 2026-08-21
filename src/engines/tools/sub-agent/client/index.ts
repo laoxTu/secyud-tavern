@@ -31,6 +31,8 @@ export const subAgentToolProvider: LlmapiToolProvider = {
         };
     },
     async create(config: LlmapiToolConfigModel, slot) {
+        // 子Agent禁止Agent调用
+        if (slot.properties.sub_agent) return [];
         const configValue: SubAgentConfigModel = config.value;
         const disableTags = new Set(configValue.disableTags);
         const story: StoryModel = {
@@ -53,7 +55,9 @@ export const subAgentToolProvider: LlmapiToolProvider = {
             },
             presets: result.presets.filter(u => u.tags
                 .every(v => !disableTags.has(v))),
-            properties: {}
+            properties: {
+                sub_agent: 1
+            }
         }
         await conversationManager.initializer.initialize({slot: subSlot});
         return [new SubAgentTool(config.code, configValue, subSlot)];
