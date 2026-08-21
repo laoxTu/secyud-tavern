@@ -12,13 +12,13 @@ import {getSlot} from "@/app/api/stories/models";
  */
 export const GET = interceptor.createRoute(
     async (request, records) => {
-        const story = await records.params as StoryModel;
+        const story = records.searchParams as StoryModel;
 
         if (!story) {
             throw new BusinessError(
                 'entity not found',
                 "default.entity_not_found")
-                .withValue("id", "input");
+                .withValue("id", "story");
         }
 
         const result = await getSlot(story);

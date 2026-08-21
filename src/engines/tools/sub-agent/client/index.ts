@@ -35,7 +35,7 @@ export const subAgentToolProvider: LlmapiToolProvider = {
         const configValue: SubAgentConfigModel = config.value;
         const disableTags = new Set(configValue.disableTags);
         const story: StoryModel = {
-            id: "",
+            id: "sub_agent",
             name: "sub_agent",
             requires: [...(configValue.presets ?? []), ...slot.requires,],
             llmapi: configValue.llmapi ?? slot.llmapi,
