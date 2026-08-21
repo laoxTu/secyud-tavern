@@ -11,16 +11,28 @@ export const openAIProvider: LlmapiProvider = {
             baseURL: config.url,
             apiKey: context.apiKey,
         });
-        const parameter: OpenAI.ChatCompletionCreateParams = {
-            ...context.config.parameters,
-            ...context.input,
-            stream,
-        };
 
-        const result =
-            await client.chat.completions.create(
-                parameter, {signal: context.signal,});
-        return stream ? packSseStream(result as any) : result;
+        if (config.format === "responses") {
+            const parameter: OpenAI.Responses.ResponseCreateParams = {
+                ...context.config.parameters,
+                ...context.input,
+                stream,
+            };
+            const result =
+                await client.responses.create(
+                    parameter, {signal: context.signal,});
+            return stream ? packSseStream(result as any) : result;
+        } else {
+            const parameter: OpenAI.ChatCompletionCreateParams = {
+                ...context.config.parameters,
+                ...context.input,
+                stream,
+            };
+            const result =
+                await client.chat.completions.create(
+                    parameter, {signal: context.signal,});
+            return stream ? packSseStream(result as any) : result;
+        }
     }
 
 }

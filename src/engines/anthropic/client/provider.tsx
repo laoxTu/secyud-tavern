@@ -101,8 +101,7 @@ function Content() {
 
 
 /**
- * open ai 的输出解析。
- * deepseek用的也是这个，这里提取出来复用。
+ * anthropic 的输出解析。
  */
 export async function generateOutput(context: LlmapiOutputContext) {
     const {output, content, message, stream} = context;

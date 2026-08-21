@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {moduleName} from "@/modules/llmapis/models";
 import {LlmapiOutputContext, LlmapiProvider} from "@/modules/llmapis/client/provider-models";
 import {engineName, OpenAIConfigModel} from "../models";
-import {mergeObjects} from "@/utils";
+import {joinAsString, mergeObjects} from "@/utils";
 import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
@@ -15,9 +15,13 @@ import {spanFull} from "@/components/custom/GridField";
 import {messageUtils} from "@/modules/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {OpenAI} from "openai";
+import {Selector} from "@/components/custom/selector";
+
+const formats = ["chat", "responses"];
 
 const defaultConfig: OpenAIConfigModel = {
     url: "",
+    format: "chat",
     extras: {},
     parameters: {
         model: "",
@@ -37,9 +41,18 @@ function Content() {
     const {model} = useItemState();
     const config: OpenAIConfigModel = mergeObjects(
         defaultConfig, model?.content["config"]);
+    const [format, setFormat] = React.useState<string | null>(config.format);
 
     return (
         <>
+            <Field>
+                <FieldLabel htmlFor={`${moduleName}-format`}>
+                    {t(`${moduleName}.format`)}
+                </FieldLabel>
+                <Selector id={`${moduleName}-format`} name={"format"}
+                          items={formats}
+                          value={format} onValueChange={setFormat}/>
+            </Field>
             <Field>
                 <FieldLabel htmlFor={`${moduleName}-url`}>
                     {t(`${moduleName}.url`)}
@@ -80,6 +93,20 @@ function Content() {
                        type={"number"} max={2} min={0} step={0.05}
                        defaultValue={config.parameters.top_p}/>
             </Field>
+            {
+                format === "responses" &&
+                <>
+                    <Field>
+                        <FieldLabel htmlFor={`${moduleName}-max_tokens`}>
+                            {t(`${moduleName}.max_tokens`)}
+                        </FieldLabel>
+                        <Input id={`${moduleName}-max_tokens`}
+                               name={"max_output_tokens"}
+                               type={"number"} min={0} step={1}
+                               defaultValue={config.parameters.max_output_tokens ?? 16}/>
+                    </Field>
+                </>
+            }
             <Field>
                 <FieldLabel htmlFor={`${moduleName}-presence_penalty`}>
                     {t(`${moduleName}.presence_penalty`)}
@@ -113,73 +140,145 @@ function Content() {
 /**
  * open ai 的输出解析。
  * deepseek用的也是这个，这里提取出来复用。
+ * 包含 chat / responses两种format，默认用chat
  */
 export async function generateOutput(context: LlmapiOutputContext) {
-    const {output, content, message, stream} = context;
+    const {output, content, message, stream, slot} = context;
     if (!output) return;
-    if (stream) {
-        const chunk: OpenAI.ChatCompletionChunk = output;
-        const choice = chunk.choices[0];
-        const delta = choice.delta;
-        if (choice.finish_reason === "stop") {
-            context.stopped = true;
-        }
-        // 偷懒，deepseek的思考直接放这里了
-        const thought: string = (delta as any).reasoning_content;
-        message.thought += thought ?? "";
-        if (delta.content) {
-            content.content ??= "";
-            content.content += delta.content;
-            messageUtils.setContent(message, content.content);
-        }
-        // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
-        if (delta.tool_calls?.length) {
-            message.callings ??= [];
-            for (const tool_call of delta.tool_calls) {
-                const index = message.callings
-                    .findIndex(u => u.index === tool_call.index);let calling: SlotCalling | null = null;
-                if (index < 0) {
-                    calling = {
-                        index: tool_call.index,
-                        id: tool_call.id,
-                        name: tool_call.function?.name,
-                        arguments: tool_call.function?.arguments ?? "",
-                    } as SlotCalling;
-                    message.callings.push(calling);
-                } else {
-                    calling = message.callings[index];
+
+    if (slot.llmapi.content.config?.format === "responses") {
+        if (stream) {
+            const event: OpenAI.Responses.ResponseStreamEvent = output;
+
+            switch (event.type) {
+                case 'response.reasoning_summary_text.delta':
+                    message.thought += event.delta;
+                    break;
+                case 'response.output_text.delta':
+                    content.content ??= "";
+                    content.content += event.delta;
+                    messageUtils.setContent(message, content.content);
+                    break;
+                // 新增 Item（消息或工具调用）
+                case 'response.output_item.added':
+                    const item = event.item;
+                    if (item.type === 'function_call') {
+                        message.callings ??= [];
+                        content.toolCallIndex ??= 0;
+                        content.currentToolCall = {
+                            index: content.toolCallIndex++,
+                            id: item.id,
+                            name: item.name,
+                            arguments: item.arguments ?? "",
+                        } as SlotCalling;
+                        message.callings.push(content.currentToolCall)
+                    }
+                    break;
+                case 'response.function_call_arguments.delta':
+                    if (content.currentToolCall) {
+                        content.currentToolCall.arguments += event.delta;
+                    }
+                    break;
+                case "response.completed":
+                    context.stopped = !message.callings?.length;
+                    break;
+            }
+        } else {
+            const chunk: OpenAI.Responses.Response = output;
+            if (chunk.output.every(u => u.type !== "function_call")) {
+                context.stopped = true;
+            }
+            let toolCallId = 0;
+            for (const delta of chunk.output) {
+                switch (delta.type) {
+                    case "function_call": {
+                        message.callings?.push({
+                            index: toolCallId++,
+                            id: delta.call_id,
+                            name: delta.name,
+                            arguments: delta.arguments ?? "",
+                        });
+                    }
+                        break;
+                    case "message":
+                        messageUtils.setContent(message, joinAsString(delta.content
+                            .filter(u =>
+                                u.type === "output_text"), "", u => u.text));
+                        break;
+                    case "reasoning":
+                        if (delta.content) {
+                            message.thought += joinAsString(delta.content,
+                                "", u => u.text);
+                        }
+                        break;
                 }
-                calling.id ??= tool_call.id ?? "";
-                calling.name ??= tool_call.function?.name ?? "";
-                if (tool_call.function?.arguments)
-                    calling.arguments += tool_call.function.arguments;
             }
         }
     } else {
-        const chunk: OpenAI.ChatCompletion = output;
-        const choice = chunk.choices[0];
-        const delta = choice.message;
-        if (choice.finish_reason === "stop") {
-            context.stopped = true;
-        }
-        const thought: string = (delta as any).reasoning_content;
-        message.thought += thought ?? "";
-        messageUtils.setContent(message, delta.content);
-        if (delta.tool_calls)
-            for (let i = 0; i < delta.tool_calls.length; i++) {
-                const tool_call = delta.tool_calls[i];
-                if (tool_call.type === "function") {
-                    message.callings?.push({
-                        index: i,
-                        id: tool_call.id,
-                        name: tool_call.function?.name,
-                        arguments: tool_call.function?.arguments ?? "",
-                    });
+        if (stream) {
+            const chunk: OpenAI.ChatCompletionChunk = output;
+            const choice = chunk.choices[0];
+            const delta = choice.delta;
+            if (choice.finish_reason === "stop") {
+                context.stopped = true;
+            }
+            // 偷懒，deepseek的思考直接放这里了
+            const thought: string = (delta as any).reasoning_content;
+            message.thought += thought ?? "";
+            if (delta.content) {
+                content.content ??= "";
+                content.content += delta.content;
+                messageUtils.setContent(message, content.content);
+            }
+            // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
+            if (delta.tool_calls?.length) {
+                message.callings ??= [];
+                for (const tool_call of delta.tool_calls) {
+                    const index = message.callings
+                        .findIndex(u => u.index === tool_call.index);
+                    let calling: SlotCalling | null = null;
+                    if (index < 0) {
+                        calling = {
+                            index: tool_call.index,
+                            id: tool_call.id,
+                            name: tool_call.function?.name,
+                            arguments: tool_call.function?.arguments ?? "",
+                        } as SlotCalling;
+                        message.callings.push(calling);
+                    } else {
+                        calling = message.callings[index];
+                    }
+                    calling.id ??= tool_call.id ?? "";
+                    calling.name ??= tool_call.function?.name ?? "";
+                    if (tool_call.function?.arguments)
+                        calling.arguments += tool_call.function.arguments;
                 }
             }
+        } else {
+            const chunk: OpenAI.ChatCompletion = output;
+            const choice = chunk.choices[0];
+            const delta = choice.message;
+            if (choice.finish_reason === "stop") {
+                context.stopped = true;
+            }
+            const thought: string = (delta as any).reasoning_content;
+            message.thought += thought ?? "";
+            messageUtils.setContent(message, delta.content);
+            if (delta.tool_calls)
+                for (let i = 0; i < delta.tool_calls.length; i++) {
+                    const tool_call = delta.tool_calls[i];
+                    if (tool_call.type === "function") {
+                        message.callings?.push({
+                            index: i,
+                            id: tool_call.id,
+                            name: tool_call.function?.name,
+                            arguments: tool_call.function?.arguments ?? "",
+                        });
+                    }
+                }
+        }
     }
 }
-
 
 export const provider: LlmapiProvider =
     {
@@ -192,17 +291,22 @@ export const provider: LlmapiProvider =
             } catch (_) {
                 extras = {};
             }
+            const format = data.get("format") as any ?? "chat";
             return {
+                format: format,
+                inputBuilder: getInputBuilderConfig(data),
+                url: data.get('url') as string,
+                extras: extras,
                 parameters: {
                     model: data.get('model') as string,
                     temperature: Number(data.get('temperature')),
                     top_p: Number(data.get('top_p')),
                     presence_penalty: Number(data.get('presence_penalty')),
                     frequency_penalty: Number(data.get('frequency_penalty')),
+                    ...(format === "responses" ? {
+                        max_output_tokens: Number(data.get('max_output_tokens')),
+                    } : {})
                 },
-                inputBuilder: getInputBuilderConfig(data),
-                url: data.get('url') as string,
-                extras: extras,
             };
         },
         generateOutput,
