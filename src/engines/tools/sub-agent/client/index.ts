@@ -2,13 +2,12 @@ import {Editor} from "./editor";
 import {SubAgentConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
-import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
+import {LlmapiToolModel, SlotModel, StoryModel} from "@/modules/stories/models";
 import {conversationManager} from "@/modules/stories/client/conversation";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {checkJson, tryParseJson} from "@/utils";
 import {getPresetRequires} from "@/modules/presets/client/tabs";
 import {get} from "@/client";
-import {StoryModel} from "@/modules/stories/models";
 import {BusinessError} from "@/handler/models";
 
 export const subAgentToolProvider: LlmapiToolProvider = {
@@ -37,7 +36,10 @@ export const subAgentToolProvider: LlmapiToolProvider = {
         const story: StoryModel = {
             id: "sub_agent",
             name: "sub_agent",
-            requires: [...(configValue.presets ?? []), ...slot.requires,],
+            requires: [
+                ...(configValue.presets ?? []),
+                ...(configValue.disablePreset ? [] : slot.requires),
+            ],
             llmapi: configValue.llmapi ?? slot.llmapi,
             content: {},
         };
@@ -49,9 +51,8 @@ export const subAgentToolProvider: LlmapiToolProvider = {
             get histories() {
                 return slot.histories;
             },
-            presets: configValue.disablePreset ? [] :
-                result.presets.filter(u => u.tags
-                    .every(v => !disableTags.has(v))),
+            presets: result.presets.filter(u => u.tags
+                .every(v => !disableTags.has(v))),
             properties: {}
         }
         await conversationManager.initializer.initialize({slot: subSlot});
