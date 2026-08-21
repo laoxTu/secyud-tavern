@@ -31,10 +31,13 @@ class SlotInitializerRegistry extends ClientRegistry<SlotInitializer> {
         super("SlotInitializer");
     }
 
-    async initialize(slot?: SlotModel) {
+    async initialize(
+        {slot}: {
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const context: SlotInitializeContext = {
-            content: {},
+            properties: {},
             slot,
         }
         await this.use(provider =>
@@ -47,11 +50,14 @@ class LlmapiOutputProcesserRegistry extends ClientRegistry<LlmapiOutputProcesser
         super("LlmapiOutputProcesser");
     }
 
-    async processOutput(history: SlotHistory,
-                        slot?: SlotModel) {
+    async processOutput(
+        {history, slot}: {
+            history: SlotHistory,
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const outputContext: LlmapiResultContext = {
-            content: {},
+            properties: {},
             history,
             slot,
         };
@@ -66,7 +72,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         super("LlmapiInputProcesser");
     }
 
-    getLlmapiProvider(llmapi: LlmapiModel) {
+    private getLlmapiProvider(llmapi: LlmapiModel) {
         // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
         const providerName = llmapi.provider;
         if (!providerName) {
@@ -83,9 +89,13 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         };
     }
 
-    async* requestReply(history: SlotHistory,
-                        signal: (c: AbortController) => Promise<void>,
-                        slot?: SlotModel) {
+    async* requestReply(
+        {history, args, signal, slot}: {
+            history: SlotHistory,
+            args?: any,
+            signal: (c: AbortController) => Promise<void>,
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const {llmapi, provider, maxIterations} = this.getLlmapiProvider(slot.llmapi);
         const outputs: SlotMessageOutput[] = [];
@@ -96,7 +106,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
             const current = outputs.length > 0;
 
             const {input} = await this
-                .processInput(history, current, slot);
+                .processInput({args, history, current, slot});
 
             const reply = new AbortController();
             await signal(reply);
@@ -122,7 +132,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
                             break;
                         }
                         const context: LlmapiOutputContext = {
-                            content,
+                            properties: content,
                             message: output,
                             output: chunk,
                             stream: true,
@@ -138,7 +148,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
                 }
             } else {
                 const context: LlmapiOutputContext = {
-                    content,
+                    properties: content,
                     message: output,
                     output: response,
                     slot,
@@ -151,16 +161,20 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         }
     }
 
-    async processInput(history: SlotHistory,
-                       current: boolean,
-                       slot?: SlotModel) {
+    async processInput(
+        {history, current, args, slot}: {
+            history: SlotHistory,
+            args?: any,
+            current: boolean,
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const {provider} = this.getLlmapiProvider(slot.llmapi);
         const histories = slot.histories;
         const context: LlmapiInputContext = {
             slot,
             history,
-            content: {},
+            properties: {args},
             current,
             histories: [],
             contentHandlers: [],
@@ -199,14 +213,18 @@ class SlotContentRendererRegistry extends ClientRegistry<SlotContentRenderer> {
         super("SlotContentRenderer");
     }
 
-    async renderContent(history: SlotHistory, slot?: SlotModel) {
+    async renderContent(
+        {history, slot}: {
+            history: SlotHistory,
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const {
             postMessageContent,
             postMessageVariables,
         } = slotContext;
         const context: RenderContext = {
-            content: {},
+            properties: {},
             history,
             slot,
             contentHandlers: []
@@ -229,10 +247,14 @@ class SlotStreamRendererRegistry extends ClientRegistry<SlotStreamRenderer> {
         super("SlotStreamRenderer");
     }
 
-    async renderStream(history: SlotHistory, slot?: SlotModel) {
+    async renderStream(
+        {history, slot}: {
+            history: SlotHistory,
+            slot?: SlotModel
+        }) {
         slot = check.slot(slot);
         const context: RenderContext = {
-            content: {},
+            properties: {},
             history,
             slot,
             contentHandlers: []

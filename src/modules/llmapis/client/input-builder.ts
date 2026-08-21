@@ -37,7 +37,7 @@ export async function generateMessageWithBuilder(
         pushSystemMessage: (content: string) => void,
     }) {
     const entries = slotUtils
-        .getContent<LorebookConversationCache>(slot, lorebookPlural);
+        .getProperty<LorebookConversationCache>(slot, lorebookPlural);
     const visited = new Set<string>();
     let simulation = 0;
     switch (builder) {

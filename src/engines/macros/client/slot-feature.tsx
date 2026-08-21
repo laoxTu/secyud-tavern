@@ -25,7 +25,7 @@ export function MacroSelector() {
     const handleDialogOpen = () => {
         try {
             const {slot} = slotContext.slotData;
-            const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
+            const cache: MacroConversationCache = slotUtils.getProperty(slot, enginePlural);
             setCache(cache);
             setOpen(true);
         } catch (error) {
@@ -35,7 +35,7 @@ export function MacroSelector() {
     const handleSelectChange = (key: string, index: number) => {
         try {
             const {slot} = slotContext.slotData;
-            const cache: MacroConversationCache = slotUtils.getContent(slot, enginePlural);
+            const cache: MacroConversationCache = slotUtils.getProperty(slot, enginePlural);
             const item = cache.macros[key];
             item.select = index;
             setCache(cache);

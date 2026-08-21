@@ -58,7 +58,7 @@ export const ragConversationProvider:
         const provider =
             manager.records[state.embeddingGenerator];
         if (state.disabled || !provider) {
-            slotUtils.setContent(ctx.slot, enginePlural, {
+            slotUtils.setProperty(ctx.slot, enginePlural, {
                 disabled: true
             });
             return;
@@ -91,18 +91,18 @@ export const ragConversationProvider:
                 })
             }
         }
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
         // 缓存可选：RAG 未启用时 onInitialize 不会写入，这里用守卫而非 getContent；
         // cache.disabled 用于收窄联合类型到完整缓存分支
         const cache: RagConversationCache =
-            slotUtils.getContent(ctx.slot, enginePlural);
+            slotUtils.getProperty(ctx.slot, enginePlural);
         if (cache.disabled) return;
 
         // 世界书缓存必定初始化，跨引擎读取走 getContent
         const lorebookCache = slotUtils
-            .getContent<LorebookConversationCache>(ctx.slot, lorebookEnginePlural);
+            .getProperty<LorebookConversationCache>(ctx.slot, lorebookEnginePlural);
         const prepareLorebooks: PresetLorebookModel[] = [];
         for (const history of ctx.histories) {
             for (const input of history.inputs) {
@@ -117,7 +117,8 @@ export const ragConversationProvider:
 
             prepareLorebooks.length = 0;
 
-            const output = historyUtils.getOutput(history);
+            const output = historyUtils
+                .getOutputs(history)?.at(-1);
             if (output) await setActiveVectors(output);
         }
 
@@ -138,7 +139,7 @@ export const ragConversationProvider:
     },
     onProcessOutput: async (ctx) => {
         // 同 onProcessInput，RAG 缓存可选，用守卫
-        const cache: RagConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
+        const cache: RagConversationCache = slotUtils.getProperty(ctx.slot, enginePlural);
         if (cache.disabled) return;
         const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs?.length) return;

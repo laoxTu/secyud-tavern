@@ -17,7 +17,7 @@ export async function generateInput(context: LlmapiInputContext) {
     if (context.slot.llmapi.content.config?.format === "responses") {
         const messages: OpenAI.Responses.ResponseInputItem[] = [];
         const tools: OpenAI.Responses.Tool[] = Object
-            .values(slotUtils.getContent<ToolConversationCache>(
+            .values(slotUtils.getProperty<ToolConversationCache>(
                 context.slot, toolPlural).tools)
             .map((u) => ({
                 type: "function",
@@ -88,7 +88,7 @@ export async function generateInput(context: LlmapiInputContext) {
     } else {
         const messages: OpenAI.ChatCompletionMessageParam[] = [];
         const tools: OpenAI.ChatCompletionTool[] = Object
-            .values(slotUtils.getContent<ToolConversationCache>(
+            .values(slotUtils.getProperty<ToolConversationCache>(
                 context.slot, toolPlural).tools)
             .map((u) => ({
                 type: "function",

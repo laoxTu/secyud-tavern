@@ -51,7 +51,7 @@ export const scriptConversationProvider:
         }
         cache.entries.sort((a, b) => a.priority - b.priority);
         cache.importMap = JSON.stringify(cache.importMap);
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async () => {
     },
@@ -61,7 +61,7 @@ export const scriptConversationProvider:
         if (!window.__injectedScriptInitialized && document) {
             window.__injectedScriptInitialized = true;
             console.debug('[script]: start inject');
-            const cache: ScriptConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
+            const cache: ScriptConversationCache = slotUtils.getProperty(ctx.slot, enginePlural);
 
             if (cache.importMap !== "{}") {
                 const script = document.createElement("script");

@@ -7,22 +7,30 @@ import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {SubAgentConfigModel} from "@/engines/tools/sub-agent/models";
 import {Textarea} from "@/components/ui/textarea";
 import {TagBox} from "@/components/custom/combobox";
-import {spanFull} from "@/components/custom/GridField";
+import {spanFull, spanHalf} from "@/components/custom/GridField";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {submitTargetFormOnKey} from "@/business/client";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {parameterEntryName as engineName} from "@/modules/comfyui/models";
 import React from "react";
+import {PresetRequiresField} from "@/modules/presets/client/tabs";
+import {MonacoEditor} from "@/components/custom/monaco-editor";
 
 const defaultConfig: SubAgentConfigModel = {
     disablePreset: false, maxLength: 0,
-    description: "", disableTags: [],
-    prompt: "",
-    llmapi: null
+    description: "",
+    disableTags: [],
+    llmapi: null,
+    presets: [],
+    schema: `
+{
+    "type": "object",
+    "additionalProperties": false
+}`,
 };
 
-export function Editor({defaultValue, entry}: LlmapiToolProps) {
+export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
     const t = useTranslations();
     const config: SubAgentConfigModel = mergeObjects(defaultConfig, defaultValue);
 
@@ -49,6 +57,8 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
             </Field>
             <LlmapiRequireField defaultValue={config.llmapi ?? null}
                                 prefix={`${engineName}-${entry.id}`}/>
+            <PresetRequiresField defaultValue={config.presets ?? []}
+                                 prefix={`${engineName}-${entry.id}`}/>
             <Field className={spanFull}>
                 <FieldLabel htmlFor={`${entry.id}-disable_tags`}>
                     {t('sub_agent.disable_tags')}
@@ -56,16 +66,7 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                 <TagBox id={`${entry.id}-disable_tags`} name={"disable_tags"}
                         defaultValue={config.disableTags}/>
             </Field>
-            <Field className={spanFull}>
-                <FieldLabel htmlFor={`${entry.id}-prompt`}>
-                    {t('sub_agent.prompt')}
-                </FieldLabel>
-                <Textarea id={`${entry.id}-prompt`}
-                          name={"prompt"}
-                          defaultValue={config.prompt}
-                          onKeyDown={submitTargetFormOnKey}/>
-            </Field>
-            <Field className={spanFull}>
+            <Field className={spanHalf}>
                 <FieldLabel htmlFor={`${entry.id}-description`}>
                     {t('default.description')}
                 </FieldLabel>
@@ -73,6 +74,15 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
                           name={"description"}
                           defaultValue={config.description}
                           onKeyDown={submitTargetFormOnKey}/>
+            </Field>
+            <Field className={spanHalf}>
+                <FieldLabel htmlFor={`${entry.id}-schema`}>
+                    {t('default.schema')}
+                </FieldLabel>
+                <MonacoEditor name={"schema"}
+                              defaultValue={config.schema}
+                              language={"json"}
+                              formRef={formRef}/>
             </Field>
         </>
     );

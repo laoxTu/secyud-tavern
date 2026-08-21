@@ -143,7 +143,7 @@ function Content() {
  * 包含 chat / responses两种format，默认用chat
  */
 export async function generateOutput(context: LlmapiOutputContext) {
-    const {output, content, message, stream, slot} = context;
+    const {output, properties, message, stream, slot} = context;
     if (!output) return;
 
     if (slot.llmapi.content.config?.format === "responses") {
@@ -155,28 +155,28 @@ export async function generateOutput(context: LlmapiOutputContext) {
                     message.thought += event.delta;
                     break;
                 case 'response.output_text.delta':
-                    content.content ??= "";
-                    content.content += event.delta;
-                    messageUtils.setContent(message, content.content);
+                    properties.content ??= "";
+                    properties.content += event.delta;
+                    messageUtils.setContent(message, properties.content);
                     break;
                 // 新增 Item（消息或工具调用）
                 case 'response.output_item.added':
                     const item = event.item;
                     if (item.type === 'function_call') {
                         message.callings ??= [];
-                        content.toolCallIndex ??= 0;
-                        content.currentToolCall = {
-                            index: content.toolCallIndex++,
+                        properties.toolCallIndex ??= 0;
+                        properties.currentToolCall = {
+                            index: properties.toolCallIndex++,
                             id: item.id,
                             name: item.name,
                             arguments: item.arguments ?? "",
                         } as SlotCalling;
-                        message.callings.push(content.currentToolCall)
+                        message.callings.push(properties.currentToolCall)
                     }
                     break;
                 case 'response.function_call_arguments.delta':
-                    if (content.currentToolCall) {
-                        content.currentToolCall.arguments += event.delta;
+                    if (properties.currentToolCall) {
+                        properties.currentToolCall.arguments += event.delta;
                     }
                     break;
                 case "response.completed":
@@ -226,9 +226,9 @@ export async function generateOutput(context: LlmapiOutputContext) {
             const thought: string = (delta as any).reasoning_content;
             message.thought += thought ?? "";
             if (delta.content) {
-                content.content ??= "";
-                content.content += delta.content;
-                messageUtils.setContent(message, content.content);
+                properties.content ??= "";
+                properties.content += delta.content;
+                messageUtils.setContent(message, properties.content);
             }
             // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
             if (delta.tool_calls?.length) {

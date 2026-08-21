@@ -44,7 +44,7 @@ export const toolConversationProvider:
                 }
             }
         }
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async () => {
     },
@@ -65,7 +65,7 @@ export async function fillToolCallContent(
     toolCalls?: SlotCalling[],
 ) {
     if (!toolCalls?.length) return;
-    const cache: ToolConversationCache = slotUtils.getContent(slot, enginePlural);
+    const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
 
     for (const toolCall of toolCalls.filter(u => !u.result)) {
         try {

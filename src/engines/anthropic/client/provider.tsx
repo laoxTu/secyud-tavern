@@ -104,7 +104,7 @@ function Content() {
  * anthropic 的输出解析。
  */
 export async function generateOutput(context: LlmapiOutputContext) {
-    const {output, content, message, stream} = context;
+    const {output, properties, message, stream} = context;
     if (!output) return;
     if (stream) {
         const chunk: Anthropic.RawMessageStreamEvent = output;
@@ -129,9 +129,9 @@ export async function generateOutput(context: LlmapiOutputContext) {
 
             switch (delta.type) {
                 case "text_delta":
-                    content.content ??= "";
-                    content.content += delta.text;
-                    messageUtils.setContent(message, content.content);
+                    properties.content ??= "";
+                    properties.content += delta.text;
+                    messageUtils.setContent(message, properties.content);
                     break;
                 case "signature_delta":
                     message.properties["signature"] += delta.signature;

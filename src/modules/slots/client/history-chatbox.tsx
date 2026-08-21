@@ -13,7 +13,6 @@ import {slotContext,} from "@/modules/slots/client/context";
 import {post} from "@/client";
 import {conversationManager,} from "@/modules/slots/client/conversation";
 import {useTranslations} from "next-intl";
-import {tryGetLastItem} from "@/utils";
 import {useErrorHandler} from "@/handler/client/error";
 import {useHistoryPageState} from "@/modules/slots/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
@@ -64,9 +63,11 @@ export const useStoryChatboxState =
                         await setPage(histories.length);
                     }
                     for await (const {} of conversationManager.inputProcesser
-                        .requestReply(history, async signal => {
-                            await setHistoryPage();
-                            set({signal});
+                        .requestReply({
+                            history, signal: async signal => {
+                                await setHistoryPage();
+                                set({signal});
+                            }
                         })) {
                         // 流式渲染条件
                         // 故事页面为最新，输出页面为最新
@@ -74,13 +75,13 @@ export const useStoryChatboxState =
                         if (page.cur === histories.length &&
                             history.outputId === history.outputs.length - 1) {
                             await conversationManager.streamRenderer
-                                .renderStream(history);
+                                .renderStream({history});
                         }
                     }
                     await setHistoryPage();
                     // 解析输出，填充一些选项或处理，这里应该会缓存世界书
                     await conversationManager.outputProcesser
-                        .processOutput(history);
+                        .processOutput({history});
                 } catch (err) {
                     if (err instanceof Error && err.name === 'AbortError') {
                         console.log('user abort reply');
@@ -117,7 +118,7 @@ export const useStoryChatboxState =
                     // 如果上一个历史还未输出，合并到上一个历史。
                     // 如果上一个历史已经输出，创建新的历史。
                     // 如果还没有历史，使用开场白变量。
-                    let history = tryGetLastItem(histories)!;
+                    let history = histories.at(-1)!;
                     if (history) {
                         if (history.outputs.length > 0) {
                             variables = historyUtils.getVariables(history);

@@ -14,7 +14,7 @@ export const scriptToolProvider: LlmapiToolProvider = {
         const schema = data.get('schema') as string;
         if (!checkJson(schema))
             throw new BusinessError("json invalid", "default.json_invalid")
-                .withValue("target", "default.schema")
+                .withValue("target", "default.schema");
         return {
             hidden: !!data.get('hidden'),
             enableDoc: !!data.get('enable_doc'),

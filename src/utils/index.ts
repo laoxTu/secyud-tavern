@@ -41,13 +41,6 @@ export function mergeObjects(target: any, source: any) {
     return result;
 }
 
-export function tryGetLastItem<T>(items: T[]) {
-    if (items.length == 0) {
-        return null;
-    }
-    return items[items.length - 1];
-}
-
 export function mergeSortedArrays<T>(arr1: T[], arr2: T[], value: (t: T) => number): T[] {
     let i = 0, j = 0;
     const result: T[] = [];

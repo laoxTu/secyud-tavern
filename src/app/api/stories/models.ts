@@ -38,7 +38,7 @@ export async function getSlot(story: StoryModel): Promise<SlotModel> {
         histories,
         llmapi,
         presets,
-        context: {}
+        properties: {}
     };
 }
 

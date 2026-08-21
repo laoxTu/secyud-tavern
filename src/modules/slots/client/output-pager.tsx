@@ -70,7 +70,7 @@ export const useOutputPageState =
             const {page} = useHistoryPageState.getState();
             const history = getHistory(page.cur);
             await conversationManager.contentRenderer
-                .renderContent(history);
+                .renderContent({history});
         },
     }));
 

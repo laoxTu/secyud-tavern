@@ -6,8 +6,9 @@ export interface SubAgentConfigModel {
     // 子agent只考虑上下文构筑
     disableTags: string[],
     description: string,
-    prompt: string,
     maxLength: number,
+    schema: string,
     disablePreset: boolean,
     llmapi: RequireModel | null,
+    presets: RequireModel[] | null,
 }

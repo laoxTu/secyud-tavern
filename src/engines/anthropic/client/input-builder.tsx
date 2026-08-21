@@ -18,7 +18,7 @@ export async function generateInput(
     const items: LlmapiInputItem[] = [];
     const messages: Anthropic.MessageParam[] = [];
     const tools: Anthropic.ToolUnion[] = Object
-        .values(slotUtils.getContent<ToolConversationCache>(
+        .values(slotUtils.getProperty<ToolConversationCache>(
             context.slot, toolPlural).tools)
         .map((u) => ({
             name: u.model.name,

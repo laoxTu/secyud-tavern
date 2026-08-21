@@ -62,9 +62,9 @@ export function InputViewer() {
             };
 
             const {items} = await conversationManager.inputProcesser
-                .processInput(history, false, {
-                    ...slot,
-                    histories: [...histories, history]
+                .processInput({
+                    history, current: false,
+                    slot: {...slot, histories: [...histories, history]}
                 });
             setItems(items);
             setOpen(true);

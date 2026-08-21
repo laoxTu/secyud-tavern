@@ -157,7 +157,7 @@ export class VariableSetTool implements LlmapiTool {
 
     async invoke({changes}: { changes: Operation[] }) {
         const history = this.slot.histories.at(-1);
-        const currentOutput = history ? historyUtils.getOutput(history) : null;
+        const currentOutput = historyUtils.getOutputs(history)?.at(-1);
         if (currentOutput) {
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
             for (const change of changes) {

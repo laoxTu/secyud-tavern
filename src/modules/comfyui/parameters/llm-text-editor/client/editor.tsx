@@ -106,17 +106,19 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             let thought = "";
             let content = "";
             for await (const {output, outputs} of conversationManager.inputProcesser.requestReply(
-                history,
-                async (signal) => {
-                    useLlmTextEditorState.getState().setSignal(signal);
-                },
                 {
-                    ...slot,
-                    histories: [
-                        getHistory(useHistoryPageState.getState().page.cur),
-                        history,
-                    ],
-                    llmapi: await slotUtils.getLlmapi(config?.llmapi, slot),
+                    history,
+                    signal: async (signal) => {
+                        useLlmTextEditorState.getState().setSignal(signal);
+                    },
+                    slot: {
+                        ...slot,
+                        histories: [
+                            getHistory(useHistoryPageState.getState().page.cur),
+                            history,
+                        ],
+                        llmapi: await slotUtils.getLlmapi(config?.llmapi, slot),
+                    }
                 })) {
                 if (output.thought === thought) {
                     setThinking(false);

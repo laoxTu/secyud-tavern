@@ -2,12 +2,12 @@
 import {
     LlmapiInputProcesser,
     SlotContentRenderer,
+    SlotContextBase,
     SlotInitializer,
     SlotStreamRenderer,
     slotUtils
 } from "@/modules/slots/client/conversation-models";
 import {Eta} from 'eta/core';
-import {SlotModel} from "@/modules/slots/models";
 import {joinAsString} from "@/utils";
 import {engineName as regexEngineName} from "@/engines/regexes/models"
 import {historyUtils, SlotHistory} from "@/modules/models";
@@ -17,8 +17,12 @@ const eta = new Eta({
     rmWhitespace: false,
 });
 
-function buildMacroObject(ctx: { slot: SlotModel, history: SlotHistory }) {
-    const cache: MacroConversationCache = slotUtils.getContent(ctx.slot, enginePlural);
+function buildMacroObject(
+    {history, slot, properties}: SlotContextBase & {
+        history: SlotHistory
+    }) {
+    const cache = slotUtils
+        .getProperty<MacroConversationCache>(slot, enginePlural);
 
     return {
         ...Object.fromEntries(Object.values(cache.macros).map(u => {
@@ -27,7 +31,8 @@ function buildMacroObject(ctx: { slot: SlotModel, history: SlotHistory }) {
                     ...u.multiples.filter(v => !v.disabled)
                 ], "", u => u?.value)]
         })),
-        variables: historyUtils.getVariables(ctx.history, false),
+        ...(properties.args ?? {}),
+        variables: historyUtils.getVariables(history, false),
     }
 }
 
@@ -63,11 +68,11 @@ export const macroConversationProvider:
     = {
     id: engineName,
     requires: [regexEngineName],
-    onInitialize: async (ctx) => {
+    onInitialize: async ({slot}) => {
         const cache: MacroConversationCache = {
             macros: {}
         }
-        for (const preset of ctx.slot.presets) {
+        for (const preset of slot.presets) {
             const entries: PresetMacroModel[] = preset.entries?.[enginePlural];
             if (!entries) continue;
             for (const entry of entries) {
@@ -88,7 +93,7 @@ export const macroConversationProvider:
                 }
             }
         }
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
         const macroObject = buildMacroObject(ctx);

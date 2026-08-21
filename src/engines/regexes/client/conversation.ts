@@ -25,7 +25,7 @@ export const regexLlmapiInputProcesser: LlmapiInputProcesser = {
     id: engineName,
     requires: [lorebookEngineName],
     onProcessInput: async (ctx) => {
-        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
+        const cache: RegexConversationCache = slotUtils.getProperty(ctx.slot, enginePlural)
         const generate = async (str: string, role: string) => {
             return role !== "tool" ? applyRegexes(cache.inputs, str,) : str;
         };
@@ -58,17 +58,17 @@ export const regexConversationProvider:
                 }
             }
         }
-        slotUtils.setContent(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
-        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
+        const cache: RegexConversationCache = slotUtils.getProperty(ctx.slot, enginePlural)
         const generate = async (str: string) => {
             return applyRegexes(cache.outputs, str);
         };
         ctx.contentHandlers.push(generate);
     },
     onRenderContent: async (ctx) => {
-        const cache: RegexConversationCache = slotUtils.getContent(ctx.slot, enginePlural)
+        const cache: RegexConversationCache = slotUtils.getProperty(ctx.slot, enginePlural)
         const generate = async (str: string) => {
             return applyRegexes(cache.outputs, str);
         };
