@@ -184,7 +184,7 @@ function Tab() {
                         if (!checkJson(content))
                             throw new BusinessError("json is invalid",
                                 "default.json_invalid")
-                                .withValue("target", "default.lorebook");
+                                .withValue("target", "preset.lorebook");
                     }
                     const result: PresetLorebookModel = {
                         ...entry,

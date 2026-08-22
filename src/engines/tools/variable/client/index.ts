@@ -84,7 +84,7 @@ export class VariableSetTool implements LlmapiTool {
                                             $ref: "$def/path"
                                         },
                                         op: {
-                                            description: "The operation to perform. if replace, path should be exist, otherwise miss change.",
+                                            description: "The operation to perform.",
                                             type: "string",
                                             enum: ["add", "replace", "test"]
                                         },
