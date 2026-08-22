@@ -78,7 +78,7 @@ export function MacroSelector() {
                                             {i > 0 ? <Separator className={'my-1'}/> : null}
                                             <FieldContent className="flex-row p-2">
                                                 <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
-                                                <FieldLabel htmlFor={`macro-${u.key}-${i}`}
+                                                <FieldLabel htmlFor={`macro-${u.key}-${i * 2}`}
                                                             className="m-auto ml-2 flex-1">
                                                     {u.name}
                                                 </FieldLabel>
@@ -107,9 +107,10 @@ export function MacroSelector() {
                                         {i > 0 ? <Separator className={'my-1'}/> : null}
                                         <FieldContent
                                             className="flex-row p-2 rounded-md hover:bg-primary-foreground">
-                                            <Checkbox defaultChecked={!u.disabled}
+                                            <Checkbox id={`macro-${u.key}-${i * 2 + 1}`}
+                                                      defaultChecked={!u.disabled}
                                                       onCheckedChange={b => u.disabled = !b}/>
-                                            <FieldLabel htmlFor={`macro-${u.key}-${i}`}
+                                            <FieldLabel htmlFor={`macro-${u.key}-${i * 2 + 1}`}
                                                         className="m-auto ml-2 flex-1">
                                                 {u.name}
                                             </FieldLabel>

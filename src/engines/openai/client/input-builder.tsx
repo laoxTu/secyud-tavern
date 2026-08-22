@@ -3,7 +3,7 @@ import React from "react";
 import {LlmapiInputContext, slotUtils} from "@/modules/stories/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
-import {ToolConversationCache} from "@/engines/tools/client/conversation";
+import {ToolConversationCache, toolUtils} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
 import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
@@ -20,9 +20,8 @@ export async function generateInput(context: LlmapiInputContext) {
     const items: LlmapiInputItem[] = [];
     if (context.slot.llmapi.content.config?.format === "responses") {
         const messages: OpenAI.Responses.ResponseInputItem[] = [];
-        const tools: OpenAI.Responses.Tool[] = Object
-            .values(slotUtils.getProperty<ToolConversationCache>(
-                context.slot, toolPlural).tools)
+        const tools: OpenAI.Responses.Tool[] = toolUtils
+            .getActiveTools(context.slot)
             .map((u) => ({
                 type: "function",
                 name: u.model.name,

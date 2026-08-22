@@ -11,6 +11,7 @@ export interface LlmapiToolProps {
 }
 
 export interface LlmapiTool {
+    disabled?: boolean,
     model: LlmapiToolModel,
     invoke: (args: any) => Promise<SlotCallingResult>,
 }

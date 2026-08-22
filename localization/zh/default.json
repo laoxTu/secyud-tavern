@@ -294,7 +294,9 @@
     "prompt": "提示词"
   },
   "tool": {
-    "create_failed": "工具创建失败({entry})"
+    "create_failed": "工具创建失败({entry})",
+    "selector": "工具选择",
+    "show_selector": "显示工具选择"
   },
   "url_fetch": {
     "max_length": "长度返回限制",

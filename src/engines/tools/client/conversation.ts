@@ -58,15 +58,20 @@ export const toolConversationProvider:
         const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs?.length) return;
         for (const output of outputs) {
-            await fillToolCallContent(ctx.slot, output.callings);
+            await callTools(ctx.slot, output.callings);
         }
     }
 };
 
+function getActiveTools(slot: SlotModel) {
+    const cache = slotUtils.getProperty<ToolConversationCache>(slot, enginePlural);
+
+    return Object.values(cache.tools).filter(t => !t.disabled);
+}
 
 // 在浏览器端执行模型请求的工具，结果写回 content。
 // 会被两处调用，靠 content 已填去重，避免重复执行。
-export async function fillToolCallContent(
+async function callTools(
     slot: SlotModel,
     toolCalls?: SlotCalling[],
 ) {
@@ -96,4 +101,8 @@ export async function fillToolCallContent(
             console.error(err);
         }
     }
+}
+
+export const toolUtils = {
+    callTools, getActiveTools
 }
