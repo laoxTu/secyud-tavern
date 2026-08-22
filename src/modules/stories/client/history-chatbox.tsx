@@ -38,7 +38,9 @@ export const useStoryChatboxState =
     create<StoryChatboxState>((set, get) =>
         ({
             content: "",
-            setContent: (content: string) => set({content}),
+            setContent: (content: string | ((t: string) => string)) =>
+                typeof content === "string" ? set({content}) :
+                    set(u => ({content: content(u.content)})),
             summary: false,
             setSummary: (summary: boolean) => set({summary}),
             setSignal: (signal, reason) => {
