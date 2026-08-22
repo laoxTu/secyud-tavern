@@ -23,6 +23,8 @@ function getOutputs(history?: SlotHistory | null) {
  */
 function getVariables(history: SlotHistory, output: boolean = true) {
     const variables = structuredClone(history.variables);
+    console.debug("[variables](before patch): ", history.variables);
+    console.debug("[variables](after patch): ", variables);
     for (const input of history.inputs) {
         patch(variables, input.variables);
     }

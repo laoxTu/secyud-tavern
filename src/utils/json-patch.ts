@@ -103,16 +103,16 @@ export function patchOne(obj: any, change: Operation) {
     switch (change.op) {
         case "add": {
             const {previous, current} = extract(obj, change.path, true);
-            if (!current || typeof current.item !== 'object') {
-                // 目标没有值，就直接赋值，或值不为对象，就直接赋值
+            if (!current.item || typeof current.item !== 'object') {
+                // 目标没有值或值不为对象，就直接赋值
                 previous.item[current.key] = change.value;
             } else if (Array.isArray(current.item)) {
                 // 值为数组，直接在后面追加
-                previous.item.push(change.value);
+                current.item.push(change.value);
             } else {
                 // 目标是对象，直接展开
                 previous.item[current.key] = {
-                    ...(current ?? {}),
+                    ...(current.item ?? {}),
                     ...(change.value ?? {}),
                 };
             }
@@ -122,7 +122,7 @@ export function patchOne(obj: any, change: Operation) {
             // ai 总是会用replace，导致行为不符合预期，所以没有用JSON Patch的标准。
             // JSON Patch 标准：只有目标值存在才会被替换
             const {previous, current} = extract(obj, change.path, true);
-            if (!current || !Array.isArray(previous.item)) {
+            if (!Array.isArray(previous.item)) {
                 // 目标没有值，就直接赋值，或值不为对象，就直接赋值
                 previous.item[current.key] = change.value;
             } else if (/^\d+$/.test(current.key)) {
