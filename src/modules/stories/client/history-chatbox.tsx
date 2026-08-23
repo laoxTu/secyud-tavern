@@ -47,8 +47,8 @@ export const useStoryChatboxState =
             setSummary: (summary: boolean) => set({summary}),
             setSignal: (signal, reason) => {
                 const origin = get().signal;
-                if (origin) {
-                    origin.abort(reason ?? "reset");
+                if (origin && reason) {
+                    origin.abort(reason);
                 }
                 set({signal});
             },

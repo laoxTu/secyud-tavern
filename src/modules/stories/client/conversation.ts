@@ -113,9 +113,11 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
 
             const reply = new AbortController();
             await signal(reply);
-            setAbort(reply.signal, ()=>{
+            setAbort(reply.signal, () => {
+                console.debug("[slot]: reset signal");
                 iterations = 0;
             });
+            console.debug(`[slot]: iterations ${iterations}`);
             const response = await post(`/llmapis/{id}/chat`, input,
                 {
                     params: {id: llmapi.id},
@@ -130,6 +132,22 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
             };
             outputs.push(output);
             const content: Record<string, any> = {};
+            const setOutput =
+                async (stream: boolean, delta: any) => {
+                    const context: LlmapiOutputContext = {
+                        properties: content,
+                        message: output,
+                        output: delta,
+                        stream: stream,
+                        slot,
+                        stopped: false,
+                    };
+                    await provider.generateOutput(context);
+                    if (context.stopped) {
+                        iterations = 0;
+                    }
+                    return {outputs, output};
+                };
             if (slot.llmapi.stream) {
                 if (response.body) {
                     for await (const chunk of readSseStream(response.body)) {
@@ -137,32 +155,11 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
                             console.warn('[HistoryChatbox] reply canceled');
                             break;
                         }
-                        const context: LlmapiOutputContext = {
-                            properties: content,
-                            message: output,
-                            output: chunk,
-                            stream: true,
-                            slot,
-                            stopped: false,
-                        };
-                        await provider.generateOutput(context);
-                        yield {outputs, output};
-                        if (context.stopped) {
-                            iterations = 0;
-                        }
+                        yield setOutput(true, chunk);
                     }
                 }
             } else {
-                const context: LlmapiOutputContext = {
-                    properties: content,
-                    message: output,
-                    output: response,
-                    slot,
-                    stream: false,
-                    stopped: false,
-                };
-                await provider.generateOutput(context);
-                yield {outputs, output};
+                yield setOutput(true, response);
             }
         }
     }
