@@ -4,7 +4,7 @@ import {
     LlmapiOutputProcesser,
     SlotInitializer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {
     RagConversationCache,
     RagSearchContext,

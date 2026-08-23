@@ -1,4 +1,4 @@
-﻿import {slotContext} from "@/modules/slots/client/context";
+﻿import {slotContext} from "@/modules/stories/client/context";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon} from "lucide-react";
@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {PageState} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {create} from 'zustand';
-import {useOutputPageState} from "@/modules/slots/client/output-pager";
+import {useOutputPageState} from "@/modules/stories/client/output-pager";
 
 export interface StoryHistoryPageState {
     page: PageState;

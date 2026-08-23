@@ -94,28 +94,27 @@ export function extract(obj: any, path: string, create: boolean = false) {
     };
 }
 
+/**
+ * 这是针对AI的JSON patch，和一般的json Patch理解不同
+ * @param obj
+ * @param change
+ */
 export function patchOne(obj: any, change: Operation) {
     switch (change.op) {
         case "add": {
             const {previous, current} = extract(obj, change.path, true);
-            if (Array.isArray(previous.item) && /^\d+$/.test(current.key)) {
-                const index = parseInt(current.key, 10);
-                if (index === previous.item.length) {
-                    // 索引等于长度 → 追加
-                    previous.item.push(change.value);
-                } else if (index < previous.item.length) {
-                    // 索引在范围内 → 插入
-                    previous.item.splice(index, 0, change.value);
-                } else {
-                    // 索引越界 → 报错或返回 false
-                    return false;
-                }
-            } else if (Array.isArray(previous.item) && current.key === '-') {
-                // 特殊语法: /- → 追加
-                previous.item.push(change.value);
-            } else {
-                // 对象或非数字索引 → 直接赋值
+            if (!current.item || typeof current.item !== 'object') {
+                // 目标没有值或值不为对象，就直接赋值
                 previous.item[current.key] = change.value;
+            } else if (Array.isArray(current.item)) {
+                // 值为数组，直接在后面追加
+                current.item.push(change.value);
+            } else {
+                // 目标是对象，直接展开
+                previous.item[current.key] = {
+                    ...(current.item ?? {}),
+                    ...(change.value ?? {}),
+                };
             }
             return true;
         }
@@ -123,20 +122,22 @@ export function patchOne(obj: any, change: Operation) {
             // ai 总是会用replace，导致行为不符合预期，所以没有用JSON Patch的标准。
             // JSON Patch 标准：只有目标值存在才会被替换
             const {previous, current} = extract(obj, change.path, true);
-            if (Array.isArray(previous.item) && /^\d+$/.test(current.key)) {
+            if (!Array.isArray(previous.item)) {
+                // 目标没有值，就直接赋值，或值不为对象，就直接赋值
+                previous.item[current.key] = change.value;
+            } else if (/^\d+$/.test(current.key)) {
                 const index = parseInt(current.key, 10);
-                if (index === previous.item.length) {
-                    // 索引等于长度 → 追加
+                if (index >= previous.item.length) {
+                    // 追加
                     previous.item.push(change.value);
-                } else if (index < previous.item.length) {
-                    // 索引在范围内 → 插入
-                    previous.item.splice(index, 0, change.value);
+                } else if (index < 0) {
+                    // 插入首位
+                    previous.item.unshift(change.value);
                 } else {
-                    // 索引越界 → 报错或返回 false
-                    return false;
+                    previous.item[index] = change.value;
                 }
             } else {
-                previous.item[current.key] = change.value;
+                return false;
             }
             return true;
         }

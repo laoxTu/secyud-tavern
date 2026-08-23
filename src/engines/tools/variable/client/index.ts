@@ -1,5 +1,5 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {Editor} from "./editor";
 import {extract, Operation} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";
@@ -84,7 +84,7 @@ export class VariableSetTool implements LlmapiTool {
                                             $ref: "$def/path"
                                         },
                                         op: {
-                                            description: "The operation to perform. if replace, path should be exist, otherwise miss change.",
+                                            description: "The operation to perform.",
                                             type: "string",
                                             enum: ["add", "replace", "test"]
                                         },

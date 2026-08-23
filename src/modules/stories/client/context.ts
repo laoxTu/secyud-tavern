@@ -2,10 +2,10 @@
 import {RefObject} from "react";
 import {put} from "@/client";
 import {joinAsString} from "@/utils";
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
-import {slotUtils} from "@/modules/slots/client/conversation-models";
+import {slotUtils} from "@/modules/stories/client/conversation-models";
 
 const instance: {
     slot: SlotModel | null;

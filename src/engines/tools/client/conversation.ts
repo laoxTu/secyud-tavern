@@ -1,16 +1,17 @@
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
     SlotInitializer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {LlmapiTool} from "@/engines/tools/client/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {historyUtils} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -58,22 +59,31 @@ export const toolConversationProvider:
         const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs?.length) return;
         for (const output of outputs) {
-            await fillToolCallContent(ctx.slot, output.callings);
+            await callTools(ctx.slot, output.callings);
         }
     }
 };
 
+function getActiveTools(slot: SlotModel) {
+    const cache = slotUtils.getProperty<ToolConversationCache>(slot, enginePlural);
+
+    return Object.values(cache.tools).filter(t => !t.disabled);
+}
 
 // 在浏览器端执行模型请求的工具，结果写回 content。
 // 会被两处调用，靠 content 已填去重，避免重复执行。
-export async function fillToolCallContent(
+async function callTools(
     slot: SlotModel,
     toolCalls?: SlotCalling[],
 ) {
     if (!toolCalls?.length) return;
     const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
 
+    let aborted = false;
+    useStoryChatboxState.getState()
+        .setAbort(() => aborted = true);
     for (const toolCall of toolCalls.filter(u => !u.result)) {
+        if (aborted) break;
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
             const tool = cache.tools[toolCall.name];
@@ -96,4 +106,8 @@ export async function fillToolCallContent(
             console.error(err);
         }
     }
+}
+
+export const toolUtils = {
+    callTools, getActiveTools
 }

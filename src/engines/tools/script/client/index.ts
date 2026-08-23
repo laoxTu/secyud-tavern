@@ -2,9 +2,9 @@ import {Editor} from "./editor";
 import {ScriptToolConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
-import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
+import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {BusinessError} from "@/handler/models";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {checkJson} from "@/utils";
 
 export const scriptToolProvider: LlmapiToolProvider = {

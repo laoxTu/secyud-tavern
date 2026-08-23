@@ -1,13 +1,12 @@
 ﻿import {useTranslations} from "next-intl";
 import React from "react";
-import {LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
+import {LlmapiInputContext} from "@/modules/stories/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
-import {ToolConversationCache} from "@/engines/tools/client/conversation";
+import {toolUtils} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
 import {AnthropicInputBuilderConfigModel} from "../models";
 import {joinAsString, tryParseJson} from "@/utils";
-import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import Anthropic from '@anthropic-ai/sdk';
 import {generateMessageWithBuilder, getLorebookTool} from "@/modules/llmapis/client/input-builder";
@@ -17,9 +16,8 @@ export async function generateInput(
     context: LlmapiInputContext) {
     const items: LlmapiInputItem[] = [];
     const messages: Anthropic.MessageParam[] = [];
-    const tools: Anthropic.ToolUnion[] = Object
-        .values(slotUtils.getProperty<ToolConversationCache>(
-            context.slot, toolPlural).tools)
+    const tools: Anthropic.ToolUnion[] = toolUtils
+        .getActiveTools(context.slot)
         .map((u) => ({
             name: u.model.name,
             input_schema: u.model.parameters as any,

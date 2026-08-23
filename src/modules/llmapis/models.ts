@@ -1,4 +1,5 @@
 ﻿import {BaseModel} from "@/business/models";
+import {RequireModel} from "@/modules/presets/models";
 
 export interface LlmapiModel extends BaseModel {
     code: string,
@@ -10,6 +11,15 @@ export interface LlmapiModel extends BaseModel {
     key?: string,
     iv?: Buffer,
     builder?: string,
+}
+
+export function convertToRequire(llmapi: LlmapiModel) {
+    return {
+        code: llmapi.code,
+        version: llmapi.version,
+        name: llmapi.name,
+        author: llmapi.provider,
+    } as RequireModel;
 }
 
 export const moduleName = 'llmapi';

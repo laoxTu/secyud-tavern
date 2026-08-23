@@ -1,8 +1,8 @@
 ﻿import {presetTabManager} from "@/modules/presets/client/tabs";
-import {conversationManager} from "@/modules/slots/client/conversation";
+import {conversationManager} from "@/modules/stories/client/conversation";
 import {tabConfig} from "./preset-tab";
 import {macroConversationProvider, macroLlmapiInputProcesser} from "./conversation";
-import {slotFeatureManager} from "@/modules/slots/client/feature";
+import {slotFeatureManager} from "@/modules/stories/client/feature";
 import {macroSelectorFeature} from "@/engines/macros/client/slot-feature";
 
 

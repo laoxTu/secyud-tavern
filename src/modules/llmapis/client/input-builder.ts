@@ -1,9 +1,9 @@
-import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/slots/client/conversation-models";
+import {LlmapiHistory, LlmapiInputContext, slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotCalling} from "@/modules/models/calling";
 import {LorebookConversationCache} from "@/engines/lorebooks/client/conversation";
 import {compareLorebook, enginePlural as lorebookPlural, PresetLorebookModel} from "@/engines/lorebooks/models";
 import {historyUtils} from "@/modules/models";
-import {fillToolCallContent} from "@/engines/tools/client/conversation";
+import {toolUtils} from "@/engines/tools/client/conversation";
 import {joinAsString, sequenceGroupBy} from "@/utils";
 import {SlotMessageOutput} from "@/modules/models/message";
 
@@ -101,7 +101,7 @@ export async function generateMessageWithBuilder(
         for (const output of outputs) {
             const content = await generateContent(output.content, "assistant", "output");
             // 检验工具是否触发
-            await fillToolCallContent(slot, output.callings);
+            await toolUtils.callTools(slot, output.callings);
             const callings = output.callings
                 ?.filter(u => !u.result?.hidden);
             if (callings?.length) {

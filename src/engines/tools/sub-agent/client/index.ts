@@ -2,13 +2,12 @@ import {Editor} from "./editor";
 import {SubAgentConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolConfigModel} from "@/engines/tools/models";
-import {LlmapiToolModel, SlotModel} from "@/modules/slots/models";
-import {conversationManager} from "@/modules/slots/client/conversation";
-import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
+import {LlmapiToolModel, SlotModel, StoryModel} from "@/modules/stories/models";
+import {conversationManager} from "@/modules/stories/client/conversation";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {checkJson, tryParseJson} from "@/utils";
 import {getPresetRequires} from "@/modules/presets/client/tabs";
 import {get} from "@/client";
-import {StoryModel} from "@/modules/stories/models";
 import {BusinessError} from "@/handler/models";
 
 export const subAgentToolProvider: LlmapiToolProvider = {
@@ -32,12 +31,17 @@ export const subAgentToolProvider: LlmapiToolProvider = {
         };
     },
     async create(config: LlmapiToolConfigModel, slot) {
+        // 子Agent禁止Agent调用
+        if (slot.properties.sub_agent) return [];
         const configValue: SubAgentConfigModel = config.value;
         const disableTags = new Set(configValue.disableTags);
         const story: StoryModel = {
             id: "sub_agent",
             name: "sub_agent",
-            requires: [...(configValue.presets ?? []), ...slot.requires,],
+            requires: [
+                ...(configValue.presets ?? []),
+                ...(configValue.disablePreset ? [] : slot.requires),
+            ],
             llmapi: configValue.llmapi ?? slot.llmapi,
             content: {},
         };
@@ -49,10 +53,11 @@ export const subAgentToolProvider: LlmapiToolProvider = {
             get histories() {
                 return slot.histories;
             },
-            presets: configValue.disablePreset ? [] :
-                result.presets.filter(u => u.tags
-                    .every(v => !disableTags.has(v))),
-            properties: {}
+            presets: result.presets.filter(u => u.tags
+                .every(v => !disableTags.has(v))),
+            properties: {
+                sub_agent: 1
+            }
         }
         await conversationManager.initializer.initialize({slot: subSlot});
         return [new SubAgentTool(config.code, configValue, subSlot)];
@@ -74,22 +79,13 @@ export class SubAgentTool implements LlmapiTool {
     }
 
     async invoke(args: any) {
-        let instance: {
-            abort: () => void,
-        } | null = null;
-
         const signal = async (signal: AbortController | null) => {
-            if (instance) {
-                instance.abort();
-            }
             if (signal) {
-                const parent = useStoryChatboxState.getState().signal;
-                const abort = () => {
-                    signal.abort();
-                    parent?.signal.removeEventListener("abort", abort);
-                };
-                parent?.signal.addEventListener("abort", abort);
-                instance = {abort};
+                useStoryChatboxState.getState()
+                    .setAbort(() => {
+                        console.debug("[sub-agent]: abort");
+                        signal.abort("user cancelled");
+                    });
             }
         }
         let result: string = "error: empty content";
@@ -112,7 +108,6 @@ export class SubAgentTool implements LlmapiTool {
         const history = histories.at(-1)!;
         history.outputs = [];
         history.outputId = -1;
-
         for await (const {output} of conversationManager.inputProcesser
             .requestReply({
                 history, signal,

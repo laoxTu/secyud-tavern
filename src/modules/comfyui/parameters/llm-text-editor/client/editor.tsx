@@ -12,14 +12,14 @@ import {CornerDownLeftIcon, SquareStopIcon} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {spanFull, spanHalf} from "@/components/custom/GridField";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
-import {conversationManager} from "@/modules/slots/client/conversation";
+import {conversationManager} from "@/modules/stories/client/conversation";
 import {create} from "zustand";
-import {slotUtils} from "@/modules/slots/client/conversation-models";
+import {slotUtils} from "@/modules/stories/client/conversation-models";
 
 export interface LlmTextEditorState {
     signal?: AbortController,

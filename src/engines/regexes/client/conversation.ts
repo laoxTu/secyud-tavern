@@ -4,7 +4,7 @@
     SlotInitializer,
     SlotStreamRenderer,
     slotUtils
-} from "@/modules/slots/client/conversation-models";
+} from "@/modules/stories/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 

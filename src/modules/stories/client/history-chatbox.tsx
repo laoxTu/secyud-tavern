@@ -9,17 +9,18 @@ import {
 } from "@/components/ui/input-group";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Label} from "@/components/ui/label";
-import {slotContext,} from "@/modules/slots/client/context";
+import {slotContext,} from "@/modules/stories/client/context";
 import {post} from "@/client";
-import {conversationManager,} from "@/modules/slots/client/conversation";
+import {conversationManager,} from "@/modules/stories/client/conversation";
 import {useTranslations} from "next-intl";
 import {useErrorHandler} from "@/handler/client/error";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
 import {create} from "zustand";
 import {historyUtils, messageUtils} from "@/modules/models";
-import {slotUtils} from "@/modules/slots/client/conversation-models";
+import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotMessageInput} from "@/modules/models/message";
+import {setAbort} from "@/utils";
 
 
 export interface StoryChatboxState {
@@ -29,6 +30,7 @@ export interface StoryChatboxState {
     setSummary: (summary: boolean) => void,
     signal?: AbortController,
     setSignal: (signal?: AbortController, reason?: string) => void,
+    setAbort: (func: () => void) => void,
     generating: boolean,
     generate: () => Promise<void>,
     create: () => Promise<void>,
@@ -38,7 +40,9 @@ export const useStoryChatboxState =
     create<StoryChatboxState>((set, get) =>
         ({
             content: "",
-            setContent: (content: string) => set({content}),
+            setContent: (content: string | ((t: string) => string)) =>
+                typeof content === "string" ? set({content}) :
+                    set(u => ({content: content(u.content)})),
             summary: false,
             setSummary: (summary: boolean) => set({summary}),
             setSignal: (signal, reason) => {
@@ -47,6 +51,15 @@ export const useStoryChatboxState =
                     origin.abort(reason ?? "reset");
                 }
                 set({signal});
+            },
+            setAbort: (action) => {
+                const signal = get().signal?.signal;
+                if (!signal) {
+                    console.debug(`[signal]: not set`)
+                    return;
+                }
+                console.debug(`[signal]: set abort`);
+                setAbort(signal, action);
             },
             generating: false,
             generate: async () => {
@@ -66,7 +79,7 @@ export const useStoryChatboxState =
                         .requestReply({
                             history, signal: async signal => {
                                 await setHistoryPage();
-                                set({signal});
+                                get().setSignal(signal);
                             }
                         })) {
                         // 流式渲染条件
@@ -227,6 +240,7 @@ export function HistoryChatbox() {
                             <InputGroupButton type="button" disabled={false}
                                               onClick={(e) => {
                                                   e.stopPropagation();
+                                                  e.preventDefault();
                                                   setSignal(undefined, "user canceled")
                                               }}>
                                 <SquareStopIcon/>

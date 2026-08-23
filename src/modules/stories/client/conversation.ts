@@ -1,5 +1,5 @@
 'use client';
-import {SlotModel} from "@/modules/slots/models";
+import {SlotModel} from "@/modules/stories/models";
 import {
     check,
     LlmapiHistory,
@@ -15,11 +15,11 @@ import {
     slotUtils,
 } from "./conversation-models";
 import {ClientRegistry} from "@/plugins/client";
-import {slotContext} from "@/modules/slots/client/context";
+import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
-import {readSseStream} from "@/utils";
+import {readSseStream, setAbort} from "@/utils";
 import {LlmapiOutputContext} from "@/modules/llmapis/client/provider-models";
 import {SlotMessageOutput} from "@/modules/models/message";
 import {post} from "@/client";
@@ -105,6 +105,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         history.outputs.push(outputs);
         let iterations = maxIterations;
         while (iterations > 0) {
+            iterations--;
             const current = outputs.length > 0;
 
             const {input} = await this
@@ -112,6 +113,9 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
 
             const reply = new AbortController();
             await signal(reply);
+            setAbort(reply.signal, ()=>{
+                iterations = 0;
+            });
             const response = await post(`/llmapis/{id}/chat`, input,
                 {
                     params: {id: llmapi.id},
@@ -222,6 +226,8 @@ class SlotContentRendererRegistry extends ClientRegistry<SlotContentRenderer> {
         }) {
         slot = check.slot(slot);
         if (!slot.initialized) {
+            // 副作用问题, 开发模式会渲染两次, 第一次渲染会读到第二次设置的slot.
+            // 它还未初始化就会引发错误, 这里直接停止第一次渲染. 让第二次渲染自己渲染.
             return;
         }
         const {

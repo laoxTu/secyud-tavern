@@ -3,8 +3,8 @@ import {useTranslations} from "next-intl";
 import {RotateCcwIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
-import {useStoryChatboxState} from "@/modules/slots/client/history-chatbox";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 
 
 export function Regenerator() {

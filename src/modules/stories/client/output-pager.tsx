@@ -6,9 +6,9 @@ import {PageState} from "@/business/models";
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {slotContext} from "@/modules/slots/client/context";
-import {conversationManager} from "@/modules/slots/client/conversation";
-import {useHistoryPageState} from "@/modules/slots/client/history-pager";
+import {slotContext} from "@/modules/stories/client/context";
+import {conversationManager} from "@/modules/stories/client/conversation";
+import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 
 export interface StoryOutputPageState {
     page: PageState,
