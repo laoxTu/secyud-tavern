@@ -11,6 +11,7 @@ import {LlmapiTool} from "@/engines/tools/client/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {historyUtils} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -78,7 +79,11 @@ async function callTools(
     if (!toolCalls?.length) return;
     const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
 
+    let aborted = false;
+    useStoryChatboxState.getState()
+        .setAbort(() => aborted = true);
     for (const toolCall of toolCalls.filter(u => !u.result)) {
+        if (aborted) break;
         try {
             // 按函数名找配置，再经 toolId 找具体实现。
             const tool = cache.tools[toolCall.name];

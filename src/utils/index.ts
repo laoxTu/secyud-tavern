@@ -6,6 +6,7 @@
         return defaultValue;
     }
 }
+
 export function checkJson(str?: string | null) {
     try {
         return !!(str && JSON.parse(str));
@@ -13,7 +14,6 @@ export function checkJson(str?: string | null) {
         return false;
     }
 }
-
 
 
 // 原生实现（支持嵌套对象合并）
@@ -174,11 +174,10 @@ export function sequenceGroupBy<T, TKey = string>(arr: T[], value: (t: T) => TKe
     }, [] as SequenceGroup<T, TKey>[]);
 }
 
-export function connectSignal(signal: AbortSignal, controller: AbortController) {
-    const onAbort = () => {
-        console.warn('client abort the api stream.');
-        controller.abort();
-        signal.removeEventListener("abort", onAbort);
+export function setAbort(signal: AbortSignal, action: () => void) {
+    const abort = () => {
+        action();
+        signal.removeEventListener("abort", abort);
     };
-    signal.addEventListener('abort', onAbort);
+    signal.addEventListener('abort', abort);
 }

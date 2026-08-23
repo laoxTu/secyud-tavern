@@ -19,7 +19,7 @@ import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {llmapiProviderRegistry} from "@/modules/llmapis/client/provider";
-import {readSseStream} from "@/utils";
+import {readSseStream, setAbort} from "@/utils";
 import {LlmapiOutputContext} from "@/modules/llmapis/client/provider-models";
 import {SlotMessageOutput} from "@/modules/models/message";
 import {post} from "@/client";
@@ -105,6 +105,7 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         history.outputs.push(outputs);
         let iterations = maxIterations;
         while (iterations > 0) {
+            iterations--;
             const current = outputs.length > 0;
 
             const {input} = await this
@@ -112,6 +113,9 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
 
             const reply = new AbortController();
             await signal(reply);
+            setAbort(reply.signal, ()=>{
+                iterations = 0;
+            });
             const response = await post(`/llmapis/{id}/chat`, input,
                 {
                     params: {id: llmapi.id},

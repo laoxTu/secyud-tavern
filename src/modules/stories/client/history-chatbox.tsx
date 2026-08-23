@@ -20,6 +20,7 @@ import {create} from "zustand";
 import {historyUtils, messageUtils} from "@/modules/models";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotMessageInput} from "@/modules/models/message";
+import {setAbort} from "@/utils";
 
 
 export interface StoryChatboxState {
@@ -29,6 +30,7 @@ export interface StoryChatboxState {
     setSummary: (summary: boolean) => void,
     signal?: AbortController,
     setSignal: (signal?: AbortController, reason?: string) => void,
+    setAbort: (func: () => void) => void,
     generating: boolean,
     generate: () => Promise<void>,
     create: () => Promise<void>,
@@ -50,6 +52,15 @@ export const useStoryChatboxState =
                 }
                 set({signal});
             },
+            setAbort: (action) => {
+                const signal = get().signal?.signal;
+                if (!signal) {
+                    console.debug(`[signal]: not set`)
+                    return;
+                }
+                console.debug(`[signal]: set abort`);
+                setAbort(signal, action);
+            },
             generating: false,
             generate: async () => {
                 const {
@@ -68,7 +79,7 @@ export const useStoryChatboxState =
                         .requestReply({
                             history, signal: async signal => {
                                 await setHistoryPage();
-                                set({signal});
+                                get().setSignal(signal);
                             }
                         })) {
                         // 流式渲染条件
@@ -229,6 +240,7 @@ export function HistoryChatbox() {
                             <InputGroupButton type="button" disabled={false}
                                               onClick={(e) => {
                                                   e.stopPropagation();
+                                                  e.preventDefault();
                                                   setSignal(undefined, "user canceled")
                                               }}>
                                 <SquareStopIcon/>

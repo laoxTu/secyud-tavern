@@ -79,22 +79,13 @@ export class SubAgentTool implements LlmapiTool {
     }
 
     async invoke(args: any) {
-        let instance: {
-            abort: () => void,
-        } | null = null;
-
         const signal = async (signal: AbortController | null) => {
-            if (instance) {
-                instance.abort();
-            }
             if (signal) {
-                const parent = useStoryChatboxState.getState().signal;
-                const abort = () => {
-                    signal.abort();
-                    parent?.signal.removeEventListener("abort", abort);
-                };
-                parent?.signal.addEventListener("abort", abort);
-                instance = {abort};
+                useStoryChatboxState.getState()
+                    .setAbort(() => {
+                        console.debug("[sub-agent]: abort");
+                        signal.abort("user cancelled");
+                    });
             }
         }
         let result: string = "error: empty content";
@@ -117,7 +108,6 @@ export class SubAgentTool implements LlmapiTool {
         const history = histories.at(-1)!;
         history.outputs = [];
         history.outputId = -1;
-
         for await (const {output} of conversationManager.inputProcesser
             .requestReply({
                 history, signal,
