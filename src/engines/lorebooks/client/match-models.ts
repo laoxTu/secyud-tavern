@@ -10,10 +10,11 @@ export interface MatcherProps {
 }
 
 export interface MatcherMatchContext {
-    history: SlotHistory;
-    message: SlotMessageBase;
-    expression?: any;
-    variables: any;
+    history: SlotHistory,
+    message: SlotMessageBase,
+    expression?: any,
+    variables: any,
+    properties: Record<string, any>
 }
 
 export interface Matcher extends Registerable {

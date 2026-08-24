@@ -9,6 +9,7 @@ import {
     slotUtils
 } from "@/modules/stories/client/conversation-models";
 import {engineName as ragEngineName} from '@/engines/rags/models';
+import {engineName as toolEngineName} from '@/engines/tools/models';
 import {historyUtils} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
 import {tryParseJson} from "@/utils";
@@ -26,7 +27,7 @@ export const lorebookConversationProvider:
     & LlmapiOutputProcesser
     = {
     id: engineName,
-    requires: [ragEngineName],
+    requires: [ragEngineName, toolEngineName],
     onInitialize: async (ctx) => {
         const cache: LorebookConversationCache = {
             before: [],
@@ -90,7 +91,8 @@ export const lorebookConversationProvider:
             const lorebookNames = message.properties[enginePlural] ??
                 tryFillActiveLorebooks(cache.entries, {
                     history, message,
-                    variables: historyUtils.getVariables(ctx.history, includeOutput)
+                    variables: historyUtils.getVariables(ctx.history, includeOutput),
+                    properties: {},
                 });
             for (const lorebookName of lorebookNames) {
                 const lorebook = cache.entries[lorebookName];
@@ -107,7 +109,8 @@ export const lorebookConversationProvider:
         for (const output of outputs) {
             tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message: output,
-                variables: historyUtils.getVariables(ctx.history, true)
+                variables: historyUtils.getVariables(ctx.history, true),
+                properties: {},
             });
         }
     }

@@ -32,6 +32,6 @@ export const eventMatcher: Matcher =
                     && maxDate >= date
             }))
                 return false;
-            return normalMatch(ctx.message, expression);
+            return normalMatch(ctx, expression);
         }
     } as const;
