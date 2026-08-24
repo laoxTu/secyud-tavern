@@ -19,8 +19,11 @@ export async function getSlot(story: StoryModel): Promise<SlotModel> {
     }
 
     const llmapi = await llmapiRepository.get(
-        story.llmapi.code, true,
-        table => eq(table.code, story.llmapi?.code));
+        story.llmapi.code,
+        table => eq(table.code, story.llmapi?.code),
+        {
+            withDetails: true,
+        });
 
     if (!llmapi) {
         throw new BusinessError('llmapi config not found', "default.llmapi_config_notfound")

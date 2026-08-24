@@ -37,7 +37,8 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
             model.content.coverId = await imageRepository.create(imgBuffer, "image/png");
         }
 
-        const exist = await repository.get(model.code, false, (table) => eq(table.code, model.code));
+        const exist = await repository.get(model.code,
+            (table) => eq(table.code, model.code));
         if (exist) {
             model.id = exist.id;
         } else {

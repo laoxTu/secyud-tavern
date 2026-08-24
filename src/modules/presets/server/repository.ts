@@ -28,8 +28,9 @@ export const presetRepository =
             while (codes.length > 0) {
                 const code = codes.shift()!;
                 const preset = await presetRepository.get(
-                    code, true, () => eq(presets.code, code)
-                );
+                    code, () => eq(presets.code, code), {
+                        withDetails: true
+                    });
                 if (!preset) continue;
 
                 visited.add(preset.code);

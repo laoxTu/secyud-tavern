@@ -14,7 +14,7 @@ export const GET = interceptor.createRoute(
     async (request, records) => {
         const {id} = await records.params;
 
-        const story = await storyRepository.get(id, true);
+        const story = await storyRepository.get(id, undefined, {withDetails: true});
 
         if (!story) {
             throw new BusinessError(
