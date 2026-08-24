@@ -42,6 +42,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
         entryState: {
             entryType,
             moduleName,
+            refreshItem,
             usePagedItemsState,
         },
         props: {
@@ -87,6 +88,7 @@ export function EntryUpdate<TEntry extends EntryModel>(
         try {
             await deleteHandler(entry);
             handleSuccess(t("default.delete_successfully"));
+            await refreshItem?.();
             await fetch();
         } catch (error) {
             handleError(error);

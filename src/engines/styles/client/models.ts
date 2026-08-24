@@ -5,6 +5,7 @@ import {get} from "@/client";
 import {PresetStyleModel} from "@/engines/styles/models";
 import {moduleName, modulePlural} from "@/modules/presets/models";
 import {engineName} from "../models";
+import {refreshItem} from "@/modules/presets/client/tabs";
 
 export const usePagedItemsState = createUsePagedItemsState<PresetStyleModel>(
     async options => {
@@ -12,5 +13,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetStyleModel>(
     });
 
 export const entryState: EntryState<PresetStyleModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
 };

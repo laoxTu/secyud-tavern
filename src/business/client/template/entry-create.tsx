@@ -32,6 +32,7 @@ export function EntryCreate<TEntry>(
         entryState: {
             moduleName,
             entryType,
+            refreshItem,
             usePagedItemsState,
         },
         props: {
@@ -46,6 +47,7 @@ export function EntryCreate<TEntry>(
     const handleCreate = async (data: FormData) => {
         try {
             await createHandler(data);
+            await refreshItem?.();
             await fetch();
             setCreateOpen(false);
         } catch (error) {

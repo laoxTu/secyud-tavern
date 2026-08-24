@@ -88,6 +88,14 @@ export function ModelList<TModel extends BaseModel>(
         }
     }
 
+    const changeModel = async (model: TModel) => {
+        try {
+            await setModel(model);
+        } catch (err) {
+            handleError(err);
+        }
+    }
+
     const changePanelState =
         (panel: PanelImperativeHandle | null, setCollapsed: (collapsed: boolean) => void) => {
             if (!panel) return;
@@ -107,7 +115,7 @@ export function ModelList<TModel extends BaseModel>(
             const items = usePagedItemsState.getState().items;
             if (!useItemState.getState().model &&
                 items && items.length > 0) {
-                setModel(items[0]);
+                await setModel(items[0]);
             }
         })();
     }, []);
@@ -183,7 +191,7 @@ export function ModelList<TModel extends BaseModel>(
                                               item.id === model?.id ? " bg-secondary text-secondary-foreground" : ""
                                           }`}
                                           variant={"outline"}
-                                          role="listitem" onClick={() => setModel(item)}>
+                                          role="listitem" onClick={() => changeModel(item)}>
                                         {itemContent(item)}
                                     </Item>
                                 ))}

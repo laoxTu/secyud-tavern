@@ -4,6 +4,7 @@ import {createUsePagedItemsState} from "@/components/custom/pager";
 import {get} from "@/client";
 import {moduleName, modulePlural} from "@/modules/presets/models";
 import {engineName, PresetScriptModel} from "../models";
+import {refreshItem} from "@/modules/presets/client/tabs";
 
 export const usePagedItemsState = createUsePagedItemsState<PresetScriptModel>(
     async options => {
@@ -11,5 +12,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetScriptModel>(
     });
 
 export const entryState: EntryState<PresetScriptModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
 };

@@ -33,7 +33,7 @@ export function EntryList<TEntry extends EntryModel>(
     const t = useTranslations();
     const [searchInput, setSearchInput] = useState('');
     const {handleError} = useErrorHandler();
-    const {items, maxPage, search, loading, params, fetch} = usePagedItemsState();
+    const {items, loading, params, fetch} = usePagedItemsState();
 
     const searchEntries = async (data: FormData) => {
         try {
@@ -61,24 +61,6 @@ export function EntryList<TEntry extends EntryModel>(
             void fetch({params: {entryType: entryState.entryType, id: modelId}});
         }
     }, [modelId]);
-    if (maxPage === 0 && !search && !loading) {
-        return (<div className={"flex-1 flex pb-24"}>
-            <Empty className={"m-auto"}>
-                <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                        <FolderOpenIcon/>
-                    </EmptyMedia>
-                    <EmptyTitle>{t("default.empty_title", {target: t(`${moduleName}.${entryType}`)})}</EmptyTitle>
-                    <EmptyDescription>
-                        {t("default.empty_description", {target: t(`${moduleName}.${entryType}`)})}
-                    </EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent className="flex-row justify-center gap-2">
-                    <EntryCreate entryState={entryState} props={createProps}/>
-                </EmptyContent>
-            </Empty>
-        </div>);
-    }
 
     return (
         <div className={"flex-1 flex flex-col p-2 gap-1 overflow-y-hidden"} key={`${modelId}-${loading}`}>
@@ -104,10 +86,23 @@ export function EntryList<TEntry extends EntryModel>(
 
             <div className="flex-1 flex overflow-x-auto scrollbar-none gap-x-2 p-2"
                  key={`entry-loading-${loading}`}>
-                {items && items.map((entry, i) =>
+                {items?.length ? items.map((entry, i) =>
                     <EntryUpdate key={`${entry.id}-${i}`} entryState={entryState}
                                  props={updateProps} entry={entry}/>
-                )}
+                ) : <Empty className={"m-auto"}>
+                    <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                            <FolderOpenIcon/>
+                        </EmptyMedia>
+                        <EmptyTitle>{t("default.empty_title", {target: t(`${moduleName}.${entryType}`)})}</EmptyTitle>
+                        <EmptyDescription>
+                            {t("default.empty_description", {target: t(`${moduleName}.${entryType}`)})}
+                        </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent className="flex-row justify-center gap-2">
+                        <EntryCreate entryState={entryState} props={createProps}/>
+                    </EmptyContent>
+                </Empty>}
             </div>
             <div className="w-full p-1">
                 <PaginationWrapper usePagedItemsState={usePagedItemsState}/>

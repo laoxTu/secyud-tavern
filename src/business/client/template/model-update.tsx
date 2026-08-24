@@ -41,7 +41,7 @@ export function ModelUpdate<TModel extends BaseModel>(
     const formRef = useRef<HTMLFormElement>(null);
 
     const refresh = async (model?: TModel) => {
-        setModel(model);
+        await setModel(model);
         await fetch();
     }
 

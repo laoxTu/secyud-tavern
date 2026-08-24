@@ -1,30 +1,20 @@
 ﻿import {ToolboxIcon} from "lucide-react";
 import React, {RefObject, useState} from "react";
-import {del, get, post, put} from "@/client";
+import {del, post, put} from "@/client";
 import {TabConfig} from "@/components/custom/tab";
 import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
-import {moduleName, modulePlural} from "@/modules/presets/models";
+import {moduleName} from "@/modules/presets/models";
 import {engineName,LlmapiToolConfigModel} from "../models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
-import {createUsePagedItemsState} from "@/components/custom/pager";
-import {EntryState} from "@/business/client/models";
 import {useTranslations} from "next-intl";
-import {LlmapiToolProvider} from "@/engines/tools/client/models";
+import {entryState, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Selector} from "@/components/custom/selector";
 import {Input} from "@/components/ui/input";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
-export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
-    async options => {
-        return await get('/presets/{id}/entries/{entryType}', {params: options})
-    });
-
-export const entryState: EntryState<LlmapiToolConfigModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName
-};
 
 
 export function EditorContent({entry, formRef}: {

@@ -35,10 +35,13 @@ export function apiGetModel<TModel extends BaseModel>(
     }: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id} = await records.params;
-        const {withDetails} =
-            records.searchParams as { withDetails?: boolean };
+        const {withDetails, withExistEntries} =
+            records.searchParams as any;
         const model = await repository
-            .get(id, withDetails, conditionMatchId?.(id));
+            .get(id, conditionMatchId?.(id), {
+                withDetails,
+                withExistEntries,
+            });
         return NextResponse.json(model);
     }
 }
@@ -94,7 +97,9 @@ export function apiExportModel<TModel extends BaseModel>(
     return async (_, records) => {
         const {id} = await records.params;
         const model = await repository
-            .get(id, true, conditionMatchId?.(id));
+            .get(id, conditionMatchId?.(id), {
+                withDetails: true
+            });
         if (model === null)
             throw new BusinessError('entity not found.',
                 "default.entity_not_found")
@@ -189,6 +194,7 @@ export function apiDeleteEntry<TModel extends BaseModel>({repository}: TemplateC
         return NextResponse.json(null);
     }
 }
+
 export function apiCountEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id, entryType} = await records.params;
@@ -196,6 +202,7 @@ export function apiCountEntry<TModel extends BaseModel>({repository}: TemplateCo
         return NextResponse.json({count});
     }
 }
+
 export function apiExistEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (_, records) => {
         const {id, entryType} = await records.params;

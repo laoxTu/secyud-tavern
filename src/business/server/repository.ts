@@ -12,7 +12,10 @@ import {IModelStorage} from "@/business/server/storage";
 export type ConditionFunc = (table: any) => SQL;
 
 export interface Repository<TModel> {
-    get: (id: string, withDetails?: boolean, conditionFunc?: ConditionFunc) => Promise<TModel | null>,
+    get: (id: string, conditionFunc?: ConditionFunc, options?: {
+        withDetails?: boolean,
+        withExistEntries?: boolean,
+    }) => Promise<TModel | null>,
     getList: (options: PageOptions, conditionFunc?: ConditionFunc) => Promise<PagedResult<TModel>>,
     create: (model: TModel) => Promise<TModel>,
     update: (id: string, model: Partial<TModel>) => Promise<TModel>,
@@ -39,7 +42,11 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     mapToModel: ((entity: Partial<TMaster>) => Partial<TModel>) | undefined = undefined): Repository<TModel> {
 
     const db = databaseManager.db;
-    const get = async (id: string, withDetails: boolean = false, conditionFunc?: ConditionFunc): Promise<TModel | null> => {
+    const get = async (
+        id: string, conditionFunc?: ConditionFunc, options?: {
+            withDetails?: boolean,
+            withExistEntries?: boolean,
+        }): Promise<TModel | null> => {
         const condition = conditionFunc?.(masters) ?? eq(masters.id, id);
         const entity =
             await db.select().from(masters)
@@ -53,9 +60,16 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             ...(mapToModel?.(entity) ?? {})
         } as TModel;
 
-        if (withDetails) {
+        if (options?.withDetails) {
             model.entries = {};
             await modelStorage.loadModel(model);
+        }
+        if (options?.withExistEntries) {
+            const result = await db
+                .selectDistinct({entryType: entries.entryType})
+                .from(entries)
+                .where(eq(entries.masterId, model.id));
+            model.content.entries = result.map(u => u.entryType);
         }
 
         return model;
@@ -194,7 +208,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         )
                     );
                 const result = await db
-                    .select({ exists: exists(subQuery) })
+                    .select({exists: exists(subQuery)})
                     .from(entries)  // 主查询的表可以任意，只要合法即可
                     .limit(1);
                 return !!result[0]?.exists;

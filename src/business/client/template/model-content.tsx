@@ -77,7 +77,7 @@ export function ModelContent<TModel>(
             const items = usePagedItemsState.getState().items;
             model = items && items.length > 0 ? items[0] : undefined;
         }
-        setModel(model);
+        await setModel(model);
     }
 
     const handleExport = async () => {
@@ -116,26 +116,24 @@ export function ModelContent<TModel>(
     };
 
     useEffect(() => {
-        if (!hideTabs) {
-            void (async () => {
-                try {
-                    const tabs = tabManager.getSorted();
-                    const showTabs: TabConfig[] = [];
-                    const hideTabs: TabConfig[] = [];
-                    for (const tab of tabs) {
-                        if (tab.hide && await tab.hide()) {
-                            hideTabs.push(tab);
-                        } else {
-                            showTabs.push(tab);
-                        }
+        void (async () => {
+            try {
+                const tabs = tabManager.getSorted();
+                const showTabs: TabConfig[] = [];
+                const hideTabs: TabConfig[] = [];
+                for (const tab of tabs) {
+                    if (tab.hide && await tab.hide()) {
+                        hideTabs.push(tab);
+                    } else {
+                        showTabs.push(tab);
                     }
-                    setShowTabs(showTabs);
-                    setHideTabs(hideTabs);
-                } catch (err) {
-                    handleError(err);
                 }
-            })();
-        }
+                setShowTabs(showTabs);
+                setHideTabs(hideTabs);
+            } catch (err) {
+                handleError(err);
+            }
+        })();
     }, [model])
 
     if (!model) {

@@ -77,7 +77,7 @@ function PresetImportDialog() {
                     sessionId,
                 }
             });
-            setModel(model);
+            await setModel(model);
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));
@@ -277,7 +277,7 @@ function Content() {
                     const entity = await get("/presets/{id}", {
                         params: {
                             id: model.id,
-                            withDetails: true
+                            withDetails: true,
                         }
                     });
                     return await post("/presets", {

@@ -81,7 +81,7 @@ function ModelCreateDialog<TModel>(
         try {
             if (!createHandler) return;
             const model = await createHandler(data);
-            setModel(model);
+            await setModel(model);
             await fetch();
             handleSuccess(t("default.created_successfully"));
         } catch (error) {
@@ -154,7 +154,7 @@ function ModelImportDialog<TModel>(
             if (!importHandler) return;
             const file = formData.get("filename") as File;
             const model = await importHandler(file);
-            setModel(model);
+            await setModel(model);
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));

@@ -21,17 +21,16 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {spanFull, spanHalf} from "@/components/custom/GridField";
 import {tryParseJson} from "@/utils";
 
+export async function refreshItem() {
+    const {model, setModel} = useItemState.getState();
+    await setModel(model);
+}
+
 export async function presetTabIsHide(entryType: string) {
     const model = useItemState.getState().model;
     if (!model) return false;
-    const {exist} = await get("/presets/{id}/entries/{entryType}/exist", {
-        params: {
-            id: model.id,
-            entryType,
-        }
-    });
-    console.debug(`[preset]: ${model.code} ${entryType} exist: ${exist}`);
-    return !exist;
+    const entries: string[] = model.content.entries;
+    return !entries?.some(u => u === entryType);
 }
 
 export function getPresetRequires(data: FormData) {
