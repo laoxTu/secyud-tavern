@@ -33,7 +33,7 @@ export function MonacoEditor({name, defaultValue, language, className, formRef}:
                 "flex field-sizing-content min-h-16 w-full rounded-lg border px-2.5 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3 md:text-sm dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
                 className
             )}
-            height={'30rem'}
+            height={'22rem'}
             theme={theme === 'dark' ? 'vs-dark' : 'light'}
             language={language}
             options={{

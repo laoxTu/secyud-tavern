@@ -9,7 +9,7 @@ export const useItemState = createUseItemState<StoryModel>("story-item-state")
 export const usePagedItemsState = createUsePagedItemsState<StoryModel>(
     async options => {
         return await get('/stories', {params: options})
-    }, 10);
+    }, 7);
 export const modelState: ModelState<StoryModel> = {
     moduleName, useItemState, usePagedItemsState
 };

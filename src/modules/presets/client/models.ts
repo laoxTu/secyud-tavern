@@ -15,7 +15,7 @@ export const useItemState =
 export const usePagedItemsState =
     createUsePagedItemsState<PresetModel>(async options => {
         return await get('/presets', {params: options})
-    }, 10);
+    }, 7);
 export const modelState: ModelState<PresetModel> = {
     moduleName, useItemState, usePagedItemsState
 };
