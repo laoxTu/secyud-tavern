@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {messageUtils} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
 
@@ -37,18 +37,18 @@ describe('extractVariableChanges', () => {
 
     it('单个对象块被解析为变更项', () => {
         const history = makeHistory();
-        messageUtils.setContent(history, '回复。<variable_changes>{"op":"update","path":"/player/hp","value":80}</variable_changes>');
-        expect(history.variables).toEqual([{op: 'update', path: '/player/hp', value: 80}]);
+        messageUtils.setContent(history, '回复。<variable_changes>{"op":"replace","path":"/player/hp","value":80}</variable_changes>');
+        expect(history.variables).toEqual([{op: 'replace', path: '/player/hp', value: 80}]);
         expect(history.content).toBe('回复。');
     });
 
     it('数组块中的多个合法项全部被解析', () => {
         const history = makeHistory();
-        const text = '战斗继续。<variable_changes>[{"op":"update","path":"/player/hp","value":80},{"op":"update","path":"/player/mp","value":50},{"op":"remove","path":"/player/status"}]</variable_changes>';
+        const text = '战斗继续。<variable_changes>[{"op":"replace","path":"/player/hp","value":80},{"op":"replace","path":"/player/mp","value":50},{"op":"remove","path":"/player/status"}]</variable_changes>';
         messageUtils.setContent(history, text);
         expect(history.variables).toEqual([
-            {op: 'update', path: '/player/hp', value: 80},
-            {op: 'update', path: '/player/mp', value: 50},
+            {op: 'replace', path: '/player/hp', value: 80},
+            {op: 'replace', path: '/player/mp', value: 50},
             {op: 'remove', path: '/player/status'},
         ]);
         expect(history.content).toBe('战斗继续。');
@@ -56,9 +56,9 @@ describe('extractVariableChanges', () => {
 
     it('数组中混入的非法项会被过滤掉', () => {
         const history = makeHistory();
-        const text = '<variable_changes>[{"op":"update","path":"/a","value":1},"hello",{"op":"remove"},123,{"path":"/b"}]</variable_changes>';
+        const text = '<variable_changes>[{"op":"replace","path":"/a","value":1},"hello",{"op":"remove"},123,{"path":"/b"}]</variable_changes>';
         messageUtils.setContent(history, text);
-        expect(history.variables).toEqual([{op: 'update', path: '/a', value: 1}]);
+        expect(history.variables).toEqual([{op: 'replace', path: '/a', value: 1}]);
     });
 
     it('缺少 value 的项只要 op 和 path 合法也会保留', () => {
@@ -69,20 +69,20 @@ describe('extractVariableChanges', () => {
 
     it('多个块会合并解析, 顺序保持', () => {
         const history = makeHistory();
-        const text = '你受伤了。<variable_changes>{"op":"update","path":"/hp","value":80}</variable_changes>随后获得增益。<variable_changes>{"op":"add","path":"/buffs/shield"}</variable_changes>';
+        const text = '你受伤了。<variable_changes>{"op":"replace","path":"/hp","value":80}</variable_changes>随后获得增益。<variable_changes>{"op":"add","path":"/buffs/shield", "value": "value"}</variable_changes>';
         messageUtils.setContent(history, text);
         expect(history.variables).toEqual([
-            {op: 'update', path: '/hp', value: 80},
-            {op: 'add', path: '/buffs/shield'},
+            {op: 'replace', path: '/hp', value: 80},
+            {op: 'add', path: '/buffs/shield', value: "value"},
         ]);
         expect(history.content).toBe('你受伤了。随后获得增益。');
     });
 
     it('块内 JSON 非法时跳过该块并移除标签, 不影响其他块', () => {
         const history = makeHistory();
-        const text = '开头<variable_changes>{not valid json}</variable_changes>中间<variable_changes>{"op":"update","path":"/a","value":1}</variable_changes>结尾';
+        const text = '开头<variable_changes>{not valid json}</variable_changes>中间<variable_changes>{"op":"replace","path":"/a","value":1}</variable_changes>结尾';
         messageUtils.setContent(history, text);
-        expect(history.variables).toEqual([{op: 'update', path: '/a', value: 1}]);
+        expect(history.variables).toEqual([{op: 'replace', path: '/a', value: 1}]);
         expect(history.content).toBe('开头中间结尾');
     });
 
@@ -96,17 +96,17 @@ describe('extractVariableChanges', () => {
 
     it('块内容含换行和首尾空白时也能正确解析', () => {
         const history = makeHistory();
-        const text = '<variable_changes>\n  [\n    {"op":"update","path":"/player/hp","value":80}\n  ]\n</variable_changes>';
+        const text = '<variable_changes>\n  [\n    {"op":"replace","path":"/player/hp","value":80}\n  ]\n</variable_changes>';
         messageUtils.setContent(history, text);
-        expect(history.variables).toEqual([{op: 'update', path: '/player/hp', value: 80}]);
+        expect(history.variables).toEqual([{op: 'replace', path: '/player/hp', value: 80}]);
         expect(history.content).toBe('');
     });
 
     it('块前后文本保留, 输入首尾空白在替换前被去除', () => {
         const history = makeHistory();
-        const text = '  她缓缓抬起头。  <variable_changes>{"op":"update","path":"/mood","value":"平静"}</variable_changes>  ';
+        const text = '  她缓缓抬起头。  <variable_changes>{"op":"replace","path":"/mood","value":"平静"}</variable_changes>  ';
         messageUtils.setContent(history, text);
-        expect(history.variables).toEqual([{op: 'update', path: '/mood', value: '平静'}]);
+        expect(history.variables).toEqual([{op: 'replace', path: '/mood', value: '平静'}]);
         // 注意: 实现只在 replace 前 trim, 块前紧邻的空格会残留
         expect(history.content).toBe('她缓缓抬起头。  ');
     });

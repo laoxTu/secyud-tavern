@@ -77,7 +77,7 @@ export function extract(obj: any, path: string, create: boolean = false) {
         if (!current.item || typeof current.item !== 'object') {
             if (create) {
                 current.item = {};
-                previous.item[key] = current.item;
+                previous.item[current.key] = current.item;
             } else break;
         }
         previous = current;

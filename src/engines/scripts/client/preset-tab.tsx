@@ -1,4 +1,4 @@
-﻿import {PaletteIcon} from "lucide-react";
+﻿import {Code2Icon} from "lucide-react";
 import React, {RefObject, useState} from "react";
 import {useTranslations} from "next-intl";
 import {del, post, put} from "@/client";
@@ -160,6 +160,6 @@ function Tab() {
 export const tabConfig: TabConfig = {
     id: engineName,
     hide: async () => presetTabIsHide(engineName),
-    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={PaletteIcon}/>,
+    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={Code2Icon}/>,
     component: Tab
 }
