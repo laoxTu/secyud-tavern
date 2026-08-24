@@ -1,4 +1,5 @@
-﻿import React, {RefObject, useState} from "react";
+﻿'use client';
+import React, {RefObject, useState} from "react";
 import {FileCode2Icon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
@@ -19,6 +20,7 @@ import {Matcher} from "@/engines/lorebooks/client/match-models";
 import {spanHalf} from "@/components/custom/GridField";
 import {BusinessError} from "@/handler/models";
 import {checkJson} from "@/utils";
+import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -213,6 +215,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: async () => presetTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={FileCode2Icon}/>,
     component: Tab
 }

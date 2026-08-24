@@ -1,4 +1,4 @@
-﻿import {and, eq, like, SQL, sql} from "drizzle-orm";
+﻿import {and, eq, exists, like, SQL, sql} from "drizzle-orm";
 import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
 import {BaseEntity} from "./entities";
 import {v4 as uuidv4, validate} from 'uuid';
@@ -19,6 +19,8 @@ export interface Repository<TModel> {
     delete: (id: string) => Promise<void>,
     exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
     entry: {
+        exist: (masterId: string, type: string) => Promise<boolean>,
+        count: (masterId: string, type: string) => Promise<number>,
         getList: (masterId: string, type: string, options?: PageOptions) => Promise<PagedResult<any>>,
         get: (masterId: string, type: string, entryId: string) => Promise<any>,
         batchCreate: (masterId: string, type: string, entryList: any[]) => Promise<void>,
@@ -165,7 +167,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
         const condition = conditionFunc(masters);
 
         const result = await db
-            .select({count: sql<number>`count(*)`})
+            .select({count: sql<number>`count(1)`})
             .from(masters)
             .where(condition)
             .get();
@@ -181,6 +183,32 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
         delete: _delete,
         exist,
         entry: {
+            exist: async (masterId, type) => {
+                const subQuery = db
+                    .select()
+                    .from(entries)
+                    .where(
+                        and(
+                            eq(entries.masterId, masterId),
+                            eq(entries.entryType, type)
+                        )
+                    );
+                const result = await db
+                    .select({ exists: exists(subQuery) })
+                    .from(entries)  // 主查询的表可以任意，只要合法即可
+                    .limit(1);
+                return !!result[0]?.exists;
+            },
+            count: async (masterId, type) => {
+                const result = await db
+                    .select({count: sql<number>`count(1)`})
+                    .from(entries)
+                    .where(and(
+                        eq(entries.masterId, masterId),
+                        eq(entries.entryType, type)))
+                    .get();
+                return result?.count ?? 0;
+            },
             getList: async (masterId: string, type: string, options?: PageOptions): Promise<PagedResult<any>> => {
                 const {page, pageSize, search} = options ?? {};
 

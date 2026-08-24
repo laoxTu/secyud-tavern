@@ -4,8 +4,9 @@ import {Registerable} from "@/utils/register";
 import {ClientRegistry} from "@/plugins/client";
 
 export interface TabConfig extends Registerable {
-    label: React.ComponentType;
-    component?: React.ComponentType;
+    label: React.ComponentType,
+    component?: React.ComponentType,
+    hide?: () => Promise<boolean>,
 }
 
 // Tab 注册表

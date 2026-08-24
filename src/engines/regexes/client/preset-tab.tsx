@@ -15,6 +15,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/GridField";
+import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 const regexTargets = ["both", "input", "output"]
 
@@ -144,6 +145,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: async () => presetTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ReplaceIcon}/>,
     component: Tab
 }

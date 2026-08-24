@@ -189,6 +189,20 @@ export function apiDeleteEntry<TModel extends BaseModel>({repository}: TemplateC
         return NextResponse.json(null);
     }
 }
+export function apiCountEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
+    return async (_, records) => {
+        const {id, entryType} = await records.params;
+        const count = await repository.entry.count(id, entryType);
+        return NextResponse.json({count});
+    }
+}
+export function apiExistEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
+    return async (_, records) => {
+        const {id, entryType} = await records.params;
+        const exist = await repository.entry.exist(id, entryType);
+        return NextResponse.json({exist});
+    }
+}
 
 export function apiDisableEntry<TModel extends BaseModel>({repository}: TemplateConfig<TModel>): NextHandler {
     return async (request, records) => {

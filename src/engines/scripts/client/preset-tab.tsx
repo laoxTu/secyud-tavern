@@ -14,6 +14,7 @@ import {engineName, PresetScriptModel} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/GridField";
+import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -158,6 +159,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: async () => presetTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={PaletteIcon}/>,
     component: Tab
 }

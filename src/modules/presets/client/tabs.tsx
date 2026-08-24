@@ -13,13 +13,26 @@ import {BusinessError} from "@/handler/models";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
-import {defaultTags, modelState} from "./models";
+import {defaultTags, modelState, useItemState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {spanFull, spanHalf} from "@/components/custom/GridField";
 import {tryParseJson} from "@/utils";
+
+export async function presetTabIsHide(entryType: string) {
+    const model = useItemState.getState().model;
+    if (!model) return false;
+    const {exist} = await get("/presets/{id}/entries/{entryType}/exist", {
+        params: {
+            id: model.id,
+            entryType,
+        }
+    });
+    console.debug(`[preset]: ${model.code} ${entryType} exist: ${exist}`);
+    return !exist;
+}
 
 export function getPresetRequires(data: FormData) {
     return data.getAll("require")

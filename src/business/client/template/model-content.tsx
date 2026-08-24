@@ -1,10 +1,10 @@
 'use client';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
 import {ModelState, TabState, UseStoreState} from "@/business/client/models";
-import {TabManager} from "@/components/custom/tab";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {TabConfig, TabManager} from "@/components/custom/tab";
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
 import {
     Dialog,
@@ -21,6 +21,7 @@ import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/co
 import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 
 export interface ModelContentProps<TModel> {
     // 克隆 FieldGroup 的内部内容
@@ -67,6 +68,8 @@ export function ModelContent<TModel>(
     const {model, setModel} = useItemState();
     const {fetch} = usePagedItemsState();
     const {tabId, setTabId} = useTabState();
+    const [showTabs, setShowTabs] = useState<TabConfig[]>([]);
+    const [hideTabs, setHideTabs] = useState<TabConfig[] | null>(null);
 
     const refresh = async (model?: TModel) => {
         await fetch();
@@ -112,6 +115,29 @@ export function ModelContent<TModel>(
         }
     };
 
+    useEffect(() => {
+        if (!hideTabs) {
+            void (async () => {
+                try {
+                    const tabs = tabManager.getSorted();
+                    const showTabs: TabConfig[] = [];
+                    const hideTabs: TabConfig[] = [];
+                    for (const tab of tabs) {
+                        if (tab.hide && await tab.hide()) {
+                            hideTabs.push(tab);
+                        } else {
+                            showTabs.push(tab);
+                        }
+                    }
+                    setShowTabs(showTabs);
+                    setHideTabs(hideTabs);
+                } catch (err) {
+                    handleError(err);
+                }
+            })();
+        }
+    }, [model])
+
     if (!model) {
         return (<div className={"flex h-full pb-24"}>
             <Empty className={"m-auto"}>
@@ -128,7 +154,7 @@ export function ModelContent<TModel>(
         </div>);
     }
 
-    const tabs = tabManager.getSorted();
+    const TabComponent = tabManager.records[tabId]?.component;
 
     return (
         <Tabs value={tabId} onValueChange={setTabId}
@@ -138,15 +164,30 @@ export function ModelContent<TModel>(
                     <FoldHorizontalIcon/>
                 </Button>
                 <TabsList className="overflow-x-auto scrollbar-none gap-1 justify-normal">
-                    {tabs.map((tab, index) => {
+                    {showTabs.map((tab) => {
                         const Component = tab.label;
                         return (
-                            <TabsTrigger key={index} value={tab.id}>
+                            <TabsTrigger key={tab.id} value={tab.id}>
                                 <Component/>
                             </TabsTrigger>
                         );
                     })}
                 </TabsList>
+                {hideTabs?.length && (<DropdownMenu>
+                    <DropdownMenuTrigger render={<Button variant="outline">{t("default.more")}</Button>}/>
+                    <DropdownMenuContent>
+                        {hideTabs.map((tab) => {
+                            const Component = tab.label;
+                            return (
+                                <DropdownMenuItem
+                                    key={tab.id}
+                                    onClick={() => setTabId(tab.id)}>
+                                    <Component/>
+                                </DropdownMenuItem>
+                            );
+                        })}
+                    </DropdownMenuContent>
+                </DropdownMenu>)}
             </div>
             <div className="flex flex-row-reverse gap-2">
                 <DeleteDialog handleDelete={handleDelete}
@@ -194,16 +235,10 @@ export function ModelContent<TModel>(
                 </Tooltip>
                 {toolbar?.(model)}
             </div>
-            {tabs.map((tab) => {
-                const Component = tab.component;
-                if (!Component) return null;
-                return (
-                    <TabsContent key={tab.id} value={tab.id}
-                                 className="flex-1 flex flex-col overflow-hidden">
-                        <Component/>
-                    </TabsContent>
-                );
-            })}
+            {TabComponent &&
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    <TabComponent/>
+                </div>}
         </Tabs>
     );
 }

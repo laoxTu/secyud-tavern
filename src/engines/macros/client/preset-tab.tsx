@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
 import {moduleName} from "@/modules/presets/models";
-import {engineName, PresetMacroModel} from "../models";
+import {engineName,PresetMacroModel} from "../models";
 import {useItemState} from "@/modules/presets/client/models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {EntryList} from "@/business/client/template/entry-list";
@@ -15,6 +15,7 @@ import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Checkbox} from "@/components/ui/checkbox";
 import {spanHalf} from "@/components/custom/GridField";
+import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 function Tab() {
     const t = useTranslations();
@@ -152,6 +153,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: async () => presetTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ReplaceAllIcon}/>,
     component: Tab
 }

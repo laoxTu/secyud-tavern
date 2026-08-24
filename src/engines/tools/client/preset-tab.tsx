@@ -6,7 +6,7 @@ import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName, modulePlural} from "@/modules/presets/models";
-import {engineName, LlmapiToolConfigModel} from "../models";
+import {engineName,LlmapiToolConfigModel} from "../models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {createUsePagedItemsState} from "@/components/custom/pager";
 import {EntryState} from "@/business/client/models";
@@ -15,6 +15,7 @@ import {LlmapiToolProvider} from "@/engines/tools/client/models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Selector} from "@/components/custom/selector";
 import {Input} from "@/components/ui/input";
+import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
     async options => {
@@ -154,6 +155,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: async () => presetTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ToolboxIcon}/>,
     component: Tab
 }
