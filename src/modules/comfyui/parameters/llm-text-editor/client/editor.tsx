@@ -14,7 +14,7 @@ import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
-import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {spanFull, spanHalf} from "@/components/custom/grid-field";
 import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
 import {conversationManager} from "@/modules/stories/client/conversation";

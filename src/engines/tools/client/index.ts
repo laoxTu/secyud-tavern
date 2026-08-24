@@ -20,7 +20,8 @@ export function registerToolsClient() {
     );
     conversationManager.initializer.register(toolConversationProvider);
     conversationManager.outputProcesser.register(toolConversationProvider);
-    conversationManager.inputProcesser.register(toolConversationProvider);slotFeatureManager.register(
+    conversationManager.inputProcesser.register(toolConversationProvider);
+    slotFeatureManager.register(
         toolSelectorFeature
     );
 }

@@ -1,9 +1,8 @@
 import {TemplateConfig} from "@/app/api/template";
-import {StoryModel} from "@/modules/stories/models";
+import {SlotModel, StoryModel} from "@/modules/stories/models";
 import {and, eq, like, SQL} from "drizzle-orm";
 import {BusinessError, Check} from "@/handler/models";
 import {storyRepository} from "@/modules/stories/server/repository";
-import {SlotModel} from "@/modules/stories/models";
 import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {SlotHistory} from "@/modules/models";
 import {EntryModel} from "@/business/models";

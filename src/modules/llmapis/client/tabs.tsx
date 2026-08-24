@@ -19,6 +19,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
 import {Checkbox} from "@/components/ui/checkbox";
+import {customCreateElement} from "@/components/custom";
 
 export function LlmapiRequireField(
     {
@@ -122,10 +123,7 @@ function UpdateContent({model}: { model: LlmapiModel }) {
                       valueAccessor={u => u.id}
                       labelAccessor={(u) => t(`${moduleName}.provider_${u.id}`)}/>
         </Field>
-        {configEditor?.component && (() => {
-            const Component = configEditor.component;
-            return <Component/>
-        })()}
+        {customCreateElement(configEditor?.component)}
     </>;
 }
 

@@ -34,5 +34,5 @@ export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel
 
 
 export const entryState: EntryState<LlmapiToolConfigModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

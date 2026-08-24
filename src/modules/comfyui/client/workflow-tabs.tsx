@@ -16,7 +16,7 @@ import {Button} from "@/components/ui/button";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {useErrorHandler} from "@/handler/client/error";
 import {submitTargetFormOnKey} from "@/business/client";
-import {spanFull} from "@/components/custom/GridField";
+import {spanFull} from "@/components/custom/grid-field";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();

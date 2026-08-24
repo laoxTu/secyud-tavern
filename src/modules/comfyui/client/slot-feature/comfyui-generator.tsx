@@ -25,7 +25,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {BusinessError} from "@/handler/models";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
-import {GridField, spanFull} from "@/components/custom/GridField";
+import {GridField, spanFull} from "@/components/custom/grid-field";
 import {tryParseJson} from "@/utils";
 
 export function ComfyUIGenerator() {

@@ -11,7 +11,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
-import {spanFull} from "@/components/custom/GridField";
+import {spanFull} from "@/components/custom/grid-field";
 import {messageUtils} from "@/modules/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {OpenAI} from "openai";

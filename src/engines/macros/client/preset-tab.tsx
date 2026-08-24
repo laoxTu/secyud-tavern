@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
 import {moduleName} from "@/modules/presets/models";
-import {engineName,PresetMacroModel} from "../models";
+import {engineName, PresetMacroModel} from "../models";
 import {useItemState} from "@/modules/presets/client/models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {EntryList} from "@/business/client/template/entry-list";
@@ -14,7 +14,7 @@ import {entryState} from "./models";
 import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
 import {Checkbox} from "@/components/ui/checkbox";
-import {spanHalf} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/grid-field";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 function Tab() {

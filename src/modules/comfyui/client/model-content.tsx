@@ -39,7 +39,8 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
-import {GridField} from "@/components/custom/GridField";
+import {GridField} from "@/components/custom/grid-field";
+import {customCreateElement} from "@/components/custom";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     let src = '/images/default_cover.png';
@@ -493,10 +494,7 @@ function Content() {
                                           labelAccessor={e => t(`${moduleName}.importer_${e.id}`)}
                                           valueAccessor={e => e.id}/>
                             </Field>
-                            {editor?.component && (() => {
-                                const Component = editor.component;
-                                return <Component/>
-                            })()}
+                            {customCreateElement(editor?.component)}
                         </FieldGroup>
                         <DialogFooter>
                             <Button type="submit">

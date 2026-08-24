@@ -171,7 +171,7 @@ export function ModelContent<TModel>(
                         );
                     })}
                 </TabsList>
-                {hideTabs?.length && (<DropdownMenu>
+                {!!hideTabs?.length && (<DropdownMenu>
                     <DropdownMenuTrigger render={<Button variant="outline">{t("default.more")}</Button>}/>
                     <DropdownMenuContent>
                         {hideTabs.map((tab) => {

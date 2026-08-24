@@ -10,10 +10,10 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
 import {entryState} from "./models";
-import {engineName,PresetStyleModel} from "../models";
+import {engineName, PresetStyleModel} from "../models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
-import {spanHalf} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/grid-field";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 
 const styleTypes = ["", "link", "text/css"];

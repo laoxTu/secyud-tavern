@@ -8,7 +8,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {useComfyUISettingState} from "@/modules/comfyui/client/models";
 import {moduleName} from "@/modules/comfyui/models";
 import {Input} from "@/components/ui/input";
-import {GridField} from "@/components/custom/GridField";
+import {GridField} from "@/components/custom/grid-field";
 
 function Tab() {
     const t = useTranslations();

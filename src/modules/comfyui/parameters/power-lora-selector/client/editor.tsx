@@ -11,7 +11,7 @@ import {ComfyUIHoverableItem} from "@/modules/comfyui/client/components";
 import {get} from "@/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
-import {spanHalf} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/grid-field";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {

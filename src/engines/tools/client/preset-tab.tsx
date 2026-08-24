@@ -6,7 +6,7 @@ import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
-import {engineName,LlmapiToolConfigModel} from "../models";
+import {engineName, LlmapiToolConfigModel} from "../models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {useTranslations} from "next-intl";
 import {entryState, LlmapiToolProvider} from "@/engines/tools/client/models";
@@ -14,7 +14,7 @@ import {Field, FieldLabel} from "@/components/ui/field";
 import {Selector} from "@/components/custom/selector";
 import {Input} from "@/components/ui/input";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
-
+import {customCreateElement} from "@/components/custom";
 
 
 export function EditorContent({entry, formRef}: {
@@ -55,10 +55,9 @@ export function EditorContent({entry, formRef}: {
                           valueAccessor={u => u.id}
                           labelAccessor={(u) => t(`llmapi.tool_provider_${u.id}`)}/>
             </Field>
-            {editor?.component && (() => {
-                const Component = editor.component;
-                return <Component defaultValue={entry.value} entry={entry} formRef={formRef}/>
-            })()}
+            {customCreateElement(editor?.component, {
+                defaultValue: entry.value, entry, formRef,
+            })}
         </>
     );
 }

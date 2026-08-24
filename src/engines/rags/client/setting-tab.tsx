@@ -10,7 +10,8 @@ import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/
 import {useErrorHandler} from "@/handler/client/error";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Selector} from "@/components/custom/selector";
-import {GridField} from "@/components/custom/GridField";
+import {GridField} from "@/components/custom/grid-field";
+import {customCreateElement} from "@/components/custom";
 
 function Tab() {
     const t = useTranslations();
@@ -59,10 +60,7 @@ function Tab() {
                                           labelAccessor={e => e.id}
                                           valueAccessor={e => e.id}/>
                             </Field>
-                            {editor?.component && (() => {
-                                const Component = editor.component;
-                                return <Component/>
-                            })()}
+                            {customCreateElement(editor?.component)}
                         </GridField>
                     </FieldGroup>
                 </FieldSet>

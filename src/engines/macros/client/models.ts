@@ -12,5 +12,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetMacroModel>(
     });
 
 export const entryState: EntryState<PresetMacroModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

@@ -17,10 +17,11 @@ import {entryState} from "@/engines/lorebooks/client/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
-import {spanHalf} from "@/components/custom/GridField";
+import {spanHalf} from "@/components/custom/grid-field";
 import {BusinessError} from "@/handler/models";
 import {checkJson} from "@/utils";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
+import {customCreateElement} from "@/components/custom";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -110,10 +111,8 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
                           valueAccessor={u => u.id}
                           labelAccessor={(u) => t(`lorebook.match_type_${u.id}`)}/>
             </Field>
-            {editor?.component && (() => {
-                const Component = editor.component;
-                return <Component defaultValue={entry.matchExpression} entry={entry}/>
-            })()}
+            {customCreateElement(editor?.component,
+                {defaultValue: entry.matchExpression, entry,})}
         </>
     );
 }

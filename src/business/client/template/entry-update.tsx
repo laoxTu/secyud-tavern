@@ -21,7 +21,7 @@ import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
-import {GridField} from "@/components/custom/GridField";
+import {GridField} from "@/components/custom/grid-field";
 
 export interface EntryUpdateProps<TEntry> {
     disableHandler: (entry: TEntry, disabled: boolean) => Promise<TEntry>;

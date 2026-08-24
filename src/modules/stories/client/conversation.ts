@@ -74,23 +74,6 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         super("LlmapiInputProcesser");
     }
 
-    private getLlmapiProvider(llmapi: LlmapiModel) {
-        // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
-        const providerName = llmapi.provider;
-        if (!providerName) {
-            throw new BusinessError(`[slot](input): llmapi provider is not set. (${llmapi.code})`);
-        }
-        const provider = llmapiProviderRegistry.records[providerName];
-        if (!provider) {
-            throw new BusinessError(`[slot](input): llmapi provider is not registered. (${providerName})`);
-        }
-        return {
-            llmapi, provider,
-            config: llmapi.content.config,
-            maxIterations: Math.max(2, llmapi.content.maxIterations ?? 20)
-        };
-    }
-
     async* requestReply(
         {history, args, signal, slot}: {
             history: SlotHistory,
@@ -208,6 +191,23 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
                 content: {}
             }
         }
+    }
+
+    private getLlmapiProvider(llmapi: LlmapiModel) {
+        // 工具循环：输出还带 toolCalls 就续接当前输出再请求，直到模型不再调工具。
+        const providerName = llmapi.provider;
+        if (!providerName) {
+            throw new BusinessError(`[slot](input): llmapi provider is not set. (${llmapi.code})`);
+        }
+        const provider = llmapiProviderRegistry.records[providerName];
+        if (!provider) {
+            throw new BusinessError(`[slot](input): llmapi provider is not registered. (${providerName})`);
+        }
+        return {
+            llmapi, provider,
+            config: llmapi.content.config,
+            maxIterations: Math.max(2, llmapi.content.maxIterations ?? 20)
+        };
     }
 }
 

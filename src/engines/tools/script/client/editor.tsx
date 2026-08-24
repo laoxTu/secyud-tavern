@@ -9,7 +9,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import React from "react";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Checkbox} from "@/components/ui/checkbox";
-import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {spanFull, spanHalf} from "@/components/custom/grid-field";
 
 const defaultConfig: ScriptToolConfigModel = {
     description: "",

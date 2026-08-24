@@ -12,5 +12,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetScriptModel>(
     });
 
 export const entryState: EntryState<PresetScriptModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

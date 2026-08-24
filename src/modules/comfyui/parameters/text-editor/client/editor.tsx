@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
-import {spanFull} from "@/components/custom/GridField";
+import {spanFull} from "@/components/custom/grid-field";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {

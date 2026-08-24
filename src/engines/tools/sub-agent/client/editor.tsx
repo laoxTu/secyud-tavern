@@ -7,7 +7,7 @@ import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {SubAgentConfigModel} from "@/engines/tools/sub-agent/models";
 import {Textarea} from "@/components/ui/textarea";
 import {TagBox} from "@/components/custom/combobox";
-import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {spanFull, spanHalf} from "@/components/custom/grid-field";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {submitTargetFormOnKey} from "@/business/client";

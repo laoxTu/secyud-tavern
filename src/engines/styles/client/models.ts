@@ -13,5 +13,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetStyleModel>(
     });
 
 export const entryState: EntryState<PresetStyleModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

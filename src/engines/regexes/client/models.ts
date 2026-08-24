@@ -12,5 +12,5 @@ export const usePagedItemsState = createUsePagedItemsState<PresetRegexModel>(
     });
 
 export const entryState: EntryState<PresetRegexModel> = {
-    moduleName, modulePlural, usePagedItemsState, entryType: engineName,refreshItem
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

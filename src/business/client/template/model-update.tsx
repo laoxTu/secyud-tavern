@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {useErrorHandler} from "@/handler/client/error";
 import {BaseModel} from "@/business/models";
 import {ModelState} from "@/business/client/models";
-import {GridField} from "@/components/custom/GridField";
+import {GridField} from "@/components/custom/grid-field";
 
 export interface ModelUpdateProps<TModel extends BaseModel> {
     // 根据原模型和表单更新模型，返回更新后的模型。

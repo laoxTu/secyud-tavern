@@ -13,7 +13,7 @@ export const GET = interceptor.createRoute(
         const {requires} = await records.params as { requires: string[] };
         const presets: PresetModel[] = await presetRepository
             .getWithRequires(requires);
-        
+
         return NextResponse.json(presets);
     }
 )

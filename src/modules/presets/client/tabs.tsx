@@ -18,7 +18,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
-import {spanFull, spanHalf} from "@/components/custom/GridField";
+import {spanFull, spanHalf} from "@/components/custom/grid-field";
 import {tryParseJson} from "@/utils";
 
 export async function refreshItem() {

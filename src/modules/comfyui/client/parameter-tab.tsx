@@ -12,6 +12,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/parameter-model";
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
 import {Selector} from "@/components/custom/selector";
+import {customCreateElement} from "@/components/custom";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
@@ -56,10 +57,9 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
                           labelAccessor={e => t(`comfyui.parameter_type_${e.id}`)}
                           valueAccessor={e => e.id}/>
             </Field>
-            {editor?.editorComponent && (() => {
-                const Component = editor.editorComponent;
-                return <Component formRef={formRef} entry={entry}/>
-            })()}
+            {customCreateElement(editor?.editorComponent, {
+                entry, formRef,
+            })}
         </>
     );
 }
