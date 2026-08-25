@@ -35,6 +35,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {useRemoteSettingState} from "@/modules/settings/client/models";
 import {useRouter} from "next/navigation";
 import {BusinessError} from "@/handler/models";
+import {getCover} from "@/business/client";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
 
@@ -224,7 +225,7 @@ function Content() {
             <>
                 <ItemMedia variant={'image'}>
                     <Image
-                        src={model.content.coverId ? `/api/images/${model.content.coverId}` : "/images/default_cover.png"}
+                        src={getCover(model.content)}
                         alt={model.name}
                         width={32}
                         height={32}

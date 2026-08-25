@@ -41,14 +41,10 @@ import {Selector} from "@/components/custom/selector";
 import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
 import {GridField} from "@/components/custom/grid-field";
 import {customCreateElement} from "@/components/custom";
+import {getCover} from "@/business/client";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
-    let src = '/images/default_cover.png';
-    const content = model.content as ComfyUIModelContentModel;
-    if (content.coverId)
-        src = `/api/images/${content.coverId}`;
-    else if (content.coverSrc)
-        src = content.coverSrc;
+    const src = getCover(model.content);
     return (<AspectRatio ratio={1}>
         {src.endsWith('mp4') ?
             <video src={src} controls preload="metadata"

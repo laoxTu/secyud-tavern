@@ -107,6 +107,7 @@ export function DefaultTab() {
                             description: data.get("description"),
                             variables,
                             coverId,
+                            coverSrc: data.get("cover_src"),
                         },
                         version: data.get("version") as string,
                         name: data.get("name") as string,
@@ -157,6 +158,13 @@ export function DefaultTab() {
                         {t("default.version")}
                     </FieldLabel>
                     <Input name="version" id={`${moduleName}-version`}
+                           defaultValue={model.version}/>
+                </Field>
+                <Field>
+                    <FieldLabel htmlFor={`${moduleName}-cover_src`}>
+                        {t("default.cover_src")}
+                    </FieldLabel>
+                    <Input name="cover_src" id={`${moduleName}-cover_src`}
                            defaultValue={model.version}/>
                 </Field>
                 <Field>
