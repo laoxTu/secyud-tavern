@@ -165,7 +165,7 @@ export function DefaultTab() {
                         {t("default.cover_src")}
                     </FieldLabel>
                     <Input name="cover_src" id={`${moduleName}-cover_src`}
-                           defaultValue={model.version}/>
+                           defaultValue={model.content.coverSrc ?? ""}/>
                 </Field>
                 <Field>
                     <FieldLabel htmlFor={`${moduleName}-tags`}>
