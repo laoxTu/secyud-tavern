@@ -1,51 +1,35 @@
-import {Orama, Vector} from "@orama/orama";
-import {SlotMessageBase} from "@/modules/models/message";
+import {create as createSchema, Orama} from "@orama/orama";
 import {create} from "zustand";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {remoteStorage} from "@/modules/settings/client/storage";
 import {Registerable} from "@/utils/register";
+import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
+import React from "react";
 
-export const ragVectorSchema = {
-    name: 'string',
-} as const;
-
-export type RagVectorSchema = typeof ragVectorSchema & { embedding: Vector };
-
-interface RagConversationCacheBase {
-    lorebookDb: Orama<RagVectorSchema>,
-    generator: RagEmbeddingGenerator,
-    disabled: false,
+export interface EmbeddingContext {
+    content: string,
 }
 
-export type RagConversationCache = RagConversationCacheBase | { disabled: true }
-
-export interface RagSearchContext extends RagConversationCacheBase {
-    message: SlotMessageBase;
-}
-
-export interface RagEmbeddingContext {
-    content: string;
-}
-
-export interface RagEmbeddingGenerator {
+export interface EmbeddingGenerator {
+    model: string,
     embeddingDimension: number;
-    generateEmbedding: (ctx: RagEmbeddingContext) => Promise<number[]>;
+    generateEmbedding: (ctx: EmbeddingContext) => Promise<number[]>;
 }
 
-export interface RagEmbeddingGeneratorProvider extends Registerable {
+export interface EmbeddingGeneratorProvider extends Registerable {
     component: React.ComponentType,
     getValue: (data: FormData) => Record<string, any>,
-    getGenerator: () => Promise<RagEmbeddingGenerator>;
+    getGenerator: () => Promise<EmbeddingGenerator>;
 }
 
-export interface RagSettingState {
+export interface EmbeddingSettingState {
     embeddingGenerator: string;
     disabled: boolean;
     embeddingGeneratorConfig: Record<string, any>;
 }
 
-export const useRagSettingState = create<RagSettingState>()(
-    persist<RagSettingState>(() => ({
+export const useEmbeddingSettingState = create<EmbeddingSettingState>()(
+    persist<EmbeddingSettingState>(() => ({
             embeddingGenerator: "transformers",
             embeddingGeneratorConfig: {},
             disabled: false,
@@ -61,3 +45,28 @@ export const useRagSettingState = create<RagSettingState>()(
         }
     )
 );
+
+export interface RagModel<TSchema> {
+    generator: EmbeddingGenerator,
+    database: Orama<TSchema>,
+}
+
+export async function createDatabase<TSchema>(schema: TSchema): Promise<RagModel<TSchema> | null> {
+    const manager = embeddingGeneratorManager;
+    const state = useEmbeddingSettingState.getState();
+    const provider =
+        manager.records[state.embeddingGenerator];
+    if (state.disabled || !provider) {
+        return null;
+    }
+    const generator = await provider.getGenerator();
+    return {
+        generator,
+        database: createSchema({
+            schema: {
+                ...schema,
+                embedding: `vector[${generator.embeddingDimension}]`
+            }
+        }),
+    };
+}

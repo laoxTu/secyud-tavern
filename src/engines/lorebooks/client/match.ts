@@ -4,14 +4,14 @@ import {Matcher, MatcherMatchContext} from "./match-models";
 
 export const lorebookMatcherRegistry = new ClientRegistry<Matcher>(engineName + "Matcher");
 
-export function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookModel>,
+export async function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookModel>,
                                        context: MatcherMatchContext) {
     const message = context.message;
     const matchers = lorebookMatcherRegistry.records;
     const activeLorebooks: string[] = [];
     for (const [key, lorebook] of Object.entries(lorebooks)) {
         const matcher = matchers[lorebook.matchType];
-        if (matcher && matcher.match(context, lorebook.matchExpression)) {
+        if (matcher && await matcher.match(context, lorebook)) {
             activeLorebooks.push(key);
         }
     }

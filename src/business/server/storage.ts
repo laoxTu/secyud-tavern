@@ -14,7 +14,7 @@ export interface IModelStorage<TModel> {
 export class ModelStorage<T> extends ServerRegistry<ModelStorageProvider<T>> implements IModelStorage<T> {
 
     static getInstance<T>(name: string) {
-        return getInstance(name + "Storage", u => new ModelStorage<T>(u));
+        return getInstance(name + "-storage", u => new ModelStorage<T>(u));
     }
 
     async loadModel(model: T): Promise<void> {

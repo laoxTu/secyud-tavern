@@ -9,7 +9,7 @@ import {AnthropicInputBuilderConfigModel} from "../models";
 import {joinAsString, tryParseJson} from "@/utils";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import Anthropic from '@anthropic-ai/sdk';
-import {generateMessageWithBuilder, getLorebookTool} from "@/modules/llmapis/client/input-builder";
+import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
@@ -27,7 +27,7 @@ export async function generateInput(
         input_schema: {
             type: 'object',
         },
-        ...getLorebookTool
+        ...getKnowledgeTool
     });
     const systemPrompts: string[] = [];
     await generateMessageWithBuilder(context, {

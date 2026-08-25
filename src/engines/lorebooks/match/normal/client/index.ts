@@ -1,8 +1,6 @@
 ﻿import {matchName, NormalMatchModel} from "../models";
 import {MatchEditor} from "./editor";
-import {Matcher, MatcherMatchContext} from "@/engines/lorebooks/client/match-models";
-import {SlotMessageOutput} from "@/modules/models/message";
-import {joinAsString} from "@/utils";
+import {Matcher, MatcherMatchContext, matchUtils} from "@/engines/lorebooks/client/match-models";
 
 export function getNormalModel(data: FormData): NormalMatchModel {
     const keywordsLength = parseInt(data.get('keywordsLength') as string);
@@ -21,16 +19,7 @@ export function normalMatch(
     context: MatcherMatchContext,
     expression?: NormalMatchModel) {
     if (!expression?.keywordsLength) return false;
-    let content = context.properties.matchContent;
-    if (!content && content !== "") {
-        const message = context.message as SlotMessageOutput;
-        content = `${message.content ?? ""}${joinAsString(
-            message.callings?.filter(
-                u => u.result?.hidden === false), "",
-            u => u.result?.content ?? "")}`;
-        context.properties.matchContent = content;
-    }
-
+    const content = matchUtils.getContent(context);
     let fitCount = 0;
     for (const keywords of expression.keywords) {
         if (keywords.some(keyword => content.includes(keyword))) {
@@ -49,7 +38,7 @@ export const normalMatcher: Matcher =
         getValue: (data): NormalMatchModel => {
             return getNormalModel(data);
         },
-        match: (ctx: MatcherMatchContext, expression?: NormalMatchModel) => {
-            return normalMatch(ctx, expression);
+        match:async (ctx: MatcherMatchContext, lorebook) => {
+            return normalMatch(ctx, lorebook.matchExpression);
         }
     } as const;

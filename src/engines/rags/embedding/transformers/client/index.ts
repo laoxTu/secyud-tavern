@@ -1,4 +1,4 @@
-import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/client/models";
+import {EmbeddingGeneratorProvider, useEmbeddingSettingState} from "@/engines/rags/client/models";
 import {Editor} from "./editor";
 import {env, pipeline} from "@huggingface/transformers";
 
@@ -18,9 +18,9 @@ export const transformerModels: Record<string, TransformerModelInfo> = {
     },
 };
 
-export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
+export const transformersEmbeddingGenerator: EmbeddingGeneratorProvider = {
     async getGenerator() {
-        const state = useRagSettingState.getState();
+        const state = useEmbeddingSettingState.getState();
         const config = state.embeddingGeneratorConfig;
         let model = config["model"];
         if (!model || model === '') {
@@ -33,6 +33,7 @@ export const transformersEmbeddingGenerator: RagEmbeddingGeneratorProvider = {
         console.debug("[transformer](info): ", info);
         const extractor = await pipeline("feature-extraction", info.model);
         return {
+            model,
             embeddingDimension: info.dimension,
             async generateEmbedding(ctx) {
                 const result = await extractor(ctx.content, {
