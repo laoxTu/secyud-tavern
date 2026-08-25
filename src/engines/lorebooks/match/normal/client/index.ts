@@ -24,12 +24,10 @@ export function normalMatch(
     let content = context.properties.matchContent;
     if (!content && content !== "") {
         const message = context.message as SlotMessageOutput;
-        content = message.content ?? "";
-        const callings = message.callings
-            ?.filter(u => u.result?.hidden === false);
-        if (callings?.length) {
-            content += joinAsString(callings, "");
-        }
+        content = `${message.content ?? ""}${joinAsString(
+            message.callings?.filter(
+                u => u.result?.hidden === false), "",
+            u => u.result?.content ?? "")}`;
         context.properties.matchContent = content;
     }
 
