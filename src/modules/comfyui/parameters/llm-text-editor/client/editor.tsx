@@ -14,12 +14,13 @@ import {LlmTextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
 import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
-import {spanFull, spanHalf} from "@/components/custom/grid-field";
+import {rowQuat, spanHalf} from "@/components/custom/grid-field";
 import {slotContext} from "@/modules/stories/client/context";
 import {SlotHistory} from "@/modules/models";
 import {conversationManager} from "@/modules/stories/client/conversation";
 import {create} from "zustand";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
+import {cn} from "@/lib/utils";
 
 export interface LlmTextEditorState {
     signal?: AbortController,
@@ -58,7 +59,7 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
         </Field>
         <LlmapiRequireField defaultValue={config.llmapi ?? null}
                             prefix={`${engineName}-${entry.id}`}/>
-        <Field className={spanFull}>
+        <Field className={cn(spanHalf, rowQuat)}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {t("comfyui.text_prompt")}
             </FieldLabel>

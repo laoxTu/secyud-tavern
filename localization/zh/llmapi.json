@@ -1,0 +1,39 @@
+{
+  "deepseek": {
+    "deepseek-v4-flash": "deepseek-v4-flash",
+    "deepseek-v4-pro": "deepseek-v4-pro"
+  },
+  "llmapi": {
+    "apikey": "api key",
+    "builder": "提示词构造器",
+    "builder_default": "默认构造器",
+    "builder_layered": "层级构造器",
+    "extras": "额外参数",
+    "format": "格式",
+    "frequency_penalty": "presence penalty (用词重复度 -2.0~2.0)",
+    "logprobs": "logprobs (返回置信度)",
+    "max_iterations": "单回合最大轮次",
+    "max_tokens": "max tokens (输出长度上限 0~max)",
+    "model": "模型",
+    "presence_penalty": "presence penalty (话题新颖度 -2.0~2.0)",
+    "provider": "供应者",
+    "provider_anthropic": "Anthropic",
+    "provider_deepseek": "Deepseek",
+    "provider_openai": "Open AI",
+    "reasoning_effort": "reasoning effort (思考强度)",
+    "stream": "流式传输",
+    "temperature": "temperature (温度 0~2)",
+    "thinking": "思考模式",
+    "tool": "工具",
+    "tool_provider": "工具类型",
+    "tool_provider_script": "脚本",
+    "tool_provider_sub_agent": "子Agent",
+    "tool_provider_url_fetch": "联网搜索",
+    "tool_provider_variable": "变量工具",
+    "top_logprobs": "top logprobs (最大返回置信词数)",
+    "top_p": "top p (核采样 0~1)",
+    "url": "地址",
+    "user_input_prefix": "用户输入前缀",
+    "user_input_suffix": "用户输入后缀"
+  }
+}

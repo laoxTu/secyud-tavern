@@ -7,7 +7,7 @@ import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import {SubAgentConfigModel} from "@/engines/tools/sub-agent/models";
 import {Textarea} from "@/components/ui/textarea";
 import {TagBox} from "@/components/custom/combobox";
-import {spanFull, spanHalf} from "@/components/custom/grid-field";
+import {rowFull, rowQuat, spanHalf} from "@/components/custom/grid-field";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {submitTargetFormOnKey} from "@/business/client";
@@ -16,6 +16,7 @@ import {parameterEntryName as engineName} from "@/modules/comfyui/models";
 import React from "react";
 import {PresetRequiresField} from "@/modules/presets/client/tabs";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
+import {cn} from "@/lib/utils";
 
 const defaultConfig: SubAgentConfigModel = {
     disablePreset: false, maxLength: 0,
@@ -23,8 +24,7 @@ const defaultConfig: SubAgentConfigModel = {
     disableTags: [],
     llmapi: null,
     presets: [],
-    schema: `
-{
+    schema: `{
     "type": "object",
     "additionalProperties": false
 }`,
@@ -36,6 +36,24 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
 
     return (
         <>
+            <Field className={cn(spanHalf, rowQuat)}>
+                <FieldLabel htmlFor={`${entry.id}-description`}>
+                    {t('default.description')}
+                </FieldLabel>
+                <Textarea id={`${entry.id}-description`}
+                          name={"description"}
+                          defaultValue={config.description}
+                          onKeyDown={submitTargetFormOnKey}/>
+            </Field>
+            <Field className={cn(spanHalf, rowFull)}>
+                <FieldLabel htmlFor={`${entry.id}-schema`}>
+                    {t('default.schema')}
+                </FieldLabel>
+                <MonacoEditor name={"schema"}
+                              defaultValue={config.schema}
+                              language={"json"}
+                              formRef={formRef}/>
+            </Field>
             <Field>
                 <FieldLabel htmlFor={`${entry.id}-disable_preset`}>
                     {t('sub_agent.disable_preset')}
@@ -59,30 +77,12 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                                 prefix={`${engineName}-${entry.id}`}/>
             <PresetRequiresField defaultValue={config.presets ?? []}
                                  prefix={`${engineName}-${entry.id}`}/>
-            <Field className={spanFull}>
+            <Field className={spanHalf}>
                 <FieldLabel htmlFor={`${entry.id}-disable_tags`}>
                     {t('sub_agent.disable_tags')}
                 </FieldLabel>
                 <TagBox id={`${entry.id}-disable_tags`} name={"disable_tags"}
                         defaultValue={config.disableTags}/>
-            </Field>
-            <Field className={spanHalf}>
-                <FieldLabel htmlFor={`${entry.id}-description`}>
-                    {t('default.description')}
-                </FieldLabel>
-                <Textarea id={`${entry.id}-description`}
-                          name={"description"}
-                          defaultValue={config.description}
-                          onKeyDown={submitTargetFormOnKey}/>
-            </Field>
-            <Field className={spanHalf}>
-                <FieldLabel htmlFor={`${entry.id}-schema`}>
-                    {t('default.schema')}
-                </FieldLabel>
-                <MonacoEditor name={"schema"}
-                              defaultValue={config.schema}
-                              language={"json"}
-                              formRef={formRef}/>
             </Field>
         </>
     );

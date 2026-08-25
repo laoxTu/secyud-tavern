@@ -25,7 +25,7 @@ import {comfyUIParameterRegistry} from "@/modules/comfyui/client/parameter";
 import {BusinessError} from "@/handler/models";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
 import {PagedResult} from "@/business/models";
-import {GridField, spanFull} from "@/components/custom/grid-field";
+import {GridField, spanHalf} from "@/components/custom/grid-field";
 import {tryParseJson} from "@/utils";
 
 export function ComfyUIGenerator() {
@@ -82,7 +82,7 @@ export function ComfyUIGenerator() {
             <FieldSet className={'overflow-auto p-2 flex-1'}>
                 <FieldGroup>
                     <GridField>
-                        <Field className={spanFull}>
+                        <Field className={spanHalf}>
                             <FieldLabel>
                                 {t("comfyui.workflow")}
                             </FieldLabel>
