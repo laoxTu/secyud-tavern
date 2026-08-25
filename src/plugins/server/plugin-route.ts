@@ -14,7 +14,7 @@ class PluginRouteManager extends ServerRegistry<PluginRoute> {
     private routeTree?: any;
 
     static getInstance() {
-        return getInstance("pluginRoute", u => new PluginRouteManager(u));
+        return getInstance("plugin-route", u => new PluginRouteManager(u));
     }
 
     getRouteTree() {

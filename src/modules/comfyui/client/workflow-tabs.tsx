@@ -16,7 +16,8 @@ import {Button} from "@/components/ui/button";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {useErrorHandler} from "@/handler/client/error";
 import {submitTargetFormOnKey} from "@/business/client";
-import {spanFull} from "@/components/custom/grid-field";
+import {rowFull, rowQuat, spanHalf} from "@/components/custom/grid-field";
+import {cn} from "@/lib/utils";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
@@ -49,7 +50,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
             <Input name="name" id={`${moduleName}-name`}
                    defaultValue={model.name}/>
         </Field>
-        <Field className={spanFull}>
+        <Field className={cn(spanHalf, rowFull)}>
             <FieldLabel htmlFor={`${moduleName}-workflow_content`}>
                 {t("default.content")}
                 <Tooltip>
@@ -66,7 +67,7 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
                           defaultValue={model?.content?.workflow}
                           language={'json'} formRef={formRef}/>
         </Field>
-        <Field className={spanFull}>
+        <Field className={cn(spanHalf, rowQuat)}>
             <FieldLabel htmlFor={`${moduleName}-description`}>
                 {t("default.description")}
             </FieldLabel>

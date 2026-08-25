@@ -48,11 +48,11 @@ export class VariableGetTool implements LlmapiTool {
         const history = this.slot.histories.at(-1);
         // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
         const variables = history ? historyUtils.getVariables(history, true) : {};
-        const {previous, current, exists} = extract(variables, path, false);
+        const {current, exists} = extract(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
         return {
             hidden: false,
-            content: exists ? JSON.stringify(current.item) : `not exists, closest path: ${previous.path}`
+            content: exists ? JSON.stringify(current.item) : `result: not exists`
         };
     }
 }

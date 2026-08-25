@@ -7,7 +7,8 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TextEditorConfig} from "../model";
 import {submitTargetFormOnKey} from "@/business/client";
-import {spanFull} from "@/components/custom/grid-field";
+import {rowQuat, spanHalf} from "@/components/custom/grid-field";
+import {cn} from "@/lib/utils";
 
 
 export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
@@ -35,7 +36,7 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
 export function InputComponent({entry}: ComfyUIParameterProps) {
     const config = entry.config as TextEditorConfig;
     return <>
-        <Field className={spanFull}>
+        <Field className={cn(spanHalf, rowQuat)}>
             <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
                 {entry.name}
             </FieldLabel>

@@ -6,7 +6,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {BookIcon} from "lucide-react";
 import {engineName} from "@/engines/rags/models";
 import {embeddingGeneratorManager} from "@/engines/rags/client/embedding";
-import {RagEmbeddingGeneratorProvider, useRagSettingState} from "@/engines/rags/client/models";
+import {EmbeddingGeneratorProvider, useEmbeddingSettingState} from "@/engines/rags/client/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Selector} from "@/components/custom/selector";
@@ -15,14 +15,14 @@ import {customCreateElement} from "@/components/custom";
 
 function Tab() {
     const t = useTranslations();
-    const {disabled, embeddingGenerator} = useRagSettingState();
+    const {disabled, embeddingGenerator} = useEmbeddingSettingState();
     const {handleError, handleSuccess} = useErrorHandler();
-    const [editor, setEditor] = useState<RagEmbeddingGeneratorProvider | null>(
+    const [editor, setEditor] = useState<EmbeddingGeneratorProvider | null>(
         embeddingGeneratorManager.records[embeddingGenerator] ?? null);
 
     const handleSubmit = async (data: FormData) => {
         try {
-            useRagSettingState.setState({
+            useEmbeddingSettingState.setState({
                 disabled: !!data.get("disabled"),
                 embeddingGenerator: editor?.id ?? "",
                 embeddingGeneratorConfig: editor?.getValue(data) ?? {},

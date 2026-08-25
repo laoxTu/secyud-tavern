@@ -1,13 +1,13 @@
 import {Field, FieldLabel} from "@/components/ui/field";
 import React from "react";
 import {useTranslations} from "next-intl";
-import {useRagSettingState} from "@/engines/rags/client/models";
+import {useEmbeddingSettingState} from "@/engines/rags/client/models";
 import {transformerModels} from "@/engines/rags/embedding/transformers/client/index";
 import {Selector} from "@/components/custom/selector";
 
 export function Editor() {
     const t = useTranslations();
-    const {embeddingGeneratorConfig} = useRagSettingState();
+    const {embeddingGeneratorConfig} = useEmbeddingSettingState();
 
     return (<>
         <Field>

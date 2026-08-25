@@ -12,7 +12,7 @@ export const alwaysMatcher: Matcher =
                 lastMessage: !!data.get("lastMessage")
             };
         },
-        match: () => {
+        match: async () => {
             return true;
         }
     } as const;

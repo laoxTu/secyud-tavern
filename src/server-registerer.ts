@@ -12,6 +12,7 @@ import {registerComfyUIServer} from "@/modules/comfyui/server";
 import {registerStoryServer} from "@/modules/stories/server";
 import {registerToolsServer} from "@/engines/tools/server";
 import {registerAnthropicServer} from "@/engines/anthropic/server";
+import {registerMemoriesServer} from "@/engines/memories/server";
 
 export async function registerServerPlugins() {
     const global = globalThis as { __initialized?: boolean };
@@ -32,6 +33,7 @@ export async function registerServerPlugins() {
     registerStylesServer();
     registerScriptsServer();
     registerMacrosServer();
+    registerMemoriesServer();
 
     registerToolsServer();
 

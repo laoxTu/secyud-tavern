@@ -7,6 +7,7 @@ import {alwaysMatcher} from "../match/always/client";
 import {normalMatcher} from "../match/normal/client";
 import {eventMatcher} from "../match/event/client";
 import {vectorMatcher} from "../match/vector/client";
+import {variableMatcher} from "@/engines/lorebooks/match/variable/client";
 
 export function registerLorebooksClient() {
     presetTabManager.register(tabConfig);
@@ -17,6 +18,7 @@ export function registerLorebooksClient() {
         alwaysMatcher,
         normalMatcher,
         eventMatcher,
-        vectorMatcher
+        vectorMatcher,
+        variableMatcher,
     );
 }

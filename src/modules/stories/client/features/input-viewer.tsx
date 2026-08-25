@@ -18,7 +18,6 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {conversationManager,} from "@/modules/stories/client/conversation";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {slotContext} from "@/modules/stories/client/context";
 import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
@@ -36,10 +35,7 @@ export function InputViewer() {
         setLoading(true);
         try {
             const {slotData: {slot, histories}, getHistory} = slotContext;
-            if (useStoryChatboxState.getState().generating) {
-                handleError(new BusinessError("is during output.", "slot.is_output_warning"));
-                return;
-            }
+
             const last = getHistory();
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
@@ -60,11 +56,27 @@ export function InputViewer() {
                 summary: false,
                 variables: last ? historyUtils.getVariables(last, true) : {},
             };
+            const virtualHistories =
+                [...structuredClone(histories), history];
+            // 工具调用初始化，防止虚拟上下文调用工具。
+            for (const virtualHistory of virtualHistories) {
+                for (const outputs of virtualHistory.outputs) {
+                    for (const output of outputs) {
+                        if (!output.callings?.length) continue;
+                        for (const calling of output.callings) {
+                            calling.result ??= {
+                                content: "",
+                                hidden: true,
+                            }
+                        }
+                    }
+                }
+            }
 
             const {items} = await conversationManager.inputProcesser
                 .processInput({
                     history, current: false,
-                    slot: {...slot, histories: [...histories, history]}
+                    slot: {...slot, histories: virtualHistories}
                 });
             setItems(items);
             setOpen(true);

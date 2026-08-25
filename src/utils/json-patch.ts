@@ -57,7 +57,7 @@ export function validate(obj: any) {
     }
 }
 
-type ExtractNode = { item: any, path: string, key: string };
+type ExtractNode = { item: any, key: string, pos: number };
 
 // 沿 '/' 路径定位变量节点，create=true 时补建缺失的中间对象，增删改通过返回的 parent 操作。
 export function extract(obj: any, path: string, create: boolean = false) {
@@ -69,8 +69,8 @@ export function extract(obj: any, path: string, create: boolean = false) {
     }
     let current: ExtractNode = {
         item: obj,
-        path: "",
-        key: ""
+        key: "",
+        pos: 0,
     };
     let previous: ExtractNode = null!;
     for (const key of keys) {
@@ -83,14 +83,14 @@ export function extract(obj: any, path: string, create: boolean = false) {
         previous = current;
         current = {
             item: previous.item[key], key,
-            path: previous.path ? `${previous.path}/${key}` : key,
+            pos: previous.pos + 1,
         }
     }
 
     return {
         current,
         previous,
-        exists: current.path === keys.join('/') && current.item !== undefined
+        exists: current.pos === keys.length && current.item !== undefined
     };
 }
 

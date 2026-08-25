@@ -17,11 +17,12 @@ import {entryState} from "@/engines/lorebooks/client/models";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
-import {spanHalf} from "@/components/custom/grid-field";
+import {rowFull, spanHalf} from "@/components/custom/grid-field";
 import {BusinessError} from "@/handler/models";
 import {checkJson} from "@/utils";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 import {customCreateElement} from "@/components/custom";
+import {cn} from "@/lib/utils";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -39,7 +40,7 @@ function EditorContent({entry, formRef}: { entry: PresetLorebookModel, formRef: 
 
     return (
         <>
-            <Field className={spanHalf + " row-span-8"}>
+            <Field className={cn(spanHalf, rowFull)}>
                 <FieldLabel>
                     {t("default.content")}
                 </FieldLabel>

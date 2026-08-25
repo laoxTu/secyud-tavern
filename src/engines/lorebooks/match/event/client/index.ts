@@ -1,6 +1,6 @@
 ﻿import {EventDate, EventMatchModel, matchName} from "../models";
 import {MatchEditor} from "./editor";
-import {Matcher, MatcherMatchContext} from "@/engines/lorebooks/client/match-models";
+import {Matcher, MatcherMatchContext, matchUtils} from "@/engines/lorebooks/client/match-models";
 import {getNormalModel, normalMatch} from "@/engines/lorebooks/match/normal/client";
 import {getDate} from "@/engines/lorebooks/match/event/client/date-editor";
 
@@ -19,11 +19,11 @@ export const eventMatcher: Matcher =
                 minDate: getDate(data, 'min-date'),
             };
         },
-        match: (ctx: MatcherMatchContext, expression?: EventMatchModel) => {
-            if (!expression) return false;
-            const relatedDates = ctx.variables.relatedDates as EventDate[];
+        match:async (ctx: MatcherMatchContext, lorebook) => {
+            const expression: EventMatchModel = lorebook.matchExpression;
+            const variables = matchUtils.getVariables(ctx);
+            const relatedDates = variables.relatedDates as EventDate[];
             if (!relatedDates) return false;
-
             const maxDate = getDateNumber(expression.maxDate);
             const minDate = getDateNumber(expression.minDate);
             if (!relatedDates.some(u => {

@@ -18,6 +18,7 @@ import {registerRagsClient} from "@/engines/rags/client";
 import {registerComfyUIClient} from "@/modules/comfyui/client";
 import {registerToolsClient} from "@/engines/tools/client";
 import {registerAnthropicClient} from "@/engines/anthropic/client";
+import {registerMemoriesClient} from "@/engines/memories/client";
 
 async function loadClientPlugins() {
     registerBusinessClient();
@@ -38,6 +39,7 @@ async function loadClientPlugins() {
     registerStylesClient();
     registerScriptsClient();
     registerMacrosClient();
+    registerMemoriesClient();
 
     registerToolsClient();
 

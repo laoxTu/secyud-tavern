@@ -9,7 +9,7 @@ import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {generateMessageWithBuilder, getLorebookTool} from "@/modules/llmapis/client/input-builder";
+import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {joinAsString} from "@/utils";
 
 /**
@@ -31,7 +31,7 @@ export async function generateInput(context: LlmapiInputContext) {
             }));
         tools.push({
             type: "function",
-            ...getLorebookTool,
+            ...getKnowledgeTool,
             parameters: {},
             strict: false,
         });
@@ -103,7 +103,7 @@ export async function generateInput(context: LlmapiInputContext) {
             }));
         tools.push({
             type: "function",
-            function: getLorebookTool
+            function: getKnowledgeTool
         });
         await generateMessageWithBuilder(context, {
             builder: context.slot.llmapi.content

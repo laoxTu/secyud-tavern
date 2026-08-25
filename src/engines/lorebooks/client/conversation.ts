@@ -1,25 +1,170 @@
-﻿import {engineName, enginePlural, PresetLorebookModel,} from "../models";
-import {matchName} from "../match/always/models";
+﻿import {compareLorebook, engineName, enginePlural, PresetLorebookModel,} from "../models";
+import {matchName as alwaysMatch} from "../match/always/models";
 import {tryFillActiveLorebooks} from "@/engines/lorebooks/client/match";
 import {
-    LlmapiHistory,
+    InjectContext,
+    InjectHandler,
+    LlmapiInputContext,
     LlmapiInputProcesser,
     LlmapiOutputProcesser,
     SlotInitializer,
     slotUtils
 } from "@/modules/stories/client/conversation-models";
-import {engineName as ragEngineName} from '@/engines/rags/models';
 import {engineName as toolEngineName} from '@/engines/tools/models';
-import {historyUtils} from "@/modules/models";
+import {historyUtils, SlotHistory} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
-import {tryParseJson} from "@/utils";
+import {joinAsString, sequenceGroupBy, tryParseJson} from "@/utils";
+import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {LorebookConversationCache, lorebookSchema} from "@/engines/lorebooks/client/models";
+import {createDatabase} from "@/engines/rags/client/models";
+import {matchName as vectorMatch} from "@/engines/lorebooks/match/vector/models";
+import {insert} from "@orama/orama";
 
+async function createInjectHandler(
+    {
+        slot,
+        histories,
+        contentHandlers,
+    }: LlmapiInputContext, {
+        builder,
+        toolName,
+        pushToolMessage,
+        pushUserMessage,
+        pushAiMessage,
+        pushSystemMessage,
+    }: InjectContext): Promise<InjectHandler> {
+    const cache: LorebookConversationCache =
+        slotUtils.getProperty(slot, enginePlural);
+    const visited = new Set<string>();
+    let lorebooks: PresetLorebookModel[] = [];
+    let simulation = 0;
+    switch (builder) {
+        case "layered": {
+            await insertLorebooks(cache.before);
+            await insertLorebooks(cache.after);
+            for (const history of histories) {
+                await insertMessages(history, history.inputs, false);
+                if (history === histories.at(-1)) break;
+                await insertMessages(history, historyUtils.getOutputs(history), true);
+            }
+            lorebooks.sort(compareLorebook);
+            let index = 0;
+            return {
+                async middle(i: number) {
+                    const items: PresetLorebookModel[] = [];
+                    for (; index < lorebooks.length; index++) {
+                        const u = lorebooks[index];
+                        if (i === histories.length - 1 ||
+                            u.layer + histories.length >= i + 100) break;
+                        items.push(u);
+                    }
+                    await generateLorebooks(items);
+                },
+            };
+        }
+        default:
+            let index = 0;
+            await insertLorebooks(cache.before);
+            return {
+                async before(i: number) {
+                    const history = histories[i];
+                    await insertMessages(history, history.inputs, false);
+                    if (i === histories.length - 1)
+                        await insertLorebooks(cache.after);
+                    lorebooks.sort(compareLorebook);
+                    const c = lorebooks.findIndex(u => u.layer >= 100);
+                    index = c < 0 ? lorebooks.length : c;
+                    // 添加user前世界书
+                    await generateLorebooks(lorebooks.slice(0, index))
+                },
+                async middle() {
+                    // 添加user后世界书
+                    await generateLorebooks(lorebooks.slice(index, lorebooks.length));
+                    lorebooks.length = 0;
+                },
+                async after(i: number) {
+                    if (i === histories.length - 1) return;
+                    const history = histories[i];
+                    await insertMessages(history, historyUtils.getOutputs(history), true);
+                },
+            };
+    }
 
-export interface LorebookConversationCache {
-    before: PresetLorebookModel[],
-    after: PresetLorebookModel[]
-    entries: Record<string, PresetLorebookModel>
+    async function generateContent(str: string, role: string, type: string) {
+        return await slotUtils.handleContent(contentHandlers, {str, role, type});
+    }
+
+    async function generateLorebooks(lorebooks: PresetLorebookModel[]) {
+        const groups = sequenceGroupBy(lorebooks, u => u.role);
+        console.debug("[lorebook]: ", lorebooks);
+        for (const group of groups) {
+            const contents: string[] = [];
+            for (const item of group.items) {
+                contents.push(await generateContent(
+                    item.content, group.key, "output"));
+            }
+            const content = joinAsString(contents, "\n\n");
+            switch (group.key) {
+                case "knowledge":
+                    simulation += 1;
+                    pushToolMessage([
+                        {
+                            index: 0,
+                            id: `${toolName(simulation)}l`,
+                            name: getKnowledgeTool.name,
+                            arguments: "{}",
+                            result: {content, hidden: false}
+                        }
+                    ]);
+                    break;
+                case "system":
+                    pushSystemMessage(content);
+                    break;
+                case "assistant":
+                    pushAiMessage(content);
+                    break;
+                case "user":
+                    pushUserMessage(content);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    async function insertMessages(
+        history: SlotHistory,
+        messages: SlotMessageBase[] | null,
+        output: boolean) {
+        if (!messages?.length) return;
+        for (const message of messages) {
+            const names = message.properties[enginePlural] ??
+                await tryFillActiveLorebooks(cache.entries, {
+                    history, message,
+                    properties: {},
+                    output,
+                    cache,
+                });
+            for (const name of names) {
+                if (visited.has(name)) continue;
+                visited.add(name);
+                const lorebook = cache.entries[name];
+                if (lorebook) {
+                    lorebooks.push(cache.entries[name]);
+                }
+            }
+        }
+    }
+
+    async function insertLorebooks(inputs: PresetLorebookModel[]) {
+        for (const lorebook of inputs) {
+            if (visited.has(lorebook.name)) continue;
+            visited.add(lorebook.name);
+            lorebooks.push(lorebook);
+        }
+    }
 }
+
 
 export const lorebookConversationProvider:
     SlotInitializer
@@ -27,12 +172,13 @@ export const lorebookConversationProvider:
     & LlmapiOutputProcesser
     = {
     id: engineName,
-    requires: [ragEngineName, toolEngineName],
+    requires: [toolEngineName],
     onInitialize: async (ctx) => {
         const cache: LorebookConversationCache = {
             before: [],
             after: [],
-            entries: {}
+            entries: {},
+            rag: await createDatabase(lorebookSchema),
         };
         for (const preset of ctx.slot.presets) {
             const entries = preset.entries
@@ -47,70 +193,45 @@ export const lorebookConversationProvider:
                 const id = `${preset.code}-${entry.code}`;
                 // 替换code，唯一标识
                 entry.code = id;
-                if (entry.matchType === matchName) {
+                if (entry.matchType === alwaysMatch) {
                     if (entry.matchExpression?.lastMessage)
                         cache.after.push(entry);
                     else cache.before.push(entry);
                 } else {
                     cache.entries[id] = entry;
                 }
+
+                if (cache.rag &&
+                    entry.matchType === vectorMatch) {
+                    const {generator, database} = cache.rag;
+                    const embedding = await generator
+                        .generateEmbedding({
+                            content: entry.content,
+                        });
+                    await insert(database, {
+                        name: id,
+                        embedding,
+                    });
+                }
             }
         }
         slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
-        const cache: LorebookConversationCache =
-            slotUtils.getProperty(ctx.slot, enginePlural);
-
-        const prepareLorebooks: PresetLorebookModel[] = [];
-        // 遍历历史：逐条输入/输出触发匹配，激活的世界书先积攒再合并进该条历史的 properties，供后续拼装提示词
-        // 将世界书拷贝到上下文中，用于生成提示词。
-        for (const history of ctx.histories) {
-            for (const input of history.inputs) {
-                setActiveLorebooks(history, input, false);
-            }
-
-            const lorebooks = history.content[enginePlural];
-            // 设置缓存，缓存的世界书来源可能不一样，如果前面设置过，需要合并。
-            history.content[enginePlural] = [
-                ...(lorebooks ?? []),
-                ...prepareLorebooks];
-
-            prepareLorebooks.length = 0;
-
-            // 每轮output添加时都会解析，所以只找最新的
-            const output =
-                historyUtils.getOutputs(history)?.at(-1);
-            if (output) {
-                setActiveLorebooks(history, output, true);
-            }
-        }
-
-        function setActiveLorebooks(history: LlmapiHistory, message: SlotMessageBase, includeOutput: boolean) {
-            // 从持久化数据中设置/读取 string[]
-            const lorebookNames = message.properties[enginePlural] ??
-                tryFillActiveLorebooks(cache.entries, {
-                    history, message,
-                    variables: historyUtils.getVariables(ctx.history, includeOutput),
-                    properties: {},
-                });
-            for (const lorebookName of lorebookNames) {
-                const lorebook = cache.entries[lorebookName];
-                if (lorebook) {
-                    prepareLorebooks.push(lorebook);
-                }
-            }
-        }
+        ctx.injectorCreators
+            .push((injectCtx) =>
+                createInjectHandler(ctx, injectCtx));
     },
     onProcessOutput: async (ctx) => {
         const outputs = historyUtils.getOutputs(ctx.history);
         if (!outputs) return;
         const cache: LorebookConversationCache = slotUtils.getProperty(ctx.slot, enginePlural);
         for (const output of outputs) {
-            tryFillActiveLorebooks(cache.entries, {
+            await tryFillActiveLorebooks(cache.entries, {
                 history: ctx.history, message: output,
-                variables: historyUtils.getVariables(ctx.history, true),
                 properties: {},
+                output: true,
+                cache,
             });
         }
     }

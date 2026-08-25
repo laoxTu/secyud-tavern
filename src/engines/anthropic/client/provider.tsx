@@ -11,9 +11,10 @@ import {Textarea} from "@/components/ui/textarea";
 import {useItemState} from "@/modules/llmapis/client/models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {BuilderContent, generateInput, getInputBuilderConfig} from "./input-builder";
-import {spanFull} from "@/components/custom/grid-field";
+import {rowHalf, spanHalf} from "@/components/custom/grid-field";
 import Anthropic from "@anthropic-ai/sdk";
 import {messageUtils} from "@/modules/models";
+import {cn} from "@/lib/utils";
 
 const defaultConfig: AnthropicConfigModel = {
     url: "",
@@ -87,7 +88,7 @@ function Content() {
                        defaultValue={config.parameters.max_tokens}/>
             </Field>
             <BuilderContent config={config.inputBuilder}/>
-            <Field className={spanFull}>
+            <Field className={cn(spanHalf, rowHalf)}>
                 <FieldLabel htmlFor={`${moduleName}-extras`}>
                     {t(`${moduleName}.extras`)}
                 </FieldLabel>

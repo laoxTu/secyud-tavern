@@ -9,7 +9,8 @@ import {submitTargetFormOnKey} from "@/business/client";
 import React from "react";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Checkbox} from "@/components/ui/checkbox";
-import {spanFull, spanHalf} from "@/components/custom/grid-field";
+import {rowFull, rowQuat, spanHalf} from "@/components/custom/grid-field";
+import {cn} from "@/lib/utils";
 
 const defaultConfig: ScriptToolConfigModel = {
     description: "",
@@ -28,6 +29,15 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
     const config: ScriptToolConfigModel = mergeObjects(defaultConfig, defaultValue);
 
     return (<>
+        <Field className={cn(spanHalf, rowQuat)}>
+            <FieldLabel htmlFor={`${entry.id}-description`}>
+                {t('default.description')}
+            </FieldLabel>
+            <Textarea name="description"
+                      id={`${entry.id}-description`}
+                      defaultValue={config.description}
+                      onKeyDown={submitTargetFormOnKey}/>
+        </Field>
         <Field>
             <FieldLabel htmlFor={`${entry.id}-hidden`}>
                 {t('default.hidden')}
@@ -58,16 +68,7 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                           defaultChecked={config.enableVariable ?? false}/>
             </FieldContent>
         </Field>
-        <Field className={spanFull}>
-            <FieldLabel htmlFor={`${entry.id}-description`}>
-                {t('default.description')}
-            </FieldLabel>
-            <Textarea name="description"
-                      id={`${entry.id}-description`}
-                      defaultValue={config.description}
-                      onKeyDown={submitTargetFormOnKey}/>
-        </Field>
-        <Field className={spanHalf}>
+        <Field className={cn(spanHalf, rowFull)}>
             <FieldLabel htmlFor={`${entry.id}-script`}>
                 {t('default.script')}
             </FieldLabel>
@@ -77,7 +78,7 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                           formRef={formRef}
             />
         </Field>
-        <Field className={spanHalf}>
+        <Field className={cn(spanHalf, rowFull)}>
             <FieldLabel htmlFor={`${entry.id}-schema`}>
                 {t('default.schema')}
             </FieldLabel>

@@ -47,3 +47,12 @@ export const submitFormOnKey =
             formRef.current?.requestSubmit();
         }
     }
+
+
+export function getCover(content: Record<string, any>) {
+    if (content.coverId)
+        return `/api/images/${content.coverId}`;
+    else if (content.coverSrc)
+        return content.coverSrc;
+    return '/images/default_cover.png';
+}

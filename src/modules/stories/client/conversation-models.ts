@@ -6,6 +6,8 @@ import {mergeObjects} from "@/utils";
 import {RequireModel} from "@/modules/presets/models";
 import {get} from "@/client";
 import {slotContext} from "@/modules/stories/client/context";
+import {SlotMessageOutput} from "@/modules/models/message";
+import {SlotCalling} from "@/modules/models/calling";
 
 export const check = {
     slot: (slot?: SlotModel | null) => {
@@ -26,8 +28,26 @@ async function handleContent(
     for (const contentHandler of handlers) {
         res = await contentHandler(res, role, type);
     }
-    return res;
+    return res.trim();
 }
+
+export interface InjectContext {
+    toolName: (index: number) => string,
+    builder: string,
+    pushUserMessage: (content: string) => void,
+    pushAiMessage: (content: string, output?: SlotMessageOutput) => void,
+    pushToolMessage: (callings: SlotCalling[], content?: string,
+                      output?: SlotMessageOutput) => void,
+    pushSystemMessage: (content: string) => void,
+}
+
+export interface InjectHandler {
+    before?: (index: number) => Promise<void>,
+    middle?: (index: number) => Promise<void>,
+    after?: (index: number) => Promise<void>,
+}
+
+export type InjectorCreator = (context: InjectContext) => Promise<InjectHandler>;
 
 export interface SlotContextBase {
     properties: Record<string, any>,
@@ -38,18 +58,15 @@ export interface SlotInitializeContext extends SlotContextBase {
     id?: string;
 }
 
-export interface LlmapiHistory extends SlotHistory {
-    content: Record<string, any>;
-}
-
 export interface LlmapiInputContext extends SlotContextBase {
     history: SlotHistory,
     // 这个和slot里面的有细微的差别
     // 截断summary或补充开场白
-    histories: LlmapiHistory[],
+    histories: SlotHistory[],
     // 持续当前输出，意味着要拼接当前output
     current: boolean,
     contentHandlers: ContentHandler[],
+    injectorCreators: InjectorCreator[],
 }
 
 export interface LlmapiResultContext extends SlotContextBase {
