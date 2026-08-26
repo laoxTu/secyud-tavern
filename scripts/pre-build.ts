@@ -59,7 +59,7 @@ async function preBuild() {
         "Xenova/all-MiniLM-L6-v2", "all-MiniLM-L6-v2",
         [
             "config.json",
-            // "onnx/model.onnx",
+            "onnx/model.onnx",
             "tokenizer_config.json",
             "tokenizer.json",
             "onnx/model_quantized.onnx"
@@ -69,7 +69,7 @@ async function preBuild() {
         "Xenova/bge-small-zh-v1.5", "bge-small-zh-v1.5",
         [
             "config.json",
-            // "onnx/model.onnx",
+            "onnx/model.onnx",
             "tokenizer_config.json",
             "tokenizer.json",
             "onnx/model_quantized.onnx",
