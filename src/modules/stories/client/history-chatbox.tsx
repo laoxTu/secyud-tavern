@@ -69,7 +69,7 @@ export const useStoryChatboxState =
                 } = slotContext;
                 set({generating: true});
                 try {
-                    const history = getHistory();
+                    const history = await getHistory();
                     const {setPage} = useHistoryPageState.getState();
                     const setHistoryPage = async () => {
                         history.outputId = history.outputs.length - 1;

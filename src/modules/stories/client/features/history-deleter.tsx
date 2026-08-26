@@ -35,7 +35,7 @@ export function HistoryDeleter() {
     const deleteCurrentHistory = async () => {
         try {
             const {slotData: {slot, histories}, getHistory} = slotContext;
-            const history = getHistory(page.cur);
+            const history = await getHistory(page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
                 {params: {id: slot.id, entryType: 'history', entryId: history.id}})
             histories.splice(page.cur - 1, 1);
@@ -50,7 +50,7 @@ export function HistoryDeleter() {
     const deleteCurrentOutput = async () => {
         try {
             const {slotData: {histories}, getHistory, setHistory} = slotContext;
-            let history = getHistory(page.cur);
+            let history = await getHistory(page.cur);
             if (history.outputs.length) {
                 history.outputs.splice(history.outputId, 1);
                 history.outputId = Math.min(
@@ -59,7 +59,7 @@ export function HistoryDeleter() {
 
             if (!history.outputs.length &&
                 page.cur < histories.length) {
-                const current = histories[page.cur];
+                const current = await getHistory(page.cur + 1);
                 current.summary ||= history.summary;
                 current.inputs = [...history.inputs, ...current.inputs];
                 await setHistory(page.cur + 1);

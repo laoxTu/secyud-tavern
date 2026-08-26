@@ -1,4 +1,4 @@
-﻿import { memoryStorageProvider} from "./storage";
+﻿import {memoryStorageProvider} from "./storage";
 import {storyStorage} from "@/modules/stories/server/storage";
 
 

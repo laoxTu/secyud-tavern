@@ -97,9 +97,8 @@ export class MemoryGetTool implements LlmapiTool {
             min_relevance?: number,
         }) {
 
-
         const outputs = historyUtils.getOutputs(
-            slotContext.getHistory(undefined, this.slot));
+            await slotContext.getHistory(undefined, this.slot));
         const output = outputs?.at(-1);
 
         if (!output) {
@@ -228,7 +227,7 @@ export class MemorySetTool implements LlmapiTool {
         const cache = slotUtils.getProperty<MemoryConversationCache>(this.slot, enginePlural);
         if (!cache.rag) return {hidden: false, content: "warn: RAG is not enabled"};
         const {generator, database} = cache.rag;
-        const vector = await generator.generateEmbedding({
+        const embedding = await generator.generateEmbedding({
             content: content,
         });
         const entry: StoryMemoryModel = {
@@ -237,12 +236,10 @@ export class MemorySetTool implements LlmapiTool {
             code: uuidv4(),
             name: title,
             importance,
-            model: generator.model,
             sequence: this.slot.histories.length,
             text: content,
             tags,
             type,
-            vector,
         };
 
         const {id} = await post("/stories/{id}/entries/{entryType}",
@@ -260,7 +257,7 @@ export class MemorySetTool implements LlmapiTool {
             type: entry.type,
             importance: entry.importance,
             sequence: entry.sequence,
-            embedding: entry.vector,
+            embedding,
         });
         return {
             content: "success",

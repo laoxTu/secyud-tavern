@@ -31,7 +31,9 @@ export const transformersEmbeddingGenerator: EmbeddingGeneratorProvider = {
         env.allowRemoteModels = false;
         const info = transformerModels[model];
         console.debug("[transformer](info): ", info);
-        const extractor = await pipeline("feature-extraction", info.model);
+        const extractor = await pipeline("feature-extraction", info.model, {
+            device: "auto"
+        });
         return {
             model,
             embeddingDimension: info.dimension,

@@ -5,7 +5,6 @@ import {BusinessError, Check} from "@/handler/models";
 import {storyRepository} from "@/modules/stories/server/repository";
 import {llmapiRepository} from "@/modules/llmapis/server/repository";
 import {SlotHistory} from "@/modules/models";
-import {EntryModel} from "@/business/models";
 import type {PresetModel} from "@/modules/presets/models";
 import {presetRepository} from "@/modules/presets/server/repository";
 
@@ -29,8 +28,8 @@ export async function getSlot(story: StoryModel): Promise<SlotModel> {
             .withValue("id", story.id);
     }
 
-    const histories = (await storyRepository.entry.getList(story.id, "history")).data as (SlotHistory & EntryModel)[];
-    histories.sort((a, b) => a.id - b.id);
+    const count = await storyRepository.entry.count(story.id, "history");
+    const histories = new Array<SlotHistory | null>(count).fill(null);
 
     const presets: PresetModel[] = await presetRepository
         .getWithRequires(story.requires.map(u => u.code));

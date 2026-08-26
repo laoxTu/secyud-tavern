@@ -115,7 +115,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     slot: {
                         ...slot,
                         histories: [
-                            getHistory(useHistoryPageState.getState().page.cur),
+                            await getHistory(useHistoryPageState.getState().page.cur),
                             history,
                         ],
                         llmapi: await slotUtils.getLlmapi(config?.llmapi, slot),

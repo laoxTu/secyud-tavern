@@ -11,7 +11,6 @@ import {
 import {engineName as toolEngineName} from "@/engines/tools/models";
 import {getMemoryCodes, MemoryConversationCache, memorySchema} from "@/engines/memories/client/models";
 import {insert} from "@orama/orama";
-import {put} from "@/client";
 import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
@@ -52,7 +51,7 @@ async function createInjectHandler(
             if (!memories.length) return;
             const content = Object.fromEntries(
                 memories.map(m => ([m.code, m.text])));
-            console.debug(`[memory](inject): `,content);
+            console.debug(`[memory](inject): `, content);
             pushToolMessage([
                 {
                     index: 0,
@@ -85,31 +84,16 @@ export const memoriesConversationProvider: SlotInitializer
             await businessUtils.useEntries<StoryMemoryModel>(ctx.slot, enginePlural,
                 async entry => {
                     cache.memories[entry.code] = entry;
-
-                    // 如果换模型的话，缓存一下
-                    if (generator.model !== entry.model) {
-                        const embedding = await generator.generateEmbedding({
-                            content: entry.text,
-                        });
-                        await put("/stories/{id}/entries/{entryType}/{entryId}", {
-                            ...entry,
-                            vector: embedding,
-                            model: generator.model,
-                        }, {
-                            params: {
-                                id: ctx.slot.id,
-                                entryId: entry.id,
-                                entryType: engineName,
-                            }
-                        });
-                    }
+                    const embedding = await generator.generateEmbedding({
+                        content: entry.text,
+                    });
                     await insert(database, {
                         name: `${entry.id}`,
                         tags: entry.tags,
                         type: entry.type,
                         importance: entry.importance,
                         sequence: entry.sequence,
-                        embedding: entry.vector,
+                        embedding,
                     })
                 })
         }

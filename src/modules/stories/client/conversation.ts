@@ -151,31 +151,30 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
             history: SlotHistory,
             args?: any,
             current: boolean,
-            slot?: SlotModel
+            slot?: SlotModel,
         }) {
         slot = check.slot(slot);
         const {provider} = this.getLlmapiProvider(slot.llmapi);
-        const histories = slot.histories;
+        const histories: SlotHistory[] = [];
+        for (let i = slot.histories.length - 1; i >= 0; i--) {
+            const history = await slotContext.getHistory(i);
+            histories.push(history);
+            if (history.summary) break;
+            if (i === 0) {
+                histories.push(slotUtils.getOpening(slot));
+            }
+        }
+        histories.reverse();
+
         const context: LlmapiInputContext = {
             slot,
             history,
             properties: {args},
             current,
-            histories: [],
+            histories,
             contentHandlers: [],
             injectorCreators: [],
         };
-        // 从最后一个 summary 历史开始发送（更早的历史已总结过）；无 summary 时补开场白作为起点
-        let start = histories.slice(0, histories.length - 1)
-            .findLastIndex(u => u.summary);
-        if (start === -1) {
-            const opening = slotUtils.getOpening(slot);
-            context.histories.push(opening);
-        }
-
-        for (let i = Math.max(start, 0); i < histories.length; i++) {
-            context.histories.push(histories[i]);
-        }
 
         console.debug("[slot](input): ", context);
 

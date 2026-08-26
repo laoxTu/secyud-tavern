@@ -38,7 +38,7 @@ export const normalMatcher: Matcher =
         getValue: (data): NormalMatchModel => {
             return getNormalModel(data);
         },
-        match:async (ctx: MatcherMatchContext, lorebook) => {
+        match: async (ctx: MatcherMatchContext, lorebook) => {
             return normalMatch(ctx, lorebook.matchExpression);
         }
     } as const;

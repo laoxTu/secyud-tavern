@@ -5,7 +5,7 @@ import {Matcher, MatcherMatchContext} from "./match-models";
 export const lorebookMatcherRegistry = new ClientRegistry<Matcher>(engineName + "Matcher");
 
 export async function tryFillActiveLorebooks(lorebooks: Record<string, PresetLorebookModel>,
-                                       context: MatcherMatchContext) {
+                                             context: MatcherMatchContext) {
     const message = context.message;
     const matchers = lorebookMatcherRegistry.records;
     const activeLorebooks: string[] = [];
