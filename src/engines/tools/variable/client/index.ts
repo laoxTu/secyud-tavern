@@ -51,7 +51,6 @@ export class VariableGetTool implements LlmapiTool {
         const {current, exists} = extract(variables, path, false);
         // 返回标准化路径、值和是否存在，供模型判断后续读写。
         return {
-            hidden: false,
             content: exists ? JSON.stringify(current.item) : `result: not exists`
         };
     }
@@ -166,7 +165,6 @@ export class VariableSetTool implements LlmapiTool {
         }
         return {
             content: "success",
-            hidden: false,
         };
     }
 }

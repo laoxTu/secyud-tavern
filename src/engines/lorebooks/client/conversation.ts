@@ -115,7 +115,7 @@ async function createInjectHandler(
                             id: `${toolName(simulation)}l`,
                             name: getKnowledgeTool.name,
                             arguments: "{}",
-                            result: {content, hidden: false}
+                            result: {content}
                         }
                     ]);
                     break;

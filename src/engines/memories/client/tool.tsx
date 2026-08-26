@@ -103,7 +103,6 @@ export class MemoryGetTool implements LlmapiTool {
 
         if (!output) {
             return {
-                hidden: false,
                 content: "error: output not found",
             };
         }
@@ -111,7 +110,6 @@ export class MemoryGetTool implements LlmapiTool {
         const cache = slotUtils.getProperty<MemoryConversationCache>(this.slot, enginePlural);
         if (!cache.rag) {
             return {
-                hidden: false,
                 content: "warn: RAG is not enabled"
             };
         }
@@ -159,7 +157,6 @@ export class MemoryGetTool implements LlmapiTool {
         memoryCodes.push(codes);
 
         return {
-            hidden: false,
             content: `memory keys: ${JSON.stringify(codes)}`
         };
     }
@@ -225,7 +222,7 @@ export class MemorySetTool implements LlmapiTool {
             tags?: string[],
         }) {
         const cache = slotUtils.getProperty<MemoryConversationCache>(this.slot, enginePlural);
-        if (!cache.rag) return {hidden: false, content: "warn: RAG is not enabled"};
+        if (!cache.rag) return {content: "warn: RAG is not enabled"};
         const {generator, database} = cache.rag;
         const embedding = await generator.generateEmbedding({
             content: content,
@@ -261,7 +258,6 @@ export class MemorySetTool implements LlmapiTool {
         });
         return {
             content: "success",
-            hidden: true,
         };
     }
 }

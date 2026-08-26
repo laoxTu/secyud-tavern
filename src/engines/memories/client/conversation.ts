@@ -15,7 +15,6 @@ import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {businessUtils} from "@/business/models";
-import {PresetModel} from "@/modules/presets/models";
 import {StoryModel} from "@/modules/stories/models";
 
 async function createInjectHandler(
@@ -62,7 +61,6 @@ async function createInjectHandler(
                     arguments: "{}",
                     result: {
                         content: `memory: ${JSON.stringify(content)}`,
-                        hidden: false
                     }
                 }
             ]);

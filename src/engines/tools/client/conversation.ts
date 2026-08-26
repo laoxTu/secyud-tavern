@@ -92,14 +92,12 @@ async function callTools(
                 toolCall.result = await tool.invoke(args);
             } else {
                 toolCall.result = {
-                    hidden: false,
                     content: "",
                 };
             }
         } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
             toolCall.result = {
-                hidden: false,
                 content: `error: ${err?.message ?? "unknown error"}`,
             };
             console.error(err);

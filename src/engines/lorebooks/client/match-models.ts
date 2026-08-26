@@ -31,7 +31,7 @@ function getContent({properties, output, message}: MatcherMatchContext) {
     if (!content && content !== "") {
         if (output) {
             const callings = (message as SlotMessageOutput)
-                .callings?.filter(u => u.result?.hidden === false);
+                .callings?.filter(u => u.result?.content && !u.result?.hidden);
             content = `${message.content ?? ""}${joinAsString(
                 callings, "",
                 u => u.result?.content ?? "")}`;

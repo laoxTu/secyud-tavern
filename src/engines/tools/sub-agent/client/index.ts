@@ -123,7 +123,6 @@ export class SubAgentTool implements LlmapiTool {
 
         return {
             content: result,
-            hidden: false,
         };
     }
 }

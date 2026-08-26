@@ -79,7 +79,7 @@ export function filterCallings(callings: SlotCalling[],
                                enableHidden?: boolean) {
     const tools: SlotCalling[] = [];
     for (const calling of callings) {
-        const hidden = !!calling.result?.hidden
+        const hidden = !!calling.result?.hidden;
         items.push({
             role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
             content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
