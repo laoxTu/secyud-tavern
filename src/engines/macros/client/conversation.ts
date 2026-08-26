@@ -11,6 +11,7 @@ import {Eta} from 'eta/core';
 import {joinAsString} from "@/utils";
 import {engineName as regexEngineName} from "@/engines/regexes/models"
 import {historyUtils, SlotHistory} from "@/modules/models";
+import {businessUtils} from "@/business/models";
 
 const eta = new Eta({
     autoTrim: false,
@@ -72,10 +73,8 @@ export const macroConversationProvider:
         const cache: MacroConversationCache = {
             macros: {}
         }
-        for (const preset of slot.presets) {
-            const entries: PresetMacroModel[] = preset.entries?.[enginePlural];
-            if (!entries) continue;
-            for (const entry of entries) {
+        await businessUtils.useEntriesList<PresetMacroModel>(slot.presets, enginePlural,
+            async (entry) => {
                 const item = cache.macros[entry.key] ??= {
                     key: entry.key,
                     select: -1,
@@ -91,8 +90,7 @@ export const macroConversationProvider:
                         item.select = item.singles.length;
                     item.singles.push(entry);
                 }
-            }
-        }
+            });
         slotUtils.setProperty(slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {

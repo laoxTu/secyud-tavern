@@ -15,6 +15,7 @@ import {put} from "@/client";
 import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {businessUtils} from "@/business/models";
 
 async function createInjectHandler(
     {
@@ -80,36 +81,36 @@ export const memoriesConversationProvider: SlotInitializer
         };
         if (cache.rag) {
             const {generator, database} = cache.rag;
-            const entries = ctx.slot.entries?.[enginePlural] as StoryMemoryModel[];
-            for (const entry of entries) {
-                cache.memories[entry.code] = entry;
+            await businessUtils.useEntries<StoryMemoryModel>(ctx.slot, enginePlural,
+                async entry => {
+                    cache.memories[entry.code] = entry;
 
-                // 如果换模型的话，缓存一下
-                if (generator.model !== entry.model) {
-                    const embedding = await generator.generateEmbedding({
-                        content: entry.text,
-                    });
-                    await put("/stories/{id}/entries/{entryType}/{entryId}", {
-                        ...entry,
-                        vector: embedding,
-                        model: generator.model,
-                    }, {
-                        params: {
-                            id: ctx.slot.id,
-                            entryId: entry.id,
-                            entryType: engineName,
-                        }
-                    });
-                }
-                await insert(database, {
-                    name: `${entry.id}`,
-                    tags: entry.tags,
-                    type: entry.type,
-                    importance: entry.importance,
-                    sequence: entry.sequence,
-                    embedding: entry.vector,
+                    // 如果换模型的话，缓存一下
+                    if (generator.model !== entry.model) {
+                        const embedding = await generator.generateEmbedding({
+                            content: entry.text,
+                        });
+                        await put("/stories/{id}/entries/{entryType}/{entryId}", {
+                            ...entry,
+                            vector: embedding,
+                            model: generator.model,
+                        }, {
+                            params: {
+                                id: ctx.slot.id,
+                                entryId: entry.id,
+                                entryType: engineName,
+                            }
+                        });
+                    }
+                    await insert(database, {
+                        name: `${entry.id}`,
+                        tags: entry.tags,
+                        type: entry.type,
+                        importance: entry.importance,
+                        sequence: entry.sequence,
+                        embedding: entry.vector,
+                    })
                 })
-            }
         }
         slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },

@@ -5,13 +5,14 @@ import {
     SlotInitializer,
     slotUtils
 } from "@/modules/stories/client/conversation-models";
-import {engineName, enginePlural, LlmapiToolConfigModel} from "@/engines/tools/models";
+import {engineName, enginePlural, PresetToolConfigModel} from "@/engines/tools/models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {LlmapiTool} from "@/engines/tools/client/models";
 import {SlotCalling} from "@/modules/models/calling";
 import {historyUtils} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
+import {businessUtils} from "@/business/models";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -25,23 +26,21 @@ export const toolConversationProvider:
     & LlmapiOutputProcesser
     = {
     id: engineName,
-    onInitialize: async (ctx) => {
+    onInitialize: async ({slot}) => {
         const cache: ToolConversationCache = {
             tools: {},
         };
-        for (const preset of ctx.slot.presets) {
-            const entries: LlmapiToolConfigModel[] = preset.entries?.[enginePlural];
-            if (!entries) continue;
-            for (const entry of entries) {
-                if (entry.disabled || !entry.provider) continue;
+        await businessUtils.useEntriesList<PresetToolConfigModel>(slot.presets, enginePlural,
+            async (entry) => {
+                if (entry.disabled || !entry.provider) return;
                 // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
                 const provider = llmapiToolManager.records[entry.provider];
                 if (!provider) {
                     console.warn(`[tool]: provider missing(${entry.provider})`);
-                    continue;
+                    return;
                 }
                 try {
-                    const tools = await provider.create(entry, ctx.slot);
+                    const tools = await provider.create(entry, slot);
                     for (const tool of tools) {
                         cache.tools[tool.model.name] = tool;
                     }
@@ -49,9 +48,8 @@ export const toolConversationProvider:
                     throw new BusinessError("tool create failed", "tool.create_failed")
                         .withValue("entry", entry.code);
                 }
-            }
-        }
-        slotUtils.setProperty(ctx.slot, enginePlural, cache);
+            })
+        slotUtils.setProperty(slot, enginePlural, cache);
     },
     onProcessInput: async () => {
     },

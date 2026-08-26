@@ -1,6 +1,6 @@
 import {EntryModel} from "@/business/models";
 
-export interface LlmapiToolConfigModel extends EntryModel {
+export interface PresetToolConfigModel extends EntryModel {
     provider: string,
     value?: any,
 }

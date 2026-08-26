@@ -1,7 +1,7 @@
 import {Editor} from "./editor";
 import {SubAgentConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {LlmapiToolConfigModel} from "@/engines/tools/models";
+import {PresetToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel, SlotModel, StoryModel} from "@/modules/stories/models";
 import {conversationManager} from "@/modules/stories/client/conversation";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
@@ -30,7 +30,7 @@ export const subAgentToolProvider: LlmapiToolProvider = {
             llmapi: tryParseJson(data.get('llmapi') as string),
         };
     },
-    async create(config: LlmapiToolConfigModel, slot) {
+    async create(config: PresetToolConfigModel, slot) {
         // 子Agent禁止Agent调用
         if (slot.properties.sub_agent) return [];
         const configValue: SubAgentConfigModel = config.value;
@@ -47,16 +47,18 @@ export const subAgentToolProvider: LlmapiToolProvider = {
         };
         const result: SlotModel = await get("/stories/slot", {
             params: story
-        })
+        });
         const subSlot: SlotModel = {
             ...result,
+            id: slot.id,
             get histories() {
                 return slot.histories;
             },
+            entries: slot.entries,
             presets: result.presets.filter(u => u.tags
                 .every(v => !disableTags.has(v))),
             properties: {
-                sub_agent: 1
+                sub_agent: 1,
             }
         }
         await conversationManager.initializer.initialize({slot: subSlot});

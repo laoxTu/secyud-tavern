@@ -1,7 +1,7 @@
 import {Registerable} from "@/utils/register";
 import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import React from "react";
-import {engineName, LlmapiToolConfigModel} from "@/engines/tools/models";
+import {engineName, PresetToolConfigModel} from "@/engines/tools/models";
 import {SlotCallingResult} from "@/modules/models/calling";
 import {EntryState} from "@/business/client/models";
 import {moduleName, modulePlural} from "@/modules/presets/models";
@@ -11,7 +11,7 @@ import {get} from "@/client";
 
 export interface LlmapiToolProps {
     defaultValue?: any,
-    entry: LlmapiToolConfigModel,
+    entry: PresetToolConfigModel,
     formRef: React.RefObject<HTMLFormElement | null>,
 }
 
@@ -24,15 +24,15 @@ export interface LlmapiTool {
 export interface LlmapiToolProvider extends Registerable {
     component: React.ComponentType<LlmapiToolProps>,
     getValue: (data: FormData) => any,
-    create: (config: LlmapiToolConfigModel, slot: SlotModel) => Promise<LlmapiTool[]>,
+    create: (config: PresetToolConfigModel, slot: SlotModel) => Promise<LlmapiTool[]>,
 }
 
-export const usePagedItemsState = createUsePagedItemsState<LlmapiToolConfigModel>(
+export const usePagedItemsState = createUsePagedItemsState<PresetToolConfigModel>(
     async options => {
         return await get('/presets/{id}/entries/{entryType}', {params: options})
     });
 
 
-export const entryState: EntryState<LlmapiToolConfigModel> = {
+export const entryState: EntryState<PresetToolConfigModel> = {
     moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
 };

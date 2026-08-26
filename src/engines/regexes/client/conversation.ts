@@ -7,6 +7,7 @@
 } from "@/modules/stories/client/conversation-models";
 import {engineName, enginePlural, PresetRegexModel} from "../models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
+import {businessUtils} from "@/business/models";
 
 export interface RegexConversationCache {
     inputs: PresetRegexModel[];
@@ -40,25 +41,22 @@ export const regexConversationProvider:
     & SlotContentRenderer
     = {
     id: engineName,
-    onInitialize: async (ctx) => {
+    onInitialize: async ({slot}) => {
         const cache: RegexConversationCache = {
             inputs: [],
             outputs: []
         }
-        for (const preset of ctx.slot.presets) {
-            const entries: PresetRegexModel[] = preset.entries?.[enginePlural];
-            if (!entries) continue;
-            for (const entry of entries) {
-                if (entry.disabled) continue;
+        await businessUtils.useEntriesList<PresetRegexModel>(slot.presets, enginePlural,
+            async entry => {
+                if (entry.disabled) return;
                 if (entry.target == "both" || entry.target == "input") {
                     cache.inputs.push(entry);
                 }
                 if (entry.target == "both" || entry.target == "output") {
                     cache.outputs.push(entry);
                 }
-            }
-        }
-        slotUtils.setProperty(ctx.slot, enginePlural, cache);
+            });
+        slotUtils.setProperty(slot, enginePlural, cache);
     },
     onRenderStream: async (ctx) => {
         const cache: RegexConversationCache = slotUtils.getProperty(ctx.slot, enginePlural)

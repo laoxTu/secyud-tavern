@@ -2,7 +2,7 @@ import {Editor} from "./editor";
 import {UrlFetchConfigModel} from "../models";
 import {Readability} from "@mozilla/readability";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {LlmapiToolConfigModel} from "@/engines/tools/models";
+import {PresetToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel} from "@/modules/stories/models";
 import {post} from "@/client";
 import {joinAsString} from "@/utils";
@@ -17,7 +17,7 @@ export const urlFetchToolProvider: LlmapiToolProvider = {
             maxLength: parseInt(data.get('max_length') as string),
         };
     },
-    async create(config: LlmapiToolConfigModel) {
+    async create(config: PresetToolConfigModel) {
         return [new UrlFetchTool(config.value)];
     },
 };
