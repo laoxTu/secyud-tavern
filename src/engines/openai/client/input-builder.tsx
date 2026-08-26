@@ -9,7 +9,7 @@ import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {filterCallings, generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {joinAsString} from "@/utils";
 
 /**
@@ -57,31 +57,9 @@ export async function generateInput(context: LlmapiInputContext) {
                     items.push({content, role: "assistant"});
                     messages.push({role: "assistant", content});
                 }
-                const tools: {
-                    call: OpenAI.Responses.ResponseFunctionToolCall,
-                    output: OpenAI.Responses.ResponseInputItem.FunctionCallOutput,
-                }[] = [];
-
+                callings = filterCallings(callings, items, enableHidden);
+                if (!callings.length) return;
                 for (const calling of callings) {
-                    const hidden = !!calling.result?.hidden
-                    items.push({
-                        role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
-                    });
-                    if (enableHidden && hidden) continue;
-                    tools.push({
-                        call: {
-                            type: "function_call",
-                            call_id: calling.id,
-                            arguments: calling.arguments,
-                            name: calling.name,
-                        },
-                        output: {
-                            type: "function_call_output",
-                            call_id: calling.id,
-                            output: calling.result?.content ?? "error",
-                        }
-                    })
                     messages.push({
                         type: "function_call",
                         call_id: calling.id,
@@ -89,13 +67,12 @@ export async function generateInput(context: LlmapiInputContext) {
                         name: calling.name,
                     });
                 }
-                if (tools.length) {
-                    for (const tool of tools) {
-                        messages.push(tool.call);
-                    }
-                    for (const tool of tools) {
-                        messages.push(tool.output);
-                    }
+                for (const calling of callings) {
+                    messages.push({
+                        type: "function_call_output",
+                        call_id: calling.id,
+                        output: calling.result?.content ?? "error",
+                    });
                 }
             }
         });
@@ -144,41 +121,30 @@ export async function generateInput(context: LlmapiInputContext) {
             },
             pushToolMessage: (callings, content, message, enableHidden) => {
                 if (content) items.push({content, role: "assistant"});
-                const tools: {
-                    call: OpenAI.ChatCompletionMessageToolCall,
-                    output: OpenAI.ChatCompletionToolMessageParam
-                }[] = [];
-                for (const calling of callings) {
-                    const hidden = !!calling.result?.hidden
-                    items.push({
-                        role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
-                    });
-                    if (enableHidden && hidden) continue;
-                    tools.push({
-                        call: {
-                            id: calling.id,
-                            type: "function",
-                            function: {
-                                arguments: calling.arguments,
-                                name: calling.name,
-                            },
-                        },
-                        output: {
-                            role: "tool",
-                            tool_call_id: calling.id,
-                            content: calling.result?.content ?? "error",
-                        }
-                    });
-                }
-                if (tools.length) {
-                    messages.push({
-                        role: "assistant", content,
-                        tool_calls: tools.map(u => u.call),
-                    });
-                    for (const tool of tools) {
-                        messages.push(tool.output);
+                callings = filterCallings(callings, items, enableHidden);
+                if (!callings.length) {
+                    if (content) {
+                        messages.push({role: "assistant", content,});
                     }
+                    return;
+                }
+                messages.push({
+                    role: "assistant", content,
+                    tool_calls: callings.map(u => ({
+                        id: u.id,
+                        type: "function",
+                        function: {
+                            arguments: u.arguments,
+                            name: u.name,
+                        },
+                    })),
+                });
+                for (const calling of callings) {
+                    messages.push({
+                        role: "tool",
+                        tool_call_id: calling.id,
+                        content: calling.result?.content ?? "error",
+                    });
                 }
             }
         });

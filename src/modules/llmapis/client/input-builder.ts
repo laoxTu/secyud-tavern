@@ -2,6 +2,8 @@ import {InjectContext, LlmapiInputContext, slotUtils} from "@/modules/stories/cl
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {toolUtils} from "@/engines/tools/client/conversation";
 import {joinAsString} from "@/utils";
+import {SlotCalling} from "@/modules/models/calling";
+import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 
 export const getKnowledgeTool =
     {
@@ -50,11 +52,8 @@ export async function generateMessageWithBuilder(
             const content = await generateContent(output.content, "assistant", "output");
             // 检验工具是否触发
             await toolUtils.callTools(slot, output.callings);
-            const callings = history === histories.at(-1) ?
-                output.callings : output.callings
-                    ?.filter(u => !u.result?.hidden);
-            if (callings?.length) {
-                pushToolMessage(callings, content, output);
+            if (output.callings?.length) {
+                pushToolMessage(output.callings, content, output, history !== histories.at(-1));
             } else if (content) {
                 pushAiMessage(content, output);
             }
@@ -71,4 +70,22 @@ export async function generateMessageWithBuilder(
     async function generateContent(str: string, role: string, type: string) {
         return await slotUtils.handleContent(contentHandlers, {str, role, type});
     }
+}
+
+
+export function filterCallings(callings: SlotCalling[],
+                               items: LlmapiInputItem[],
+                               enableHidden?: boolean) {
+    const tools: SlotCalling[] = [];
+    for (const calling of callings) {
+        const hidden = !!calling.result?.hidden
+        items.push({
+            role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
+            content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
+        });
+        if (!enableHidden || !hidden) {
+            tools.push(calling);
+        }
+    }
+    return tools;
 }

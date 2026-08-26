@@ -9,7 +9,7 @@ import {AnthropicInputBuilderConfigModel} from "../models";
 import {joinAsString, tryParseJson} from "@/utils";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import Anthropic from '@anthropic-ai/sdk';
-import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {filterCallings, generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
@@ -58,6 +58,8 @@ export async function generateInput(
         },
         pushToolMessage: (callings, content, output, enableHidden) => {
             const aiParams: Anthropic.ContentBlockParam[] = [];
+            // 即便没有工具调用，思考和ai回复也要注入
+            messages.push({role: "assistant", content: aiParams});
             if (content) {
                 items.push({content, role: "assistant"});
                 aiParams.push({type: "text", text: content});
@@ -69,15 +71,10 @@ export async function generateInput(
                     signature: output.properties["signature"],
                 });
             }
+            callings = filterCallings(callings, items, enableHidden);
+            if (!callings.length) return;
             const userParams: Anthropic.ContentBlockParam[] = [];
-
             for (const calling of callings) {
-                const hidden = !!calling.result?.hidden
-                items.push({
-                    role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
-                    content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
-                });
-                if (enableHidden && hidden) continue;
                 aiParams.push({
                     type: "tool_use",
                     id: calling.id,
@@ -90,13 +87,10 @@ export async function generateInput(
                     content: calling.result?.content ?? "error"
                 });
             }
-            if (userParams.length) {
-                messages.push({role: "assistant", content: aiParams});
-                messages.push({
-                    role: "user",
-                    content: userParams,
-                });
-            }
+            messages.push({
+                role: "user",
+                content: userParams,
+            });
         }
     });
     const system = joinAsString(systemPrompts, "\n");
