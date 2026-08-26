@@ -19,6 +19,8 @@ import {LorebookConversationCache, lorebookSchema} from "@/engines/lorebooks/cli
 import {createDatabase} from "@/engines/rags/client/models";
 import {matchName as vectorMatch} from "@/engines/lorebooks/match/vector/models";
 import {insert} from "@orama/orama";
+import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 async function createInjectHandler(
     {
@@ -138,19 +140,19 @@ async function createInjectHandler(
         output: boolean) {
         if (!messages?.length) return;
         for (const message of messages) {
-            const names = message.properties[enginePlural] ??
+            const codes = message.properties[enginePlural] ??
                 await tryFillActiveLorebooks(cache.entries, {
                     history, message,
                     properties: {},
                     output,
                     cache,
                 });
-            for (const name of names) {
-                if (visited.has(name)) continue;
-                visited.add(name);
-                const lorebook = cache.entries[name];
+            for (const code of codes) {
+                if (visited.has(code)) continue;
+                visited.add(code);
+                const lorebook = cache.entries[code];
                 if (lorebook) {
-                    lorebooks.push(cache.entries[name]);
+                    lorebooks.push(cache.entries[code]);
                 }
             }
         }
@@ -158,8 +160,10 @@ async function createInjectHandler(
 
     async function insertLorebooks(inputs: PresetLorebookModel[]) {
         for (const lorebook of inputs) {
-            if (visited.has(lorebook.name)) continue;
-            visited.add(lorebook.name);
+            if (visited.has(lorebook.code)) {
+                continue;
+            }
+            visited.add(lorebook.code);
             lorebooks.push(lorebook);
         }
     }
@@ -173,24 +177,20 @@ export const lorebookConversationProvider:
     = {
     id: engineName,
     requires: [toolEngineName],
-    onInitialize: async (ctx) => {
+    onInitialize: async ({slot}) => {
         const cache: LorebookConversationCache = {
             before: [],
             after: [],
             entries: {},
             rag: await createDatabase(lorebookSchema),
         };
-        for (const preset of ctx.slot.presets) {
-            const entries = preset.entries
-                ?.[enginePlural] as PresetLorebookModel[];
-            if (!entries) continue;
-            for (const entry of entries) {
-                if (entry.disabled) continue;
+        await businessUtils.useEntriesList<PresetLorebookModel, PresetModel>(slot.presets, enginePlural,
+            async (entry, model) => {
+                if (entry.disabled) return;
                 if (entry.type === "json") {
                     entry.content = JSON.stringify(tryParseJson(entry.content));
                 }
-
-                const id = `${preset.code}-${entry.code}`;
+                const id = `${model.code}-${entry.code}`;
                 // 替换code，唯一标识
                 entry.code = id;
                 if (entry.matchType === alwaysMatch) {
@@ -213,9 +213,10 @@ export const lorebookConversationProvider:
                         embedding,
                     });
                 }
-            }
-        }
-        slotUtils.setProperty(ctx.slot, enginePlural, cache);
+            });
+        console.debug(`[lorebook](cache): `, cache);
+
+        slotUtils.setProperty(slot, enginePlural, cache);
     },
     onProcessInput: async (ctx) => {
         ctx.injectorCreators
