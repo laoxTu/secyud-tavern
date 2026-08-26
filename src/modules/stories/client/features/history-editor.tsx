@@ -31,12 +31,12 @@ export function HistoryEditor() {
     const [open, setOpen] = useState<boolean>(false);
     const formRef = useRef<HTMLFormElement>(null);
 
-    const handleDialogOpen = () => {
+    const handleDialogOpen = async () => {
         try {
             const {getHistory} = slotContext;
             const {page} = useHistoryPageState.getState();
             if (page.cur <= 0) return;
-            const history = getHistory(page.cur);
+            const history = await getHistory(page.cur);
             setHistory(history);
             setOpen(true);
         } catch (error) {
@@ -49,7 +49,7 @@ export function HistoryEditor() {
             const {getHistory, setHistory,} = slotContext;
             const {page, setPage} = useHistoryPageState.getState();
             if (page.cur <= 0) return;
-            const history = getHistory(page.cur);
+            const history = await getHistory(page.cur);
             const variablesText = data.get("variables") as string;
             history.variables = tryParseJson(variablesText);
             if (!history.variables)

@@ -25,7 +25,7 @@ export interface Repository<TModel> {
         exist: (masterId: string, type: string) => Promise<boolean>,
         count: (masterId: string, type: string) => Promise<number>,
         getList: (masterId: string, type: string, options?: PageOptions) => Promise<PagedResult<any>>,
-        get: (masterId: string, type: string, entryId: string) => Promise<any>,
+        get: (masterId: string, type: string, entryId: number, indexed?: boolean) => Promise<any>,
         batchCreate: (masterId: string, type: string, entryList: any[]) => Promise<void>,
         create: (masterId: string, type: string, entry: any) => Promise<number>,
         setDisabled: (masterId: string, type: string, entryId: number, disabled: boolean) => Promise<void>,
@@ -264,15 +264,22 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 return {data, totalCount};
             },
 
-            get: async (masterId: string, type: string, entryId: string): Promise<any> => {
-
-                let item: any = await db
+            get: async (masterId: string, type: string, value: number, indexed = false): Promise<any> => {
+                const query = db
                     .select()
-                    .from(entries)
+                    .from(entries);
+                const item: any = indexed ? await query
+                    .where(and(
+                        eq(entries.masterId, masterId),
+                        eq(entries.entryType, type),))
+                    .orderBy(entries.entryId)
+                    .offset(value)
+                    .limit(1)
+                    .get() : await query
                     .where(and(
                         eq(entries.masterId, masterId),
                         eq(entries.entryType, type),
-                        eq(entries.entryId, entryId),))
+                        eq(entries.entryId, value),))
                     .get();
 
                 return {

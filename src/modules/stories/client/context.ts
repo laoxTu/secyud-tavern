@@ -1,6 +1,6 @@
 ﻿'use client';
 import {RefObject} from "react";
-import {put} from "@/client";
+import {get, put} from "@/client";
 import {joinAsString} from "@/utils";
 import {SlotModel} from "@/modules/stories/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
@@ -43,7 +43,7 @@ const iframeInstance = {
 };
 
 
-function getHistory(index?: number, slot?: SlotModel) {
+async function getHistory(index?: number, slot?: SlotModel) {
     slot ??= slotInstance.get();
     const histories = slot.histories;
     // 渲染开场白
@@ -51,13 +51,23 @@ function getHistory(index?: number, slot?: SlotModel) {
         return slotUtils.getOpening(slot);
     index ??= histories.length;
     index = Math.min(Math.max(1, index), histories.length);
-    return histories[index - 1];
+    let history = histories[index - 1]!;
+    if (!history) {
+        history = await get("/stories/{id}/histories/{index}", {
+            params: {
+                id: slot.id,
+                index: index - 1,
+            }
+        });
+        histories[index - 1] = history;
+    }
+    return history;
 }
 
 async function setHistory(index?: number, slot?: SlotModel) {
     if (index === 0) return;
     slot ??= slotInstance.get();
-    const history = getHistory(index, slot);
+    const history = await getHistory(index, slot);
     await put('/stories/{id}/entries/{entryType}/{entryId}', history,
         {params: {id: slot?.id, entryType: 'history', entryId: history.id}},
     );

@@ -8,13 +8,12 @@ import {BaseModel, EntryModel} from "@/business/models";
 export interface StoryModel extends BaseModel {
     requires: RequireModel[],
     llmapi: RequireModel | null,
-    histories?: SlotHistory[]
 }
 
 export interface SlotModel extends StoryModel {
     initialized?: boolean;
     llmapi: LlmapiModel,
-    histories: SlotHistory[],
+    histories: (SlotHistory | null)[],
     presets: PresetModel[],
     properties: Record<string, any>,
 }

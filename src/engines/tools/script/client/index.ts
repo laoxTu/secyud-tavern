@@ -53,7 +53,7 @@ export class ScriptTool implements LlmapiTool {
             context.window = slotContext.iframeData.window;
         }
         if (this.config.enableVariable) {
-            const history = slotContext.getHistory(undefined, this.slot);
+            const history = await slotContext.getHistory(undefined, this.slot);
             context.variables = history.variables;
         }
         const result = this.fn(args, context);

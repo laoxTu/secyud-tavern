@@ -19,7 +19,7 @@ export const eventMatcher: Matcher =
                 minDate: getDate(data, 'min-date'),
             };
         },
-        match:async (ctx: MatcherMatchContext, lorebook) => {
+        match: async (ctx: MatcherMatchContext, lorebook) => {
             const expression: EventMatchModel = lorebook.matchExpression;
             const variables = matchUtils.getVariables(ctx);
             const relatedDates = variables.relatedDates as EventDate[];

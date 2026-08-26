@@ -18,7 +18,7 @@ export interface StoryOutputPageState {
     // 默认不更改页面，只重渲染
     setPage: (cur?: number) => Promise<void>,
     render: () => Promise<void>,
-    init: () => void,
+    init: () => Promise<void>,
 }
 
 export const useOutputPageState =
@@ -36,7 +36,7 @@ export const useOutputPageState =
                 histories?.length < page.cur) return;
             let max = 0;
             if (page.cur > 0) {
-                const history = getHistory(page.cur);
+                const history = await getHistory(page.cur);
                 max = history.outputs.length;
                 cur ??= history.outputId;
                 if (cur >= max)
@@ -51,11 +51,11 @@ export const useOutputPageState =
             console.debug(`[slot](output page): ${cur}/${max}`);
             set({page: {max, cur}, prepare: true});
         },
-        init: () => {
+        init: async () => {
             const {page} = useHistoryPageState.getState();
-            const {slot} = slotContext.slotData;
+            const {slotData: {slot}, getHistory} = slotContext;
             if (slot?.histories.length && page.cur > 0) {
-                const current = slot.histories[page.cur - 1];
+                const current = await getHistory(page.cur, slot);
                 set({page: {cur: current.outputId, max: current.outputs.length}})
             }
         },
@@ -68,7 +68,7 @@ export const useOutputPageState =
             } = slotContext;
             if (!iframe || !slot) return;
             const {page} = useHistoryPageState.getState();
-            const history = getHistory(page.cur);
+            const history = await getHistory(page.cur);
             await conversationManager.contentRenderer
                 .renderContent({history});
         },
@@ -87,12 +87,14 @@ export function OutputPagerButtonGroup() {
     };
 
     useEffect(() => {
-        try {
-            init();
-        } catch (error) {
-            console.error("[slot](output error): ", error);
-            handleError(error);
-        }
+        void (async () => {
+            try {
+                await init();
+            } catch (error) {
+                console.error("[slot](output error): ", error);
+                handleError(error);
+            }
+        })();
     }, []);
 
     useEffect(() => {

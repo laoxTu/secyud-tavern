@@ -5,9 +5,7 @@ export interface StoryMemoryModel extends EntryModel {
     sequence: number,
     importance: number,
     type: string,
-    model: string,
     tags: string[],
-    vector: number[],
 }
 
 export interface MemoryToolConfigModel {

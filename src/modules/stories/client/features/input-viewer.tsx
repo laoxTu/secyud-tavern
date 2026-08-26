@@ -36,7 +36,7 @@ export function InputViewer() {
         try {
             const {slotData: {slot, histories}, getHistory} = slotContext;
 
-            const last = getHistory();
+            const last = await getHistory();
             // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
             // 让用户预览这次输入实际会发给模型的上下文
             const history: SlotHistory = {
@@ -58,8 +58,10 @@ export function InputViewer() {
             };
             const virtualHistories =
                 [...structuredClone(histories), history];
+            console.debug(`[input-viewer](histories): `,virtualHistories);
             // 工具调用初始化，防止虚拟上下文调用工具。
             for (const virtualHistory of virtualHistories) {
+                if (!virtualHistory) continue;
                 for (const outputs of virtualHistory.outputs) {
                     for (const output of outputs) {
                         if (!output.callings?.length) continue;
