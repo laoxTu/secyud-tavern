@@ -156,15 +156,16 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         slot = check.slot(slot);
         const {provider} = this.getLlmapiProvider(slot.llmapi);
         const histories: SlotHistory[] = [];
-        for (let i = slot.histories.length - 1; i >= 0; i--) {
-            const history = await slotContext.getHistory(i);
+        for (let i = slot.histories.length; i > 0; i--) {
+            const history = await slotContext.getHistory(i, slot);
             histories.push(history);
             if (history.summary) break;
-            if (i === 0) {
+            if (i === 1) {
                 histories.push(slotUtils.getOpening(slot));
             }
         }
         histories.reverse();
+        console.debug("[slot](histories): ", histories);
 
         const context: LlmapiInputContext = {
             slot,

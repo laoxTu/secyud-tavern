@@ -55,7 +55,7 @@ export const useOutputPageState =
             const {page} = useHistoryPageState.getState();
             const {slotData: {slot}, getHistory} = slotContext;
             if (slot?.histories.length && page.cur > 0) {
-                const current = await getHistory(page.cur - 1, slot);
+                const current = await getHistory(page.cur, slot);
                 set({page: {cur: current.outputId, max: current.outputs.length}})
             }
         },

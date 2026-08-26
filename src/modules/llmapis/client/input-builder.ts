@@ -24,6 +24,7 @@ export async function generateMessageWithBuilder(
     const handlers = await Promise.all(
         injectorCreators.map(u => u(ctx))
     );
+    console.debug(`[input-builder](histories): `, histories);
     for (let i = 0; i < histories.length; i++) {
         const history = histories[i];
 
