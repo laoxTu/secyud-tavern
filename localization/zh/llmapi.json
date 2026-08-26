@@ -26,6 +26,7 @@
     "thinking": "思考模式",
     "tool": "工具",
     "tool_provider": "工具类型",
+    "tool_provider_memory": "子Agent",
     "tool_provider_script": "脚本",
     "tool_provider_sub_agent": "子Agent",
     "tool_provider_url_fetch": "联网搜索",

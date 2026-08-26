@@ -52,7 +52,7 @@ async function createInjectHandler(
             if (!memories.length) return;
             const content = Object.fromEntries(
                 memories.map(m => ([m.code, m.text])));
-
+            console.debug(`[memory](inject): `,content);
             pushToolMessage([
                 {
                     index: 0,

@@ -147,7 +147,7 @@ export class MemoryGetTool implements LlmapiTool {
         const memoryCodes = getMemoryCodes(output);
         const codes = results.hits
             .map(hit => {
-                const score = hit.score + hit.document.importance
+                const score = hit.score + hit.document.importance / 10
                     + hit.document.sequence / (this.slot.histories.length + 1);
                 return {
                     name: hit.document.name, score
@@ -264,7 +264,7 @@ export class MemorySetTool implements LlmapiTool {
         });
         return {
             content: "success",
-            hidden: true,
+            hidden: false,
         };
     }
 }
