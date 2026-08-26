@@ -6,7 +6,7 @@ import {EntryList} from "@/business/client/template/entry-list";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {useItemState} from "@/modules/presets/client/models";
 import {moduleName} from "@/modules/presets/models";
-import {engineName, LlmapiToolConfigModel} from "../models";
+import {engineName, PresetToolConfigModel} from "../models";
 import {llmapiToolManager} from "@/engines/tools/client/manager";
 import {useTranslations} from "next-intl";
 import {entryState, LlmapiToolProvider} from "@/engines/tools/client/models";
@@ -18,7 +18,7 @@ import {customCreateElement} from "@/components/custom";
 
 
 export function EditorContent({entry, formRef}: {
-    entry: LlmapiToolConfigModel,
+    entry: PresetToolConfigModel,
     formRef: RefObject<HTMLFormElement | null>
 }) {
     const t = useTranslations();
@@ -65,7 +65,7 @@ export function EditorContent({entry, formRef}: {
 function Tab() {
     const {model} = useItemState();
     return (
-        <EntryList<LlmapiToolConfigModel>
+        <EntryList<PresetToolConfigModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{
@@ -120,7 +120,7 @@ function Tab() {
                 updateHandler: async (entry, data) => {
                     const provider = data.get('provider') as string;
 
-                    const result: LlmapiToolConfigModel = {
+                    const result: PresetToolConfigModel = {
                         ...entry,
                         code: data.get('code') as string,
                         name: data.get('name') as string,

@@ -15,6 +15,7 @@ import {put} from "@/client";
 import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {businessUtils} from "@/business/models";
 
 async function createInjectHandler(
     {
@@ -36,7 +37,8 @@ async function createInjectHandler(
             const outputs = historyUtils.getOutputs(history);
             if (!outputs) return;
             for (const output of outputs) {
-                const codesList = getMemoryCodes(output);
+                const codesList = getMemoryCodes(output, false);
+                if (!codesList?.length) continue;
                 for (const codes of codesList) {
                     for (const code of codes) {
                         if (visited.has(code)) continue;
@@ -50,7 +52,7 @@ async function createInjectHandler(
             if (!memories.length) return;
             const content = Object.fromEntries(
                 memories.map(m => ([m.code, m.text])));
-
+            console.debug(`[memory](inject): `,content);
             pushToolMessage([
                 {
                     index: 0,
@@ -58,7 +60,7 @@ async function createInjectHandler(
                     name: getKnowledgeTool.name,
                     arguments: "{}",
                     result: {
-                        content: JSON.stringify(content),
+                        content: `memory: ${JSON.stringify(content)}`,
                         hidden: false
                     }
                 }
@@ -80,36 +82,36 @@ export const memoriesConversationProvider: SlotInitializer
         };
         if (cache.rag) {
             const {generator, database} = cache.rag;
-            const entries = ctx.slot.entries?.[enginePlural] as StoryMemoryModel[];
-            for (const entry of entries) {
-                cache.memories[entry.code] = entry;
+            await businessUtils.useEntries<StoryMemoryModel>(ctx.slot, enginePlural,
+                async entry => {
+                    cache.memories[entry.code] = entry;
 
-                // 如果换模型的话，缓存一下
-                if (generator.model !== entry.model) {
-                    const embedding = await generator.generateEmbedding({
-                        content: entry.text,
-                    });
-                    await put("/stories/{id}/entries/{entryType}/{entryId}", {
-                        ...entry,
-                        vector: embedding,
-                        model: generator.model,
-                    }, {
-                        params: {
-                            id: ctx.slot.id,
-                            entryId: entry.id,
-                            entryType: engineName,
-                        }
-                    });
-                }
-                await insert(database, {
-                    name: `${entry.id}`,
-                    tags: entry.tags,
-                    type: entry.type,
-                    importance: entry.importance,
-                    sequence: entry.sequence,
-                    embedding: entry.vector,
+                    // 如果换模型的话，缓存一下
+                    if (generator.model !== entry.model) {
+                        const embedding = await generator.generateEmbedding({
+                            content: entry.text,
+                        });
+                        await put("/stories/{id}/entries/{entryType}/{entryId}", {
+                            ...entry,
+                            vector: embedding,
+                            model: generator.model,
+                        }, {
+                            params: {
+                                id: ctx.slot.id,
+                                entryId: entry.id,
+                                entryType: engineName,
+                            }
+                        });
+                    }
+                    await insert(database, {
+                        name: `${entry.id}`,
+                        tags: entry.tags,
+                        type: entry.type,
+                        importance: entry.importance,
+                        sequence: entry.sequence,
+                        embedding: entry.vector,
+                    })
                 })
-            }
         }
         slotUtils.setProperty(ctx.slot, enginePlural, cache);
     },

@@ -9,7 +9,7 @@ import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
 import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
-import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {filterCallings, generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {joinAsString} from "@/utils";
 
 /**
@@ -52,21 +52,19 @@ export async function generateInput(context: LlmapiInputContext) {
                 items.push({content, role: "system"});
                 messages.push({role: "system", content,});
             },
-            pushToolMessage: (callings, content) => {
+            pushToolMessage: (callings, content, output, enableHidden) => {
                 if (content) {
                     items.push({content, role: "assistant"});
                     messages.push({role: "assistant", content});
                 }
+                callings = filterCallings(callings, items, enableHidden);
+                if (!callings.length) return;
                 for (const calling of callings) {
                     messages.push({
                         type: "function_call",
                         call_id: calling.id,
                         arguments: calling.arguments,
                         name: calling.name,
-                    });
-                    items.push({
-                        role: `tool: ${calling.name}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
                     });
                 }
                 for (const calling of callings) {
@@ -121,23 +119,27 @@ export async function generateInput(context: LlmapiInputContext) {
                 items.push({content, role: "system"});
                 messages.push({role: "system", content,});
             },
-            pushToolMessage: (callings, content) => {
+            pushToolMessage: (callings, content, message, enableHidden) => {
                 if (content) items.push({content, role: "assistant"});
-                const tool_calls: OpenAI.ChatCompletionMessageToolCall[] = [];
-                messages.push({role: "assistant", content, tool_calls});
-                for (const calling of callings) {
-                    tool_calls.push({
-                        id: calling.id,
+                callings = filterCallings(callings, items, enableHidden);
+                if (!callings.length) {
+                    if (content) {
+                        messages.push({role: "assistant", content,});
+                    }
+                    return;
+                }
+                messages.push({
+                    role: "assistant", content,
+                    tool_calls: callings.map(u => ({
+                        id: u.id,
                         type: "function",
                         function: {
-                            arguments: calling.arguments,
-                            name: calling.name,
+                            arguments: u.arguments,
+                            name: u.name,
                         },
-                    });
-                    items.push({
-                        role: `tool: ${calling.name}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
-                    });
+                    })),
+                });
+                for (const calling of callings) {
                     messages.push({
                         role: "tool",
                         tool_call_id: calling.id,

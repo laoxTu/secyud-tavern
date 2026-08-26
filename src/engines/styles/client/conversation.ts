@@ -1,6 +1,7 @@
 ﻿import {SlotContentRenderer, SlotInitializer, slotUtils} from "@/modules/stories/client/conversation-models";
 import {engineName, enginePlural, PresetStyleModel} from "../models";
 import {slotContext} from "@/modules/stories/client/context";
+import {businessUtils} from "@/business/models";
 
 const prefix = "injected-style";
 
@@ -13,21 +14,17 @@ export const styleConversationProvider:
     & SlotContentRenderer
     = {
     id: engineName,
-    onInitialize: async (ctx) => {
+    onInitialize: async ({slot}) => {
         const cache: StyleConversationCache = {
             entries: [],
         };
-        for (const preset of ctx.slot.presets) {
-            const entries: PresetStyleModel[] = preset
-                .entries?.[enginePlural];
-            if (!entries) continue;
-            for (const entry of entries) {
-                if (entry.disabled) continue;
+        await businessUtils.useEntriesList<PresetStyleModel>(slot.presets, enginePlural,
+            async entry => {
+                if (entry.disabled) return;
                 cache.entries.push(entry);
-            }
-        }
+            });
         cache.entries.sort((a, b) => a.priority - b.priority);
-        slotUtils.setProperty(ctx.slot, enginePlural, cache);
+        slotUtils.setProperty(slot, enginePlural, cache);
     },
     onRenderContent: async (ctx) => {
         const {window, document} = slotContext.iframeData;

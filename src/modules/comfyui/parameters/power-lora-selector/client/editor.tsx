@@ -65,7 +65,6 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                             defaultValue={path ? {
                                 id: "",
                                 type: "",
-                                entries: [],
                                 code: path, name: path,
                                 content: {
                                     path: path,

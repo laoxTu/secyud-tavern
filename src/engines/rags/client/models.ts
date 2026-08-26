@@ -65,7 +65,10 @@ export async function createDatabase<TSchema>(schema: TSchema): Promise<RagModel
         database: createSchema({
             schema: {
                 ...schema,
-                embedding: `vector[${generator.embeddingDimension}]`
+                embedding: `vector[${generator.embeddingDimension}]`,
+            },
+            sort: {
+                enabled: true,
             }
         }),
     };

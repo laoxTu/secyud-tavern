@@ -9,7 +9,7 @@ import {AnthropicInputBuilderConfigModel} from "../models";
 import {joinAsString, tryParseJson} from "@/utils";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import Anthropic from '@anthropic-ai/sdk';
-import {generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
+import {filterCallings, generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 
 // 按序拼装历史、世界书、开场白成 messages，相同角色连续消息合并压缩。
 export async function generateInput(
@@ -56,11 +56,12 @@ export async function generateInput(
         pushSystemMessage: (content) => {
             systemPrompts.push(content);
         },
-        pushToolMessage: (callings, content, output) => {
-            if (content) items.push({content, role: "assistant"});
+        pushToolMessage: (callings, content, output, enableHidden) => {
             const aiParams: Anthropic.ContentBlockParam[] = [];
+            // 即便没有工具调用，思考和ai回复也要注入
             messages.push({role: "assistant", content: aiParams});
             if (content) {
+                items.push({content, role: "assistant"});
                 aiParams.push({type: "text", text: content});
             }
             if (output?.properties["signature"]) {
@@ -70,11 +71,9 @@ export async function generateInput(
                     signature: output.properties["signature"],
                 });
             }
+            callings = filterCallings(callings, items, enableHidden);
+            if (!callings.length) return;
             const userParams: Anthropic.ContentBlockParam[] = [];
-            messages.push({
-                role: "user",
-                content: userParams,
-            });
             for (const calling of callings) {
                 aiParams.push({
                     type: "tool_use",
@@ -82,16 +81,16 @@ export async function generateInput(
                     name: calling.name,
                     input: tryParseJson(calling.arguments),
                 });
-                items.push({
-                    role: `tool: ${calling.name}`,
-                    content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${content}`,
-                });
                 userParams.push({
                     type: "tool_result",
                     tool_use_id: calling.id,
                     content: calling.result?.content ?? "error"
                 });
             }
+            messages.push({
+                role: "user",
+                content: userParams,
+            });
         }
     });
     const system = joinAsString(systemPrompts, "\n");

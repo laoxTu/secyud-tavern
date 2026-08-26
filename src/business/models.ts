@@ -18,7 +18,7 @@ export interface PageState {
 export interface BaseModel {
     id: string,
     name: string,
-    entries?: Record<string, any>,
+    entries?: Record<string, any[]>,
     content: Record<string, any>,
 }
 
@@ -35,3 +35,19 @@ export interface ImageFile {
     id: string,
     type: string,
 }
+
+async function useEntries<T>(model: BaseModel, name: string, action: (item: T) => Promise<void>): Promise<void> {
+    const entries: T[] | undefined = model.entries?.[name];
+    if (!entries?.length) return;
+    for (const entry of entries) {
+        await action(entry);
+    }
+}
+
+async function useEntriesList<T>(models: BaseModel[], name: string, action: (item: T) => Promise<void>): Promise<void> {
+    for (const model of models) {
+        await useEntries(model, name, action);
+    }
+}
+
+export const businessUtils = {useEntries, useEntriesList};

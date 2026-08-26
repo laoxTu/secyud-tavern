@@ -1,7 +1,7 @@
 import {Editor} from "./editor";
 import {ScriptToolConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
-import {LlmapiToolConfigModel} from "@/engines/tools/models";
+import {PresetToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {BusinessError} from "@/handler/models";
 import {slotContext} from "@/modules/stories/client/context";
@@ -24,7 +24,7 @@ export const scriptToolProvider: LlmapiToolProvider = {
             description: data.get('description') as string,
         };
     },
-    async create(config: LlmapiToolConfigModel, slot) {
+    async create(config: PresetToolConfigModel, slot) {
         return [new ScriptTool(config.code, config.value, slot)];
     },
 };
