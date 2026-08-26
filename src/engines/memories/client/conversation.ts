@@ -15,6 +15,8 @@ import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
+import {StoryModel} from "@/modules/stories/models";
 
 async function createInjectHandler(
     {
@@ -81,7 +83,7 @@ export const memoriesConversationProvider: SlotInitializer
         };
         if (cache.rag) {
             const {generator, database} = cache.rag;
-            await businessUtils.useEntries<StoryMemoryModel>(ctx.slot, enginePlural,
+            await businessUtils.useEntries<StoryMemoryModel, StoryModel>(ctx.slot, enginePlural,
                 async entry => {
                     cache.memories[entry.code] = entry;
                     const embedding = await generator.generateEmbedding({

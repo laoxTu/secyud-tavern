@@ -10,6 +10,7 @@ import {engineName as regexEngineName} from "../../regexes/models";
 import {mergeObjects} from "@/utils";
 import {slotContext} from "@/modules/stories/client/context";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 const prefix = "injected-script";
 
@@ -32,7 +33,7 @@ export const scriptConversationProvider:
             importMap: {},
             entries: []
         }
-        await businessUtils.useEntriesList<PresetScriptModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetScriptModel, PresetModel>(slot.presets, enginePlural,
             async entry => {
                 if (entry.disabled) return;
                 if (entry.type === 'importmap') {

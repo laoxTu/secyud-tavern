@@ -13,6 +13,7 @@ import {historyUtils} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -30,7 +31,7 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        await businessUtils.useEntriesList<PresetToolConfigModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetToolConfigModel, PresetModel>(slot.presets, enginePlural,
             async (entry) => {
                 if (entry.disabled || !entry.provider) return;
                 // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
