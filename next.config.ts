@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
         // 启用此选项，让 next build 使用项目本地安装的 tsc 命令
         useTypeScriptCli: true,
     },
+    async headers() {
+        return [
+            {
+                source: '/models/:path*',
+                headers: [
+                    { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+                ],
+            },
+        ];
+    },
 };
 
 function compose(...plugins: Array<(config: NextConfig) => NextConfig>) {

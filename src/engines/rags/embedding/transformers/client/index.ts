@@ -32,7 +32,7 @@ export const transformersEmbeddingGenerator: EmbeddingGeneratorProvider = {
         const info = transformerModels[model];
         console.debug("[transformer](info): ", info);
         const extractor = await pipeline("feature-extraction", info.model, {
-            device: "auto"
+            // device: "auto" auto 会导致下载onnx_data, 但是没有这个文件，先用wasm
         });
         return {
             model,
