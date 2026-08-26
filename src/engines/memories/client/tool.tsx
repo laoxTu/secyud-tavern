@@ -32,7 +32,7 @@ export const memoryToolProvider: LlmapiToolProvider = {
             // description: data.get("description") as string,
         };
     },
-    async create(config, slot) {
+    async create(_, slot) {
         return [new MemoryGetTool(slot), new MemorySetTool(slot)];
     },
 };
@@ -43,7 +43,7 @@ export class MemoryGetTool implements LlmapiTool {
     constructor(private slot: SlotModel) {
         this.model = {
             name: "get_memory",
-            description: "get the memory",
+            description: "get the memory keys. memory value is injected by knowledge.",
             parameters: {
                 "type": "object",
                 "required": ["content"],
@@ -124,12 +124,12 @@ export class MemoryGetTool implements LlmapiTool {
         });
 
         // 构建搜索过滤器
-        const filter: any = {};
-        if (types && types.length > 0) {
-            filter.type = types;
+        const filter: any[][] = [];
+        if (types?.length) {
+            filter.push(["type", types]);
         }
         if (tags && tags.length > 0) {
-            filter.tags = tags;
+            filter.push(["tags", tags]);
         }
 
         // 执行向量搜索
@@ -140,17 +140,28 @@ export class MemoryGetTool implements LlmapiTool {
                 property: 'embedding', // 指定要匹配的向量字段
             },
             similarity: min_relevance,
-            limit: limit * 5,
-            where: Object.keys(filter).length > 0 ? filter : undefined,
+            limit: limit * 3,
+            where: filter.length ? Object.fromEntries(filter) : undefined,
         });
 
         const memoryCodes = getMemoryCodes(output);
-        const codes = results.hits.map(hit => hit.document.name);
+        const codes = results.hits
+            .map(hit => {
+                const score = hit.score + hit.document.importance
+                    + hit.document.sequence / (this.slot.histories.length + 1);
+                return {
+                    name: hit.document.name, score
+                }
+            })
+            .sort((a, b) =>
+                b.score - a.score)
+            .slice(0, limit)
+            .map(u => u.name);
         memoryCodes.push(codes);
 
         return {
             hidden: false,
-            content: JSON.stringify(codes)
+            content: `memory keys: ${JSON.stringify(codes)}`
         };
     }
 }

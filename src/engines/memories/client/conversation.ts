@@ -37,7 +37,8 @@ async function createInjectHandler(
             const outputs = historyUtils.getOutputs(history);
             if (!outputs) return;
             for (const output of outputs) {
-                const codesList = getMemoryCodes(output);
+                const codesList = getMemoryCodes(output, false);
+                if (!codesList?.length) continue;
                 for (const codes of codesList) {
                     for (const code of codes) {
                         if (visited.has(code)) continue;
@@ -59,7 +60,7 @@ async function createInjectHandler(
                     name: getKnowledgeTool.name,
                     arguments: "{}",
                     result: {
-                        content: JSON.stringify(content),
+                        content: `memory: ${JSON.stringify(content)}`,
                         hidden: false
                     }
                 }

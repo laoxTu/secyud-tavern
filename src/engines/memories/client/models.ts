@@ -15,10 +15,10 @@ export interface MemoryConversationCache {
     memories: Record<string, StoryMemoryModel>,
 }
 
-export function getMemoryCodes(message: SlotMessageOutput) {
+export function getMemoryCodes(message: SlotMessageOutput, create: boolean = true) {
     const propertyName = "memoryCodes";
     let memoryCodes: string[][] = message.properties[propertyName];
-    if (!memoryCodes) {
+    if (!memoryCodes && create) {
         memoryCodes = [];
         message.properties[propertyName] = memoryCodes;
     }
