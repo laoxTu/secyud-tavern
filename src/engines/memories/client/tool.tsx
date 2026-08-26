@@ -264,7 +264,7 @@ export class MemorySetTool implements LlmapiTool {
         });
         return {
             content: "success",
-            hidden: false,
+            hidden: true,
         };
     }
 }

@@ -50,8 +50,9 @@ export async function generateMessageWithBuilder(
             const content = await generateContent(output.content, "assistant", "output");
             // 检验工具是否触发
             await toolUtils.callTools(slot, output.callings);
-            const callings = output.callings
-                ?.filter(u => !u.result?.hidden);
+            const callings = history === histories.at(-1) ?
+                output.callings : output.callings
+                    ?.filter(u => !u.result?.hidden);
             if (callings?.length) {
                 pushToolMessage(callings, content, output);
             } else if (content) {

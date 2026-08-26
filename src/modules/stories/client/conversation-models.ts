@@ -37,7 +37,7 @@ export interface InjectContext {
     pushUserMessage: (content: string) => void,
     pushAiMessage: (content: string, output?: SlotMessageOutput) => void,
     pushToolMessage: (callings: SlotCalling[], content?: string,
-                      output?: SlotMessageOutput) => void,
+                      output?: SlotMessageOutput, enableHidden?: boolean) => void,
     pushSystemMessage: (content: string) => void,
 }
 

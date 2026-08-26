@@ -52,29 +52,50 @@ export async function generateInput(context: LlmapiInputContext) {
                 items.push({content, role: "system"});
                 messages.push({role: "system", content,});
             },
-            pushToolMessage: (callings, content) => {
+            pushToolMessage: (callings, content, output, enableHidden) => {
                 if (content) {
                     items.push({content, role: "assistant"});
                     messages.push({role: "assistant", content});
                 }
+                const tools: {
+                    call: OpenAI.Responses.ResponseFunctionToolCall,
+                    output: OpenAI.Responses.ResponseInputItem.FunctionCallOutput,
+                }[] = [];
+
                 for (const calling of callings) {
+                    const hidden = !!calling.result?.hidden
+                    items.push({
+                        role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
+                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
+                    });
+                    if (enableHidden && hidden) continue;
+                    tools.push({
+                        call: {
+                            type: "function_call",
+                            call_id: calling.id,
+                            arguments: calling.arguments,
+                            name: calling.name,
+                        },
+                        output: {
+                            type: "function_call_output",
+                            call_id: calling.id,
+                            output: calling.result?.content ?? "error",
+                        }
+                    })
                     messages.push({
                         type: "function_call",
                         call_id: calling.id,
                         arguments: calling.arguments,
                         name: calling.name,
                     });
-                    items.push({
-                        role: `tool: ${calling.name}`,
-                        content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
-                    });
                 }
-                for (const calling of callings) {
-                    messages.push({
-                        type: "function_call_output",
-                        call_id: calling.id,
-                        output: calling.result?.content ?? "error",
-                    });
+                if (tools.length) {
+                    for (const tool of tools) {
+                        messages.push(tool.call);
+                    }
+                    for (const tool of tools) {
+                        messages.push(tool.output);
+                    }
                 }
             }
         });
@@ -121,28 +142,43 @@ export async function generateInput(context: LlmapiInputContext) {
                 items.push({content, role: "system"});
                 messages.push({role: "system", content,});
             },
-            pushToolMessage: (callings, content) => {
+            pushToolMessage: (callings, content, message, enableHidden) => {
                 if (content) items.push({content, role: "assistant"});
-                const tool_calls: OpenAI.ChatCompletionMessageToolCall[] = [];
-                messages.push({role: "assistant", content, tool_calls});
+                const tools: {
+                    call: OpenAI.ChatCompletionMessageToolCall,
+                    output: OpenAI.ChatCompletionToolMessageParam
+                }[] = [];
                 for (const calling of callings) {
-                    tool_calls.push({
-                        id: calling.id,
-                        type: "function",
-                        function: {
-                            arguments: calling.arguments,
-                            name: calling.name,
-                        },
-                    });
+                    const hidden = !!calling.result?.hidden
                     items.push({
-                        role: `tool: ${calling.name}`,
+                        role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
                         content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
                     });
-                    messages.push({
-                        role: "tool",
-                        tool_call_id: calling.id,
-                        content: calling.result?.content ?? "error",
+                    if (enableHidden && hidden) continue;
+                    tools.push({
+                        call: {
+                            id: calling.id,
+                            type: "function",
+                            function: {
+                                arguments: calling.arguments,
+                                name: calling.name,
+                            },
+                        },
+                        output: {
+                            role: "tool",
+                            tool_call_id: calling.id,
+                            content: calling.result?.content ?? "error",
+                        }
                     });
+                }
+                if (tools.length) {
+                    messages.push({
+                        role: "assistant", content,
+                        tool_calls: tools.map(u => u.call),
+                    });
+                    for (const tool of tools) {
+                        messages.push(tool.output);
+                    }
                 }
             }
         });
