@@ -58,6 +58,7 @@ export function InputViewer() {
             };
             const virtualHistories =
                 [...structuredClone(histories), history];
+            console.debug(`[input-viewer](histories): `,virtualHistories);
             // 工具调用初始化，防止虚拟上下文调用工具。
             for (const virtualHistory of virtualHistories) {
                 if (!virtualHistory) continue;
