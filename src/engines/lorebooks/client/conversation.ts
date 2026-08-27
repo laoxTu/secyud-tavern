@@ -37,7 +37,7 @@ async function createInjectHandler(
     }: InjectContext): Promise<InjectHandler> {
     const cache: LorebookConversationCache =
         slotUtils.getProperty(slot, enginePlural);
-    const visited = new Set<string>();
+    const visited = new Set<string | undefined>();
     let lorebooks: PresetLorebookModel[] = [];
     let simulation = 0;
     switch (builder) {
@@ -142,19 +142,19 @@ async function createInjectHandler(
         output: boolean) {
         if (!messages?.length) return;
         for (const message of messages) {
-            const codes = message.properties[enginePlural] ??
+            const ids = message.properties[enginePlural] ??
                 await tryFillActiveLorebooks(cache.entries, {
                     history, message,
                     properties: {},
                     output,
                     cache,
                 });
-            for (const code of codes) {
-                if (visited.has(code)) continue;
-                visited.add(code);
-                const lorebook = cache.entries[code];
+            for (const id of ids) {
+                if (visited.has(id)) continue;
+                visited.add(id);
+                const lorebook = cache.entries[id];
                 if (lorebook) {
-                    lorebooks.push(cache.entries[code]);
+                    lorebooks.push(cache.entries[id]);
                 }
             }
         }
@@ -162,10 +162,10 @@ async function createInjectHandler(
 
     async function insertLorebooks(inputs: PresetLorebookModel[]) {
         for (const lorebook of inputs) {
-            if (visited.has(lorebook.code)) {
+            if (visited.has(lorebook.id)) {
                 continue;
             }
-            visited.add(lorebook.code);
+            visited.add(lorebook.id);
             lorebooks.push(lorebook);
         }
     }
@@ -186,21 +186,19 @@ export const lorebookConversationProvider:
             entries: {},
             rag: await createDatabase(lorebookSchema),
         };
-        await businessUtils.useEntriesList<PresetLorebookModel, PresetModel>(slot.presets, enginePlural,
-            async (entry, model) => {
+        await businessUtils.useEntriesList<PresetLorebookModel, PresetModel>(
+            slot.presets, enginePlural, m => m.code,
+            async (entry) => {
                 if (entry.disabled) return;
                 if (entry.type === "json") {
                     entry.content = JSON.stringify(tryParseJson(entry.content));
                 }
-                const id = `${model.code}-${entry.code}`;
-                // 替换code，唯一标识
-                entry.code = id;
                 if (entry.matchType === alwaysMatch) {
                     if (entry.matchExpression?.lastMessage)
                         cache.after.push(entry);
                     else cache.before.push(entry);
                 } else {
-                    cache.entries[id] = entry;
+                    cache.entries[entry.id ?? ""] = entry;
                 }
 
                 if (cache.rag &&
@@ -211,7 +209,7 @@ export const lorebookConversationProvider:
                             content: entry.content,
                         });
                     await insert(database, {
-                        name: id,
+                        name: entry.id,
                         embedding,
                     });
                 }

@@ -13,6 +13,8 @@ import {engineName as regexEngineName} from "@/engines/regexes/models"
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {businessUtils} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
+import {useMacroSelectorState} from "@/engines/macros/client/slot-feature";
+import {BusinessError} from "@/handler/models";
 
 const eta = new Eta({
     autoTrim: false,
@@ -26,13 +28,17 @@ function buildMacroObject(
     const cache = slotUtils
         .getProperty<MacroConversationCache>(slot, enginePlural);
 
+    const macrObj: Record<string, any> = {};
+
+    for (const macro of Object.values(cache.macros)) {
+        const entries = macro.multiples
+            .filter(v => !v.disabled);
+        if (macro.select) entries.unshift(macro.singles[macro.select]);
+        macrObj[macro.key] = joinAsString(entries, "", u => u.value);
+    }
+
     return {
-        ...Object.fromEntries(Object.values(cache.macros).map(u => {
-            return [u.key, joinAsString(
-                [u.select < 0 ? null : u.singles[u.select],
-                    ...u.multiples.filter(v => !v.disabled)
-                ], "", u => u?.value)]
-        })),
+        ...macrObj,
         ...(properties.args ?? {}),
         variables: historyUtils.getVariables(history, false),
     }
@@ -40,9 +46,9 @@ function buildMacroObject(
 
 export interface MacroConversationCacheItem {
     key: string,
-    singles: PresetMacroModel[],
+    singles: Record<string, PresetMacroModel>,
     multiples: PresetMacroModel[],
-    select: number,
+    select?: string,
     hidden: boolean,
 }
 
@@ -74,23 +80,30 @@ export const macroConversationProvider:
         const cache: MacroConversationCache = {
             macros: {}
         }
+        const {checkItems, selections} = useMacroSelectorState.getState();
         await businessUtils.useEntriesList<PresetMacroModel, PresetModel>(
-            slot.presets, enginePlural,
+            slot.presets, enginePlural, m => m.code,
             async (entry) => {
+                if (!entry.id)
+                    throw new BusinessError("id is null for entry in slot.");
                 const item = cache.macros[entry.key] ??= {
                     key: entry.key,
-                    select: -1,
                     multiples: [],
-                    singles: [],
+                    singles: {},
                     hidden: true,
                 };
                 if (!entry.hidden) item.hidden = false;
                 if (entry.multiple) {
                     item.multiples.push(entry);
+                    const checked = checkItems[entry.id];
+                    if (checked !== undefined)
+                        entry.disabled = !checked;
                 } else {
-                    if (!entry.disabled)
-                        item.select = item.singles.length;
-                    item.singles.push(entry);
+                    item.singles[entry.id] = entry;
+                    if ((!entry.disabled && !item.select) ||
+                        // 防止缓存中的值没有对应的item，校验后添加
+                        selections[item.key] === entry.id)
+                        item.select = entry.id;
                 }
             });
         slotUtils.setProperty(slot, enginePlural, cache);

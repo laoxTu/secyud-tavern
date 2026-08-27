@@ -47,7 +47,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id,
+                            entryId: entry.entryId,
                         }
                     })
                     return {...entry, disabled};
@@ -57,7 +57,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                 },
@@ -87,62 +87,62 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     });
                     return result;
                 },
                 updateContent: (entry) => (<>
                     <Field className={spanHalf + " row-span-8"}>
-                        <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}`}>
                             {t("macro.value")}
                         </FieldLabel>
                         <Textarea name="value"
-                                  id={`${engineName}-value-${entry.id}`}
+                                  id={`${engineName}-value-${entry.entryId}`}
                                   defaultValue={entry.value}
                                   onKeyDown={submitTargetFormOnKey}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-code-${entry.entryId}`}>
                             {t("default.code")}
                         </FieldLabel>
                         <Input name="code"
-                               id={`${engineName}-code-${entry.id}`}
+                               id={`${engineName}-code-${entry.entryId}`}
                                defaultValue={entry.code ?? ""}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-name-${entry.entryId}`}>
                             {t("default.name")}
                         </FieldLabel>
                         <Input name="name"
-                               id={`${engineName}-name-${entry.id}`}
+                               id={`${engineName}-name-${entry.entryId}`}
                                defaultValue={entry.name ?? ""}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-key-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-key-${entry.entryId}`}>
                             {t("macro.key")}
                         </FieldLabel>
                         <Input name="key"
-                               id={`${engineName}-key-${entry.id}`}
+                               id={`${engineName}-key-${entry.entryId}`}
                                defaultValue={entry.key}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-multiple-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-multiple-${entry.entryId}`}>
                             {t("macro.multiple")}
                         </FieldLabel>
                         <FieldContent>
                             <Checkbox name="multiple"
-                                      id={`${engineName}-multiple-${entry.id}`}
+                                      id={`${engineName}-multiple-${entry.entryId}`}
                                       defaultChecked={entry.multiple ?? false}/>
                         </FieldContent>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-hidden-${entry.id}`}>
+                        <FieldLabel htmlFor={`${engineName}-hidden-${entry.entryId}`}>
                             {t("default.hidden")}
                         </FieldLabel>
                         <FieldContent>
                             <Checkbox name="hidden"
-                                      id={`${engineName}-hidden-${entry.id}`}
+                                      id={`${engineName}-hidden-${entry.entryId}`}
                                       defaultChecked={entry.hidden ?? false}/>
                         </FieldContent>
                     </Field>

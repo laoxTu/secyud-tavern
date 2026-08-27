@@ -35,7 +35,7 @@ export const useEmbeddingSettingState = create<EmbeddingSettingState>()(
             disabled: false,
         }),
         {
-            name: "ragSettingState",
+            name: "rag_setting",
             storage: createJSONStorage(() => remoteStorage),
             partialize: (state) => ({
                 disabled: state.disabled,

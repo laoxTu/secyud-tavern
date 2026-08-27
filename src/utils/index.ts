@@ -183,3 +183,16 @@ export function setAbort(signal: AbortSignal, action: () => void) {
     };
     signal.addEventListener('abort', abort);
 }
+
+export function intersperse<T, S = T>(arr: T[], separator: (t: T, i: number) => S, value: (t: T) => S) {
+    const result: S[] = [];
+    if (arr?.length) {
+        result.push(value(arr[0]));
+        for (let i = 1; i < arr.length; i++) {
+            const t = arr[i];
+            result.push(separator(t, i));
+            result.push(value(t));
+        }
+    }
+    return result;
+}

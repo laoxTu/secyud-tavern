@@ -69,7 +69,7 @@ async function setHistory(index?: number, slot?: SlotModel) {
     slot ??= slotInstance.get();
     const history = await getHistory(index, slot);
     await put('/stories/{id}/entries/{entryType}/{entryId}', history,
-        {params: {id: slot?.id, entryType: 'history', entryId: history.id}},
+        {params: {id: slot?.id, entryType: 'history', entryId: history.entryId}},
     );
 }
 
@@ -128,10 +128,10 @@ export const slotContext =
                     inputs: await Promise.all(history.inputs
                         .filter(u => u.content)
                         .map(u => handler(u.content, "user", "input"))),
-                    output: await handler(joinAsString(outputs, "\r\n",
+                    output: await handler(joinAsString(outputs, "\n",
                             u => u.content).trim(),
                         "assistant", "output"),
-                    thought: joinAsString(outputs, "\r\n", u => u.thought).trim(),
+                    thought: joinAsString(outputs, "\n", u => u.thought).trim(),
                 };
                 postMessage("content", res);
             }

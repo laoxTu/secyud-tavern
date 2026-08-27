@@ -19,7 +19,8 @@ export const styleConversationProvider:
         const cache: StyleConversationCache = {
             entries: [],
         };
-        await businessUtils.useEntriesList<PresetStyleModel, PresetModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetStyleModel, PresetModel>(
+            slot.presets, enginePlural, m => m.code,
             async entry => {
                 if (entry.disabled) return;
                 cache.entries.push(entry);

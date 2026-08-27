@@ -37,16 +37,16 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
     return (
         <>
             <Field className={cn(spanHalf, rowQuat)}>
-                <FieldLabel htmlFor={`${entry.id}-description`}>
+                <FieldLabel htmlFor={`${entry.entryId}-description`}>
                     {t('default.description')}
                 </FieldLabel>
-                <Textarea id={`${entry.id}-description`}
+                <Textarea id={`${entry.entryId}-description`}
                           name={"description"}
                           defaultValue={config.description}
                           onKeyDown={submitTargetFormOnKey}/>
             </Field>
             <Field className={cn(spanHalf, rowFull)}>
-                <FieldLabel htmlFor={`${entry.id}-schema`}>
+                <FieldLabel htmlFor={`${entry.entryId}-schema`}>
                     {t('default.schema')}
                 </FieldLabel>
                 <MonacoEditor name={"schema"}
@@ -55,33 +55,33 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                               formRef={formRef}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${entry.id}-disable_preset`}>
+                <FieldLabel htmlFor={`${entry.entryId}-disable_preset`}>
                     {t('sub_agent.disable_preset')}
                 </FieldLabel>
                 <FieldContent>
-                    <Checkbox id={`${entry.id}-disable_preset`} name={"disable_preset"}
+                    <Checkbox id={`${entry.entryId}-disable_preset`} name={"disable_preset"}
                               defaultChecked={config.disablePreset}/>
                 </FieldContent>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${entry.id}-max_length`}>
+                <FieldLabel htmlFor={`${entry.entryId}-max_length`}>
                     {t('sub_agent.max_length')}
                 </FieldLabel>
                 <FieldContent>
-                    <Input id={`${entry.id}-max_length`} name={"max_length"}
+                    <Input id={`${entry.entryId}-max_length`} name={"max_length"}
                            min={0} step={1}
                            defaultValue={config.maxLength}/>
                 </FieldContent>
             </Field>
             <LlmapiRequireField defaultValue={config.llmapi ?? null}
-                                prefix={`${engineName}-${entry.id}`}/>
+                                prefix={`${engineName}-${entry.entryId}`}/>
             <PresetRequiresField defaultValue={config.presets ?? []}
-                                 prefix={`${engineName}-${entry.id}`}/>
+                                 prefix={`${engineName}-${entry.entryId}`}/>
             <Field className={spanHalf}>
-                <FieldLabel htmlFor={`${entry.id}-disable_tags`}>
+                <FieldLabel htmlFor={`${entry.entryId}-disable_tags`}>
                     {t('sub_agent.disable_tags')}
                 </FieldLabel>
-                <TagBox id={`${entry.id}-disable_tags`} name={"disable_tags"}
+                <TagBox id={`${entry.entryId}-disable_tags`} name={"disable_tags"}
                         defaultValue={config.disableTags}/>
             </Field>
         </>

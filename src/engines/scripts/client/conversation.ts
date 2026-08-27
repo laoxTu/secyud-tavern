@@ -33,7 +33,8 @@ export const scriptConversationProvider:
             importMap: {},
             entries: []
         }
-        await businessUtils.useEntriesList<PresetScriptModel, PresetModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetScriptModel, PresetModel>(
+            slot.presets, enginePlural, m => m.code,
             async entry => {
                 if (entry.disabled) return;
                 if (entry.type === 'importmap') {

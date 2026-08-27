@@ -43,35 +43,35 @@ function Editor({entry, formRef}: { entry: PresetScriptModel, formRef: RefObject
                           language={language} formRef={formRef}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-code-${entry.entryId}`}>
                 {t("default.code")}
             </FieldLabel>
             <Input name="code"
-                   id={`${engineName}-code-${entry.id}`}
+                   id={`${engineName}-code-${entry.entryId}`}
                    defaultValue={entry.code ?? ""}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-name-${entry.entryId}`}>
                 {t("default.name")}
             </FieldLabel>
             <Input name="name"
-                   id={`${engineName}-name-${entry.id}`}
+                   id={`${engineName}-name-${entry.entryId}`}
                    defaultValue={entry.name ?? ""}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-priority-${entry.entryId}`}>
                 {t("default.priority")}
             </FieldLabel>
             <Input name="priority" type={"number"}
-                   id={`${engineName}-priority-${entry.id}`}
+                   id={`${engineName}-priority-${entry.entryId}`}
                    defaultValue={entry.priority}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-type-${entry.entryId}`}>
                 {t("default.type")}
             </FieldLabel>
 
-            <Selector name={'type'} id={`${engineName}-type-${entry.id}`}
+            <Selector name={'type'} id={`${engineName}-type-${entry.entryId}`}
                       value={type} onValueChange={setType}
                       items={scriptTypes}/>
         </Field>
@@ -107,7 +107,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                     return {...entry, disabled};
@@ -117,7 +117,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                 },
@@ -146,7 +146,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     });
                     return result;

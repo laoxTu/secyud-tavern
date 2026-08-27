@@ -24,18 +24,18 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-fitCount-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-fitCount-${entry.entryId}`}>
                     {t("lorebook.fit_count")}
                 </FieldLabel>
-                <Input id={`${engineName}-fitCount-${entry.id}`} type={"number"}
+                <Input id={`${engineName}-fitCount-${entry.entryId}`} type={"number"}
                        min={1} max={Math.max(keywordsLength, 1)} step={1}
                        defaultValue={model.fitCount} name={"fitCount"}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-keywordsLength-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-keywordsLength-${entry.entryId}`}>
                     {t("lorebook.keywords_groups_length")}
                 </FieldLabel>
-                <Input id={`${engineName}-keywordsLength-${entry.id}`} type={"number"}
+                <Input id={`${engineName}-keywordsLength-${entry.entryId}`} type={"number"}
                        min={1} max={maxLength} step={1}
                        value={keywordsLength}
                        onChange={e =>
@@ -44,10 +44,10 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
             </Field>
             {Array.from({length: keywordsLength}).map((_, index) => (
                 <Field key={index}>
-                    <FieldLabel htmlFor={`${engineName}-keywords-${entry.id}-${index}`}>
+                    <FieldLabel htmlFor={`${engineName}-keywords-${entry.entryId}-${index}`}>
                         {`${t("lorebook.include_any_word")} ${index + 1}`}
                     </FieldLabel>
-                    <TagBox id={`${engineName}-keywords-${entry.id}-${index}`}
+                    <TagBox id={`${engineName}-keywords-${entry.entryId}-${index}`}
                             name={`keywords-${index}`}
                             defaultValue={model.keywords.length > index ? model.keywords[index] : []}/>
                 </Field>

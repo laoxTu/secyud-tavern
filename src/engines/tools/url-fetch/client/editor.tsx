@@ -20,11 +20,11 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${entry.id}-maxResults`}>
+                <FieldLabel htmlFor={`${entry.entryId}-maxResults`}>
                     {t('url_fetch.max_results')}
                 </FieldLabel>
                 <Input
-                    id={`${entry.id}-maxResults`}
+                    id={`${entry.entryId}-maxResults`}
                     defaultValue={config.maxResults ?? 1}
                     name="max_result_count"
                     type="number"
@@ -34,12 +34,12 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
             </Field>
 
             <Field>
-                <FieldLabel htmlFor={`${entry.id}-timeout`}>
+                <FieldLabel htmlFor={`${entry.entryId}-timeout`}>
                     {t('url_fetch.timeout')}
                 </FieldLabel>
                 <FieldContent className={"flex-row"}>
                     <Input
-                        id={`${entry.id}-timeout`}
+                        id={`${entry.entryId}-timeout`}
                         name="timeout"
                         defaultValue={config.timeout ?? 5}
                         min={3}
@@ -53,11 +53,11 @@ export function Editor({defaultValue, entry}: LlmapiToolProps) {
             </Field>
 
             <Field>
-                <FieldLabel htmlFor={`${entry.id}-max_length`}>
+                <FieldLabel htmlFor={`${entry.entryId}-max_length`}>
                     {t('url_fetch.max_length')}
                 </FieldLabel>
                 <Input
-                    id={`${entry.id}-max_length`}
+                    id={`${entry.entryId}-max_length`}
                     name="max_length"
                     defaultValue={config.maxLength ?? 8000}
                     min={3}

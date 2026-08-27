@@ -37,7 +37,7 @@ export function HistoryDeleter() {
             const {slotData: {slot, histories}, getHistory} = slotContext;
             const history = await getHistory(page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
-                {params: {id: slot.id, entryType: 'history', entryId: history.id}})
+                {params: {id: slot.id, entryType: 'history', entryId: history.entryId}})
             histories.splice(page.cur - 1, 1);
             await setPage();
         } catch (error) {

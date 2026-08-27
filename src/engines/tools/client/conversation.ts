@@ -14,6 +14,7 @@ import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {businessUtils} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
+import {useToolSelectorState} from "@/engines/tools/client/slot-feature";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -31,7 +32,9 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        await businessUtils.useEntriesList<PresetToolConfigModel, PresetModel>(slot.presets, enginePlural,
+        const {checkItems} = useToolSelectorState.getState();
+        await businessUtils.useEntriesList<PresetToolConfigModel, PresetModel>(
+            slot.presets, enginePlural, m => m.code,
             async (entry) => {
                 if (entry.disabled || !entry.provider) return;
                 // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
@@ -43,6 +46,8 @@ export const toolConversationProvider:
                 try {
                     const tools = await provider.create(entry, slot);
                     for (const tool of tools) {
+                        const checked = checkItems[tool.model.name];
+                        if (checked) tool.disabled = true;
                         cache.tools[tool.model.name] = tool;
                     }
                 } catch (error) {

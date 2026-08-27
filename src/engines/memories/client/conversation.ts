@@ -103,13 +103,14 @@ export const memoriesConversationProvider: SlotInitializer
         };
         if (cache.rag) {
             const {generator, database} = cache.rag;
-            await businessUtils.useEntries<StoryMemoryModel, StoryModel>(ctx.slot, enginePlural,
+            await businessUtils.useEntries<StoryMemoryModel, StoryModel>(
+                ctx.slot, enginePlural, _ => "s",
                 async entry => {
-                    cache.memories[entry.id] = entry;
+                    cache.memories[entry.entryId] = entry;
                     const embedding = await generator
                         .generateEmbedding({content: entry.text,});
                     await insert(database, {
-                        entryId: entry.id,
+                        entryId: entry.entryId,
                         code: entry.code,
                         tags: entry.tags,
                         type: entry.type,

@@ -15,22 +15,22 @@ export function Editor({entry}: LlmapiToolProps) {
     const config: VariableConfigModel = mergeObjects(defaultConfig, entry.value);
     return (<>
         <Field>
-            <FieldLabel htmlFor={`${entry.id}-disable_get`}>
+            <FieldLabel htmlFor={`${entry.entryId}-disable_get`}>
                 {t('variable.disable_get')}
             </FieldLabel>
             <FieldContent>
                 <Checkbox name="disable_get"
-                          id={`${entry.id}-disable_get`}
+                          id={`${entry.entryId}-disable_get`}
                           defaultChecked={config.disableGet}/>
             </FieldContent>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${entry.id}-disable_set`}>
+            <FieldLabel htmlFor={`${entry.entryId}-disable_set`}>
                 {t('variable.disable_set')}
             </FieldLabel>
             <FieldContent>
                 <Checkbox name="disable_set"
-                          id={`${entry.id}-disable_set`}
+                          id={`${entry.entryId}-disable_set`}
                           defaultChecked={config.disableSet}/>
             </FieldContent>
         </Field>

@@ -47,7 +47,8 @@ export const regexConversationProvider:
             inputs: [],
             outputs: []
         }
-        await businessUtils.useEntriesList<PresetRegexModel, PresetModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetRegexModel, PresetModel>(
+            slot.presets, enginePlural, m => m.code,
             async entry => {
                 if (entry.disabled) return;
                 if (entry.target == "both" || entry.target == "input") {

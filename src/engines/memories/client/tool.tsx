@@ -229,7 +229,7 @@ export class MemorySetTool implements LlmapiTool {
         });
         const entry: StoryMemoryModel = {
             disabled: false,
-            id: 0,
+            entryId: 0,
             code: uuidv4(),
             name: title,
             importance,
@@ -246,10 +246,10 @@ export class MemorySetTool implements LlmapiTool {
                     entryType: engineName,
                 }
             });
-        entry.id = id;
+        entry.entryId = id;
         cache.memories[id] = entry;
         await insert(database, {
-            entryId: entry.id,
+            entryId: entry.entryId,
             code: entry.code,
             tags: entry.tags,
             type: entry.type,

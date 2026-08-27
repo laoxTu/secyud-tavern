@@ -186,7 +186,7 @@ export const useStoryChatboxState =
                     if (variables) {
                         history = {
                             outputId: -1,
-                            id: 0,
+                            entryId: 0,
                             disabled: false,
                             code: input.substring(0, 10),
                             name: "0",
@@ -212,7 +212,7 @@ export const useStoryChatboxState =
                         const {id} = await post('/stories/{id}/entries/{entryType}', history,
                             {params: {id: slot.id, entryType: 'history'}}
                         );
-                        history.id = id;
+                        history.entryId = id;
                         history.name = String(id);
                     }
                 } catch (err) {

@@ -98,7 +98,7 @@ export class SubAgentTool implements LlmapiTool {
             histories.push({
                 code: "",
                 disabled: false,
-                id: 0,
+                entryId: 0,
                 inputs: [],
                 name: "",
                 outputId: 0,

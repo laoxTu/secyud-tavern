@@ -22,34 +22,34 @@ function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-code-${entry.entryId}`}>
                     {t("default.code")}
                 </FieldLabel>
                 <Input name="code"
-                       id={`${engineName}-code-${entry.id}`}
+                       id={`${engineName}-code-${entry.entryId}`}
                        defaultValue={entry.code ?? ""}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-name-${entry.entryId}`}>
                     {t("default.name")}
                 </FieldLabel>
                 <Input name="name"
-                       id={`${engineName}-name-${entry.id}`}
+                       id={`${engineName}-name-${entry.entryId}`}
                        defaultValue={entry.name ?? ""}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-priority-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-priority-${entry.entryId}`}>
                     {t("default.priority")}
                 </FieldLabel>
                 <Input name="priority" type={"number"}
-                       id={`${engineName}-priority-${entry.id}`}
+                       id={`${engineName}-priority-${entry.entryId}`}
                        defaultValue={entry.priority}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-type-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-type-${entry.entryId}`}>
                     {t("comfyui.parameter_type")}
                 </FieldLabel>
-                <Selector id={`${engineName}-type-${entry.id}`}
+                <Selector id={`${engineName}-type-${entry.entryId}`}
                           items={comfyUIParameterRegistry.getSorted()}
                           name={'type'}
                           value={editor}
@@ -93,7 +93,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                     return {...entry, disabled};
@@ -103,7 +103,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                 },
@@ -133,7 +133,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     });
                     return result;

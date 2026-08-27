@@ -256,7 +256,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 const data = (await query).map((u: { entryId: number, disabled: boolean, content: string; }) =>
                     ({
                         ...JSON.parse(u.content),
-                        id: u.entryId,
+                        entryId: u.entryId,
                         disabled: u.disabled
                     })
                 );
@@ -284,7 +284,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
                 return {
                     ...JSON.parse(item.content),
-                    id: item.entryId,
+                    entryId: item.entryId,
                     disabled: item.disabled
                 };
             },
@@ -295,13 +295,14 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                     .values(entryList.map((e) => ({
                         masterId: masterId,
                         entryType: type,
-                        entryId: e.id,
+                        entryId: e.entryId,
                         disabled: e.disabled,
                         search: modelStorage.bindSearch(type, e),
                         sorter: modelStorage.bindSorter(type, e),
                         content: JSON.stringify({
                             ...e,
                             id: undefined,
+                            entryId: undefined,
                             disabled: undefined
                         }),
                     })));
@@ -310,7 +311,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             create: async (masterId: string, type: string, entry: any) => {
                 const maxEntryId = await db
                     .select({
-                        id: sql<number>`max(${entries.entryId})`
+                        entryId: sql<number>`max(${entries.entryId})`
                     })
                     .from(entries)
                     .where(and(
@@ -318,7 +319,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         eq(entries.entryType, type),
                     ));
 
-                const entryId = maxEntryId[0].id + 1;
+                const entryId = maxEntryId[0].entryId + 1;
                 await db
                     .insert(entries)
                     .values({

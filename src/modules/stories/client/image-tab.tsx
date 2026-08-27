@@ -74,7 +74,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                 {
                     params: {
                         id: model?.id,
-                        entryId: entry.id,
+                        entryId: entry.entryId,
                         entryType: imageEntryName
                     }
                 });
@@ -92,7 +92,7 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
             await del('/stories/{id}/entries/{entryType}/{entryId}', {
                 params: {
                     id: model?.id,
-                    entryId: entry.id,
+                    entryId: entry.entryId,
                     entryType: imageEntryName
                 }
             });
@@ -157,10 +157,10 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                             </DialogHeader>
                             <FieldGroup className="p-4 overflow-auto flex-1">
                                 <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-cover-${entry.id}`}>
+                                    <FieldLabel htmlFor={`${moduleName}-cover-${entry.entryId}`}>
                                         {t("default.cover")}
                                     </FieldLabel>
-                                    <ImageUploader name="cover`" id={`${moduleName}-cover-${entry.id}`}
+                                    <ImageUploader name="cover`" id={`${moduleName}-cover-${entry.entryId}`}
                                                    className={'max-w-52'}
                                                    accept={"image/png"}
                                                    defaultValue={`/api/images/${entry.imageId}`}
@@ -170,19 +170,19 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                                                    }}/>
                                 </Field>
                                 <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-code-${entry.id}`}>
+                                    <FieldLabel htmlFor={`${moduleName}-code-${entry.entryId}`}>
                                         {t("default.code")}
                                     </FieldLabel>
-                                    <Input id={`${moduleName}-code-${entry.id}`}
+                                    <Input id={`${moduleName}-code-${entry.entryId}`}
                                            defaultValue={entry.code}
                                            disabled
                                            name="code"/>
                                 </Field>
                                 <Field>
-                                    <FieldLabel htmlFor={`${moduleName}-name-${entry.id}`}>
+                                    <FieldLabel htmlFor={`${moduleName}-name-${entry.entryId}`}>
                                         {t("default.name")}
                                     </FieldLabel>
-                                    <Input id={`${moduleName}-name-${entry.id}`}
+                                    <Input id={`${moduleName}-name-${entry.entryId}`}
                                            defaultValue={entry.name}
                                            name="name"/>
                                 </Field>
@@ -323,7 +323,7 @@ export function Content() {
         <div className={'flex-1 flex flex-col overflow-hidden'}>
             <div className={'flex-1 overflow-y-auto'}>
                 <ItemGroup className={"flex flex-row flex-wrap items-start gap-0"}>
-                    {items && items.map((u) => (<ContentItem entry={u} key={u.id}/>))}
+                    {items && items.map((u) => (<ContentItem entry={u} key={u.entryId}/>))}
                 </ItemGroup>
             </div>
 

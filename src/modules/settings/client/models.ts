@@ -19,7 +19,7 @@ export const useLocalSettingState = create<LocalSettingState>()(
             }
         }),
         {
-            name: "localSettingState",
+            name: "local_setting",
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 author: state.author,
@@ -33,7 +33,7 @@ export const useRemoteSettingState = create<RemoteSettingState>()(
             llmapi: null,
         }),
         {
-            name: "remoteSettingState",
+            name: "remote_setting",
             storage: createJSONStorage(() => remoteStorage),
             partialize: (state) => ({
                 llmapi: state.llmapi,

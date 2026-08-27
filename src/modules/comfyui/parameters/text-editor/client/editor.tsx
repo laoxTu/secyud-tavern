@@ -16,18 +16,18 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const config = entry.config as TextEditorConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.entryId}`}>
                 {t("comfyui.node_name")}
             </FieldLabel>
             <Input name={"node_name"} defaultValue={config?.nodeName}
-                   id={`${engineName}-node_name-${entry.id}`}/>
+                   id={`${engineName}-node_name-${entry.entryId}`}/>
         </Field>
         <InputComponent entry={entry} formRef={formRef}/>
     </>;
@@ -37,11 +37,11 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const config = entry.config as TextEditorConfig;
     return <>
         <Field className={cn(spanHalf, rowQuat)}>
-            <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-text-${entry.entryId}`}>
                 {entry.name}
             </FieldLabel>
-            <Textarea id={`${engineName}-text-${entry.id}`}
-                      name={`text_${entry.id}`}
+            <Textarea id={`${engineName}-text-${entry.entryId}`}
+                      name={`text_${entry.entryId}`}
                       onKeyDown={submitTargetFormOnKey}
                       defaultValue={config?.defaultValue}/>
         </Field>

@@ -30,46 +30,46 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
 
     return (<>
         <Field className={cn(spanHalf, rowQuat)}>
-            <FieldLabel htmlFor={`${entry.id}-description`}>
+            <FieldLabel htmlFor={`${entry.entryId}-description`}>
                 {t('default.description')}
             </FieldLabel>
             <Textarea name="description"
-                      id={`${entry.id}-description`}
+                      id={`${entry.entryId}-description`}
                       defaultValue={config.description}
                       onKeyDown={submitTargetFormOnKey}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${entry.id}-hidden`}>
+            <FieldLabel htmlFor={`${entry.entryId}-hidden`}>
                 {t('default.hidden')}
             </FieldLabel>
             <FieldContent>
                 <Checkbox name="hidden"
-                          id={`${entry.id}-hidden`}
+                          id={`${entry.entryId}-hidden`}
                           defaultChecked={config.hidden}/>
             </FieldContent>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${entry.id}-enable_doc`}>
+            <FieldLabel htmlFor={`${entry.entryId}-enable_doc`}>
                 {t('script.enable_doc')}
             </FieldLabel>
             <FieldContent>
                 <Checkbox name="enable_doc"
-                          id={`${entry.id}-enable_doc`}
+                          id={`${entry.entryId}-enable_doc`}
                           defaultChecked={config.enableDoc ?? false}/>
             </FieldContent>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${entry.id}-enable_variable`}>
+            <FieldLabel htmlFor={`${entry.entryId}-enable_variable`}>
                 {t('script.enable_variable')}
             </FieldLabel>
             <FieldContent>
                 <Checkbox name="enable_variable"
-                          id={`${entry.id}-enable_variable`}
+                          id={`${entry.entryId}-enable_variable`}
                           defaultChecked={config.enableVariable ?? false}/>
             </FieldContent>
         </Field>
         <Field className={cn(spanHalf, rowFull)}>
-            <FieldLabel htmlFor={`${entry.id}-script`}>
+            <FieldLabel htmlFor={`${entry.entryId}-script`}>
                 {t('default.script')}
             </FieldLabel>
             <MonacoEditor name={"script"}
@@ -79,7 +79,7 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
             />
         </Field>
         <Field className={cn(spanHalf, rowFull)}>
-            <FieldLabel htmlFor={`${entry.id}-schema`}>
+            <FieldLabel htmlFor={`${entry.entryId}-schema`}>
                 {t('default.schema')}
             </FieldLabel>
             <MonacoEditor name={"schema"}

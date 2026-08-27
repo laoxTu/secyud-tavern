@@ -5,8 +5,8 @@ import {useTranslations} from "next-intl";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet} from "@/components/ui/field";
-import {enginePlural} from "@/engines/macros/models";
-import {MacroConversationCache} from "@/engines/macros/client/conversation";
+import {enginePlural, PresetMacroModel} from "@/engines/macros/models";
+import {MacroConversationCache, MacroConversationCacheItem} from "@/engines/macros/client/conversation";
 import {useErrorHandler} from "@/handler/client/error";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {SlotFeature} from "@/modules/stories/client/feeature-models";
@@ -14,31 +14,87 @@ import {Separator} from "@/components/ui/separator";
 import {Checkbox} from "@/components/ui/checkbox";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {slotContext} from "@/modules/stories/client/context";
+import {create} from "zustand";
+import {createJSONStorage, persist} from "zustand/middleware";
+import {intersperse} from "@/utils";
+import {TextToolTip} from "@/components/custom/text-tool-tip";
+
+export interface MacroSelectorState {
+    checkItems: Record<string, boolean>,
+    selections: Record<string, string>,
+    getSelection: (key: string) => string,
+    getCheckItem: (key: string) => boolean,
+    setSelection: (key: string, value: string) => void,
+    setCheckItem: (key: string, value: boolean) => void,
+}
+
+export const useMacroSelectorState = create<MacroSelectorState>()(
+    persist((set, get) => {
+            return {
+                checkItems: {},
+                selections: {},
+                getSelection: (key) => {
+                    return get().selections[key];
+                },
+                getCheckItem: (key) => {
+                    return get().checkItems[key];
+                },
+                setSelection: (key, value) => {
+                    set({
+                        selections: {
+                            ...get().selections,
+                            [key]: value
+                        }
+                    });
+                },
+                setCheckItem(key, value) {
+                    set({
+                        checkItems: {
+                            ...get().checkItems,
+                            [key]: value
+                        }
+                    });
+                }
+            };
+        },
+        {
+            name: "macro_select",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({
+                checkItems: state.checkItems,
+                selections: state.selections,
+            }),
+        }
+    )
+);
 
 
 export function MacroSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
-    const [cache, setCache] = React.useState<MacroConversationCache | null>(null);
     const {handleError} = useErrorHandler();
+    const {setSelection, setCheckItem} = useMacroSelectorState();
 
     const handleDialogOpen = () => {
         try {
-            const {slot} = slotContext.slotData;
-            const cache: MacroConversationCache = slotUtils.getProperty(slot, enginePlural);
-            setCache(cache);
             setOpen(true);
         } catch (error) {
             handleError(error);
         }
     };
-    const handleSelectChange = (key: string, index: number) => {
+    const handleSelectChange = (item: MacroConversationCacheItem, id: string) => {
         try {
-            const {slot} = slotContext.slotData;
-            const cache: MacroConversationCache = slotUtils.getProperty(slot, enginePlural);
-            const item = cache.macros[key];
-            item.select = index;
-            setCache(cache);
+            const entry = item.singles[id];
+            setSelection(item.key, entry.id!)
+            item.select = id;
+        } catch (error) {
+            handleError(error);
+        }
+    };
+    const handleCheckItemChange = (entry: PresetMacroModel, checked: boolean) => {
+        try {
+            entry.disabled = !checked;
+            setCheckItem(entry.id!, checked);
         } catch (error) {
             handleError(error);
         }
@@ -56,12 +112,14 @@ export function MacroSelector() {
                 </TooltipContent>
             </Tooltip>
         </DialogTrigger>
-        <DialogContent className={'flex flex-col overflow-hidden h-5/6'} style={{height: '86%'}}>
+        <DialogContent className={'flex flex-col overflow-hidden h-5/6'}
+                       style={{height: '86%'}}>
             <DialogHeader>
                 <DialogTitle>{t('macro.selector')}</DialogTitle>
             </DialogHeader>
             <div className={'overflow-auto p-2 flex-1'}>
-                {cache && Object.values(cache.macros)
+                {Object.values(slotUtils.getProperty<MacroConversationCache>(
+                    slotContext.slotData.slot, enginePlural).macros)
                     .filter(u => !u.hidden)
                     .map(item => (
                         <FieldSet key={item.key}
@@ -69,68 +127,49 @@ export function MacroSelector() {
                             <FieldLegend className="text-sm font-semibold mb-2">
                                 {item.key}
                             </FieldLegend>
-                            <RadioGroup defaultValue={item.select ?? 0}
-                                        onValueChange={i => handleSelectChange(item.key, i)}
+                            <RadioGroup value={item.select}
+                                        onValueChange={id => handleSelectChange(item, id)}
                                         className="flex flex-col gap-1">
                                 {
-                                    item.singles.map((u, i) => (
-                                        <Field key={i}>
-                                            {i > 0 ? <Separator className={'my-1'}/> : null}
-                                            <FieldContent className="flex-row p-2">
-                                                <RadioGroupItem value={i} id={`macro-${u.key}-${i}`}/>
-                                                <FieldLabel htmlFor={`macro-${u.key}-${i * 2}`}
-                                                            className="m-auto ml-2 flex-1">
-                                                    {u.name}
-                                                </FieldLabel>
-                                            </FieldContent>
-                                            <FieldDescription>
-                                                {u.value.substring(0, 32)}
-                                                {u.value?.length > 32 ?
-                                                    <Tooltip>
-                                                        <TooltipTrigger
-                                                            className="cursor-pointer ml-2 inline-block text-center size-5 m-auto rounded-full border hover:border-primary hover:text-primary"
-                                                            render={<span/>}>
-                                                            ⋯
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>{u.value}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip> : null
-                                                }
-                                            </FieldDescription>
-                                        </Field>))
+                                    intersperse(Object.values(item.singles),
+                                        (t) => (
+                                            <Separator key={`s-${t.id}`} className={'my-1'}/>),
+                                        (t) => (
+                                            <Field key={t.id}>
+                                                <FieldContent className="flex-row p-2">
+                                                    <RadioGroupItem id={`macro-${t.id}`}
+                                                                    value={t.id}/>
+                                                    <FieldLabel htmlFor={`macro-${t.id}`}
+                                                                className="m-auto ml-2 flex-1">
+                                                        {t.name}
+                                                    </FieldLabel>
+                                                </FieldContent>
+                                                <FieldDescription>
+                                                    <TextToolTip text={t.value}/>
+                                                </FieldDescription>
+                                            </Field>))
                                 }
                             </RadioGroup>
                             {
-                                item.multiples.map((u, i) => (
-                                    <Field key={i}>
-                                        {i > 0 ? <Separator className={'my-1'}/> : null}
-                                        <FieldContent
-                                            className="flex-row p-2 rounded-md hover:bg-primary-foreground">
-                                            <Checkbox id={`macro-${u.key}-${i * 2 + 1}`}
-                                                      defaultChecked={!u.disabled}
-                                                      onCheckedChange={b => u.disabled = !b}/>
-                                            <FieldLabel htmlFor={`macro-${u.key}-${i * 2 + 1}`}
-                                                        className="m-auto ml-2 flex-1">
-                                                {u.name}
-                                            </FieldLabel>
-                                        </FieldContent>
-                                        <FieldDescription>
-                                            {u.value.substring(0, 32)}
-                                            {u.value?.length > 32 ?
-                                                <Tooltip>
-                                                    <TooltipTrigger
-                                                        className="cursor-pointer ml-2 inline-block text-center size-5 m-auto rounded-full border hover:border-primary hover:text-primary"
-                                                        render={<span/>}>
-                                                        ⋯
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>{u.value}</p>
-                                                    </TooltipContent>
-                                                </Tooltip> : null
-                                            }
-                                        </FieldDescription>
-                                    </Field>))
+                                intersperse(item.multiples,
+                                    (t) => (
+                                        <Separator key={`s-${t.id}`} className={'my-1'}/>),
+                                    (t) => (
+                                        <Field key={t.id}>
+                                            <FieldContent
+                                                className="flex-row p-2 rounded-md hover:bg-primary-foreground">
+                                                <Checkbox id={`macro-${t.id}`}
+                                                          checked={!t.disabled}
+                                                          onCheckedChange={b => handleCheckItemChange(t, b)}/>
+                                                <FieldLabel htmlFor={`macro-${t.id}`}
+                                                            className="m-auto ml-2 flex-1">
+                                                    {t.name}
+                                                </FieldLabel>
+                                            </FieldContent>
+                                            <FieldDescription>
+                                                <TextToolTip text={t.value}/>
+                                            </FieldDescription>
+                                        </Field>))
                             }
                         </FieldSet>))}
             </div>

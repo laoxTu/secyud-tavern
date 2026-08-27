@@ -11,7 +11,7 @@ export const modelSelector: ComfyUIParameter =
                 nodeId: data.get('node_id') as string,
                 nodeName: data.get('node_name') as string,
                 type: data.get('model_type') as string,
-                defaultValue: data.get(`model_${entry.id}`) as string,
+                defaultValue: data.get(`model_${entry.entryId}`) as string,
             };
         },
         inputComponent: InputComponent,
@@ -19,7 +19,7 @@ export const modelSelector: ComfyUIParameter =
             const config = entry.config as ModelSelectorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
-                inputs[config.nodeName] = data.get(`model_${entry.id}`);
+                inputs[config.nodeName] = data.get(`model_${entry.entryId}`);
             }
         }
     } as const;

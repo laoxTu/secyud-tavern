@@ -10,7 +10,7 @@ export const numberEditor: ComfyUIParameter =
             return {
                 nodeId: data.get('node_id') as string,
                 nodeName: data.get('node_name') as string,
-                defaultValue: parseInt(data.get(`number_${entry.id}`) as string),
+                defaultValue: parseInt(data.get(`number_${entry.entryId}`) as string),
             };
         },
         inputComponent: InputComponent,
@@ -18,7 +18,7 @@ export const numberEditor: ComfyUIParameter =
             const config = entry.config as NumberEditorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
-                inputs[config.nodeName] = parseInt(data.get(`number_${entry.id}`) as string);
+                inputs[config.nodeName] = parseInt(data.get(`number_${entry.entryId}`) as string);
             }
         }
     } as const;

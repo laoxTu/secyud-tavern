@@ -12,11 +12,11 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     const config = entry.config as ImageCallbackConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
     </>;
 }

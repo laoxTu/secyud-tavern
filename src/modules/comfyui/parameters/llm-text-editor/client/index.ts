@@ -20,7 +20,7 @@ export const llmTextEditor: ComfyUIParameter =
             const config = entry.config as LlmTextEditorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
-                inputs[config.nodeName] = data.get(`text_${entry.id}`);
+                inputs[config.nodeName] = data.get(`text_${entry.entryId}`);
             }
         }
     } as const;

@@ -44,26 +44,26 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     const config = entry.config as LlmTextEditorConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.entryId}`}>
                 {t("comfyui.node_name")}
             </FieldLabel>
             <Input name={"node_name"} defaultValue={config?.nodeName}
-                   id={`${engineName}-node_name-${entry.id}`}/>
+                   id={`${engineName}-node_name-${entry.entryId}`}/>
         </Field>
         <LlmapiRequireField defaultValue={config.llmapi ?? null}
-                            prefix={`${engineName}-${entry.id}`}/>
+                            prefix={`${engineName}-${entry.entryId}`}/>
         <Field className={cn(spanHalf, rowQuat)}>
-            <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-text-${entry.entryId}`}>
                 {t("comfyui.text_prompt")}
             </FieldLabel>
-            <Textarea id={`${engineName}-text-${entry.id}`}
+            <Textarea id={`${engineName}-text-${entry.entryId}`}
                       name={`text_prompt`}
                       defaultValue={config?.textPrompt}
                       onKeyDown={submitTargetFormOnKey}/>
@@ -98,7 +98,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 outputId: -1,
                 summary: false,
                 variables: [],
-                id: 0,
+                entryId: 0,
                 disabled: false,
                 code: "",
                 name: ""
@@ -129,7 +129,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                 }
                 if (output.content !== content) {
                     content = output.content;
-                    setText(joinAsString(outputs, "\r\n", u => u.content));
+                    setText(joinAsString(outputs, "\r", u => u.content));
                 }
             }
         } catch (err) {
@@ -146,17 +146,17 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
     return <>
         <Field className={spanHalf}>
-            <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-text-${entry.entryId}`}>
                 {`${entry.name} ${t("comfyui.text_prompt")}`}
             </FieldLabel>
-            <Textarea id={`${engineName}-text-${entry.id}`}
+            <Textarea id={`${engineName}-text-${entry.entryId}`}
                       name={`text_prompt`}
                       value={prompt}
                       onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setPrompt(e.target.value)}/>
         </Field>
         <Field className={spanHalf}>
-            <FieldLabel htmlFor={`${engineName}-text-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-text-${entry.entryId}`}>
                 {entry.name}
                 {
                     output ?
@@ -178,8 +178,8 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     </div>)
                 }
             </FieldLabel>
-            <Textarea id={`${engineName}-text-${entry.id}`}
-                      name={`text_${entry.id}`}
+            <Textarea id={`${engineName}-text-${entry.entryId}`}
+                      name={`text_${entry.entryId}`}
                       value={text}
                       onKeyDown={submitTargetFormOnKey}
                       onChange={(e) => setText(e.target.value)}/>
