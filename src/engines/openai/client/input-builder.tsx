@@ -1,13 +1,12 @@
 ﻿import {useTranslations} from "next-intl";
 import React from "react";
-import {LlmapiInputContext, slotUtils} from "@/modules/stories/client/conversation-models";
+import {LlmapiInputContext} from "@/modules/stories/client/conversation-models";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {moduleName} from "@/modules/llmapis/models";
-import {ToolConversationCache, toolUtils} from "@/engines/tools/client/conversation";
+import {toolUtils} from "@/engines/tools/client/conversation";
 import {Selector} from "@/components/custom/selector";
 import {OpenAIInputBuilderConfigModel} from "../models";
 import {OpenAI} from "openai";
-import {enginePlural as toolPlural} from "@/engines/tools/models";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 import {filterCallings, generateMessageWithBuilder, getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {joinAsString} from "@/utils";
@@ -88,17 +87,16 @@ export async function generateInput(context: LlmapiInputContext) {
         };
     } else {
         const messages: OpenAI.ChatCompletionMessageParam[] = [];
-        const tools: OpenAI.ChatCompletionTool[] = Object
-            .values(slotUtils.getProperty<ToolConversationCache>(
-                context.slot, toolPlural).tools)
-            .map((u) => ({
-                type: "function",
-                function: {
-                    name: u.model.name,
-                    parameters: u.model.parameters as any,
-                    description: u.model.description,
-                }
-            }));
+        const tools: OpenAI.ChatCompletionTool[] =
+            toolUtils.getActiveTools(context.slot)
+                .map((u) => ({
+                    type: "function",
+                    function: {
+                        name: u.model.name,
+                        parameters: u.model.parameters as any,
+                        description: u.model.description,
+                    }
+                }));
         tools.push({
             type: "function",
             function: {

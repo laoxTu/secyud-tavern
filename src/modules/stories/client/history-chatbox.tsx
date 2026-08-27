@@ -107,11 +107,12 @@ export const useStoryChatboxState =
                 }
             },
             create: async () => {
+                const {generating, content, summary} = get();
                 try {
+                    set({summary: false, content: ""});
                     const {
                         slotData: {slot, histories}, iframeData: {iframe},
                     } = slotContext;
-                    const {generating, content, summary} = get();
                     if (generating || !content.trim()) return;
                     let variables = undefined;
                     let input = content.trim();
@@ -172,8 +173,9 @@ export const useStoryChatboxState =
                         history.id = id;
                         history.name = String(id);
                     }
-                } finally {
+                } catch (err) {
                     set({summary: false, content: ""});
+                    throw err;
                 }
                 // 创建并保存历史后需要生成回复
                 await get().generate();

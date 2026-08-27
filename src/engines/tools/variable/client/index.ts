@@ -1,7 +1,7 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {Editor} from "./editor";
-import {extract, Operation} from "@/utils/json-patch";
+import {extract, Operation, validate} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";
 import {historyUtils} from "@/modules/models";
 
@@ -18,7 +18,10 @@ export const variableToolProvider: LlmapiToolProvider = {
         const c: VariableConfigModel = config.value;
         const res: LlmapiTool[] = [];
         if (!c.disableGet) res.push(new VariableGetTool(slot));
-        if (!c.disableSet) res.push(new VariableSetTool(slot));
+        if (!c.disableSet) {
+            res.push(new VariableSetTool(slot));
+            res.push(new VariableDelTool(slot));
+        }
         return res;
     },
 };
@@ -56,116 +59,90 @@ export class VariableGetTool implements LlmapiTool {
     }
 }
 
-export class VariableSetTool implements LlmapiTool {
-    model: LlmapiToolModel;
+abstract class VariableEditToolBase implements LlmapiTool {
+    abstract model: LlmapiToolModel;
 
-    constructor(private slot: SlotModel) {
-        this.model = {
-            name: "set_variable",
-            description: "use JSON patch change list to change variable",
-            parameters: {
-                type: "object",
-                additionalProperties: false,
-                required: ["changes"],
-                properties: {
-                    changes: {
-                        type: "array",
-                        description: "the change list",
-                        items: {
-                            anyOf: [
-                                {
-                                    type: "object",
-                                    description: "the operation for a change",
-                                    additionalProperties: false,
-                                    required: ["value", "op", "path"],
-                                    properties: {
-                                        path: {
-                                            $ref: "$def/path"
-                                        },
-                                        op: {
-                                            description: "The operation to perform.",
-                                            type: "string",
-                                            enum: ["add", "replace", "test"]
-                                        },
-                                        value: {
-                                            anyOf: [
-                                                {
-                                                    type: "object",
-                                                    additionalProperties: true,
-                                                },
-                                                {
-                                                    type: "string",
-                                                },
-                                                {
-                                                    type: "number",
-                                                },
-                                                {
-                                                    type: "boolean",
-                                                }
-                                            ]
-                                        }
-                                    }
-                                },
-                                {
-                                    type: "object",
-                                    additionalProperties: false,
-                                    required: ["op", "path"],
-                                    properties: {
-                                        path: {
-                                            $ref: "$def/path"
-                                        },
-                                        op: {
-                                            description: "The operation to perform.",
-                                            type: "string",
-                                            enum: ["remove"]
-                                        }
-                                    }
-                                },
-                                {
-                                    type: "object",
-                                    additionalProperties: false,
-                                    required: ["from", "op", "path"],
-                                    properties: {
-                                        path: {
-                                            $ref: "$def/path"
-                                        },
-                                        op: {
-                                            description: "The operation to perform.",
-                                            type: "string",
-                                            enum: ["move", "copy"]
-                                        },
-                                        from: {
-                                            $ref: "$def/path"
-                                        }
-                                    }
-                                }
-                            ]
-                        },
-                    }
-                },
-                $def: {
-                    path: {
-                        type: "string",
-                        description: "A JSON Pointer path.",
-                        pattern: "^#?(|(/([^/~]|~[01])*)*)$",
-                    },
-                },
-            },
-        };
+    constructor(protected slot: SlotModel) {
+
     }
 
-    async invoke({changes}: { changes: Operation[] }) {
+    async invoke(operation: Operation) {
         const history = this.slot.histories.at(-1);
         const currentOutput = historyUtils.getOutputs(history)?.at(-1);
         if (currentOutput) {
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
-            for (const change of changes) {
-                currentOutput.variables.push(change);
+            const validation = validate(operation)
+            if (validation) {
+                return {
+                    content: `error: ${validation}`,
+                }
             }
+            currentOutput.variables.push(operation);
         }
         return {
             content: "success",
         };
     }
+}
+
+export class VariableSetTool extends VariableEditToolBase {
+    model: LlmapiToolModel = {
+        name: "set_variable",
+        description: "use JSON patch to set variable.",
+        parameters: {
+            type: "object",
+            required: ["op", "path", "value"],
+            properties: {
+                path: {
+                    type: "string",
+                    description: "A JSON Pointer path. split by '/'",
+                },
+                op: {
+                    description: "The operation to perform.",
+                    type: "string",
+                    enum: ["add", "replace"]
+                },
+                value: {
+                    anyOf: [
+                        {
+                            type: "object",
+                            additionalProperties: true,
+                        },
+                        {
+                            type: "string",
+                        },
+                        {
+                            type: "number",
+                        },
+                        {
+                            type: "boolean",
+                        }
+                    ]
+                }
+            },
+        },
+    }
+}
+
+export class VariableDelTool extends VariableEditToolBase {
+    model: LlmapiToolModel = {
+        name: "del_variable",
+        description: "use JSON patch to del variable.",
+        parameters: {
+            type: "object",
+            required: ["op", "path"],
+            properties: {
+                path: {
+                    type: "string",
+                    description: "A JSON Pointer path. split by '/'",
+                },
+                op: {
+                    description: "The operation to perform.",
+                    type: "string",
+                    enum: ["remove"]
+                }
+            },
+        },
+    };
 }
 

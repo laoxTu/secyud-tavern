@@ -39,21 +39,23 @@ export type Operation =
     | CopyOperation
     | TestOperation<any>;
 
-export function validate(obj: any) {
-    if (!obj || typeof obj !== 'object' || Array.isArray(obj) ||
-        !obj.op || !obj.path) return false;
+export function validate(obj: any): string | null {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj))
+        return "input is not a json object.";
+    if (!obj.op || !obj.path)
+        return "op or path is not provided.";
     switch (obj.op) {
         case 'add':
         case 'replace':
         case 'test':
-            return obj.value !== undefined;
+            return obj.value !== undefined ? null : "value is not provided.";
         case 'remove':
-            return true;
+            return null;
         case 'move':
         case 'copy':
-            return !!obj.from;
+            return obj.from ? null : "from is not provided.";
         default:
-            return false;
+            return "op is invalid value.";
     }
 }
 

@@ -147,7 +147,7 @@ export class MemoryGetTool implements LlmapiTool {
                 const score = hit.score + hit.document.importance / 10
                     + hit.document.sequence / (this.slot.histories.length + 1);
                 return {
-                    id: hit.document.id, score
+                    id: hit.document.entryId, score
                 }
             })
             .sort((a, b) =>
@@ -157,7 +157,7 @@ export class MemoryGetTool implements LlmapiTool {
         memoryCodes.push(ids);
 
         return {
-            content: `success`
+            content: ids.length ? `success` : "success: no items."
         };
     }
 }
@@ -249,7 +249,7 @@ export class MemorySetTool implements LlmapiTool {
         entry.id = id;
         cache.memories[id] = entry;
         await insert(database, {
-            id: entry.id,
+            entryId: entry.id,
             code: entry.code,
             tags: entry.tags,
             type: entry.type,

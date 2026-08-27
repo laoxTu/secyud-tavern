@@ -3,7 +3,7 @@ import {StoryMemoryModel} from "@/engines/memories/models";
 import {SlotMessageOutput} from "@/modules/models/message";
 
 export const memorySchema = {
-    id: 'number',
+    entryId: 'number',
     code: 'string',
     tags: 'string[]',
     type: 'string',

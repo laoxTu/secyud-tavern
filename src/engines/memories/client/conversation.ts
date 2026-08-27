@@ -77,7 +77,7 @@ async function createInjectHandler(
                     id: `${toolName(simulation++)}m`,
                     name: getKnowledgeTool.info.name,
                     arguments: getKnowledgeTool.args({
-                        type: "memory-dict"
+                        type: "memory_dict"
                     }),
                     result: {
                         content: joinAsString(newMemories, "\n",
@@ -109,7 +109,7 @@ export const memoriesConversationProvider: SlotInitializer
                     const embedding = await generator
                         .generateEmbedding({content: entry.text,});
                     await insert(database, {
-                        id: entry.id,
+                        entryId: entry.id,
                         code: entry.code,
                         tags: entry.tags,
                         type: entry.type,
