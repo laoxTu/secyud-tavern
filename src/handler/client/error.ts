@@ -6,8 +6,10 @@ import {BusinessError} from "@/handler/models";
 
 export function isNetworkError(error: unknown): boolean {
     if (error instanceof TypeError) {
-        return error.message === 'Failed to fetch'
-            || error.message.includes('NetworkError');
+        const message = error.message.toLowerCase();
+        return message.includes('network')
+            || message.includes('fetch')
+            || message.includes('load failed');
     }
     return false;
 }
