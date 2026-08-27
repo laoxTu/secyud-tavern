@@ -110,6 +110,9 @@ export class SubAgentTool implements LlmapiTool {
         const history = histories.at(-1)!;
         history.outputs = [];
         history.outputId = -1;
+        let thoughtLen = 0;
+        let toolArgLen = 0;
+        const {setGenerateInfo} = useStoryChatboxState.getState();
         for await (const {output} of conversationManager.inputProcesser
             .requestReply({
                 history, signal,
@@ -118,6 +121,28 @@ export class SubAgentTool implements LlmapiTool {
                 },
                 args
             })) {
+            const curThoughtLen = output.thought.length;
+            const curToolArgLen = output.callings
+                ?.reduce((u, c) =>
+                    u + c.arguments.length, 0) ?? 0;
+            if (curThoughtLen !== thoughtLen) {
+                thoughtLen = curThoughtLen;
+                setGenerateInfo({
+                    content: `${thoughtLen} chars`,
+                    title: "sub_agent.thinking",
+                });
+            } else if (curToolArgLen !== toolArgLen) {
+                toolArgLen = curToolArgLen;
+                setGenerateInfo({
+                    content: `${toolArgLen} chars`,
+                    title: "sub_agent.generating_tool",
+                });
+            } else {
+                setGenerateInfo({
+                    content: `${output.content.length} chars`,
+                    title: "sub_agent.generating",
+                });
+            }
             result = output.content;
         }
 

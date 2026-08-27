@@ -57,7 +57,7 @@
   },
   "slot": {
     "back_home_tip": "回到主页",
-    "calling_tool": "工具调用",
+    "calling_tool": "调用工具",
     "content_already_initialized": "插槽缓存已存在：{key}",
     "content_not_initialized": "插槽缓存未初始化：{key}",
     "create_chat": "创建",
@@ -67,8 +67,8 @@
     "delete_output_tip": "删除当前回复",
     "edit_history": "编辑历史",
     "edit_history_tip": "编辑当前历史",
-    "generating": "生成内容中",
-    "generating_tool": "调用工具中",
+    "generating": "生成内容",
+    "generating_tool": "构造参数",
     "input": "用户输入",
     "input_processing": "处理输入",
     "input_viewer": "上下文",
@@ -80,7 +80,7 @@
     "output": "AI输出",
     "pin_chatbox": "固定聊天框",
     "regenerate_reply_tip": "重新生成",
-    "thinking": "思考中",
+    "thinking": "生成思考",
     "unpin_chatbox": "取消固定聊天框",
     "variable": "变量",
     "variable_invalid_json": "变量格式错误"
@@ -96,8 +96,11 @@
   "sub_agent": {
     "disable_preset": "禁用预设",
     "disable_tags": "禁用标签",
+    "generating": "生成内容(子Agent)",
+    "generating_tool": "构造参数(子Agent)",
     "max_length": "最大长度",
-    "prompt": "提示词"
+    "prompt": "提示词",
+    "thinking": "生成思考(子Agent)"
   },
   "tool": {
     "create_failed": "工具创建失败({entry})",
