@@ -24,10 +24,8 @@ export async function generateInput(
             description: u.model.description,
         }));
     tools.push({
-        input_schema: {
-            type: 'object',
-        },
-        ...getKnowledgeTool
+        input_schema: getKnowledgeTool.schema as any,
+        ...getKnowledgeTool.info
     });
     const systemPrompts: string[] = [];
     await generateMessageWithBuilder(context, {

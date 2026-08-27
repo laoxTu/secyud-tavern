@@ -31,8 +31,8 @@ export async function generateInput(context: LlmapiInputContext) {
             }));
         tools.push({
             type: "function",
-            ...getKnowledgeTool,
-            parameters: {},
+            ...getKnowledgeTool.info,
+            parameters: getKnowledgeTool.schema,
             strict: false,
         });
         const systemPrompts: string[] = [];
@@ -101,7 +101,10 @@ export async function generateInput(context: LlmapiInputContext) {
             }));
         tools.push({
             type: "function",
-            function: getKnowledgeTool
+            function: {
+                ...getKnowledgeTool.info,
+                parameters: getKnowledgeTool.schema,
+            }
         });
         await generateMessageWithBuilder(context, {
             builder: context.slot.llmapi.content

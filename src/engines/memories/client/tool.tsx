@@ -43,7 +43,7 @@ export class MemoryGetTool implements LlmapiTool {
     constructor(private slot: SlotModel) {
         this.model = {
             name: "get_memory",
-            description: "get the memory keys. memory value is injected by knowledge.",
+            description: "prepare for get the memory. memory will return by knowledge tool.",
             parameters: {
                 "type": "object",
                 "required": ["content"],
@@ -142,22 +142,22 @@ export class MemoryGetTool implements LlmapiTool {
         });
 
         const memoryCodes = getMemoryCodes(output);
-        const codes = results.hits
+        const ids = results.hits
             .map(hit => {
                 const score = hit.score + hit.document.importance / 10
                     + hit.document.sequence / (this.slot.histories.length + 1);
                 return {
-                    name: hit.document.name, score
+                    id: hit.document.id, score
                 }
             })
             .sort((a, b) =>
                 b.score - a.score)
             .slice(0, limit)
-            .map(u => u.name);
-        memoryCodes.push(codes);
+            .map(u => u.id);
+        memoryCodes.push(ids);
 
         return {
-            content: `memory keys: ${JSON.stringify(codes)}`
+            content: `success`
         };
     }
 }
@@ -249,7 +249,8 @@ export class MemorySetTool implements LlmapiTool {
         entry.id = id;
         cache.memories[id] = entry;
         await insert(database, {
-            name: entry.code,
+            id: entry.id,
+            code: entry.code,
             tags: entry.tags,
             type: entry.type,
             importance: entry.importance,

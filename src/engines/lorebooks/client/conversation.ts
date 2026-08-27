@@ -113,8 +113,10 @@ async function createInjectHandler(
                         {
                             index: 0,
                             id: `${toolName(simulation)}l`,
-                            name: getKnowledgeTool.name,
-                            arguments: "{}",
+                            name: getKnowledgeTool.info.name,
+                            arguments: getKnowledgeTool.args({
+                                type: "lorebook",
+                            }),
                             result: {content}
                         }
                     ]);

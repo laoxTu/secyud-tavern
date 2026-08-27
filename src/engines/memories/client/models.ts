@@ -3,7 +3,8 @@ import {StoryMemoryModel} from "@/engines/memories/models";
 import {SlotMessageOutput} from "@/modules/models/message";
 
 export const memorySchema = {
-    name: 'string',
+    id: 'number',
+    code: 'string',
     tags: 'string[]',
     type: 'string',
     importance: "number",
@@ -17,7 +18,7 @@ export interface MemoryConversationCache {
 
 export function getMemoryCodes(message: SlotMessageOutput, create: boolean = true) {
     const propertyName = "memoryCodes";
-    let memoryCodes: string[][] = message.properties[propertyName];
+    let memoryCodes: number[][] = message.properties[propertyName];
     if (!memoryCodes && create) {
         memoryCodes = [];
         message.properties[propertyName] = memoryCodes;
