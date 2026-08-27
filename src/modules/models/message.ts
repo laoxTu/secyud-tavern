@@ -36,7 +36,10 @@ export function setContent<T extends SlotMessageBase>(message: T, text?: string 
                 const obj = JSON.parse(element.trim());
                 const items = Array.isArray(obj) ? obj : [obj];
                 for (const item of items) {
-                    if (validate(item)) {
+                    const validation = validate(item);
+                    if (validation) {
+                        console.warn("[variables](validation): ", validation);
+                    } else {
                         results.push(item);
                     }
                 }

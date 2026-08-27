@@ -13,6 +13,7 @@ import {historyUtils} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -30,7 +31,7 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        await businessUtils.useEntriesList<PresetToolConfigModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetToolConfigModel, PresetModel>(slot.presets, enginePlural,
             async (entry) => {
                 if (entry.disabled || !entry.provider) return;
                 // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
@@ -78,8 +79,8 @@ async function callTools(
     const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
 
     let aborted = false;
-    useStoryChatboxState.getState()
-        .setAbort(() => aborted = true);
+    const {setAbort, setGenerateInfo} = useStoryChatboxState.getState();
+    setAbort(() => aborted = true);
     for (const toolCall of toolCalls.filter(u => !u.result)) {
         if (aborted) break;
         try {
@@ -88,17 +89,19 @@ async function callTools(
             if (tool) {
                 console.debug(`[tool]: `, tool.model.name);
                 const args = JSON.parse(toolCall.arguments);
+                setGenerateInfo({
+                    title: "slot.calling_tool",
+                    content: toolCall.name,
+                });
                 toolCall.result = await tool.invoke(args);
             } else {
                 toolCall.result = {
-                    hidden: false,
                     content: "",
                 };
             }
         } catch (err: any) {
             // 错误写回给模型调整，同时 console.error 供人工排查。
             toolCall.result = {
-                hidden: false,
                 content: `error: ${err?.message ?? "unknown error"}`,
             };
             console.error(err);

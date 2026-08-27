@@ -21,7 +21,13 @@ import {historyUtils, messageUtils} from "@/modules/models";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotMessageInput} from "@/modules/models/message";
 import {setAbort} from "@/utils";
+import {Item, ItemContent, ItemMedia, ItemTitle} from "@/components/ui/item";
+import {Spinner} from "@/components/ui/spinner";
 
+interface GenerateInfo {
+    title: string,
+    content: string
+}
 
 export interface StoryChatboxState {
     content: string,
@@ -31,6 +37,8 @@ export interface StoryChatboxState {
     signal?: AbortController,
     setSignal: (signal?: AbortController, reason?: string) => void,
     setAbort: (func: () => void) => void,
+    generateInfo: GenerateInfo,
+    setGenerateInfo: (info: GenerateInfo) => void,
     generating: boolean,
     generate: () => Promise<void>,
     create: () => Promise<void>,
@@ -61,13 +69,21 @@ export const useStoryChatboxState =
                 console.debug(`[signal]: set abort`);
                 setAbort(signal, action);
             },
+            generateInfo: {title: "slot.generating", content: ""},
+            setGenerateInfo: (generateInfo: GenerateInfo) => get().generating && set({generateInfo}),
             generating: false,
             generate: async () => {
                 const {
                     slotData: {histories},
                     getHistory, setHistory,
                 } = slotContext;
-                set({generating: true});
+                set({
+                    generating: true,
+                    generateInfo: {
+                        title: "slot.generating",
+                        content: "",
+                    }
+                });
                 try {
                     const history = await getHistory();
                     const {setPage} = useHistoryPageState.getState();
@@ -75,13 +91,39 @@ export const useStoryChatboxState =
                         history.outputId = history.outputs.length - 1;
                         await setPage(histories.length);
                     }
-                    for await (const {} of conversationManager.inputProcesser
+                    const {setSignal, setGenerateInfo} = get();
+
+                    let thoughtLen = 0;
+                    let toolArgLen = 0;
+                    for await (const {output} of conversationManager.inputProcesser
                         .requestReply({
                             history, signal: async signal => {
                                 await setHistoryPage();
-                                get().setSignal(signal);
+                                setSignal(signal);
                             }
                         })) {
+                        const curThoughtLen = output.thought.length;
+                        const curToolArgLen = output.callings
+                            ?.reduce((u, c) =>
+                                u + c.arguments.length, 0) ?? 0;
+                        if (curThoughtLen !== thoughtLen) {
+                            thoughtLen = curThoughtLen;
+                            setGenerateInfo({
+                                content: `${thoughtLen} chars`,
+                                title: "slot.thinking",
+                            });
+                        } else if (curToolArgLen !== toolArgLen) {
+                            toolArgLen = curToolArgLen;
+                            setGenerateInfo({
+                                content: `${toolArgLen} chars`,
+                                title: "slot.generating_tool",
+                            });
+                        } else {
+                            setGenerateInfo({
+                                content: `${output.content.length} chars`,
+                                title: "slot.generating",
+                            });
+                        }
                         // 流式渲染条件
                         // 故事页面为最新，输出页面为最新
                         const {page} = useHistoryPageState.getState();
@@ -107,11 +149,12 @@ export const useStoryChatboxState =
                 }
             },
             create: async () => {
+                const {generating, content, summary} = get();
                 try {
+                    set({summary: false, content: ""});
                     const {
                         slotData: {slot, histories}, iframeData: {iframe},
                     } = slotContext;
-                    const {generating, content, summary} = get();
                     if (generating || !content.trim()) return;
                     let variables = undefined;
                     let input = content.trim();
@@ -172,8 +215,9 @@ export const useStoryChatboxState =
                         history.id = id;
                         history.name = String(id);
                     }
-                } finally {
+                } catch (err) {
                     set({summary: false, content: ""});
+                    throw err;
                 }
                 // 创建并保存历史后需要生成回复
                 await get().generate();
@@ -181,6 +225,25 @@ export const useStoryChatboxState =
         })
     );
 
+export function GenerateTips() {
+    const t = useTranslations();
+    const {generateInfo, generating,} = useStoryChatboxState();
+    return (<>
+        {generating && <div className="fixed right-2 top-2">
+            <Item>
+                <ItemMedia>
+                    <Spinner/>
+                </ItemMedia>
+                <ItemContent>
+                    <ItemTitle className="line-clamp-1">{t(generateInfo.title)}</ItemTitle>
+                </ItemContent>
+                <ItemContent className="flex-none justify-end">
+                    <span className="text-sm tabular-nums">{generateInfo.content}</span>
+                </ItemContent>
+            </Item>
+        </div>}
+    </>);
+}
 
 export function HistoryChatbox() {
     const {
@@ -217,7 +280,8 @@ export function HistoryChatbox() {
 
     }, [inputRef]);
 
-    return (
+    return (<>
+
         <form action={triggerCreate}>
             <InputGroup className={"bg-white"}>
                 <InputGroupTextarea ref={inputRef}
@@ -251,5 +315,6 @@ export function HistoryChatbox() {
                     }
                 </InputGroupAddon>
             </InputGroup>
-        </form>);
+        </form>
+    </>);
 }

@@ -37,7 +37,7 @@ export interface JsonProperty extends JsonPropertyBase {
     type: "object",
     properties?: JsonSchemaProperties,
     required?: string[],
-    additionalProperties: boolean,
+    additionalProperties?: boolean,
 }
 
 export type JsonSchemaProperty =

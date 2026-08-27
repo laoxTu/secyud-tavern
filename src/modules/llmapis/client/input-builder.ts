@@ -5,11 +5,22 @@ import {joinAsString} from "@/utils";
 import {SlotCalling} from "@/modules/models/calling";
 import {LlmapiInputItem} from "@/modules/llmapis/client/provider-models";
 
-export const getKnowledgeTool =
-    {
+export const getKnowledgeTool = {
+    info: {
         name: "get_knowledge",
         description: "get knowledge. return empty if current knowledge is injected. ",
-    }
+    },
+    schema: {
+        type: 'object',
+        properties: {
+            type: {
+                type: 'string',
+                description: "the type of knowledge. ",
+            },
+        },
+    },
+    args: (args: { type: string }) => JSON.stringify(args)
+};
 
 export async function generateMessageWithBuilder(
     {
@@ -79,7 +90,7 @@ export function filterCallings(callings: SlotCalling[],
                                enableHidden?: boolean) {
     const tools: SlotCalling[] = [];
     for (const calling of callings) {
-        const hidden = !!calling.result?.hidden
+        const hidden = !!calling.result?.hidden;
         items.push({
             role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
             content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,

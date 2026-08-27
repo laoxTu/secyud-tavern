@@ -15,6 +15,9 @@ import {createDatabase} from "@/engines/rags/client/models";
 import {historyUtils} from "@/modules/models";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {businessUtils} from "@/business/models";
+import {StoryModel} from "@/modules/stories/models";
+import {SlotCalling} from "@/modules/models/calling";
+import {joinAsString} from "@/utils";
 
 async function createInjectHandler(
     {
@@ -24,46 +27,65 @@ async function createInjectHandler(
         toolName,
         pushToolMessage,
     }: InjectContext): Promise<InjectHandler> {
-    const visited = new Set<string>();
+    const visited = new Set<number>();
     const cache = slotUtils
         .getProperty<MemoryConversationCache>(slot, enginePlural);
     let simulation = 0;
     return {
         after: async (i) => {
             if (i === histories.length - 1) return;
-            const memories: StoryMemoryModel[] = [];
+            // 需要注入内容
+            const newMemories: StoryMemoryModel[] = [];
+            // 只注入Key
+            const keyMemories: StoryMemoryModel[] = [];
+            const visitedKeys = new Set<number>();
             const history = histories[i];
             const outputs = historyUtils.getOutputs(history);
             if (!outputs) return;
             for (const output of outputs) {
-                const codesList = getMemoryCodes(output, false);
-                if (!codesList?.length) continue;
-                for (const codes of codesList) {
-                    for (const code of codes) {
-                        if (visited.has(code)) continue;
-                        visited.add(code);
-                        const memory = cache.memories[code];
+                const idsList = getMemoryCodes(output, false);
+                if (!idsList?.length) continue;
+                for (const ids of idsList) {
+                    for (const id of ids) {
+                        if (visitedKeys.has(id)) continue;
+                        visitedKeys.add(id);
+                        const memory = cache.memories[id];
                         if (!memory) continue;
-                        memories.push(memory);
+                        keyMemories.push(memory);
+                        if (visited.has(id)) continue;
+                        visited.add(id);
+                        newMemories.push(memory);
                     }
                 }
             }
-            if (!memories.length) return;
-            const content = Object.fromEntries(
-                memories.map(m => ([m.code, m.text])));
-            console.debug(`[memory](inject): `, content);
-            pushToolMessage([
-                {
-                    index: 0,
-                    id: `${toolName(simulation)}m`,
-                    name: getKnowledgeTool.name,
-                    arguments: "{}",
-                    result: {
-                        content: `memory: ${JSON.stringify(content)}`,
-                        hidden: false
-                    }
+            if (!keyMemories.length) return;
+            const callings: SlotCalling[] = [{
+                index: 0,
+                id: `${toolName(simulation++)}m`,
+                name: getKnowledgeTool.info.name,
+                arguments: getKnowledgeTool.args({
+                    type: "memory"
+                }),
+                result: {
+                    content: joinAsString(keyMemories, "\n",
+                        u => u.name),
                 }
-            ]);
+            }];
+            if (newMemories.length) {
+                callings.push({
+                    index: 1,
+                    id: `${toolName(simulation++)}m`,
+                    name: getKnowledgeTool.info.name,
+                    arguments: getKnowledgeTool.args({
+                        type: "memory_dict"
+                    }),
+                    result: {
+                        content: joinAsString(newMemories, "\n",
+                            u => `- ${u.name}: ${u.text}`),
+                    }
+                })
+            }
+            pushToolMessage(callings);
         }
     }
 }
@@ -81,14 +103,14 @@ export const memoriesConversationProvider: SlotInitializer
         };
         if (cache.rag) {
             const {generator, database} = cache.rag;
-            await businessUtils.useEntries<StoryMemoryModel>(ctx.slot, enginePlural,
+            await businessUtils.useEntries<StoryMemoryModel, StoryModel>(ctx.slot, enginePlural,
                 async entry => {
-                    cache.memories[entry.code] = entry;
-                    const embedding = await generator.generateEmbedding({
-                        content: entry.text,
-                    });
+                    cache.memories[entry.id] = entry;
+                    const embedding = await generator
+                        .generateEmbedding({content: entry.text,});
                     await insert(database, {
-                        name: `${entry.id}`,
+                        entryId: entry.id,
+                        code: entry.code,
                         tags: entry.tags,
                         type: entry.type,
                         importance: entry.importance,

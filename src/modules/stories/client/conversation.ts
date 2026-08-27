@@ -23,6 +23,7 @@ import {LlmapiOutputContext} from "@/modules/llmapis/client/provider-models";
 import {SlotMessageOutput} from "@/modules/models/message";
 import {post} from "@/client";
 import {LlmapiModel} from "@/modules/llmapis/models";
+import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 
 
 class SlotInitializerRegistry extends ClientRegistry<SlotInitializer> {
@@ -89,7 +90,10 @@ class LlmapiInputProcesserRegistry extends ClientRegistry<LlmapiInputProcesser> 
         while (iterations > 0) {
             iterations--;
             const current = outputs.length > 0;
-
+            useStoryChatboxState.getState().setGenerateInfo({
+                title: "slot.input_processing",
+                content: ""
+            });
             const {input} = await this
                 .processInput({args, history, current, slot});
 

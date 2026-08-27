@@ -36,15 +36,15 @@ export interface ImageFile {
     type: string,
 }
 
-async function useEntries<T>(model: BaseModel, name: string, action: (item: T) => Promise<void>): Promise<void> {
+async function useEntries<T, TModel extends BaseModel>(model: TModel, name: string, action: (item: T, model: TModel) => Promise<void>): Promise<void> {
     const entries: T[] | undefined = model.entries?.[name];
     if (!entries?.length) return;
     for (const entry of entries) {
-        await action(entry);
+        await action(entry, model);
     }
 }
 
-async function useEntriesList<T>(models: BaseModel[], name: string, action: (item: T) => Promise<void>): Promise<void> {
+async function useEntriesList<T, TModel extends BaseModel>(models: TModel[], name: string, action: (item: T, model: TModel) => Promise<void>): Promise<void> {
     for (const model of models) {
         await useEntries(model, name, action);
     }

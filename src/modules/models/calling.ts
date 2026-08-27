@@ -2,7 +2,7 @@ export interface SlotCallingResult {
     // 调用结果内容
     content: string,
     // 是否隐藏调用
-    hidden: boolean,
+    hidden?: boolean,
 }
 
 export interface SlotCalling {

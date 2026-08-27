@@ -2,6 +2,7 @@
 import {engineName, enginePlural, PresetStyleModel} from "../models";
 import {slotContext} from "@/modules/stories/client/context";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 const prefix = "injected-style";
 
@@ -18,7 +19,7 @@ export const styleConversationProvider:
         const cache: StyleConversationCache = {
             entries: [],
         };
-        await businessUtils.useEntriesList<PresetStyleModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetStyleModel, PresetModel>(slot.presets, enginePlural,
             async entry => {
                 if (entry.disabled) return;
                 cache.entries.push(entry);

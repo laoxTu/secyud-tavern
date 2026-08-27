@@ -8,6 +8,7 @@
 import {engineName, enginePlural, PresetRegexModel} from "../models";
 import {engineName as lorebookEngineName} from "../../lorebooks/models";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 export interface RegexConversationCache {
     inputs: PresetRegexModel[];
@@ -46,7 +47,7 @@ export const regexConversationProvider:
             inputs: [],
             outputs: []
         }
-        await businessUtils.useEntriesList<PresetRegexModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetRegexModel, PresetModel>(slot.presets, enginePlural,
             async entry => {
                 if (entry.disabled) return;
                 if (entry.target == "both" || entry.target == "input") {

@@ -12,6 +12,7 @@ import {joinAsString} from "@/utils";
 import {engineName as regexEngineName} from "@/engines/regexes/models"
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {businessUtils} from "@/business/models";
+import {PresetModel} from "@/modules/presets/models";
 
 const eta = new Eta({
     autoTrim: false,
@@ -73,7 +74,8 @@ export const macroConversationProvider:
         const cache: MacroConversationCache = {
             macros: {}
         }
-        await businessUtils.useEntriesList<PresetMacroModel>(slot.presets, enginePlural,
+        await businessUtils.useEntriesList<PresetMacroModel, PresetModel>(
+            slot.presets, enginePlural,
             async (entry) => {
                 const item = cache.macros[entry.key] ??= {
                     key: entry.key,
