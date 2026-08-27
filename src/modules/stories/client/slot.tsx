@@ -11,10 +11,11 @@ import {SlotModel} from "@/modules/stories/models";
 import {slotContext} from "@/modules/stories/client/context";
 import {HistoryPagerButtonGroup, useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {OutputPagerButtonGroup} from "@/modules/stories/client/output-pager";
-import {HistoryChatbox} from "@/modules/stories/client/history-chatbox";
+import {GenerateTips, HistoryChatbox} from "@/modules/stories/client/history-chatbox";
 import {slotFeatureManager} from "@/modules/stories/client/feature";
 import {Button} from "@/components/ui/button";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+
 
 interface LoadingState {
     // 加载中
@@ -101,7 +102,7 @@ export default function StoryPageContent({params}: { params: Promise<{ id: strin
     return (<>
         {/* key不要删除。发布后，如果没有这个key，会导致引用有问题，原因不明，开发环境无此问题。 */}
         <iframe key={1} ref={iframe} width={'100%'} height={'100%'}/>
-
+        <GenerateTips/>
         <div className="fixed inset-0 top-auto min-h-20 sc-dc">
             <div className={`flex-col gap-2 p-2 ${pinned ? "flex" : "sc-dc-flex"}`}>
                 <fieldset className={"m-auto flex justify-center flex-wrap gap-2"}

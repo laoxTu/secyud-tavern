@@ -79,8 +79,8 @@ async function callTools(
     const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
 
     let aborted = false;
-    useStoryChatboxState.getState()
-        .setAbort(() => aborted = true);
+    const {setAbort, setGenerateInfo} = useStoryChatboxState.getState();
+    setAbort(() => aborted = true);
     for (const toolCall of toolCalls.filter(u => !u.result)) {
         if (aborted) break;
         try {
@@ -89,6 +89,10 @@ async function callTools(
             if (tool) {
                 console.debug(`[tool]: `, tool.model.name);
                 const args = JSON.parse(toolCall.arguments);
+                setGenerateInfo({
+                    title: "slot.calling_tool",
+                    content: toolCall.name,
+                });
                 toolCall.result = await tool.invoke(args);
             } else {
                 toolCall.result = {

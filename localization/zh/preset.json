@@ -57,6 +57,7 @@
   },
   "slot": {
     "back_home_tip": "回到主页",
+    "calling_tool": "工具调用",
     "content_already_initialized": "插槽缓存已存在：{key}",
     "content_not_initialized": "插槽缓存未初始化：{key}",
     "create_chat": "创建",
@@ -66,7 +67,10 @@
     "delete_output_tip": "删除当前回复",
     "edit_history": "编辑历史",
     "edit_history_tip": "编辑当前历史",
+    "generating": "生成内容中",
+    "generating_tool": "调用工具中",
     "input": "用户输入",
+    "input_processing": "处理输入",
     "input_viewer": "上下文",
     "input_viewer_tip": "查看上下文",
     "is_output_warning": "当前正在输出中，无法操作",
@@ -76,6 +80,7 @@
     "output": "AI输出",
     "pin_chatbox": "固定聊天框",
     "regenerate_reply_tip": "重新生成",
+    "thinking": "思考中",
     "unpin_chatbox": "取消固定聊天框",
     "variable": "变量",
     "variable_invalid_json": "变量格式错误"
