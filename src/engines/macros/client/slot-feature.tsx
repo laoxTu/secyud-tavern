@@ -14,70 +14,34 @@ import {Separator} from "@/components/ui/separator";
 import {Checkbox} from "@/components/ui/checkbox";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {slotContext} from "@/modules/stories/client/context";
-import {create} from "zustand";
-import {createJSONStorage, persist} from "zustand/middleware";
 import {intersperse} from "@/utils";
 import {TextToolTip} from "@/components/custom/text-tool-tip";
+import {StoryModel} from "@/modules/stories/models";
+import {businessUtils} from "@/business/models";
 
 export interface MacroSelectorState {
     checkItems: Record<string, boolean>,
-    selections: Record<string, string>,
-    getSelection: (key: string) => string,
-    getCheckItem: (key: string) => boolean,
-    setSelection: (key: string, value: string) => void,
-    setCheckItem: (key: string, value: boolean) => void,
+    selections: Record<string, string | undefined>,
 }
 
-export const useMacroSelectorState = create<MacroSelectorState>()(
-    persist((set, get) => {
-            return {
-                checkItems: {},
-                selections: {},
-                getSelection: (key) => {
-                    return get().selections[key];
-                },
-                getCheckItem: (key) => {
-                    return get().checkItems[key];
-                },
-                setSelection: (key, value) => {
-                    set({
-                        selections: {
-                            ...get().selections,
-                            [key]: value
-                        }
-                    });
-                },
-                setCheckItem(key, value) {
-                    set({
-                        checkItems: {
-                            ...get().checkItems,
-                            [key]: value
-                        }
-                    });
-                }
-            };
-        },
-        {
-            name: "macro_select",
-            storage: createJSONStorage(() => localStorage),
-            partialize: (state) => ({
-                checkItems: state.checkItems,
-                selections: state.selections,
-            }),
-        }
-    )
-);
+export function getMacroSelectorState(model: StoryModel) {
+    return businessUtils.getContent<MacroSelectorState>(model, enginePlural,
+        () => ({checkItems: {}, selections: {}}));
+}
 
 
 export function MacroSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
     const {handleError} = useErrorHandler();
-    const {setSelection, setCheckItem} = useMacroSelectorState();
+    const {checkItems, selections} = getMacroSelectorState(slotContext.slotData.slot);
 
-    const handleDialogOpen = () => {
+    const handleDialogOpen = async (open: boolean) => {
         try {
-            setOpen(true);
+            setOpen(open);
+            if (!open) {
+                await slotContext.saveContent();
+            }
         } catch (error) {
             handleError(error);
         }
@@ -85,7 +49,7 @@ export function MacroSelector() {
     const handleSelectChange = (item: MacroConversationCacheItem, id: string) => {
         try {
             const entry = item.singles[id];
-            setSelection(item.key, entry.id!)
+            selections[item.key] = entry.id;
             item.select = id;
         } catch (error) {
             handleError(error);
@@ -94,16 +58,20 @@ export function MacroSelector() {
     const handleCheckItemChange = (entry: PresetMacroModel, checked: boolean) => {
         try {
             entry.disabled = !checked;
-            setCheckItem(entry.id!, checked);
+            if (!entry.id) {
+                console.error(`[macro]: entry id is null`);
+                return;
+            }
+            checkItems[entry.id] = checked;
         } catch (error) {
             handleError(error);
         }
     };
 
-    return (<Dialog open={open} onOpenChange={setOpen}>
+    return (<Dialog open={open} onOpenChange={handleDialogOpen}>
         <DialogTrigger render={<Tooltip/>}>
             <Tooltip>
-                <TooltipTrigger onClick={() => open ? setOpen(false) : handleDialogOpen()}
+                <TooltipTrigger onClick={() => handleDialogOpen(!open)}
                                 render={<Button variant="outline"/>}>
                     <ListIcon/>
                 </TooltipTrigger>

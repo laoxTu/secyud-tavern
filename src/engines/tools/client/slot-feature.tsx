@@ -8,70 +8,54 @@ import {Field, FieldContent, FieldDescription, FieldGroup, FieldLabel} from "@/c
 import {useErrorHandler} from "@/handler/client/error";
 import {SlotFeature} from "@/modules/stories/client/feeature-models";
 import {Checkbox} from "@/components/ui/checkbox";
-import {create} from "zustand";
-import {createJSONStorage, persist} from "zustand/middleware";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {slotContext} from "@/modules/stories/client/context";
 import {ToolConversationCache} from "@/engines/tools/client/conversation";
 import {enginePlural} from "@/engines/tools/models";
 import {LlmapiTool} from "@/engines/tools/client/models";
 import {TextToolTip} from "@/components/custom/text-tool-tip";
+import {StoryModel} from "@/modules/stories/models";
+import {businessUtils} from "@/business/models";
 
 export interface ToolSelectorState {
     // 这个因为一开始都是勾选的，直接存disabled
-    checkItems: Record<string, true | undefined>,
-    setCheckItem: (key: string, value: boolean) => void,
+    items: Record<string, boolean>,
 }
 
-export const useToolSelectorState = create<ToolSelectorState>()(
-    persist((set, get) => {
-            return {
-                checkItems: {},
-                setCheckItem(key, value) {
-                    set({
-                        checkItems: {
-                            ...get().checkItems,
-                            [key]: value ? true : undefined,
-                        }
-                    });
-                }
-            };
-        },
-        {
-            name: "tool_select",
-            storage: createJSONStorage(() => localStorage),
-            partialize: (state) => ({
-                checkItems: state.checkItems,
-            }),
-        }
-    )
-);
+export function getToolSelectorState(model: StoryModel) {
+    return businessUtils.getContent<ToolSelectorState>(model, enginePlural,
+        () => ({items: {}}));
+}
 
 export function ToolSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
     const {handleError} = useErrorHandler();
-    const {setCheckItem} = useToolSelectorState();
-    const handleDialogOpen = () => {
+    const {items} = getToolSelectorState(slotContext.slotData.slot);
+    const handleDialogOpen = async (open: boolean) => {
         try {
-            setOpen(true);
-        } catch (error) {
-            handleError(error);
-        }
-    };
-    const handleCheckItemChange = (entry: LlmapiTool, checked: boolean) => {
-        try {
-            entry.disabled = !checked;
-            setCheckItem(entry.model.name, !checked);
+            setOpen(open);
+            if (!open) {
+                await slotContext.saveContent();
+            }
         } catch (error) {
             handleError(error);
         }
     };
 
-    return (<Dialog open={open} onOpenChange={setOpen}>
+    const handleCheckItemChange = (entry: LlmapiTool, checked: boolean) => {
+        try {
+            entry.disabled = !checked;
+            items[entry.model.name] = checked;
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    return (<Dialog open={open} onOpenChange={handleDialogOpen}>
         <DialogTrigger render={<Tooltip/>}>
             <Tooltip>
-                <TooltipTrigger onClick={() => open ? setOpen(false) : handleDialogOpen()}
+                <TooltipTrigger onClick={() => handleDialogOpen(!open)}
                                 render={<Button variant="outline"/>}>
                     <ToolboxIcon/>
                 </TooltipTrigger>

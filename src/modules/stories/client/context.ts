@@ -73,6 +73,15 @@ async function setHistory(index?: number, slot?: SlotModel) {
     );
 }
 
+async function saveContent(slot?: SlotModel) {
+    slot ??= slotInstance.get();
+    await put('/stories/{id}', {
+            content: slot.content,
+        },
+        {params: {id: slot?.id}},
+    );
+}
+
 function postMessage(type: string, data: any) {
     const window = instance.iframe?.current?.contentWindow;
     if (!window) {
@@ -115,6 +124,7 @@ export const slotContext =
                 return instance.iframe?.current?.contentDocument ?? null;
             },
         },
+        saveContent,
         setHistory,
         getHistory,
         postMessage,

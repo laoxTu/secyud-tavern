@@ -10,8 +10,8 @@ import {BusinessError, Check} from "@/handler/models";
 export const apiConfig: TemplateConfig<PresetModel> = {
     repository: presetRepository,
     checkCreate: async (model) => {
-        Check.NotEmpty('code', model.code);
-        Check.NotEmpty('name', model.name);
+        Check.NotNullOrWhitespace('code', model.code);
+        Check.NotNullOrWhitespace('name', model.name);
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -20,9 +20,12 @@ export const apiConfig: TemplateConfig<PresetModel> = {
         }
     },
     checkUpdate: async (id, model) => {
-        Check.NotEmpty('code', model.code);
-        Check.NotEmpty('name', model.name);
-        if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
+        Check.NotWhitespace('code', model.code);
+        Check.NotWhitespace('name', model.name);
+        if (model.code && await repository
+            .exist(e => (and(
+                eq(e.code, model.code),
+                not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
                 .withValue("entity_name", "default.preset")

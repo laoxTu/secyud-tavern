@@ -13,8 +13,8 @@ import {engineName as regexEngineName} from "@/engines/regexes/models"
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {businessUtils} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
-import {useMacroSelectorState} from "@/engines/macros/client/slot-feature";
 import {BusinessError} from "@/handler/models";
+import {getMacroSelectorState} from "@/engines/macros/client/slot-feature";
 
 const eta = new Eta({
     autoTrim: false,
@@ -80,7 +80,7 @@ export const macroConversationProvider:
         const cache: MacroConversationCache = {
             macros: {}
         }
-        const {checkItems, selections} = useMacroSelectorState.getState();
+        const {checkItems, selections} = getMacroSelectorState(slot);
         await businessUtils.useEntriesList<PresetMacroModel, PresetModel>(
             slot.presets, enginePlural, m => m.code,
             async (entry) => {

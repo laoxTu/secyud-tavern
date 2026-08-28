@@ -14,7 +14,7 @@ import {BusinessError} from "@/handler/models";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
 import {businessUtils} from "@/business/models";
 import {PresetModel} from "@/modules/presets/models";
-import {useToolSelectorState} from "@/engines/tools/client/slot-feature";
+import {getToolSelectorState} from "@/engines/tools/client/slot-feature";
 
 export interface ToolConversationCache {
     tools: Record<string, LlmapiTool>;
@@ -32,7 +32,7 @@ export const toolConversationProvider:
         const cache: ToolConversationCache = {
             tools: {},
         };
-        const {checkItems} = useToolSelectorState.getState();
+        const {items} = getToolSelectorState(slot);
         await businessUtils.useEntriesList<PresetToolConfigModel, PresetModel>(
             slot.presets, enginePlural, m => m.code,
             async (entry) => {
@@ -46,8 +46,8 @@ export const toolConversationProvider:
                 try {
                     const tools = await provider.create(entry, slot);
                     for (const tool of tools) {
-                        const checked = checkItems[tool.model.name];
-                        if (checked) tool.disabled = true;
+                        const checked = items[tool.model.name];
+                        if (checked !== undefined) tool.disabled = !checked;
                         cache.tools[tool.model.name] = tool;
                     }
                 } catch (error) {

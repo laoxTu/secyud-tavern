@@ -80,13 +80,12 @@ export function HistoryDeleter() {
             const {slot} = slotContext.slotData;
             const llmapi = slot.llmapi;
             const story: StoryModel = {
-                id: "",
+                id: slot.id,
                 content: slot.content,
                 name: slot.name,
                 requires: slot.requires,
                 llmapi: convertToRequire(llmapi)
             }
-            const {id} = await post("/stories", story);
             if (!remain) {
                 await del("/stories/{id}", {
                     params: {
@@ -94,6 +93,7 @@ export function HistoryDeleter() {
                     }
                 })
             }
+            const {id} = await post("/stories", story);
             router.push(`/business/stories/${id}`);
         } catch (e) {
             handleError(e);

@@ -40,7 +40,7 @@ export interface ImageFile {
 async function useEntries<TEntry extends EntryModel, TModel extends BaseModel>(
     model: TModel, name: string, modelId: (model: TModel) => string,
     action: (item: TEntry, model: TModel) => Promise<void>): Promise<void> {
-    const entries: TEntry[] | undefined = model.entries?.[name];
+    const entries = getEntries<TEntry>(model, name);
     if (!entries?.length) return;
     for (const entry of entries) {
         entry.id ??= `${modelId(model)}.${entry.entryId}`;
@@ -56,4 +56,23 @@ async function useEntriesList<TEntry extends EntryModel, TModel extends BaseMode
     }
 }
 
-export const businessUtils = {useEntries, useEntriesList};
+function getEntries<TEntry extends EntryModel>(
+    model: BaseModel, key: string): TEntry[] | undefined {
+    return model.entries?.[key];
+}
+
+function getContent<T>(model: BaseModel, key: string): T | undefined;
+// 重载签名2：有 init，返回 T（一定存在）
+function getContent<T>(model: BaseModel, key: string, init: () => T): T;
+
+function getContent<T>(model: BaseModel, key: string, init?: () => T): T | undefined {
+    let value: T | undefined = model.content[key];
+    if (!value && init) {
+        value = init();
+        model.content[key] = value;
+    }
+
+    return value;
+}
+
+export const businessUtils = {useEntries, useEntriesList, getEntries, getContent};
