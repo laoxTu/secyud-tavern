@@ -22,13 +22,15 @@ export interface BaseModel {
     content: Record<string, any>,
 }
 
-export type ModelCreate<T extends BaseModel> = Omit<T, 'id'>;
+export type ModelOperation<T extends BaseModel> = Omit<T, 'id'>;
 
+export interface DisableModel {
+    disabled: boolean,
+}
 
-export interface EntryModel {
+export interface EntryModel extends DisableModel {
     id?: string, // 只在slot中用
     entryId: number,
-    disabled: boolean,
     // 编码，同预设下唯一
     code: string,
     // 名称

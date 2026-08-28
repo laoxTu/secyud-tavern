@@ -14,7 +14,7 @@ import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {submitTargetFormOnKey} from "@/business/client";
-import {PagedResult} from "@/business/models";
+import {ModelOperation, PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {rowHalf, rowQuat, spanHalf} from "@/components/custom/grid-field";
@@ -100,8 +100,7 @@ export function DefaultTab() {
                         'default.json_invalid')
                         .withValue("target", "default.variables");
 
-
-                return await put("/presets/{id}",
+                await put<ModelOperation<PresetModel>>("/presets/{id}",
                     {
                         content: {
                             opening: data.get("opening"),

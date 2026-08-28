@@ -40,17 +40,14 @@ export function ModelUpdate<TModel extends BaseModel>(
     const {fetch} = usePagedItemsState();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const refresh = async () => {
-        await setModel(model?.id);
-        await fetch();
-    }
-
     const handleUpdate = async (data: FormData) => {
         try {
             if (model) {
                 await updateHandler(model, data);
                 handleSuccess(t("default.saved_successfully"));
-                await refresh();
+                await setModel(model?.id);
+                // 刷新列表是为了刷新名称之类的item项
+                await fetch();
             }
         } catch (error) {
             handleError(error);

@@ -13,7 +13,7 @@ import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
 import {Selector} from "@/components/custom/selector";
 import {customCreateElement} from "@/components/custom";
-import {EntryOperation} from "@/business/models";
+import {DisableModel, EntryOperation} from "@/business/models";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
@@ -90,15 +90,16 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled', {
-                        disabled,
-                    }, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
+                    await put<DisableModel>(
+                        '/comfyuis/workflows/{id}/entries/{entryType}/{entryId}/disabled', {
+                            disabled,
+                        }, {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 deleteHandler: async entry => {
                     await del('/comfyuis/workflows/{id}/entries/{entryType}/{entryId}', {
