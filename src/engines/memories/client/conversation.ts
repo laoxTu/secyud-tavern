@@ -59,21 +59,10 @@ async function createInjectHandler(
                 }
             }
             if (!keyMemories.length) return;
-            const callings: SlotCalling[] = [{
-                index: 0,
-                id: `${toolName(simulation++)}m`,
-                name: getKnowledgeTool.info.name,
-                arguments: getKnowledgeTool.args({
-                    type: "memory"
-                }),
-                result: {
-                    content: joinAsString(keyMemories, "\n",
-                        u => u.name),
-                }
-            }];
+            const callings: SlotCalling[] = [];
             if (newMemories.length) {
                 callings.push({
-                    index: 1,
+                    index: callings.length,
                     id: `${toolName(simulation++)}m`,
                     name: getKnowledgeTool.info.name,
                     arguments: getKnowledgeTool.args({
@@ -85,6 +74,18 @@ async function createInjectHandler(
                     }
                 })
             }
+            callings.push({
+                index: callings.length,
+                id: `${toolName(simulation++)}m`,
+                name: getKnowledgeTool.info.name,
+                arguments: getKnowledgeTool.args({
+                    type: "memory"
+                }),
+                result: {
+                    content: joinAsString(keyMemories, "\n",
+                        u => u.name),
+                }
+            })
             pushToolMessage(callings);
         }
     }
