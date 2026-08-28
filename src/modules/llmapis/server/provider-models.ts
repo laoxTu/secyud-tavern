@@ -9,5 +9,5 @@ export interface LlmapiRequestContext {
 }
 
 export interface LlmapiProvider extends Registerable {
-    run(context: LlmapiRequestContext, stream: boolean): Promise<any>,
+    run(context: LlmapiRequestContext, stream: boolean): Promise<AsyncIterable<any> | Record<string, any>>,
 }

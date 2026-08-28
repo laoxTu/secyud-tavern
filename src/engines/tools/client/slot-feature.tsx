@@ -32,6 +32,7 @@ export function ToolSelector() {
     const [open, setOpen] = React.useState(false);
     const {handleError} = useErrorHandler();
     const {items} = getToolSelectorState(slotContext.slotData.slot);
+    const [key, setKey] = React.useState(0);
     const handleDialogOpen = async (open: boolean) => {
         try {
             setOpen(open);
@@ -47,6 +48,7 @@ export function ToolSelector() {
         try {
             entry.disabled = !checked;
             items[entry.model.name] = checked;
+            setKey(u => u + 1);
         } catch (error) {
             handleError(error);
         }
@@ -75,7 +77,8 @@ export function ToolSelector() {
                     .map(u => (
                         <Field key={u.model.name}>
                             <FieldContent className={'flex-row'}>
-                                <Checkbox id={`tool-${u.model.name}`}
+                                <Checkbox key={key}
+                                          id={`tool-${u.model.name}`}
                                           checked={!u.disabled}
                                           onCheckedChange={b => handleCheckItemChange(u, b)}/>
                                 <FieldLabel htmlFor={`tool-${u.model.name}`}
