@@ -135,7 +135,7 @@ function getOpening(slot: SlotModel) {
             variables = mergeObjects(variables, preset.content.variables);
         }
         openingHistory = {
-            id: 0,
+            entryId: 0,
             code: "opening history",
             name: "0",
             disabled: false,

@@ -2,7 +2,7 @@ import {EntryModel} from "@/business/models";
 import {setContent, SlotMessageInput, SlotMessageOutput} from "@/modules/models/message";
 import {patch} from "@/utils/json-patch";
 
-export interface SlotHistory extends EntryModel {
+export interface SlotHistory extends Omit<EntryModel, "id"> {
     outputId: number;
     summary: boolean;
     variables: Record<string, any>;

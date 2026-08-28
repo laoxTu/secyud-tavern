@@ -58,7 +58,7 @@ export const useComfyUISettingState = create<ComfyUISettingState>()(
             modelDir: "",
         }),
         {
-            name: "comfyuiSettingState",
+            name: "comfyui_setting",
             storage: createJSONStorage(() => remoteStorage),
             partialize: (state) => ({
                 baseUrl: state.baseUrl,

@@ -98,7 +98,7 @@ export class SubAgentTool implements LlmapiTool {
             histories.push({
                 code: "",
                 disabled: false,
-                id: 0,
+                entryId: 0,
                 inputs: [],
                 name: "",
                 outputId: 0,
@@ -128,18 +128,18 @@ export class SubAgentTool implements LlmapiTool {
             if (curThoughtLen !== thoughtLen) {
                 thoughtLen = curThoughtLen;
                 setGenerateInfo({
-                    content: `${thoughtLen} chars`,
+                    content: `${thoughtLen}`,
                     title: "sub_agent.thinking",
                 });
             } else if (curToolArgLen !== toolArgLen) {
                 toolArgLen = curToolArgLen;
                 setGenerateInfo({
-                    content: `${toolArgLen} chars`,
+                    content: `${toolArgLen}`,
                     title: "sub_agent.generating_tool",
                 });
             } else {
                 setGenerateInfo({
-                    content: `${output.content.length} chars`,
+                    content: `${output.content.length}`,
                     title: "sub_agent.generating",
                 });
             }

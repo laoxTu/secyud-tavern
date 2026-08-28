@@ -19,11 +19,11 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const config = entry.config as PowerLoraSelectorConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <InputComponent entry={entry} formRef={formRef}/>
     </>;
@@ -37,14 +37,14 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
     return <>
         <Field className={spanHalf}>
-            <FieldLabel htmlFor={`${engineName}-count-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-count-${entry.entryId}`}>
                 {`${entry.name} ${t("comfyui.lora_count")}`}
             </FieldLabel>
-            <Input name={`count_${entry.id}`} type={"number"}
+            <Input name={`count_${entry.entryId}`} type={"number"}
                    value={count}
                    onChange={u => setCount(parseInt(u.target.value))}
                    min={0} max={10} step={1}
-                   id={`${engineName}-count-${entry.id}`}/>
+                   id={`${engineName}-count-${entry.entryId}`}/>
         </Field>
 
         {Array.from({length: count}, (_, index) => {
@@ -54,14 +54,14 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
             return (
                 <React.Fragment key={index}>
                     <Field key={`${index}-lora`}>
-                        <FieldLabel htmlFor={`${engineName}-lora-${entry.id}-${index}`}>
+                        <FieldLabel htmlFor={`${engineName}-lora-${entry.entryId}-${index}`}>
                             {`${entry.name} ${t("comfyui.lora")} ${index + 1}`}
-                            <Checkbox name={`lora_on_${entry.id}_${index}`}
+                            <Checkbox name={`lora_on_${entry.entryId}_${index}`}
                                       defaultChecked={lora?.on ?? true}/>
                         </FieldLabel>
 
                         <RemoteSearchCombobox
-                            name={`lora_${entry.id}_${index}`} id={`${engineName}-lora-${entry.id}-${index}`}
+                            name={`lora_${entry.entryId}_${index}`} id={`${engineName}-lora-${entry.entryId}-${index}`}
                             defaultValue={path ? {
                                 id: "",
                                 type: "",
@@ -91,13 +91,13 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                             }}/>
                     </Field>
                     <Field key={`${index}-strength`}>
-                        <FieldLabel htmlFor={`${engineName}-lora_strength-${entry.id}-${index}`}>
+                        <FieldLabel htmlFor={`${engineName}-lora_strength-${entry.entryId}-${index}`}>
                             {`${t("comfyui.strength")} ${index + 1}`}
                         </FieldLabel>
-                        <Input name={`lora_strength_${entry.id}_${index}`} type={"number"}
+                        <Input name={`lora_strength_${entry.entryId}_${index}`} type={"number"}
                                defaultValue={lora?.strength ?? 1}
                                min={-10} max={10} step={0.05}
-                               id={`${engineName}-lora_strength-${entry.id}-${index}`}/>
+                               id={`${engineName}-lora_strength-${entry.entryId}-${index}`}/>
                     </Field>
                 </React.Fragment>
             );

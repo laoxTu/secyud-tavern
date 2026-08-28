@@ -50,7 +50,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                     return {...entry, disabled};
@@ -60,7 +60,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     })
                 },
@@ -89,7 +89,7 @@ function Tab() {
                         params: {
                             id: model?.id,
                             entryType: engineName,
-                            entryId: entry.id
+                            entryId: entry.entryId
                         }
                     });
                     return result;
@@ -97,45 +97,45 @@ function Tab() {
                 updateContent: (entry) => (
                     <>
                         <Field>
-                            <FieldLabel htmlFor={`${engineName}-code-${entry.id}`}>
+                            <FieldLabel htmlFor={`${engineName}-code-${entry.entryId}`}>
                                 {t("default.code")}
                             </FieldLabel>
                             <Input name="code"
-                                   id={`${engineName}-code-${entry.id}`}
+                                   id={`${engineName}-code-${entry.entryId}`}
                                    defaultValue={entry.code ?? ""}/>
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor={`${engineName}-name-${entry.id}`}>
+                            <FieldLabel htmlFor={`${engineName}-name-${entry.entryId}`}>
                                 {t("default.name")}
                             </FieldLabel>
                             <Input name="name"
-                                   id={`${engineName}-name-${entry.id}`}
+                                   id={`${engineName}-name-${entry.entryId}`}
                                    defaultValue={entry.name ?? ""}/>
                         </Field>
                         <Field className={spanHalf + " row-span-8"}>
-                            <FieldLabel htmlFor={`${engineName}-replacement-${entry.id}`}>
+                            <FieldLabel htmlFor={`${engineName}-replacement-${entry.entryId}`}>
                                 {t("regex.replacement")}
                             </FieldLabel>
                             <Textarea name="replacement"
-                                      id={`${engineName}-replacement-${entry.id}`}
+                                      id={`${engineName}-replacement-${entry.entryId}`}
                                       defaultValue={entry.replacement}
                                       onKeyDown={submitTargetFormOnKey}/>
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor={`${engineName}-target-${entry.id}`}>
+                            <FieldLabel htmlFor={`${engineName}-target-${entry.entryId}`}>
                                 {t("regex.target")}
                             </FieldLabel>
-                            <Selector name={'target'} id={`${engineName}-target-${entry.id}`}
+                            <Selector name={'target'} id={`${engineName}-target-${entry.entryId}`}
                                       defaultValue={entry.target ?? null}
                                       items={regexTargets}
                                       labelAccessor={e => t(`regex.target_${e}`)}/>
                         </Field>
                         <Field className={spanHalf}>
-                            <FieldLabel htmlFor={`${engineName}-pattern-${entry.id}`}>
+                            <FieldLabel htmlFor={`${engineName}-pattern-${entry.entryId}`}>
                                 {t("regex.pattern")}
                             </FieldLabel>
                             <Input name="pattern"
-                                   id={`${engineName}-pattern-${entry.id}`}
+                                   id={`${engineName}-pattern-${entry.entryId}`}
                                    defaultValue={entry.pattern}/>
                         </Field>
                     </>)

@@ -16,13 +16,13 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-lastMessage-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-lastMessage-${entry.entryId}`}>
                     {t("lorebook.last_message")}
                 </FieldLabel>
                 <FieldContent>
                     <Checkbox name={"lastMessage"}
                               key={model.lastMessage ? 1 : 0}
-                              id={`${engineName}-lastMessage-${entry.id}`}
+                              id={`${engineName}-lastMessage-${entry.entryId}`}
                               defaultChecked={model.lastMessage}/>
                 </FieldContent>
             </Field>

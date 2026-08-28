@@ -229,7 +229,7 @@ export class MemorySetTool implements LlmapiTool {
         });
         const entry: StoryMemoryModel = {
             disabled: false,
-            id: 0,
+            entryId: 0,
             code: uuidv4(),
             name: title,
             importance,
@@ -239,17 +239,17 @@ export class MemorySetTool implements LlmapiTool {
             type,
         };
 
-        const {id} = await post("/stories/{id}/entries/{entryType}",
+        const {entryId} = await post("/stories/{id}/entries/{entryType}",
             entry, {
                 params: {
                     id: this.slot.id,
                     entryType: engineName,
                 }
             });
-        entry.id = id;
-        cache.memories[id] = entry;
+        entry.entryId = entryId;
+        cache.memories[entryId] = entry;
         await insert(database, {
-            entryId: entry.id,
+            entryId: entry.entryId,
             code: entry.code,
             tags: entry.tags,
             type: entry.type,

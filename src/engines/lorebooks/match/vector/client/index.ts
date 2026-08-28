@@ -15,8 +15,8 @@ export const vectorMatcher: Matcher =
         match: async (context, lorebook) => {
             if (!context.cache.rag) return false;
             const {properties} = context;
-            let lorebookNames: Set<string> = properties[propertyName];
-            if (!lorebookNames) {
+            let ids: Set<string | undefined> = properties[propertyName];
+            if (!ids) {
                 const content = matchUtils.getContent(context);
                 const {generator, database} = context.cache.rag;
                 const embedding = await generator.generateEmbedding({
@@ -34,11 +34,11 @@ export const vectorMatcher: Matcher =
                     similarity: 0.75
                 });
                 console.debug("[lorebook](results): ", results);
-                lorebookNames = new Set(results.hits
+                ids = new Set(results.hits
                     .map(u => u.document.name));
-                properties[propertyName] = lorebookNames;
+                properties[propertyName] = ids;
             }
 
-            return lorebookNames.has(lorebook.code);
+            return ids.has(lorebook.id);
         }
     } as const;

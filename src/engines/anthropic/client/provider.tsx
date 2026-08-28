@@ -141,7 +141,7 @@ export async function generateOutput(context: LlmapiOutputContext) {
                     message.thought += delta.thinking;
                     break;
                 case "input_json_delta":
-                    if (message.callings) {
+                    if (message.callings?.length) {
                         const calling = message.callings.at(-1)!;
                         calling.arguments += delta.partial_json;
                     }

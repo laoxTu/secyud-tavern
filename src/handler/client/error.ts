@@ -4,6 +4,26 @@ import {toast} from "sonner";
 import {useTranslations} from "next-intl";
 import {BusinessError} from "@/handler/models";
 
+export function isNetworkError(error: unknown): boolean {
+    if (error instanceof TypeError) {
+        const message = error.message.toLowerCase();
+        return message.includes('network')
+            || message.includes('fetch')
+            || message.includes('load failed');
+    }
+    return false;
+}
+
+export function isAbortError(error: unknown): boolean {
+    return error instanceof DOMException && error.name === 'AbortError';
+}
+
+export function isHttpError(error: unknown): boolean {
+    // 假设 error 有 status 或 response.status
+    const status = (error as any)?.response?.status || (error as any)?.status;
+    return typeof status === 'number' && status >= 400;
+}
+
 export function useErrorHandler() {
     const t = useTranslations();
 
@@ -29,6 +49,12 @@ export function useErrorHandler() {
             toast.error(err.message, {
                 richColors: true,
             });
+        } else if (isNetworkError(err)) {
+            // 网络错误 → 静默处理
+            console.error(err);
+        } else if (isHttpError(err)) {
+            // HTTP 错误 → 根据状态码处理
+            console.error(err);
         } else {
             throw err;
         }

@@ -14,18 +14,18 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const config = entry.config as NumberEditorConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.entryId}`}>
                 {t("comfyui.node_name")}
             </FieldLabel>
             <Input name={"node_name"} defaultValue={config?.nodeName}
-                   id={`${engineName}-node_name-${entry.id}`}/>
+                   id={`${engineName}-node_name-${entry.entryId}`}/>
         </Field>
         <InputComponent entry={entry} formRef={formRef}/>
     </>;
@@ -36,7 +36,7 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const [value, setValue] = React.useState(config?.defaultValue ?? 0);
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-number-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-number-${entry.entryId}`}>
                 {entry.name}
                 <Button variant={"ghost"} size={'icon'}
                         onClick={() => {
@@ -45,8 +45,8 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
                     <DicesIcon/>
                 </Button>
             </FieldLabel>
-            <Input id={`${engineName}-number-${entry.id}`}
-                   name={`number_${entry.id}`}
+            <Input id={`${engineName}-number-${entry.entryId}`}
+                   name={`number_${entry.entryId}`}
                    type="number"
                    value={value}
                    onChange={(e) => {

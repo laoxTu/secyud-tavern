@@ -39,7 +39,7 @@ const useSlotControlState =
                 setPinned: pinned => set({pinned})
             };
         }, {
-            name: "slot-control-state",
+            name: "slot_control",
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 pinned: state.pinned,

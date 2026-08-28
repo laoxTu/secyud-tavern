@@ -42,7 +42,7 @@ export function InputViewer() {
             const history: SlotHistory = {
                 code: "",
                 disabled: false,
-                id: 0,
+                entryId: 0,
                 inputs: [
                     messageUtils.setContent({
                         content: "",

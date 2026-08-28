@@ -16,18 +16,18 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
     }, defaultValue)
     return (<>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-path-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-path-${entry.entryId}`}>
                     {t("default.path")}
                 </FieldLabel>
-                <Input id={`${engineName}-path-${entry.id}`}
+                <Input id={`${engineName}-path-${entry.entryId}`}
                        name={`match_path`}
                        defaultValue={model.path}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}`}>
                     {t("default.value")}
                 </FieldLabel>
-                <Input id={`${engineName}-value-${entry.id}`}
+                <Input id={`${engineName}-value-${entry.entryId}`}
                        name={`match_value`}
                        defaultValue={model.value}/>
             </Field>

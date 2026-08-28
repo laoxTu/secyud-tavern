@@ -59,7 +59,7 @@ export class UrlFetchTool implements LlmapiTool {
         }
 
         return {
-            content: joinAsString(results, "\r\n\r\n", u => `${u.url}\r\n${u.content ?? u.error}`),
+            content: joinAsString(results, "\n", u => `${u.url}\r\n${u.content ?? u.error}`),
         };
     }
 }

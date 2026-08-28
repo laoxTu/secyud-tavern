@@ -19,8 +19,29 @@
 }
 
 export class Check {
-    static NotEmpty<T>(fieldName: string, value?: T | null, namespace?: string) {
+    static NotNullOrEmpty<T>(fieldName: string, value?: T | null, namespace?: string) {
         if (!value) {
+            throw new BusinessError(`No ${fieldName} provided`, "error.empty_field")
+                .withValue("field", `${namespace ?? "default"}.${fieldName}`);
+        }
+    }
+
+    static NotNullOrWhitespace<T>(fieldName: string, value?: string | null, namespace?: string) {
+        if (!value?.trim()) {
+            throw new BusinessError(`No ${fieldName} provided`, "error.empty_field")
+                .withValue("field", `${namespace ?? "default"}.${fieldName}`);
+        }
+    }
+
+    static NotEmpty(fieldName: string, value?: string | null, namespace?: string) {
+        if (value === "") {
+            throw new BusinessError(`No ${fieldName} provided`, "error.empty_field")
+                .withValue("field", `${namespace ?? "default"}.${fieldName}`);
+        }
+    }
+
+    static NotWhitespace(fieldName: string, value?: string | null, namespace?: string) {
+        if (value?.trim() === "") {
             throw new BusinessError(`No ${fieldName} provided`, "error.empty_field")
                 .withValue("field", `${namespace ?? "default"}.${fieldName}`);
         }

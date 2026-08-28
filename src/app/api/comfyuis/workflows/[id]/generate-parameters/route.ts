@@ -29,7 +29,7 @@ export const POST = interceptor.createRoute(
                 // 生成参数，positive，power lora， diffusion model 是必须的。回调也检测一下。
                 if (node.inputs["unet_name"]) {
                     await addParameter({
-                        disabled: false, id: 0, priority: 0,
+                        disabled: false, entryId: 0, priority: 0,
                         code: `diffusion_model_${nodeId}`,
                         name: "diffusion_model",
                         type: "model_selector",
@@ -44,7 +44,7 @@ export const POST = interceptor.createRoute(
                 if (node._meta.title.toLocaleLowerCase().startsWith("positive") &&
                     node.inputs["text"]) {
                     await addParameter({
-                        disabled: false, id: 0, priority: 0,
+                        disabled: false, entryId: 0, priority: 0,
                         code: `positive_prompt_${nodeId}`,
                         name: "positive_prompt",
                         type: "llm_text_editor",
@@ -66,7 +66,7 @@ export const POST = interceptor.createRoute(
                         }
                     }
                     await addParameter({
-                        disabled: false, id: 0, priority: 0,
+                        disabled: false, entryId: 0, priority: 0,
                         code: `power_lora_${nodeId}`,
                         name: "power_lora",
                         type: "power_lora_selector",
@@ -79,7 +79,7 @@ export const POST = interceptor.createRoute(
                 if (node.class_type === 'Form Post Request Node') {
 
                     await addParameter({
-                        disabled: false, id: 0, priority: 0,
+                        disabled: false, entryId: 0, priority: 0,
                         code: `callback_${nodeId}`,
                         name: "callback",
                         type: "image_callback",
@@ -94,12 +94,12 @@ export const POST = interceptor.createRoute(
                 const index = parameters.findIndex(u => u.code === parameter.code);
                 if (index >= 0) {
                     const exist = parameters[index];
-                    await comfyuiWorkflowRepository.entry.update(id, parameterEntryName, exist.id, parameter);
-                    parameter.id = exist.id;
+                    await comfyuiWorkflowRepository.entry.update(id, parameterEntryName, exist.entryId, parameter);
+                    parameter.entryId = exist.entryId;
                     parameters[index] = parameter;
                 } else {
                     parameters.push(parameter);
-                    parameter.id = await comfyuiWorkflowRepository.entry.create(id, parameterEntryName, parameter);
+                    parameter.entryId = await comfyuiWorkflowRepository.entry.create(id, parameterEntryName, parameter);
                 }
             }
         }

@@ -74,7 +74,7 @@ export async function generateMessageWithBuilder(
 
     async function generateInput(history: SlotHistory) {
         if (!history.inputs.length) return;
-        const input = joinAsString(history.inputs, "\r\n", u => u.content);
+        const input = joinAsString(history.inputs, "\n", u => u.content);
         const content = await generateContent(input, "user", "input");
         if (content) pushUserMessage(content)
     }
@@ -93,7 +93,7 @@ export function filterCallings(callings: SlotCalling[],
         const hidden = !!calling.result?.hidden;
         items.push({
             role: `tool: ${calling.name} ${hidden ? "hidden" : ""}`,
-            content: `${calling.id}\r\narguments: \r\n${calling.arguments}\r\nresponse: \r\n${calling.result?.content}`,
+            content: `${calling.id}\narguments: \n${calling.arguments}\nresponse: \n${calling.result?.content}`,
         });
         if (!enableHidden || !hidden) {
             tools.push(calling);

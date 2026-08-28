@@ -5,36 +5,57 @@ import {useTranslations} from "next-intl";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {Field, FieldContent, FieldDescription, FieldGroup, FieldLabel} from "@/components/ui/field";
-import {enginePlural} from "@/engines/tools/models";
-import {ToolConversationCache} from "@/engines/tools/client/conversation";
 import {useErrorHandler} from "@/handler/client/error";
 import {SlotFeature} from "@/modules/stories/client/feeature-models";
 import {Checkbox} from "@/components/ui/checkbox";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {slotContext} from "@/modules/stories/client/context";
+import {ToolConversationCache} from "@/engines/tools/client/conversation";
+import {enginePlural} from "@/engines/tools/models";
+import {LlmapiTool} from "@/engines/tools/client/models";
+import {TextToolTip} from "@/components/custom/text-tool-tip";
+import {StoryModel} from "@/modules/stories/models";
+import {businessUtils} from "@/business/models";
 
+export interface ToolSelectorState {
+    // 这个因为一开始都是勾选的，直接存disabled
+    items: Record<string, boolean>,
+}
+
+export function getToolSelectorState(model: StoryModel) {
+    return businessUtils.getContent<ToolSelectorState>(model, enginePlural,
+        () => ({items: {}}));
+}
 
 export function ToolSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
-    const [cache, setCache] = React.useState<ToolConversationCache | null>(null);
     const {handleError} = useErrorHandler();
-
-    const handleDialogOpen = () => {
+    const {items} = getToolSelectorState(slotContext.slotData.slot);
+    const handleDialogOpen = async (open: boolean) => {
         try {
-            const {slot} = slotContext.slotData;
-            const cache: ToolConversationCache = slotUtils.getProperty(slot, enginePlural);
-            setCache(cache);
-            setOpen(true);
+            setOpen(open);
+            if (!open) {
+                await slotContext.saveContent();
+            }
         } catch (error) {
             handleError(error);
         }
     };
 
-    return (<Dialog open={open} onOpenChange={setOpen}>
+    const handleCheckItemChange = (entry: LlmapiTool, checked: boolean) => {
+        try {
+            entry.disabled = !checked;
+            items[entry.model.name] = checked;
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    return (<Dialog open={open} onOpenChange={handleDialogOpen}>
         <DialogTrigger render={<Tooltip/>}>
             <Tooltip>
-                <TooltipTrigger onClick={() => open ? setOpen(false) : handleDialogOpen()}
+                <TooltipTrigger onClick={() => handleDialogOpen(!open)}
                                 render={<Button variant="outline"/>}>
                     <ToolboxIcon/>
                 </TooltipTrigger>
@@ -43,37 +64,27 @@ export function ToolSelector() {
                 </TooltipContent>
             </Tooltip>
         </DialogTrigger>
-        <DialogContent className={'flex flex-col overflow-hidden h-5/6'} style={{height: '86%'}}>
+        <DialogContent className={'flex flex-col overflow-hidden h-5/6'}
+                       style={{height: '86%'}}>
             <DialogHeader>
                 <DialogTitle>{t('tool.selector')}</DialogTitle>
             </DialogHeader>
             <FieldGroup className={'overflow-auto p-2 flex-1'}>
-                {cache && Object.values(cache.tools)
+                {Object.values(slotUtils.getProperty<ToolConversationCache>(
+                    slotContext.slotData.slot, enginePlural).tools)
                     .map(u => (
                         <Field key={u.model.name}>
                             <FieldContent className={'flex-row'}>
                                 <Checkbox id={`tool-${u.model.name}`}
-                                          defaultChecked={!u.disabled}
-                                          onCheckedChange={b => u.disabled = !b}/>
+                                          checked={!u.disabled}
+                                          onCheckedChange={b => handleCheckItemChange(u, b)}/>
                                 <FieldLabel htmlFor={`tool-${u.model.name}`}
                                             className="m-auto ml-2 flex-1">
                                     {u.model.name}
                                 </FieldLabel>
                             </FieldContent>
                             <FieldDescription>
-                                {u.model.description.substring(0, 32)}
-                                {u.model.description.length > 32 ?
-                                    <Tooltip>
-                                        <TooltipTrigger
-                                            className="cursor-pointer ml-2 inline-block text-center size-5 m-auto rounded-full border hover:border-primary hover:text-primary"
-                                            render={<span/>}>
-                                            ⋯
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{u.model.description}</p>
-                                        </TooltipContent>
-                                    </Tooltip> : null
-                                }
+                                <TextToolTip text={u.model.description}/>
                             </FieldDescription>
                         </Field>))}
             </FieldGroup>

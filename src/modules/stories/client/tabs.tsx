@@ -20,7 +20,7 @@ function Tab() {
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-                return await put("/stories/{id}", {
+                await put("/stories/{id}", {
                         content: {},
                         name: data.get("name") as string,
                         requires: getPresetRequires(data),

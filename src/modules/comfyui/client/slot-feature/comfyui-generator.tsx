@@ -132,7 +132,7 @@ export function ComfyUIGenerator() {
                                 const editor = comfyUIParameterRegistry.records[u.type];
                                 const Component = editor.inputComponent;
                                 return Component ?
-                                    <Component key={u.id} formRef={formRef} entry={u}/>
+                                    <Component key={u.entryId} formRef={formRef} entry={u}/>
                                     : null;
                             })
                         }

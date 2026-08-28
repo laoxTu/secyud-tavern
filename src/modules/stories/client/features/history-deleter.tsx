@@ -18,7 +18,6 @@ import {Button} from "@/components/ui/button";
 import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useRouter} from "next/navigation";
 import {slotContext} from "@/modules/stories/client/context";
 import {StoryModel} from "@/modules/stories/models";
 import {convertToRequire} from "@/modules/llmapis/models";
@@ -27,7 +26,6 @@ export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
     const {page, setPage} = useHistoryPageState();
-    const router = useRouter();
     const [openReopen, setOpenReopen] = useState<boolean>(false);
     const [openRemove, setOpenRemove] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -37,7 +35,7 @@ export function HistoryDeleter() {
             const {slotData: {slot, histories}, getHistory} = slotContext;
             const history = await getHistory(page.cur);
             await del("/stories/{id}/entries/{entryType}/{entryId}",
-                {params: {id: slot.id, entryType: 'history', entryId: history.id}})
+                {params: {id: slot.id, entryType: 'history', entryId: history.entryId}})
             histories.splice(page.cur - 1, 1);
             await setPage();
         } catch (error) {
@@ -80,13 +78,12 @@ export function HistoryDeleter() {
             const {slot} = slotContext.slotData;
             const llmapi = slot.llmapi;
             const story: StoryModel = {
-                id: "",
+                id: slot.id,
                 content: slot.content,
                 name: slot.name,
                 requires: slot.requires,
                 llmapi: convertToRequire(llmapi)
             }
-            const {id} = await post("/stories", story);
             if (!remain) {
                 await del("/stories/{id}", {
                     params: {
@@ -94,7 +91,8 @@ export function HistoryDeleter() {
                     }
                 })
             }
-            router.push(`/business/stories/${id}`);
+            await post("/stories", story);
+            window.location.reload();
         } catch (e) {
             handleError(e);
         }

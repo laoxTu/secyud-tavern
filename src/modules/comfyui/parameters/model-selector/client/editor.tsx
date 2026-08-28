@@ -20,25 +20,25 @@ export function EditorComponent({entry, formRef}: ComfyUIParameterProps) {
     const [type, setType] = React.useState<string | null>(config?.type ?? null);
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.entryId}`}>
                 {t("comfyui.node_name")}
             </FieldLabel>
             <Input name={"node_name"} defaultValue={config?.nodeName}
-                   id={`${engineName}-node_name-${entry.id}`}/>
+                   id={`${engineName}-node_name-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-model_type-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-model_type-${entry.entryId}`}>
                 {t("comfyui.model_type")}
             </FieldLabel>
             <Selector name={'model_type'}
-                      id={`${engineName}-model_type-${entry.id}`}
+                      id={`${engineName}-model_type-${entry.entryId}`}
                       value={type} onValueChange={setType}
                       items={modelTypes}/>
         </Field>
@@ -58,12 +58,12 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
 
     return <>
         <Field className={spanHalf}>
-            <FieldLabel htmlFor={`${engineName}-model-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-model-${entry.entryId}`}>
                 {entry.name}
             </FieldLabel>
             <RemoteSearchCombobox
                 key={config.type ?? "model"}
-                name={`model_${entry.id}`} id={`${engineName}-model-${entry.id}`}
+                name={`model_${entry.entryId}`} id={`${engineName}-model-${entry.entryId}`}
                 defaultValue={path ? {
                     id: "",
                     type: "",

@@ -109,18 +109,18 @@ export const useStoryChatboxState =
                         if (curThoughtLen !== thoughtLen) {
                             thoughtLen = curThoughtLen;
                             setGenerateInfo({
-                                content: `${thoughtLen} chars`,
+                                content: `${thoughtLen}`,
                                 title: "slot.thinking",
                             });
                         } else if (curToolArgLen !== toolArgLen) {
                             toolArgLen = curToolArgLen;
                             setGenerateInfo({
-                                content: `${toolArgLen} chars`,
+                                content: `${toolArgLen}`,
                                 title: "slot.generating_tool",
                             });
                         } else {
                             setGenerateInfo({
-                                content: `${output.content.length} chars`,
+                                content: `${output.content.length}`,
                                 title: "slot.generating",
                             });
                         }
@@ -186,7 +186,7 @@ export const useStoryChatboxState =
                     if (variables) {
                         history = {
                             outputId: -1,
-                            id: 0,
+                            entryId: 0,
                             disabled: false,
                             code: input.substring(0, 10),
                             name: "0",
@@ -209,11 +209,11 @@ export const useStoryChatboxState =
                     await useHistoryPageState.getState()
                         .setPage(histories.length);
                     if (variables) {
-                        const {id} = await post('/stories/{id}/entries/{entryType}', history,
+                        const {entryId} = await post('/stories/{id}/entries/{entryType}', history,
                             {params: {id: slot.id, entryType: 'history'}}
                         );
-                        history.id = id;
-                        history.name = String(id);
+                        history.entryId = entryId;
+                        history.name = String(entryId);
                     }
                 } catch (err) {
                     set({summary: false, content: ""});

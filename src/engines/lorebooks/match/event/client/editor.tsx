@@ -31,18 +31,18 @@ export function MatchEditor({defaultValue, entry}: MatcherProps) {
     return (
         <>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-min-date-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-min-date-${entry.entryId}`}>
                     {t("lorebook.min_date")}
                 </FieldLabel>
-                <DateEditor id={`${engineName}-min-date-${entry.id}`}
+                <DateEditor id={`${engineName}-min-date-${entry.entryId}`}
                             defaultValue={model.minDate}
                             name={`min-date`}/>
             </Field>
             <Field>
-                <FieldLabel htmlFor={`${engineName}-max-date-${entry.id}`}>
+                <FieldLabel htmlFor={`${engineName}-max-date-${entry.entryId}`}>
                     {t("lorebook.max_date")}
                 </FieldLabel>
-                <DateEditor id={`${engineName}-max-date-${entry.id}`}
+                <DateEditor id={`${engineName}-max-date-${entry.entryId}`}
                             defaultValue={model.maxDate}
                             name={`max-date`}/>
             </Field>

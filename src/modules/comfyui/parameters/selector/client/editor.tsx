@@ -15,48 +15,48 @@ export function EditorComponent({entry}: ComfyUIParameterProps) {
     const [count, setCount] = React.useState(config?.items?.length ?? 1);
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_id-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_id-${entry.entryId}`}>
                 {t("comfyui.node_id")}
             </FieldLabel>
             <Input name={"node_id"} defaultValue={config?.nodeId}
-                   id={`${engineName}-node_id-${entry.id}`}/>
+                   id={`${engineName}-node_id-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-node_name-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-node_name-${entry.entryId}`}>
                 {t("comfyui.node_name")}
             </FieldLabel>
             <Input name={"node_name"} defaultValue={config?.nodeName}
-                   id={`${engineName}-node_name-${entry.id}`}/>
+                   id={`${engineName}-node_name-${entry.entryId}`}/>
         </Field>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-count-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-count-${entry.entryId}`}>
                 {t("comfyui.value_count")}
             </FieldLabel>
             <Input name={`value_count`} type={"number"}
                    value={count}
                    onChange={u => setCount(parseInt(u.target.value))}
                    min={1} step={1}
-                   id={`${engineName}-count-${entry.id}`}/>
+                   id={`${engineName}-count-${entry.entryId}`}/>
         </Field>
         {Array.from({length: count}, (_, index) => {
             const value = (config?.items?.length ?? 0) > index ?
                 config.items[index] : null;
             return (
                 <Field key={index}>
-                    <FieldLabel htmlFor={`${engineName}-value-${entry.id}-${index}`}>
+                    <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}-${index}`}>
                         {`${t("comfyui.value")} ${index + 1}`}
                     </FieldLabel>
                     <Input name={`value_${index}`} defaultValue={value ?? ""}
-                           id={`${engineName}-value-${entry.id}-${index}`}/>
+                           id={`${engineName}-value-${entry.entryId}-${index}`}/>
                 </Field>
             );
         })}
         <Field>
-            <FieldLabel htmlFor={`${engineName}-value-${entry.id}-default`}>
+            <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}-default`}>
                 {t("comfyui.default_value")}
             </FieldLabel>
             <Input name={`value_default`} defaultValue={config?.defaultValue ?? ""}
-                   id={`${engineName}-value-${entry.id}-default`}/>
+                   id={`${engineName}-value-${entry.entryId}-default`}/>
         </Field>
     </>;
 }
@@ -65,11 +65,11 @@ export function InputComponent({entry}: ComfyUIParameterProps) {
     const config = entry.config as SelectorConfig;
     return <>
         <Field>
-            <FieldLabel htmlFor={`${engineName}-value-${entry.id}`}>
+            <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}`}>
                 {entry.name}
             </FieldLabel>
-            <Selector name={`value_${entry.id}`}
-                      id={`${engineName}-value-${entry.id}`}
+            <Selector name={`value_${entry.entryId}`}
+                      id={`${engineName}-value-${entry.entryId}`}
                       defaultValue={config.defaultValue ?? null}
                       items={modelTypes}/>
         </Field>

@@ -10,8 +10,8 @@ import {imageRepository} from "@/business/server/image-repository";
 export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
     repository: repository,
     checkCreate: async (model) => {
-        Check.NotEmpty('code', model.code);
-        Check.NotEmpty('name', model.name);
+        Check.NotNullOrEmpty('code', model.code);
+        Check.NotNullOrEmpty('name', model.name);
         if (await repository.exist(e => (eq(e.code, model.code)))) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")
@@ -20,8 +20,8 @@ export const apiConfig: TemplateConfig<ComfyUIModelModel> = {
         }
     },
     checkUpdate: async (id, model) => {
-        Check.NotEmpty('code', model.code);
-        Check.NotEmpty('name', model.name);
+        Check.NotNullOrEmpty('code', model.code);
+        Check.NotNullOrEmpty('name', model.name);
         if (await repository.exist(e => (and(eq(e.code, model.code), not(eq(e.id, id)))) as SQL)) {
             throw new BusinessError("Code already exists", "error.duplicate_field")
                 .withValue("field", "default.code")

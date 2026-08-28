@@ -4,10 +4,9 @@ import {BaseEntity} from "./entities";
 import {v4 as uuidv4, validate} from 'uuid';
 import type {PagedResult, PageOptions} from "@/business/models";
 import {BaseModel} from "@/business/models";
-import {BusinessError} from "@/handler/models";
 import {databaseManager} from "@/business/server/database";
-import {mergeObjects} from "@/utils";
 import {IModelStorage} from "@/business/server/storage";
+import {BusinessError} from "@/handler/models";
 
 export type ConditionFunc = (table: any) => SQL;
 
@@ -18,7 +17,7 @@ export interface Repository<TModel> {
     }) => Promise<TModel | null>,
     getList: (options: PageOptions, conditionFunc?: ConditionFunc) => Promise<PagedResult<TModel>>,
     create: (model: TModel) => Promise<TModel>,
-    update: (id: string, model: Partial<TModel>) => Promise<TModel>,
+    update: (id: string, model: Partial<TModel>) => Promise<void>,
     delete: (id: string) => Promise<void>,
     exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
     entry: {
@@ -134,34 +133,24 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
     };
 
     const update = async (id: string, model: Partial<TModel>) => {
-        const exist = await get(id);
-        if (!exist)
-            throw new BusinessError('update entity not found', "default.entity_not_found")
-                .withValue("id", id);
-
         const updateData: Record<string, unknown> = {
             updatedAt: new Date().toISOString(),
             ...(mapToEntity?.(model) ?? {})
         };
 
-        if (model.name !== undefined)
+        if (model.name)
             updateData.name = model.name;
-        if (model.content !== undefined)
-            updateData.content = JSON.stringify(mergeObjects(exist.content, model.content));
+        if (model.content)
+            updateData.content = JSON.stringify(model.content);
 
         const result = await db
             .update(masters)
             .set(updateData)
             .where(eq(masters.id, id))
-            .returning();
+            .returning({id: masters.id,});
 
-        const res = result[0];
-        return {
-            id: res.id,
-            name: res.name,
-            content: JSON.parse(res.content),
-            ...(mapToModel?.(res as Partial<TMaster>) ?? {})
-        } as TModel;
+        if (!result.length)
+            throw new BusinessError(`Failed to update record ${id}: expected 1 row, but 0 rows were updated.`);
     };
 
     const _delete = async (id: string) => {
@@ -256,7 +245,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                 const data = (await query).map((u: { entryId: number, disabled: boolean, content: string; }) =>
                     ({
                         ...JSON.parse(u.content),
-                        id: u.entryId,
+                        entryId: u.entryId,
                         disabled: u.disabled
                     })
                 );
@@ -284,7 +273,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
 
                 return {
                     ...JSON.parse(item.content),
-                    id: item.entryId,
+                    entryId: item.entryId,
                     disabled: item.disabled
                 };
             },
@@ -295,13 +284,14 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                     .values(entryList.map((e) => ({
                         masterId: masterId,
                         entryType: type,
-                        entryId: e.id,
+                        entryId: e.entryId,
                         disabled: e.disabled,
                         search: modelStorage.bindSearch(type, e),
                         sorter: modelStorage.bindSorter(type, e),
                         content: JSON.stringify({
                             ...e,
                             id: undefined,
+                            entryId: undefined,
                             disabled: undefined
                         }),
                     })));
@@ -310,7 +300,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             create: async (masterId: string, type: string, entry: any) => {
                 const maxEntryId = await db
                     .select({
-                        id: sql<number>`max(${entries.entryId})`
+                        entryId: sql<number>`max(${entries.entryId})`
                     })
                     .from(entries)
                     .where(and(
@@ -318,7 +308,7 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
                         eq(entries.entryType, type),
                     ));
 
-                const entryId = maxEntryId[0].id + 1;
+                const entryId = maxEntryId[0].entryId + 1;
                 await db
                     .insert(entries)
                     .values({

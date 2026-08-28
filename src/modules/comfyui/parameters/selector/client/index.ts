@@ -20,7 +20,7 @@ export const selector: ComfyUIParameter =
             const config = entry.config as SelectorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
-                inputs[config.nodeName] = data.get(`value_${entry.id}`);
+                inputs[config.nodeName] = data.get(`value_${entry.entryId}`);
             }
         }
     } as const;

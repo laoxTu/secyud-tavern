@@ -10,7 +10,7 @@ import {GridField} from "@/components/custom/grid-field";
 
 export interface ModelUpdateProps<TModel extends BaseModel> {
     // 根据原模型和表单更新模型，返回更新后的模型。
-    updateHandler: (model: TModel, data: FormData) => Promise<TModel>;
+    updateHandler: (model: TModel, data: FormData) => Promise<void>;
     // 编辑 FieldGroup 的内部内容。
     updateContent: (model: TModel, formRef: RefObject<HTMLFormElement | null>) => React.ReactNode;
 }
@@ -40,7 +40,7 @@ export function ModelUpdate<TModel extends BaseModel>(
     const {fetch} = usePagedItemsState();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const refresh = async (model?: TModel) => {
+    const refresh = async () => {
         await setModel(model);
         await fetch();
     }
@@ -48,9 +48,9 @@ export function ModelUpdate<TModel extends BaseModel>(
     const handleUpdate = async (data: FormData) => {
         try {
             if (model) {
-                const res = await updateHandler(model, data);
+                await updateHandler(model, data);
                 handleSuccess(t("default.saved_successfully"));
-                await refresh(res);
+                await refresh();
             }
         } catch (error) {
             handleError(error);

@@ -46,7 +46,7 @@ async function preBuild() {
     try {
         const envFilePath = path.join(root, '.env');
         // 使用 'wx' 标志
-        await promise.writeFile(envFilePath, `SECRET_SALT=${generateSecureString(40)}\r\nSECRET_KEYS=${generateSecureString(39)}`, {flag: 'wx'});
+        await promise.writeFile(envFilePath, `SECRET_SALT=${generateSecureString(40)}\nSECRET_KEYS=${generateSecureString(39)}`, {flag: 'wx'});
         console.log('generated .env file!');
         return true;
     } catch (err: any) {

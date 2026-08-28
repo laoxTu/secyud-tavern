@@ -10,7 +10,7 @@ export const textEditor: ComfyUIParameter =
             return {
                 nodeId: data.get("node_id") as string,
                 nodeName: data.get("node_name") as string,
-                defaultValue: data.get(`text_${entry.id}`) as string,
+                defaultValue: data.get(`text_${entry.entryId}`) as string,
             };
         },
         inputComponent: InputComponent,
@@ -18,7 +18,7 @@ export const textEditor: ComfyUIParameter =
             const config = entry.config as TextEditorConfig;
             const inputs = input[config.nodeId]?.inputs;
             if (inputs) {
-                inputs[config.nodeName] = data.get(`text_${entry.id}`);
+                inputs[config.nodeName] = data.get(`text_${entry.entryId}`);
             }
         }
     } as const;

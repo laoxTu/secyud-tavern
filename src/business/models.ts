@@ -23,7 +23,8 @@ export interface BaseModel {
 }
 
 export interface EntryModel {
-    id: number,
+    id?: string, // 只在slot中用
+    entryId: number,
     disabled: boolean,
     // 编码，同预设下唯一
     code: string,
@@ -36,18 +37,42 @@ export interface ImageFile {
     type: string,
 }
 
-async function useEntries<T, TModel extends BaseModel>(model: TModel, name: string, action: (item: T, model: TModel) => Promise<void>): Promise<void> {
-    const entries: T[] | undefined = model.entries?.[name];
+async function useEntries<TEntry extends EntryModel, TModel extends BaseModel>(
+    model: TModel, name: string, modelId: (model: TModel) => string,
+    action: (item: TEntry, model: TModel) => Promise<void>): Promise<void> {
+    const entries = getEntries<TEntry>(model, name);
     if (!entries?.length) return;
     for (const entry of entries) {
+        entry.id ??= `${modelId(model)}.${entry.entryId}`;
         await action(entry, model);
     }
 }
 
-async function useEntriesList<T, TModel extends BaseModel>(models: TModel[], name: string, action: (item: T, model: TModel) => Promise<void>): Promise<void> {
+async function useEntriesList<TEntry extends EntryModel, TModel extends BaseModel>(
+    models: TModel[], name: string, modelId: (model: TModel) => string,
+    action: (item: TEntry, model: TModel) => Promise<void>): Promise<void> {
     for (const model of models) {
-        await useEntries(model, name, action);
+        await useEntries(model, name, modelId, action);
     }
 }
 
-export const businessUtils = {useEntries, useEntriesList};
+function getEntries<TEntry extends EntryModel>(
+    model: BaseModel, key: string): TEntry[] | undefined {
+    return model.entries?.[key];
+}
+
+function getContent<T>(model: BaseModel, key: string): T | undefined;
+// 重载签名2：有 init，返回 T（一定存在）
+function getContent<T>(model: BaseModel, key: string, init: () => T): T;
+
+function getContent<T>(model: BaseModel, key: string, init?: () => T): T | undefined {
+    let value: T | undefined = model.content[key];
+    if (!value && init) {
+        value = init();
+        model.content[key] = value;
+    }
+
+    return value;
+}
+
+export const businessUtils = {useEntries, useEntriesList, getEntries, getContent};

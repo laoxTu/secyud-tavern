@@ -82,7 +82,7 @@ export const useGlobalState = create<GlobalState>()(persist((set) => ({
         set({panelWidth: width});
     },
 }), {
-    name: "global-state",
+    name: "global",
     storage: createJSONStorage(() => localStorage),
     partialize: (state) => ({
         panelWidth: state.panelWidth,

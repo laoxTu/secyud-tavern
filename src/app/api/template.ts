@@ -74,8 +74,8 @@ export function apiUpdateModel<TModel extends BaseModel>(
         if (checkUpdate) {
             await checkUpdate(id, model, records.searchParams);
         }
-        const result = await repository.update(id, model);
-        return NextResponse.json(result);
+        await repository.update(id, model);
+        return NextResponse.json({id});
     }
 }
 
@@ -166,7 +166,7 @@ export function apiCreateEntry<TModel extends BaseModel>({repository}: TemplateC
         const {id, entryType} = await records.params as { id: string, entryType: string };
         const model = await request.json();
         const entryId = await repository.entry.create(id, entryType, model);
-        return NextResponse.json({id: entryId});
+        return NextResponse.json({entryId});
     }
 }
 
@@ -183,7 +183,7 @@ export function apiUpdateEntry<TModel extends BaseModel>({repository}: TemplateC
         const {id, entryType, entryId} = await records.params;
         const model = await request.json();
         await repository.entry.update(id, entryType, entryId, model);
-        return NextResponse.json(model);
+        return NextResponse.json({id, entryType, entryId});
     }
 }
 
@@ -216,6 +216,6 @@ export function apiDisableEntry<TModel extends BaseModel>({repository}: Template
         const {id, entryType, entryId} = await records.params;
         const {disabled} = await request.json() as { disabled: boolean };
         await repository.entry.setDisabled(id, entryType, entryId, disabled);
-        return NextResponse.json(null);
+        return NextResponse.json({id, disabled});
     }
 }
