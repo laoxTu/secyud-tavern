@@ -24,7 +24,7 @@ type CreateProps =
     // 创建 FieldGroup 的内部内容。
     createContent: () => React.ReactNode;
     // 根据表单创建模型，返回创建后的模型。
-    createHandler: (data: FormData) => Promise<string>,
+    createHandler: (data: FormData) => Promise<{ id: string }>,
     createComponent?: never;
 }
     | {
@@ -37,7 +37,7 @@ type CreateProps =
 type ImportProps =
     | {
     // 根据文件导入模型，返回创建后的模型。
-    importHandler: (file: File) => Promise<string>,
+    importHandler: (file: File) => Promise<{ id: string }>,
     // 接受的导入文件类型
     importAccept: string,
     importComponent?: never;
@@ -80,7 +80,7 @@ function ModelCreateDialog<TModel>(
     const handleCreate = async (data: FormData) => {
         try {
             if (!createHandler) return;
-            const id = await createHandler(data);
+            const {id} = await createHandler(data);
             await setModel(id);
             await fetch();
             handleSuccess(t("default.created_successfully"));
@@ -153,7 +153,7 @@ function ModelImportDialog<TModel>(
         try {
             if (!importHandler) return;
             const file = formData.get("filename") as File;
-            const id = await importHandler(file);
+            const {id} = await importHandler(file);
             await setModel(id);
             await fetch();
             setImportOpen(false);

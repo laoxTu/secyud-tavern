@@ -46,6 +46,6 @@ export const PUT = interceptor.createRoute(
             if (!res) res = entity;
         }
 
-        return NextResponse.json(models[0]);
+        return NextResponse.json({id: models[0].id});
     }
 )

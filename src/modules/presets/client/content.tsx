@@ -72,7 +72,7 @@ function PresetImportDialog() {
     };
     const handleImport = async (formData: FormData) => {
         try {
-            const model = await put("/presets/import", {
+            const {id} = await put("/presets/import", {
                 ...Object.fromEntries(importModels.map(u =>
                     [u.code, !!formData.get(`code_${u.code}`)]))
             }, {
@@ -80,7 +80,7 @@ function PresetImportDialog() {
                     sessionId,
                 }
             });
-            await setModel(model);
+            await setModel(id);
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));

@@ -38,8 +38,8 @@ export function createUseItemState<T>(getModel: (t?: string) => Promise<T | unde
     const func =
         (set: (partial: Partial<ItemState<T>>) => void, get: () => ItemState<T>): ItemState<T> => ({
             render: 0,
-            async setModel(model) {
-                set({model: await getModel(model), render: get().render + 1});
+            async setModel(id) {
+                set({model: await getModel(id), render: get().render + 1});
             }
         });
 

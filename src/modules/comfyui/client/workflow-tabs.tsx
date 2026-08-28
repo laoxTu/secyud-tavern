@@ -25,7 +25,6 @@ function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef:
     const {handleError, handleSuccess} = useErrorHandler();
     const generateParameter = async () => {
         try {
-
             await post('/comfyuis/workflows/{id}/generate-parameters', {}, {
                 params: {id: model.id}
             });

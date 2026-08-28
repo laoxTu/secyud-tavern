@@ -22,12 +22,13 @@ import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon} from "lucide-rea
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {BaseModel} from "@/business/models";
 
 export interface ModelContentProps<TModel> {
     // 克隆 FieldGroup 的内部内容
     cloneContent: (model: TModel) => React.ReactNode,
     // 根据原模型和表单克隆模型，返回克隆后的模型。注意传入模型不带详情。
-    cloneHandler: (model: TModel, data: FormData) => Promise<string>,
+    cloneHandler: (model: TModel, data: FormData) => Promise<{ id: string }>,
     // 克隆 FieldGroup 的内部内容
     toolbar?: (model: TModel) => React.ReactNode,
     // 导出模型，一般用 window.open(`/api/${apiName}/${model.id}/export`)
@@ -44,7 +45,7 @@ interface Props<TModel> {
     collapse: () => void
 }
 
-export function ModelContent<TModel>(
+export function ModelContent<TModel extends BaseModel>(
     {
         collapse,
         modelState: {
@@ -71,11 +72,6 @@ export function ModelContent<TModel>(
     const [showTabs, setShowTabs] = useState<TabConfig[]>([]);
     const [hideTabs, setHideTabs] = useState<TabConfig[] | null>(null);
 
-    const refresh = async (id?: string) => {
-        await fetch();
-        await setModel(id);
-    }
-
     const handleExport = async () => {
         try {
             if (model) {
@@ -89,8 +85,9 @@ export function ModelContent<TModel>(
     const handleClone = async (data: FormData) => {
         try {
             if (model) {
-                const id = await cloneHandler(model, data);
-                await refresh(id);
+                const {id} = await cloneHandler(model, data);
+                await setModel(id);
+                await fetch();
                 setCloneOpen(false);
                 handleSuccess(t("default.copy_successfully"));
             }
@@ -103,7 +100,9 @@ export function ModelContent<TModel>(
         try {
             if (model) {
                 await deleteHandler(model);
-                await refresh(undefined);
+                await fetch();
+                await setModel(usePagedItemsState.getState()
+                    .items?.at(0)?.id)
                 handleSuccess(t("default.delete_successfully"));
             }
         } catch (err) {
