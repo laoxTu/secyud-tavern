@@ -18,7 +18,6 @@ import {Button} from "@/components/ui/button";
 import {DeleteIcon, MessageCirclePlusIcon, TrashIcon} from "lucide-react";
 import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useRouter} from "next/navigation";
 import {slotContext} from "@/modules/stories/client/context";
 import {StoryModel} from "@/modules/stories/models";
 import {convertToRequire} from "@/modules/llmapis/models";
@@ -27,7 +26,6 @@ export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
     const t = useTranslations();
     const {page, setPage} = useHistoryPageState();
-    const router = useRouter();
     const [openReopen, setOpenReopen] = useState<boolean>(false);
     const [openRemove, setOpenRemove] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -93,8 +91,8 @@ export function HistoryDeleter() {
                     }
                 })
             }
-            const {id} = await post("/stories", story);
-            router.push(`/business/stories/${id}`);
+            await post("/stories", story);
+            window.location.reload();
         } catch (e) {
             handleError(e);
         }
