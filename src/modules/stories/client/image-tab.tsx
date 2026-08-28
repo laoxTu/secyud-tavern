@@ -31,9 +31,9 @@ import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import Link from "next/link";
 import {useImagePagedItemsState, useItemState} from "@/modules/stories/client/models";
-import {engineName} from "@/engines/regexes/models";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {EntryOperation} from "@/business/models";
+import {storyTabIsHide} from "@/modules/stories/client/tabs";
 
 
 function ContentItem({entry}: { entry: StoryImageModel }) {
@@ -261,7 +261,23 @@ export function Content() {
     }, []);
 
     return (<div className={'h-full overflow-hidden flex flex-col gap-2 p-4'}>
-        <div className={'flex flex-col gap-2'}>
+        <div className={'flex gap-2'}>
+            <form className={"flex-1"} action={applySearch}>
+                <InputGroup>
+                    <InputGroupInput name="search" id={`comfyui-model-list-search`}
+                                     placeholder={t("default.search")}
+                                     value={searchInput}
+                                     onChange={(e) => setSearchInput(e.target.value)}/>
+                    <InputGroupAddon align={"inline-end"}>
+                        <InputGroupButton onClick={resetSearch}>
+                            <XIcon/>
+                        </InputGroupButton>
+                        <InputGroupButton type="submit">
+                            <SearchIcon/>
+                        </InputGroupButton>
+                    </InputGroupAddon>
+                </InputGroup>
+            </form>
             <div className={'overflow-x-auto flex flex-row-reverse scrollbar-none gap-1 justify-normal'}>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger render={<Tooltip/>}>
@@ -303,22 +319,6 @@ export function Content() {
                     </DialogContent>
                 </Dialog>
             </div>
-            <form action={applySearch}>
-                <InputGroup>
-                    <InputGroupInput name="search" id={`comfyui-model-list-search`}
-                                     placeholder={t("default.search")}
-                                     value={searchInput}
-                                     onChange={(e) => setSearchInput(e.target.value)}/>
-                    <InputGroupAddon align={"inline-end"}>
-                        <InputGroupButton onClick={resetSearch}>
-                            <XIcon/>
-                        </InputGroupButton>
-                        <InputGroupButton type="submit">
-                            <SearchIcon/>
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
-            </form>
         </div>
         <div className={'flex-1 flex flex-col overflow-hidden'}>
             <div className={'flex-1 overflow-y-auto'}>
@@ -333,7 +333,8 @@ export function Content() {
 }
 
 export const tabConfig: TabConfig = {
-    id: engineName,
+    id: imageEntryName,
+    hide: () => storyTabIsHide(imageEntryName),
     label: () => <EntryTabHeader space={moduleName} value={imageEntryName} icon={ImagesIcon}/>,
     component: Content
 }

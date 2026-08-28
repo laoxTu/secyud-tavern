@@ -19,6 +19,7 @@ import {cn} from "@/lib/utils";
 import {Selector} from "@/components/custom/selector";
 import {memoryTypes} from "@/engines/memories/client/tool";
 import {TagBox} from "@/components/custom/combobox";
+import {storyTabIsHide} from "@/modules/stories/client/tabs";
 
 function Tab() {
     const t = useTranslations();
@@ -163,6 +164,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
+    hide: () => storyTabIsHide(engineName),
     label: () => <EntryTabHeader space={moduleName} value={engineName} icon={BrainIcon}/>,
     component: Tab
 }

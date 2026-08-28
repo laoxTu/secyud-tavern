@@ -7,7 +7,12 @@ import {modulePlural} from "@/modules/presets/models";
 
 export const useItemState = createUseItemState<StoryModel>(
     async id => {
-        return await get('/stories/{id}', {params: {id}})
+        return await get('/stories/{id}', {
+            params: {
+                id,
+                withExistEntries: true
+            }
+        })
     }
 )
 export const usePagedItemsState = createUsePagedItemsState<StoryModel>(

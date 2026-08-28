@@ -19,6 +19,13 @@ export async function refreshItem() {
     await setModel(model?.id);
 }
 
+export async function storyTabIsHide(entryType: string) {
+    const model = useItemState.getState().model;
+    if (!model) return false;
+    const entries: string[] = model.content.entries;
+    return !entries?.some(u => u === entryType);
+}
+
 function Tab() {
     const t = useTranslations();
     return <ModelUpdate<StoryModel>
