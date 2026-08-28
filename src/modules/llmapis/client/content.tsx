@@ -13,6 +13,7 @@ import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {ModelList} from "@/business/client/template/model-list";
 import {modelState} from "./models";
 import {createUseTabState} from "@/business/client/models";
+import {ModelCreate} from "@/business/models";
 
 export const useLlmapiTabState = createUseTabState(llmapiTabManager);
 
@@ -50,10 +51,10 @@ function Content() {
                 </Field>
             </>),
             createHandler: async (data) => {
-                return await post("/llmapis", {
-                    id: "",
+                return await post<ModelCreate<LlmapiModel>>("/llmapis", {
                     code: data.get("code") as string,
                     name: data.get("name") as string,
+                    stream: true,
                     version: "1.0.0",
                     content: {
                         maxIterations: 20
@@ -69,8 +70,8 @@ function Content() {
                         withDetails: true
                     }
                 });
-                return await post("/llmapis", {
-                    ...entity, id: "",
+                return await post<ModelCreate<LlmapiModel>>("/llmapis", {
+                    ...entity, id: undefined,
                     code: data.get("code") as string,
                     name: data.get("name") as string,
                 })

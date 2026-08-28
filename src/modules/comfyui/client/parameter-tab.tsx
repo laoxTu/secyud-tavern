@@ -13,6 +13,7 @@ import {ComfyUIParameter, ComfyUIParameterProps} from "@/modules/comfyui/client/
 import {parameterEntryState, useItemState} from "@/modules/comfyui/client/models";
 import {Selector} from "@/components/custom/selector";
 import {customCreateElement} from "@/components/custom";
+import {EntryOperation} from "@/business/models";
 
 function EditorContent({entry, formRef}: ComfyUIParameterProps) {
     const t = useTranslations();
@@ -73,10 +74,12 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/comfyuis/workflows/{id}/entries/{entryType}', {
-                        code: data.get('code'),
-                        name: data.get('name'),
+                    await post<EntryOperation<ComfyUIParameterModel>>('/comfyuis/workflows/{id}/entries/{entryType}', {
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                         priority: 100,
+                        type: "",
+                        config: {},
                     }, {
                         params: {
                             id: model?.id,
@@ -95,8 +98,7 @@ function Tab() {
                             entryType: engineName,
                             entryId: entry.entryId
                         }
-                    })
-                    return {...entry, disabled};
+                    });
                 },
                 deleteHandler: async entry => {
                     await del('/comfyuis/workflows/{id}/entries/{entryType}/{entryId}', {
@@ -108,10 +110,10 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/comfyuis/workflows/{id}/entries/{entryType}', {
+                    await post<EntryOperation<ComfyUIParameterModel>>('/comfyuis/workflows/{id}/entries/{entryType}', {
                         ...entry,
-                        code: data.get('code'),
-                        name: data.get('name'),
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }, {
                         params: {
                             id: model?.id,
@@ -121,22 +123,22 @@ function Tab() {
                 },
                 updateHandler: async (entry, data) => {
                     const type = data.get("type") as string;
-                    const result: ComfyUIParameterModel = {
-                        ...entry,
-                        type: type,
-                        config: editors[type].getEditorValue({data, entry, model: model!}),
-                        priority: parseInt(data.get("priority") as string),
-                        code: data.get('code') as string,
-                        name: data.get('name') as string,
-                    };
-                    await put('/comfyuis/workflows/{id}/entries/{entryType}/{entryId}', result, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
-                    return result;
+                    await put<EntryOperation<ComfyUIParameterModel>>(
+                        '/comfyuis/workflows/{id}/entries/{entryType}/{entryId}',
+                        {
+                            type: type,
+                            config: editors[type].getEditorValue({data, entry, model: model!}),
+                            priority: parseInt(data.get("priority") as string),
+                            code: data.get('code') as string,
+                            name: data.get('name') as string,
+                        },
+                        {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 updateContent: (entry, formRef) =>
                     (<EditorContent entry={entry} formRef={formRef}/>)

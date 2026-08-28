@@ -16,7 +16,7 @@ export interface Repository<TModel> {
         withExistEntries?: boolean,
     }) => Promise<TModel | null>,
     getList: (options: PageOptions, conditionFunc?: ConditionFunc) => Promise<PagedResult<TModel>>,
-    create: (model: TModel) => Promise<TModel>,
+    create: (model: TModel) => Promise<string>,
     update: (id: string, model: Partial<TModel>) => Promise<void>,
     delete: (id: string) => Promise<void>,
     exist: (conditionFunc: ConditionFunc) => Promise<boolean>,
@@ -113,23 +113,15 @@ export function createRepository<TModel extends BaseModel, TMaster extends BaseE
             ...(mapToEntity?.(model) ?? {})
         }
 
-        const result = await db
+        await db
             .insert(masters)
-            .values(entity)
-            .returning();
+            .values(entity);
 
         if (model.entries) {
             model.id = entity.id;
             await modelStorage.saveModel(model);
         }
-
-        const res = result[0];
-        return {
-            id: res.id,
-            name: res.name,
-            content: JSON.parse(res.content),
-            ...(mapToModel?.(res as Partial<TMaster>) ?? {})
-        } as TModel;
+        return entity.id;
     };
 
     const update = async (id: string, model: Partial<TModel>) => {

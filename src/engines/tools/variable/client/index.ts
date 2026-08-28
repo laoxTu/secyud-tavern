@@ -100,7 +100,7 @@ export class VariableSetTool extends VariableEditToolBase {
                 op: {
                     description: "The operation to perform.",
                     type: "string",
-                    enum: ["add", "replace"]
+                    enum: ["replace"]
                 },
                 value: {
                     anyOf: [

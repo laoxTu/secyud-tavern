@@ -15,6 +15,7 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/grid-field";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
+import {EntryOperation} from "@/business/models";
 
 const scriptTypes = ["", "link", "application/javascript", "module", "importmap"];
 
@@ -86,9 +87,9 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
-                        code: data.get('code'),
-                        name: data.get('name'),
+                    await post<EntryOperation<PresetScriptModel>>('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                         content: "",
                         priority: 100,
                     }, {
@@ -110,7 +111,6 @@ function Tab() {
                             entryId: entry.entryId
                         }
                     })
-                    return {...entry, disabled};
                 },
                 deleteHandler: async entry => {
                     await del('/presets/{id}/entries/{entryType}/{entryId}', {
@@ -122,10 +122,10 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<PresetScriptModel>>('/presets/{id}/entries/{entryType}', {
                         ...entry,
-                        code: data.get('code'),
-                        name: data.get('name'),
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }, {
                         params: {
                             id: model?.id,
@@ -134,22 +134,22 @@ function Tab() {
                     })
                 },
                 updateHandler: async (entry, data) => {
-                    const result = {
-                        ...entry,
-                        content: data.get("content") as string,
-                        priority: parseInt(data.get("priority") as string),
-                        type: data.get("type") as string,
-                        code: data.get('code') as string,
-                        name: data.get('name') as string,
-                    }
-                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
-                    return result;
+                    await put<EntryOperation<PresetScriptModel>>(
+                        '/presets/{id}/entries/{entryType}/{entryId}',
+                        {
+                            content: data.get("content") as string,
+                            priority: parseInt(data.get("priority") as string),
+                            type: data.get("type") as string,
+                            code: data.get('code') as string,
+                            name: data.get('name') as string,
+                        },
+                        {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 updateContent: (entry, formRef) =>
                     (<Editor entry={entry} formRef={formRef}/>)

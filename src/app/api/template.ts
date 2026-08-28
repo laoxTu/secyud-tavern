@@ -57,9 +57,9 @@ export function apiCreateModel<TModel extends BaseModel>({
             await checkCreate(model, records.searchParams);
         }
 
-        const result = await repository.create(model);
+        const id = await repository.create(model);
 
-        return NextResponse.json(result);
+        return NextResponse.json({id});
     }
 }
 
@@ -147,7 +147,7 @@ export function apiImportModel<TModel extends BaseModel>({
             }
             await repository.create(model);
         }
-        return NextResponse.json(models[0]);
+        return NextResponse.json({id: models[0].id});
     }
 }
 

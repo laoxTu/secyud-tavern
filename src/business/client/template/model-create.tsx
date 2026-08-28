@@ -19,12 +19,12 @@ import {ModelState} from "@/business/client/models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {FileDownIcon, FilePlusIcon} from "lucide-react";
 
-type CreateProps<TModel> =
+type CreateProps =
     | {
     // 创建 FieldGroup 的内部内容。
     createContent: () => React.ReactNode;
     // 根据表单创建模型，返回创建后的模型。
-    createHandler: (data: FormData) => Promise<TModel>,
+    createHandler: (data: FormData) => Promise<{ id: string }>,
     createComponent?: never;
 }
     | {
@@ -34,10 +34,10 @@ type CreateProps<TModel> =
 };
 
 // 定义 Import 的两种模式（互斥）
-type ImportProps<TModel> =
+type ImportProps =
     | {
     // 根据文件导入模型，返回创建后的模型。
-    importHandler: (file: File) => Promise<TModel>,
+    importHandler: (file: File) => Promise<{ id: string }>,
     // 接受的导入文件类型
     importAccept: string,
     importComponent?: never;
@@ -49,11 +49,11 @@ type ImportProps<TModel> =
     importAccept?: never;
 };
 
-export type ModelCreateProps<TModel> = CreateProps<TModel> & ImportProps<TModel>;
+export type ModelCreateProps = CreateProps & ImportProps;
 
 interface Props<TModel> {
     modelState: ModelState<TModel>,
-    props: ModelCreateProps<TModel>,
+    props: ModelCreateProps,
 }
 
 function ModelCreateDialog<TModel>(
@@ -80,8 +80,8 @@ function ModelCreateDialog<TModel>(
     const handleCreate = async (data: FormData) => {
         try {
             if (!createHandler) return;
-            const model = await createHandler(data);
-            await setModel(model);
+            const {id} = await createHandler(data);
+            await setModel(id);
             await fetch();
             handleSuccess(t("default.created_successfully"));
         } catch (error) {
@@ -153,8 +153,8 @@ function ModelImportDialog<TModel>(
         try {
             if (!importHandler) return;
             const file = formData.get("filename") as File;
-            const model = await importHandler(file);
-            await setModel(model);
+            const {id} = await importHandler(file);
+            await setModel(id);
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));

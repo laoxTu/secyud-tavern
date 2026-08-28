@@ -25,7 +25,7 @@ export interface EntryState<T> {
 export interface ItemState<T> {
     model?: T;
     render: number;
-    setModel: (model?: T) => Promise<void>;
+    setModel: (modelId?: string) => Promise<void>;
 }
 
 export const useImagePagedItemsState = createUsePagedItemsState<ImageFile>(
@@ -34,13 +34,12 @@ export const useImagePagedItemsState = createUsePagedItemsState<ImageFile>(
     }, 8);
 
 
-export function createUseItemState<T>(name?: string, getModel?: (t?: T) => Promise<T | undefined>) {
+export function createUseItemState<T>(getModel: (t?: string) => Promise<T | undefined>, name?: string) {
     const func =
         (set: (partial: Partial<ItemState<T>>) => void, get: () => ItemState<T>): ItemState<T> => ({
             render: 0,
-            async setModel(model) {
-                model = getModel ? await getModel(model) : model;
-                set({model, render: get().render + 1});
+            async setModel(id) {
+                set({model: await getModel(id), render: get().render + 1});
             }
         });
 

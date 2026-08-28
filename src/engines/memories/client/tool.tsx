@@ -6,12 +6,12 @@ import {engineName, enginePlural, MemoryToolConfigModel, StoryMemoryModel} from 
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {getMemoryCodes, MemoryConversationCache} from "@/engines/memories/client/models";
 import {insert, search} from "@orama/orama";
-import {v4 as uuidv4} from "uuid";
 import {post} from "@/client";
 import {historyUtils} from "@/modules/models";
 import {slotContext} from "@/modules/stories/client/context";
+import {EntryOperation} from "@/business/models";
 
-const memoryTypes = ["event", "relation", "knowledge", "other"];
+export const memoryTypes = ["event", "relation", "knowledge", "other"];
 
 export function ToolEditor({}: LlmapiToolProps) {
     // const t = useTranslations();
@@ -230,7 +230,7 @@ export class MemorySetTool implements LlmapiTool {
         const entry: StoryMemoryModel = {
             disabled: false,
             entryId: 0,
-            code: uuidv4(),
+            code: Math.random().toString(36).substring(2, 2 + 10),
             name: title,
             importance,
             sequence: this.slot.histories.length,
@@ -239,7 +239,7 @@ export class MemorySetTool implements LlmapiTool {
             type,
         };
 
-        const {entryId} = await post("/stories/{id}/entries/{entryType}",
+        const {entryId} = await post<EntryOperation<StoryMemoryModel>>("/stories/{id}/entries/{entryType}",
             entry, {
                 params: {
                     id: this.slot.id,

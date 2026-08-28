@@ -1,38 +1,43 @@
-﻿import React from "react";
-import {ReplaceAllIcon} from "lucide-react";
+import React from "react";
+import {BrainIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
+import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {TabConfig} from "@/components/custom/tab";
-import {moduleName} from "@/modules/presets/models";
-import {engineName, PresetMacroModel} from "../models";
-import {useItemState} from "@/modules/presets/client/models";
+import {moduleName} from "@/modules/stories/models";
+import {engineName, StoryMemoryModel} from "../models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {EntryList} from "@/business/client/template/entry-list";
 import {entryState} from "./models";
 import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
-import {Checkbox} from "@/components/ui/checkbox";
 import {rowHalf, spanHalf} from "@/components/custom/grid-field";
-import {presetTabIsHide} from "@/modules/presets/client/tabs";
+import {useItemState} from "@/modules/stories/client/models";
 import {EntryOperation} from "@/business/models";
 import {cn} from "@/lib/utils";
+import {Selector} from "@/components/custom/selector";
+import {memoryTypes} from "@/engines/memories/client/tool";
+import {TagBox} from "@/components/custom/combobox";
+import {storyTabIsHide} from "@/modules/stories/client/tabs";
 
 function Tab() {
     const t = useTranslations();
     const {model} = useItemState();
     return (
-        <EntryList<PresetMacroModel>
+        <EntryList<StoryMemoryModel>
             entryState={entryState}
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post<EntryOperation<PresetMacroModel>>('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<StoryMemoryModel>>('/stories/{id}/entries/{entryType}', {
                         code: data.get('code') as string,
                         name: data.get('name') as string,
-                        key: "",
-                        value: ""
+                        text: "",
+                        sequence: 100,
+                        importance: 5,
+                        type: "event",
+                        tags: [],
                     }, {
                         params: {
                             id: model?.id,
@@ -43,7 +48,7 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                    await put('/stories/{id}/entries/{entryType}/{entryId}/disabled', {
                         disabled,
                     }, {
                         params: {
@@ -54,7 +59,7 @@ function Tab() {
                     })
                 },
                 deleteHandler: async entry => {
-                    await del('/presets/{id}/entries/{entryType}/{entryId}', {
+                    await del('/stories/{id}/entries/{entryType}/{entryId}', {
                         params: {
                             id: model?.id,
                             entryType: engineName,
@@ -63,7 +68,7 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post<EntryOperation<PresetMacroModel>>('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<StoryMemoryModel>>('/stories/{id}/entries/{entryType}', {
                         ...entry,
                         code: data.get('code') as string,
                         name: data.get('name') as string,
@@ -75,14 +80,16 @@ function Tab() {
                     })
                 },
                 updateHandler: async (entry, data) => {
-                    await put<EntryOperation<PresetMacroModel>>('/presets/{id}/entries/{entryType}/{entryId}',
+                    await put<EntryOperation<StoryMemoryModel>>(
+                        '/stories/{id}/entries/{entryType}/{entryId}',
                         {
-                            key: data.get("key") as string,
-                            value: data.get("value") as string,
                             code: data.get('code') as string,
                             name: data.get('name') as string,
-                            multiple: !!data.get('multiple'),
-                            hidden: !!data.get('hidden'),
+                            text: data.get('text') as string,
+                            sequence: parseInt(data.get('sequence') as string),
+                            importance: parseInt(data.get('importance') as string),
+                            type: data.get('type') as string,
+                            tags: data.getAll('tag') as string[],
                         },
                         {
                             params: {
@@ -93,21 +100,13 @@ function Tab() {
                         });
                 },
                 updateContent: (entry) => (<>
-                    <Field className={spanHalf}>
-                        <FieldLabel htmlFor={`${engineName}-key-${entry.entryId}`}>
-                            {t("macro.key")}
-                        </FieldLabel>
-                        <Input name="key"
-                               id={`${engineName}-key-${entry.entryId}`}
-                               defaultValue={entry.key}/>
-                    </Field>
                     <Field className={cn(spanHalf, rowHalf)}>
-                        <FieldLabel htmlFor={`${engineName}-value-${entry.entryId}`}>
-                            {t("macro.value")}
+                        <FieldLabel htmlFor={`${engineName}-text-${entry.entryId}`}>
+                            {t("memory.text")}
                         </FieldLabel>
-                        <Textarea name="value"
-                                  id={`${engineName}-value-${entry.entryId}`}
-                                  defaultValue={entry.value}
+                        <Textarea name="text"
+                                  id={`${engineName}-text-${entry.entryId}`}
+                                  defaultValue={entry.text}
                                   onKeyDown={submitTargetFormOnKey}/>
                     </Field>
                     <Field>
@@ -127,24 +126,36 @@ function Tab() {
                                defaultValue={entry.name ?? ""}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-multiple-${entry.entryId}`}>
-                            {t("macro.multiple")}
+                        <FieldLabel htmlFor={`${engineName}-sequence-${entry.entryId}`}>
+                            {t("memory.sequence")}
                         </FieldLabel>
-                        <FieldContent>
-                            <Checkbox name="multiple"
-                                      id={`${engineName}-multiple-${entry.entryId}`}
-                                      defaultChecked={entry.multiple ?? false}/>
-                        </FieldContent>
+                        <Input name="sequence" type={"number"} min={0} step={1}
+                               id={`${engineName}-sequence-${entry.entryId}`}
+                               defaultValue={entry.sequence}/>
                     </Field>
                     <Field>
-                        <FieldLabel htmlFor={`${engineName}-hidden-${entry.entryId}`}>
-                            {t("default.hidden")}
+                        <FieldLabel htmlFor={`${engineName}-importance-${entry.entryId}`}>
+                            {t("memory.importance")}
                         </FieldLabel>
-                        <FieldContent>
-                            <Checkbox name="hidden"
-                                      id={`${engineName}-hidden-${entry.entryId}`}
-                                      defaultChecked={entry.hidden ?? false}/>
-                        </FieldContent>
+                        <Input name="importance" type={"number"}
+                               min={1} step={1} max={10}
+                               id={`${engineName}-importance-${entry.entryId}`}
+                               defaultValue={entry.importance}/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${engineName}-type-${entry.entryId}`}>
+                            {t("default.type")}
+                        </FieldLabel>
+                        <Selector id={`${engineName}-type-${entry.entryId}`}
+                                  items={memoryTypes} name={"type"}
+                                  defaultValue={entry.type}/>
+                    </Field>
+                    <Field>
+                        <FieldLabel htmlFor={`${engineName}-tag-${entry.entryId}`}>
+                            {t("default.tags")}
+                        </FieldLabel>
+                        <TagBox id={`${engineName}-tag-${entry.entryId}`}
+                                name={"tag"} defaultValue={entry.tags}/>
                     </Field>
                 </>)
             }}/>
@@ -153,7 +164,7 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    hide: async () => presetTabIsHide(engineName),
-    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ReplaceAllIcon}/>,
+    hide: () => storyTabIsHide(engineName),
+    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={BrainIcon}/>,
     component: Tab
 }

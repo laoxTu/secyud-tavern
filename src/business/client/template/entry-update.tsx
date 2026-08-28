@@ -24,8 +24,8 @@ import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {GridField} from "@/components/custom/grid-field";
 
 export interface EntryUpdateProps<TEntry> {
-    disableHandler: (entry: TEntry, disabled: boolean) => Promise<TEntry>;
-    updateHandler: (entry: TEntry, data: FormData) => Promise<TEntry>;
+    disableHandler: (entry: TEntry, disabled: boolean) => Promise<void>;
+    updateHandler: (entry: TEntry, data: FormData) => Promise<void>;
     updateContent: (entry: TEntry, formRef: RefObject<HTMLFormElement | null>) => React.ReactNode;
     deleteHandler: (entry: TEntry) => Promise<void>;
     cloneHandler: (entry: TEntry, data: FormData) => Promise<void>;

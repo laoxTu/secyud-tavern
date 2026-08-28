@@ -9,10 +9,22 @@ import {Input} from "@/components/ui/input";
 import {TabManager} from "@/components/custom/tab";
 import {tryParseJson} from "@/utils";
 import {moduleName, StoryModel} from "../models";
-import {modelState} from "./models";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {getPresetRequires, PresetRequiresField} from "@/modules/presets/client/tabs";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
+import {modelState, useItemState} from "./models";
+
+export async function refreshItem() {
+    const {model, setModel} = useItemState.getState();
+    await setModel(model?.id);
+}
+
+export async function storyTabIsHide(entryType: string) {
+    const model = useItemState.getState().model;
+    if (!model) return false;
+    const entries: string[] = model.content.entries;
+    return !entries?.some(u => u === entryType);
+}
 
 function Tab() {
     const t = useTranslations();

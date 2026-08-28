@@ -22,6 +22,9 @@ export interface BaseModel {
     content: Record<string, any>,
 }
 
+export type ModelCreate<T extends BaseModel> = Omit<T, 'id'>;
+
+
 export interface EntryModel {
     id?: string, // 只在slot中用
     entryId: number,
@@ -31,6 +34,8 @@ export interface EntryModel {
     // 名称
     name: string,
 }
+
+export type EntryOperation<T extends EntryModel> = Omit<T, 'entryId' | 'disabled'>;
 
 export interface ImageFile {
     id: string,

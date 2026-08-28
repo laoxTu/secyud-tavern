@@ -36,6 +36,8 @@ import {useRemoteSettingState} from "@/modules/settings/client/models";
 import {useRouter} from "next/navigation";
 import {BusinessError} from "@/handler/models";
 import {getCover} from "@/business/client";
+import {ModelCreate} from "@/business/models";
+import {StoryModel} from "@/modules/stories/models";
 
 export const usePresetTabState = createUseTabState(presetTabManager);
 
@@ -70,7 +72,7 @@ function PresetImportDialog() {
     };
     const handleImport = async (formData: FormData) => {
         try {
-            const model = await put("/presets/import", {
+            const {id} = await put("/presets/import", {
                 ...Object.fromEntries(importModels.map(u =>
                     [u.code, !!formData.get(`code_${u.code}`)]))
             }, {
@@ -78,7 +80,7 @@ function PresetImportDialog() {
                     sessionId,
                 }
             });
-            await setModel(model);
+            await setModel(id);
             await fetch();
             setImportOpen(false);
             handleSuccess(t("default.imported_successfully"));
@@ -161,7 +163,7 @@ function PresetToolbar({model}: { model: PresetModel }) {
                 handleError(new BusinessError("default llmapi is not set.", "setting.llmapi_required"));
                 return;
             }
-            const {id} = await post("/stories", {
+            const {id} = await post<ModelCreate<StoryModel>>("/stories", {
                 name: model.name,
                 requires: [convertToRequire(model)],
                 llmapi,
@@ -257,8 +259,7 @@ function Content() {
                 </Field>
             </>),
             createHandler: async (data) => {
-                return await post("/presets", {
-                    id: "",
+                return await post<ModelCreate<PresetModel>>("/presets", {
                     version: "1.0.0",
                     code: data.get("code") as string,
                     name: data.get("name") as string,
@@ -281,8 +282,8 @@ function Content() {
                             withDetails: true,
                         }
                     });
-                    return await post("/presets", {
-                        ...entity, id: "",
+                    return await post<ModelCreate<PresetModel>>("/presets", {
+                        ...entity, id: undefined,
                         code: data.get("code") as string,
                         name: data.get("name") as string,
                     })

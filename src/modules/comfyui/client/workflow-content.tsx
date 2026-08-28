@@ -13,6 +13,7 @@ import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {ModelList} from "@/business/client/template/model-list";
 import {modelState} from "./models";
 import {createUseTabState} from "@/business/client/models";
+import {ModelCreate} from "@/business/models";
 
 export const useComfyUIWorkflowTabState = createUseTabState(comfyuiWorkflowTabManager);
 
@@ -51,8 +52,7 @@ function Content() {
                 </Field>
             </>),
             createHandler: async (data) => {
-                return await post("/comfyuis/workflows", {
-                    id: "",
+                return await post<ModelCreate<ComfyUIWorkflowModel>>("/comfyuis/workflows", {
                     code: data.get("code") as string,
                     name: data.get("name") as string,
                     content: {}
@@ -67,8 +67,8 @@ function Content() {
                         withDetails: true
                     }
                 });
-                return await post("/comfyuis/workflows", {
-                    ...entity, id: "",
+                return await post<ModelCreate<ComfyUIWorkflowModel>>("/comfyuis/workflows", {
+                    ...entity, id: undefined,
                     code: data.get("code") as string,
                     name: data.get("name") as string,
                 })

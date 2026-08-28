@@ -5,7 +5,16 @@ import {get} from "@/client";
 import {imageEntryName, moduleName, StoryImageModel, StoryModel} from "../models";
 import {modulePlural} from "@/modules/presets/models";
 
-export const useItemState = createUseItemState<StoryModel>("story-item-state")
+export const useItemState = createUseItemState<StoryModel>(
+    async id => {
+        return await get('/stories/{id}', {
+            params: {
+                id,
+                withExistEntries: true
+            }
+        })
+    }
+)
 export const usePagedItemsState = createUsePagedItemsState<StoryModel>(
     async options => {
         return await get('/stories', {params: options})
