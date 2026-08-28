@@ -6,6 +6,7 @@ import {llmapiProviderRegistry} from "@/modules/llmapis/server/provider";
 import {hasher} from "@/utils/server/hasher";
 import {BusinessError} from "@/handler/models";
 import {getCache} from "@/utils/server/cache";
+import {packSseStream} from "@/utils";
 
 /**
  * 调用指定 LLM API 进行流式对话
@@ -60,12 +61,13 @@ export const POST = interceptor.createRoute(
             input,
         }, llmapi.stream);
 
-        return llmapi.stream ? new NextResponse(response, {
-            headers: {
-                'Content-Type': 'text/event-stream',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-            },
-        }) : NextResponse.json(response);
+        return llmapi.stream ? new NextResponse(
+            await packSseStream(response as any), {
+                headers: {
+                    'Content-Type': 'text/event-stream',
+                    'Cache-Control': 'no-cache',
+                    'Connection': 'keep-alive',
+                },
+            }) : NextResponse.json(response);
     }
 );

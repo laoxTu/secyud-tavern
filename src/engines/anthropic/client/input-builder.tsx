@@ -111,7 +111,7 @@ export function BuilderContent({config}: { config: AnthropicInputBuilderConfigMo
         <>
             <Field>
                 <FieldLabel htmlFor={`${moduleName}-builder-type`}>
-                    {t(`${moduleName}.user_input_prefix`)}
+                    {t(`${moduleName}.builder`)}
                 </FieldLabel>
                 <Selector id={`${moduleName}-builder-type`} name={"builder-type"}
                           items={["default", "layered"]}

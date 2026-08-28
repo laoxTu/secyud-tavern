@@ -34,6 +34,7 @@ export function MacroSelector() {
     const t = useTranslations();
     const [open, setOpen] = React.useState(false);
     const {handleError} = useErrorHandler();
+    const [key, setKey] = React.useState(0);
     const {checkItems, selections} = getMacroSelectorState(slotContext.slotData.slot);
 
     const handleDialogOpen = async (open: boolean) => {
@@ -51,6 +52,7 @@ export function MacroSelector() {
             const entry = item.singles[id];
             selections[item.key] = entry.id;
             item.select = id;
+            setKey(u => u + 1);
         } catch (error) {
             handleError(error);
         }
@@ -63,6 +65,7 @@ export function MacroSelector() {
                 return;
             }
             checkItems[entry.id] = checked;
+            setKey(u => u + 1);
         } catch (error) {
             handleError(error);
         }
@@ -104,7 +107,7 @@ export function MacroSelector() {
                                             <Separator key={`s-${t.id}`} className={'my-1'}/>),
                                         (t) => (
                                             <Field key={t.id}>
-                                                <FieldContent className="flex-row p-2">
+                                                <FieldContent key={key} className="flex-row p-2">
                                                     <RadioGroupItem id={`macro-${t.id}`}
                                                                     value={t.id}/>
                                                     <FieldLabel htmlFor={`macro-${t.id}`}
@@ -124,8 +127,8 @@ export function MacroSelector() {
                                         <Separator key={`s-${t.id}`} className={'my-1'}/>),
                                     (t) => (
                                         <Field key={t.id}>
-                                            <FieldContent
-                                                className="flex-row p-2 rounded-md hover:bg-primary-foreground">
+                                            <FieldContent key={key}
+                                                          className="flex-row p-2 rounded-md hover:bg-primary-foreground">
                                                 <Checkbox id={`macro-${t.id}`}
                                                           checked={!t.disabled}
                                                           onCheckedChange={b => handleCheckItemChange(t, b)}/>
