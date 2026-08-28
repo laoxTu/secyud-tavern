@@ -33,8 +33,6 @@
     "tool_provider_variable": "变量工具",
     "top_logprobs": "top logprobs (最大返回置信词数)",
     "top_p": "top p (核采样 0~1)",
-    "url": "URL",
-    "user_input_prefix": "用户输入前缀",
-    "user_input_suffix": "用户输入后缀"
+    "url": "URL"
   }
 }
