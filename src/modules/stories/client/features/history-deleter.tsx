@@ -76,14 +76,6 @@ export function HistoryDeleter() {
     const cloneStoryHistory = async (remain: boolean) => {
         try {
             const {slot} = slotContext.slotData;
-            const llmapi = slot.llmapi;
-            const story: StoryModel = {
-                id: slot.id,
-                content: slot.content,
-                name: slot.name,
-                requires: slot.requires,
-                llmapi: convertToRequire(llmapi)
-            }
             if (!remain) {
                 await del("/stories/{id}", {
                     params: {
@@ -91,7 +83,13 @@ export function HistoryDeleter() {
                     }
                 })
             }
-            await post("/stories", story);
+            await post<StoryModel>("/stories", {
+                id: slot.id,
+                content: slot.content,
+                name: slot.name,
+                requires: slot.requires,
+                llmapi: convertToRequire(slot.llmapi)
+            });
             window.location.reload();
         } catch (e) {
             handleError(e);

@@ -33,6 +33,7 @@ import Link from "next/link";
 import {useImagePagedItemsState, useItemState} from "@/modules/stories/client/models";
 import {engineName} from "@/engines/regexes/models";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
+import {EntryOperation} from "@/business/models";
 
 
 function ContentItem({entry}: { entry: StoryImageModel }) {
@@ -214,11 +215,10 @@ export function Content() {
 
     const handleCreate = async (data: FormData) => {
         try {
-            await post("/stories/{id}/entries/{entryType}", {
-                id: "",
+            await post<EntryOperation<StoryImageModel>>("/stories/{id}/entries/{entryType}", {
                 code: data.get("code") as string,
                 name: data.get("name") as string,
-                content: {}
+                imageId: "",
             }, {
                 params: {
                     id: model?.id,

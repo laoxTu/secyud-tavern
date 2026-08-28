@@ -113,7 +113,7 @@ export async function api<
 }
 
 export const get = (url: ApiPath, options?: RequestOptions) => api(url, 'get', options);
-export const post = (url: ApiPath, body?: any, options?: RequestOptions) => api(url, 'post', {...options, body});
-export const put = (url: ApiPath, body?: any, options?: RequestOptions) => api(url, 'put', {...options, body});
+export const post = <T = any>(url: ApiPath, body?: T, options?: RequestOptions) => api(url, 'post', {...options, body});
+export const put = <T = any>(url: ApiPath, body?: T, options?: RequestOptions) => api(url, 'put', {...options, body});
 export const del = (url: ApiPath, options?: RequestOptions) => api(url, 'delete', options);
 export const open = (url: ApiPath, options?: RequestOptions) => api(url, 'open', options);

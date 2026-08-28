@@ -42,6 +42,7 @@ import {ComfyUIModelImporter} from "@/modules/comfyui/client/impoter-models";
 import {GridField} from "@/components/custom/grid-field";
 import {customCreateElement} from "@/components/custom";
 import {getCover} from "@/business/client";
+import {ModelCreate} from "@/business/models";
 
 function ItemCover({model}: { model: ComfyUIModelModel }) {
     const src = getCover(model.content);
@@ -348,11 +349,11 @@ function Content() {
 
     const handleCreate = async (data: FormData) => {
         try {
-            await post("/comfyuis/models", {
-                id: "",
+            await post<ModelCreate<ComfyUIModelModel>>("/comfyuis/models", {
                 code: data.get("code") as string,
                 name: data.get("name") as string,
-                content: {}
+                content: {},
+                type: "lora"
             })
             await fetch();
             handleSuccess(t("default.created_successfully"));

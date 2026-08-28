@@ -4,13 +4,13 @@ import {get} from "@/client";
 import {moduleName, PresetModel} from "../models";
 
 export const useItemState =
-    createUseItemState<PresetModel>(undefined, async (model) => {
-        return model ? await get('/presets/{id}', {
+    createUseItemState<PresetModel>(async (id) => {
+        return await get('/presets/{id}', {
             params: {
-                id: model.id,
+                id,
                 withExistEntries: true
             }
-        }) : undefined;
+        });
     })
 export const usePagedItemsState =
     createUsePagedItemsState<PresetModel>(async options => {

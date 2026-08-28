@@ -17,12 +17,13 @@ import {useErrorHandler} from "@/handler/client/error";
 import {useHistoryPageState} from "@/modules/stories/client/history-pager";
 import {submitTargetFormOnKey} from "@/business/client";
 import {create} from "zustand";
-import {historyUtils, messageUtils} from "@/modules/models";
+import {historyUtils, messageUtils, SlotHistory} from "@/modules/models";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
 import {SlotMessageInput} from "@/modules/models/message";
 import {setAbort} from "@/utils";
 import {Item, ItemContent, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {Spinner} from "@/components/ui/spinner";
+import {EntryOperation} from "@/business/models";
 
 interface GenerateInfo {
     title: string,
@@ -209,11 +210,11 @@ export const useStoryChatboxState =
                     await useHistoryPageState.getState()
                         .setPage(histories.length);
                     if (variables) {
-                        const {entryId} = await post('/stories/{id}/entries/{entryType}', history,
+                        const {entryId} = await post<EntryOperation<SlotHistory>>('/stories/{id}/entries/{entryType}',
+                            history,
                             {params: {id: slot.id, entryType: 'history'}}
                         );
                         history.entryId = entryId;
-                        history.name = String(entryId);
                     }
                 } catch (err) {
                     set({summary: false, content: ""});

@@ -15,6 +15,7 @@ import {Selector} from "@/components/custom/selector";
 import {Input} from "@/components/ui/input";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 import {customCreateElement} from "@/components/custom";
+import {EntryOperation} from "@/business/models";
 
 
 export function EditorContent({entry, formRef}: {
@@ -70,9 +71,9 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
-                        code: data.get('code'),
-                        name: data.get('name'),
+                    await post<EntryOperation<PresetToolConfigModel>>('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                         provider: "",
                         value: {},
                     }, {
@@ -93,8 +94,7 @@ function Tab() {
                             entryType: engineName,
                             entryId: entry.entryId
                         }
-                    })
-                    return {...entry, disabled};
+                    });
                 },
                 deleteHandler: async entry => {
                     await del('/presets/{id}/entries/{entryType}/{entryId}', {
@@ -106,10 +106,10 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<PresetToolConfigModel>>('/presets/{id}/entries/{entryType}', {
                         ...entry,
-                        code: data.get('code'),
-                        name: data.get('name'),
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }, {
                         params: {
                             id: model?.id,
@@ -120,21 +120,22 @@ function Tab() {
                 updateHandler: async (entry, data) => {
                     const provider = data.get('provider') as string;
 
-                    const result: PresetToolConfigModel = {
-                        ...entry,
-                        code: data.get('code') as string,
-                        name: data.get('name') as string,
-                        provider: provider,
-                        value: llmapiToolManager.records[provider]?.getValue(data),
-                    };
-                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
-                    return result;
+                    await put<EntryOperation<PresetToolConfigModel>>(
+                        '/presets/{id}/entries/{entryType}/{entryId}',
+                        {
+                            ...entry,
+                            code: data.get('code') as string,
+                            name: data.get('name') as string,
+                            provider: provider,
+                            value: llmapiToolManager.records[provider]?.getValue(data),
+                        },
+                        {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 updateContent: (entry, formRef) =>
                     (<EditorContent entry={entry} formRef={formRef}/>)

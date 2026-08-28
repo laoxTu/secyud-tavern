@@ -1,6 +1,20 @@
 import {RagModel} from "@/engines/rags/client/models";
-import {StoryMemoryModel} from "@/engines/memories/models";
 import {SlotMessageOutput} from "@/modules/models/message";
+import {EntryState} from "@/business/client/models";
+import {createUsePagedItemsState} from "@/components/custom/pager";
+import {get} from "@/client";
+import {moduleName, modulePlural} from "@/modules/stories/models";
+import {engineName, StoryMemoryModel} from "../models";
+import {refreshItem} from "@/modules/stories/client/tabs";
+
+export const usePagedItemsState = createUsePagedItemsState<StoryMemoryModel>(
+    async options => {
+        return await get('/stories/{id}/entries/{entryType}', {params: options})
+    });
+
+export const entryState: EntryState<StoryMemoryModel> = {
+    moduleName, modulePlural, usePagedItemsState, entryType: engineName, refreshItem
+};
 
 export const memorySchema = {
     entryId: 'number',

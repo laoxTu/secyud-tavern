@@ -13,7 +13,6 @@ import {BusinessError} from "@/handler/models";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
-import {defaultTags, modelState, useItemState} from "./models";
 import {submitTargetFormOnKey} from "@/business/client";
 import {PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
@@ -21,10 +20,11 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {rowHalf, rowQuat, spanHalf} from "@/components/custom/grid-field";
 import {tryParseJson} from "@/utils";
 import {cn} from "@/lib/utils";
+import {defaultTags, modelState, useItemState} from "./models";
 
 export async function refreshItem() {
     const {model, setModel} = useItemState.getState();
-    await setModel(model);
+    await setModel(model?.id);
 }
 
 export async function presetTabIsHide(entryType: string) {

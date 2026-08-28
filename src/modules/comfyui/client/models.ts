@@ -20,7 +20,11 @@ import {remoteStorage} from "@/modules/settings/client/storage";
  * 借助工作流和llm生成提示词，从而增加生图效率
  * 所以主item设置为 workflow
  */
-export const useItemState = createUseItemState<ComfyUIWorkflowModel>()
+export const useItemState = createUseItemState<ComfyUIWorkflowModel>(
+    async id => {
+        return await get('/comfyuis/workflows/{id}', {params: {id}})
+    }
+)
 export const usePagedItemsState = createUsePagedItemsState<ComfyUIWorkflowModel>(
     async options => {
         return await get('/comfyuis/workflows', {params: options})

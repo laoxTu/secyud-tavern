@@ -23,6 +23,7 @@ import {checkJson} from "@/utils";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 import {customCreateElement} from "@/components/custom";
 import {cn} from "@/lib/utils";
+import {EntryOperation} from "@/business/models";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -127,9 +128,9 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
-                        code: data.get('code'),
-                        name: data.get('name'),
+                    await post<EntryOperation<PresetLorebookModel>>('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                         matchType: matchName,
                         matchExpression: [],
                         content: "",
@@ -155,7 +156,6 @@ function Tab() {
                             entryId: entry.entryId
                         }
                     })
-                    return {...entry, disabled};
                 },
                 deleteHandler: async entry => {
                     await del('/presets/{id}/entries/{entryType}/{entryId}', {
@@ -167,10 +167,10 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<PresetLorebookModel>>('/presets/{id}/entries/{entryType}', {
                         ...entry,
-                        code: data.get('code'),
-                        name: data.get('name'),
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }, {
                         params: {
                             id: model?.id,
@@ -188,24 +188,23 @@ function Tab() {
                                 "default.json_invalid")
                                 .withValue("target", "preset.lorebook");
                     }
-                    const result: PresetLorebookModel = {
-                        ...entry,
-                        matchType, content, type,
-                        matchExpression: matchEditors[matchType]?.getValue(data),
-                        priority: parseInt(data.get("priority") as string),
-                        layer: parseInt(data.get("layer") as string),
-                        role: data.get("role") as any,
-                        code: data.get('code') as string,
-                        name: data.get('name') as string,
-                    }
-                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
-                    return result;
+                    await put<EntryOperation<PresetLorebookModel>>('/presets/{id}/entries/{entryType}/{entryId}',
+                        {
+                            matchType, content, type,
+                            matchExpression: matchEditors[matchType]?.getValue(data),
+                            priority: parseInt(data.get("priority") as string),
+                            layer: parseInt(data.get("layer") as string),
+                            role: data.get("role") as any,
+                            code: data.get('code') as string,
+                            name: data.get('name') as string,
+                        },
+                        {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 updateContent: (entry, formRef) =>
                     (<EditorContent entry={entry} formRef={formRef}/>)

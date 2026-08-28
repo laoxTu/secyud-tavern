@@ -19,7 +19,7 @@ import {Button} from "@/components/ui/button";
 
 interface Props<TModel> {
     modelState: ModelState<TModel>;
-    createProps: ModelCreateProps<TModel>;
+    createProps: ModelCreateProps;
     contentProps: ModelContentProps<TModel>;
     // 额外的搜索内容，FieldGroup的内部内容。
     searchContent?: () => React.ReactNode,
@@ -88,9 +88,9 @@ export function ModelList<TModel extends BaseModel>(
         }
     }
 
-    const changeModel = async (model: TModel) => {
+    const changeModel = async (id: string) => {
         try {
-            await setModel(model);
+            await setModel(id);
         } catch (err) {
             handleError(err);
         }
@@ -114,8 +114,8 @@ export function ModelList<TModel extends BaseModel>(
             await fetch();
             const items = usePagedItemsState.getState().items;
             if (!useItemState.getState().model &&
-                items && items.length > 0) {
-                await setModel(items[0]);
+                items?.length) {
+                await setModel(items[0]?.id);
             }
         })();
     }, []);
@@ -191,7 +191,8 @@ export function ModelList<TModel extends BaseModel>(
                                               item.id === model?.id ? " bg-secondary text-secondary-foreground" : ""
                                           }`}
                                           variant={"outline"}
-                                          role="listitem" onClick={() => changeModel(item)}>
+                                          role="listitem"
+                                          onClick={() => changeModel(item.id)}>
                                         {itemContent(item)}
                                     </Item>
                                 ))}

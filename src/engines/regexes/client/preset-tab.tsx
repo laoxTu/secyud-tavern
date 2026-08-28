@@ -16,6 +16,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/grid-field";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
+import {EntryOperation} from "@/business/models";
 
 const regexTargets = ["both", "input", "output"]
 
@@ -28,9 +29,9 @@ function Tab() {
             modelId={model!.id}
             createProps={{
                 createHandler: async (data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
-                        code: data.get('code'),
-                        name: data.get('name'),
+                    await post<EntryOperation<PresetRegexModel>>('/presets/{id}/entries/{entryType}', {
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                         pattern: "",
                         replacement: "",
                         target: "both",
@@ -53,7 +54,6 @@ function Tab() {
                             entryId: entry.entryId
                         }
                     })
-                    return {...entry, disabled};
                 },
                 deleteHandler: async entry => {
                     await del('/presets/{id}/entries/{entryType}/{entryId}', {
@@ -65,10 +65,10 @@ function Tab() {
                     })
                 },
                 cloneHandler: async (entry, data) => {
-                    await post('/presets/{id}/entries/{entryType}', {
+                    await post<EntryOperation<PresetRegexModel>>('/presets/{id}/entries/{entryType}', {
                         ...entry,
-                        code: data.get('code'),
-                        name: data.get('name'),
+                        code: data.get('code') as string,
+                        name: data.get('name') as string,
                     }, {
                         params: {
                             id: model?.id,
@@ -77,22 +77,22 @@ function Tab() {
                     })
                 },
                 updateHandler: async (entry, data) => {
-                    const result = {
-                        ...entry,
-                        pattern: data.get("pattern") as string,
-                        replacement: data.get("replacement") as string,
-                        target: data.get("target") as string,
-                        code: data.get('code') as string,
-                        name: data.get('name') as string,
-                    }
-                    await put('/presets/{id}/entries/{entryType}/{entryId}', result, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    });
-                    return result;
+                    await put<EntryOperation<PresetRegexModel>>(
+                        '/presets/{id}/entries/{entryType}/{entryId}',
+                        {
+                            pattern: data.get("pattern") as string,
+                            replacement: data.get("replacement") as string,
+                            target: data.get("target") as string,
+                            code: data.get('code') as string,
+                            name: data.get('name') as string,
+                        },
+                        {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        });
                 },
                 updateContent: (entry) => (
                     <>
