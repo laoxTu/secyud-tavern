@@ -1,5 +1,5 @@
 import React from "react";
-import {ReplaceAllIcon} from "lucide-react";
+import {BrainIcon} from "lucide-react";
 import {useTranslations} from "next-intl";
 import {Field, FieldLabel} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
@@ -163,6 +163,6 @@ function Tab() {
 
 export const tabConfig: TabConfig = {
     id: engineName,
-    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={ReplaceAllIcon}/>,
+    label: () => <EntryTabHeader space={moduleName} value={engineName} icon={BrainIcon}/>,
     component: Tab
 }
