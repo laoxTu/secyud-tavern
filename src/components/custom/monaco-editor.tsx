@@ -18,7 +18,7 @@ interface Props {
 
 export function MonacoEditor({name, defaultValue, language, className, formRef}: Props) {
     const editorRef = useRef<IStandaloneCodeEditor>(null);
-    const [content, setContent] = useState<string | undefined>(defaultValue);
+    const [content, setContent] = useState<string | undefined>(String(defaultValue));
     const {theme} = useTheme();
     const handleEditorDidMount: OnMount = (editor) => {
         // here is the editor instance

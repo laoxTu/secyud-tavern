@@ -12,8 +12,8 @@ import {deleteCache} from "@/utils/server/cache";
 export const apiConfig: TemplateConfig<LlmapiModel> = {
     repository: llmapiRepository,
     checkCreate: async (model) => {
-        Check.NotNullOrWhitespace('code', model.code);
-        Check.NotNullOrWhitespace('name', model.name);
+        Check.notNullOrWhitespace('code', model.code);
+        Check.notNullOrWhitespace('name', model.name);
         model.key = undefined;
         model.iv = undefined;
         if (await repository.exist(e => (eq(e.code, model.code)))) {
@@ -24,8 +24,8 @@ export const apiConfig: TemplateConfig<LlmapiModel> = {
         }
     },
     checkUpdate: async (id, model) => {
-        Check.NotWhitespace('code', model.code);
-        Check.NotWhitespace('name', model.name);
+        Check.notWhitespace('code', model.code);
+        Check.notWhitespace('name', model.name);
         if (model.code && await repository
             .exist(e => (and(
                 eq(e.code, model.code),

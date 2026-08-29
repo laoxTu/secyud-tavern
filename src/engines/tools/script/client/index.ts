@@ -3,24 +3,19 @@ import {ScriptToolConfigModel} from "../models";
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {PresetToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
-import {BusinessError} from "@/handler/models";
+import {Check} from "@/handler/models";
 import {slotContext} from "@/modules/stories/client/context";
-import {checkJson} from "@/utils";
 
 export const scriptToolProvider: LlmapiToolProvider = {
     id: "script",
     component: Editor,
     getValue: (data: FormData): ScriptToolConfigModel => {
-        const schema = data.get('schema') as string;
-        if (!checkJson(schema))
-            throw new BusinessError("json invalid", "default.json_invalid")
-                .withValue("target", "default.schema");
         return {
             hidden: !!data.get('hidden'),
             enableDoc: !!data.get('enable_doc'),
             enableVariable: !!data.get('enable_variable'),
             script: data.get('script') as string,
-            schema,
+            schema: Check.validJson(data.get('schema') as string, "default.schema"),
             description: data.get('description') as string,
         };
     },

@@ -13,7 +13,7 @@ import {
 import {engineName as toolEngineName} from '@/engines/tools/models';
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {SlotMessageBase} from "@/modules/models/message";
-import {joinAsString, sequenceGroupBy, tryParseJson} from "@/utils";
+import {joinAsString, minifyJson, sequenceGroupBy} from "@/utils";
 import {getKnowledgeTool} from "@/modules/llmapis/client/input-builder";
 import {LorebookConversationCache, lorebookSchema} from "@/engines/lorebooks/client/models";
 import {createDatabase} from "@/engines/rags/client/models";
@@ -191,7 +191,7 @@ export const lorebookConversationProvider:
             async (entry) => {
                 if (entry.disabled) return;
                 if (entry.type === "json") {
-                    entry.content = JSON.stringify(tryParseJson(entry.content));
+                    entry.content = minifyJson(entry.content);
                 }
                 if (entry.matchType === alwaysMatch) {
                     if (entry.matchExpression?.lastMessage)

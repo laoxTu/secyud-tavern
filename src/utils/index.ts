@@ -1,31 +1,39 @@
-﻿export function tryParseJson(str?: string | null, defaultValue: any = null) {
+﻿/**
+ * 返回null或json
+ * @param str
+ * @param defaultValue
+ */
+export function tryParseJson(str?: string | null, defaultValue: any = null) {
     try {
-        return str ? JSON.parse(str) : defaultValue;
+        return str?.trim() ? JSON.parse(str) : defaultValue;
     } catch (e) {
         console.warn(`[json](parse error): `, e);
         return defaultValue;
     }
 }
 
-export function checkJson(str?: string | null) {
-    try {
-        return !!(str && JSON.parse(str));
-    } catch (e) {
-        return false;
-    }
+export function minifyJson(str?: string) {
+    const json = tryParseJson(str);
+    return json ? JSON.stringify(json) : "";
 }
 
+/**
+ * 原地合并JSON对象
+ * lft为空则返回rht
+ * 同时为空返回空对象
+ * 否则返回lft
+ * @param lft
+ * @param rht
+ */
+export function mergeObjects(lft: any, rht: any) {
+    if (!lft && !rht) return {};
+    if (!lft) return rht;
 
-// 原生实现（支持嵌套对象合并）
-export function mergeObjects(target: any, source: any) {
-    if (!target && !source) return {};
-    if (!target) return source;
+    const result = lft;
 
-    const result = target;
-
-    if (source) {
-        for (const key in source) {
-            const s = source[key];
+    if (rht) {
+        for (const key in rht) {
+            const s = rht[key];
             if (s === undefined || s === null) continue;
             const t = result[key];
             // 如果当前值和源值都是普通对象，则递归合并

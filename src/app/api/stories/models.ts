@@ -46,10 +46,10 @@ export async function getSlot(story: StoryModel): Promise<SlotModel> {
 export const apiConfig: TemplateConfig<StoryModel> = {
     repository: storyRepository,
     checkCreate: async (model) => {
-        Check.NotNullOrWhitespace('name', model.name);
+        Check.notNullOrWhitespace('name', model.name);
     },
     checkUpdate: async (_, model) => {
-        Check.NotWhitespace('name', model.name);
+        Check.notWhitespace('name', model.name);
     },
     importHandler: undefined,
     exportHandler: undefined,

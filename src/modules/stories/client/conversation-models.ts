@@ -2,7 +2,7 @@
 import {BusinessError} from "@/handler/models";
 import {SlotModel} from "@/modules/stories/models";
 import {messageUtils, SlotHistory} from "@/modules/models";
-import {mergeObjects} from "@/utils";
+import {mergeObjects, tryParseJson} from "@/utils";
 import {RequireModel} from "@/modules/presets/models";
 import {get} from "@/client";
 import {slotContext} from "@/modules/stories/client/context";
@@ -130,9 +130,10 @@ function getOpening(slot: SlotModel) {
     const key = 'openingHistory';
     let openingHistory = slot.properties[key] as SlotHistory;
     if (!openingHistory) {
-        let variables = {};
+        const variables = {};
         for (const preset of slot.presets) {
-            variables = mergeObjects(variables, preset.content.variables);
+            mergeObjects(variables,
+                tryParseJson(preset.content.variables));
         }
         openingHistory = {
             entryId: 0,
