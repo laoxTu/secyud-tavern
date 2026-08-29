@@ -26,7 +26,6 @@ import {Input} from "@/components/ui/input";
 import {del, post, put} from "@/client";
 import {Label} from "@/components/ui/label";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import {LlmapiModel} from "@/modules/llmapis/models";
 import {ImageUploader} from "@/components/custom/image-uploader";
 import {BusinessError} from "@/handler/models";
 import Link from "next/link";
@@ -66,12 +65,12 @@ function ContentItem({entry}: { entry: StoryImageModel }) {
                 imageId = id;
             }
 
-            await put("/stories/{id}/entries/{entryType}/{entryId}",
+            await put<EntryOperation<StoryImageModel>>("/stories/{id}/entries/{entryType}/{entryId}",
                 {
                     code: entry.code,
-                    name: data.get("name"),
+                    name: data.get("name") as string,
                     imageId
-                } as Partial<LlmapiModel>,
+                },
                 {
                     params: {
                         id: model?.id,

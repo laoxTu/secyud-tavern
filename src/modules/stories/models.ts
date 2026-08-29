@@ -25,7 +25,7 @@ export interface LlmapiToolModel {
 }
 
 export interface StoryImageModel extends EntryModel {
-    imageId: string;
+    imageId: string | null;
 }
 
 export const moduleName = 'story';

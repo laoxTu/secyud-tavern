@@ -5,21 +5,17 @@ import {PresetToolConfigModel} from "@/engines/tools/models";
 import {LlmapiToolModel, SlotModel, StoryModel} from "@/modules/stories/models";
 import {conversationManager} from "@/modules/stories/client/conversation";
 import {useStoryChatboxState} from "@/modules/stories/client/history-chatbox";
-import {checkJson, tryParseJson} from "@/utils";
+import {tryParseJson} from "@/utils";
 import {getPresetRequires} from "@/modules/presets/client/tabs";
 import {get} from "@/client";
-import {BusinessError} from "@/handler/models";
+import {Check} from "@/handler/models";
 
 export const subAgentToolProvider: LlmapiToolProvider = {
     id: "sub_agent",
     component: Editor,
     getValue: (data: FormData): SubAgentConfigModel => {
-        const schema = data.get('schema') as string;
-        if (!checkJson(schema))
-            throw new BusinessError("json invalid", "default.json_invalid")
-                .withValue("target", "default.schema");
         return {
-            schema,
+            schema: Check.validJson(data.get('schema') as string, "default.schema"),
             disableTags: data
                 .getAll('disable_tags')
                 .map(u => String(u)),

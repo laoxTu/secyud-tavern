@@ -9,16 +9,15 @@ import {Textarea} from "@/components/ui/textarea";
 import {TabManager} from "@/components/custom/tab";
 import {RemoteSearchCombobox, TagBox} from "@/components/custom/combobox";
 import {ImageUploader} from "@/components/custom/image-uploader";
-import {BusinessError} from "@/handler/models";
+import {BusinessError, Check} from "@/handler/models";
 import {ModelUpdate} from "@/business/client/template/model-update";
 import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {convertToRequire, moduleName, PresetModel, RequireModel} from "../models";
 import {submitTargetFormOnKey} from "@/business/client";
-import {PagedResult} from "@/business/models";
+import {ModelOperation, PagedResult} from "@/business/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {rowHalf, rowQuat, spanHalf} from "@/components/custom/grid-field";
-import {tryParseJson} from "@/utils";
 import {cn} from "@/lib/utils";
 import {defaultTags, modelState, useItemState} from "./models";
 
@@ -92,18 +91,13 @@ export function DefaultTab() {
                     });
                     coverId = id;
                 }
-                const variablesText = (data.get("variables") as string)
-                    ?.trim() ?? "{}";
-                const variables = variablesText ? tryParseJson(variablesText) : {};
-                if (!variables)
-                    throw new BusinessError("variable deserialize failed.",
-                        'default.json_invalid')
-                        .withValue("target", "default.variables");
+                const variables = (data.get("variables") as string)?.trim();
+                Check.validJsonOrEmpty(variables);
 
-
-                return await put("/presets/{id}",
+                await put<ModelOperation<PresetModel>>("/presets/{id}",
                     {
                         content: {
+                            author: model.content.author,
                             opening: data.get("opening"),
                             description: data.get("description"),
                             variables,
@@ -189,7 +183,7 @@ export function DefaultTab() {
                         {t("default.variables")}
                     </FieldLabel>
                     <MonacoEditor name={'variables'}
-                                  defaultValue={JSON.stringify(model.content.variables ?? undefined)}
+                                  defaultValue={model.content.variables}
                                   language={'json'} formRef={formRef}/>
                 </Field>
                 <Field className={spanHalf}>

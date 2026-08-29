@@ -1,0 +1,44 @@
+{
+  "slot": {
+    "back_home_tip": "Back to Home",
+    "calling_tool": "Calling Tool",
+    "content_already_initialized": "Slot cache already exists: {key}",
+    "content_not_initialized": "Slot cache not initialized: {key}",
+    "create_chat": "Create",
+    "create_chat_delete_origin": "Create and Delete Original Chat",
+    "current_history": "Current History",
+    "delete_history_tip": "Delete Current History",
+    "delete_output_tip": "Delete Current Reply",
+    "edit_history": "Edit History",
+    "edit_history_tip": "Edit Current History",
+    "generating": "Generate Content",
+    "generating_tool": "Build Parameters",
+    "input": "User Input",
+    "input_processing": "Processing Input",
+    "input_viewer": "Context",
+    "input_viewer_tip": "View Context",
+    "is_output_warning": "Currently generating output, cannot perform this action",
+    "new_chat_description": "Are you sure you want to create a new chat?",
+    "new_chat_title": "Create New Chat",
+    "not_loaded": "Failed to load the save.",
+    "output": "AI Output",
+    "pin_chatbox": "Pin Chatbox",
+    "regenerate_reply_tip": "Regenerate",
+    "thinking": "Generate Thinking",
+    "unpin_chatbox": "Unpin Chatbox",
+    "variable": "Variable",
+    "variable_invalid_json": "Invalid variable format"
+  },
+  "story": {
+    "enter": "Enter",
+    "image": "Image",
+    "memory": "Memory",
+    "images": "Gallery",
+    "opening_remarks": "Opening Remarks"
+  },
+  "memory": {
+    "text": "Content",
+    "sequence": "Turn",
+    "importance": "Importance"
+  }
+}

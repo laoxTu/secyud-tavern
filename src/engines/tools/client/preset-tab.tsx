@@ -15,7 +15,7 @@ import {Selector} from "@/components/custom/selector";
 import {Input} from "@/components/ui/input";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 import {customCreateElement} from "@/components/custom";
-import {EntryOperation} from "@/business/models";
+import {DisableModel, EntryOperation} from "@/business/models";
 
 
 export function EditorContent({entry, formRef}: {
@@ -86,7 +86,7 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                    await put<DisableModel>('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
                         disabled,
                     }, {
                         params: {

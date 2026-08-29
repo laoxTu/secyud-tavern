@@ -2,7 +2,7 @@
 import {RefObject} from "react";
 import {get, put} from "@/client";
 import {joinAsString} from "@/utils";
-import {SlotModel} from "@/modules/stories/models";
+import {SlotModel, StoryModel} from "@/modules/stories/models";
 import {historyUtils, SlotHistory} from "@/modules/models";
 import {BusinessError} from "@/handler/models";
 import {slotUtils} from "@/modules/stories/client/conversation-models";
@@ -68,14 +68,14 @@ async function setHistory(index?: number, slot?: SlotModel) {
     if (index === 0) return;
     slot ??= slotInstance.get();
     const history = await getHistory(index, slot);
-    await put('/stories/{id}/entries/{entryType}/{entryId}', history,
+    await put<SlotHistory>('/stories/{id}/entries/{entryType}/{entryId}', history,
         {params: {id: slot?.id, entryType: 'history', entryId: history.entryId}},
     );
 }
 
 async function saveContent(slot?: SlotModel) {
     slot ??= slotInstance.get();
-    await put('/stories/{id}', {
+    await put<Partial<StoryModel>>('/stories/{id}', {
             content: slot.content,
         },
         {params: {id: slot?.id}},

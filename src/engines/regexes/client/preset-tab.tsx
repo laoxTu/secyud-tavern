@@ -16,7 +16,7 @@ import {submitTargetFormOnKey} from "@/business/client";
 import {Selector} from "@/components/custom/selector";
 import {spanHalf} from "@/components/custom/grid-field";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
-import {EntryOperation} from "@/business/models";
+import {DisableModel, EntryOperation} from "@/business/models";
 
 const regexTargets = ["both", "input", "output"]
 
@@ -45,7 +45,7 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                    await put<DisableModel>('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
                         disabled,
                     }, {
                         params: {

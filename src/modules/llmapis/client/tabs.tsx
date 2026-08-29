@@ -17,7 +17,7 @@ import {Selector} from "@/components/custom/selector";
 import {RequireModel} from "@/modules/presets/models";
 import {useErrorHandler} from "@/handler/client/error";
 import {RemoteSearchCombobox} from "@/components/custom/combobox";
-import {PagedResult} from "@/business/models";
+import {ModelOperation, PagedResult} from "@/business/models";
 import {Checkbox} from "@/components/ui/checkbox";
 import {customCreateElement} from "@/components/custom";
 
@@ -135,7 +135,7 @@ function DefaultTab() {
                 const key = data.get("apikey") as string | undefined;
                 const provider = data.get("provider") as string;
                 const builder = data.get("builder") as string;
-                return await put("/llmapis/{id}",
+                await put<ModelOperation<LlmapiModel>>("/llmapis/{id}",
                     {
                         content: {
                             config: llmapiProviderRegistry.records[provider]?.getValue(data),
@@ -148,7 +148,7 @@ function DefaultTab() {
                         stream: !!data.get("stream"),
                         version: data.get("version") as string,
                         key: model.key === key || !key || key === '' ? undefined : key,
-                    } as Partial<LlmapiModel>,
+                    },
                     {
                         params: {"id": model.id,}
                     });

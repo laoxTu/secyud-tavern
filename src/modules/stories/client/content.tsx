@@ -18,7 +18,7 @@ import {ModelTabHeader} from "@/business/client/template/tab-header";
 import {createUseTabState} from "@/business/client/models";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useRemoteSettingState} from "@/modules/settings/client/models";
-import {ModelCreate} from "@/business/models";
+import {ModelOperation} from "@/business/models";
 
 export const useStoryTabState = createUseTabState(storyTabManager);
 
@@ -66,7 +66,7 @@ function Content() {
                 </Field>
             </>),
             createHandler: async (data) => {
-                return await post<ModelCreate<StoryModel>>("/stories", {
+                return await post<ModelOperation<StoryModel>>("/stories", {
                     name: data.get("name") as string,
                     requires: [],
                     llmapi: useRemoteSettingState
@@ -83,7 +83,7 @@ function Content() {
                         withDetails: true
                     }
                 });
-                return await post<ModelCreate<StoryModel>>("/stories", {
+                return await post<ModelOperation<StoryModel>>("/stories", {
                     ...entity, id: undefined,
                     name: data.get("name") as string,
                 })

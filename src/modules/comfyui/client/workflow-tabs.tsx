@@ -18,6 +18,7 @@ import {useErrorHandler} from "@/handler/client/error";
 import {submitTargetFormOnKey} from "@/business/client";
 import {rowFull, rowQuat, spanHalf} from "@/components/custom/grid-field";
 import {cn} from "@/lib/utils";
+import {ModelOperation} from "@/business/models";
 
 function UpdateContent({model, formRef}: { model: ComfyUIWorkflowModel, formRef: RefObject<HTMLFormElement | null> }) {
     const t = useTranslations();
@@ -82,8 +83,7 @@ export function DefaultTab() {
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-
-                return await put("/comfyuis/workflows/{id}",
+                await put<ModelOperation<ComfyUIWorkflowModel>>("/comfyuis/workflows/{id}",
                     {
                         content: {
                             workflow: data.get("workflow_content"),

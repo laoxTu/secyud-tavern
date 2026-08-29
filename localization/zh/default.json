@@ -37,6 +37,7 @@
     "ensure": "确定",
     "entity_not_found": "目标未找到（ID：{id}）",
     "export": "导出",
+    "field": "字段",
     "hidden": "隐藏",
     "html": "Html",
     "id": "ID",
@@ -45,7 +46,6 @@
     "import_description": "请导入一个{target}",
     "import_title": "导入{target}",
     "imported_successfully": "导入成功",
-    "json_invalid": "{target} JSON格式错误",
     "language": "语言",
     "layer": "层级",
     "link": "链接",
@@ -94,7 +94,8 @@
   },
   "error": {
     "duplicate_field": "已经有一个具有相同{field}的{entity_name}！",
-    "empty_field": "{field}不可以为空！"
+    "empty_field": "{field}不可以为空！",
+    "json_invalid": "{target} JSON格式错误"
   },
   "page": {
     "next": "下一页",

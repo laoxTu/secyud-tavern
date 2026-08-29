@@ -14,7 +14,7 @@ import {del, post, put} from "@/client";
 import {submitTargetFormOnKey} from "@/business/client";
 import {rowHalf, spanHalf} from "@/components/custom/grid-field";
 import {useItemState} from "@/modules/stories/client/models";
-import {EntryOperation} from "@/business/models";
+import {DisableModel, EntryOperation} from "@/business/models";
 import {cn} from "@/lib/utils";
 import {Selector} from "@/components/custom/selector";
 import {memoryTypes} from "@/engines/memories/client/tool";
@@ -48,7 +48,7 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/stories/{id}/entries/{entryType}/{entryId}/disabled', {
+                    await put<DisableModel>('/stories/{id}/entries/{entryType}/{entryId}/disabled', {
                         disabled,
                     }, {
                         params: {

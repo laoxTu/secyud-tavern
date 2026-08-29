@@ -13,6 +13,7 @@ import {EntryTabHeader} from "@/business/client/template/tab-header";
 import {getPresetRequires, PresetRequiresField} from "@/modules/presets/client/tabs";
 import {LlmapiRequireField} from "@/modules/llmapis/client/tabs";
 import {modelState, useItemState} from "./models";
+import {ModelOperation} from "@/business/models";
 
 export async function refreshItem() {
     const {model, setModel} = useItemState.getState();
@@ -32,7 +33,7 @@ function Tab() {
         modelState={modelState}
         props={{
             updateHandler: async (model, data) => {
-                await put("/stories/{id}", {
+                await put<ModelOperation<StoryModel>>("/stories/{id}", {
                         content: {},
                         name: data.get("name") as string,
                         requires: getPresetRequires(data),

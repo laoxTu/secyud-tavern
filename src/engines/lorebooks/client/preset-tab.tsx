@@ -18,12 +18,11 @@ import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {Selector} from "@/components/custom/selector";
 import {Matcher} from "@/engines/lorebooks/client/match-models";
 import {rowFull, spanHalf} from "@/components/custom/grid-field";
-import {BusinessError} from "@/handler/models";
-import {checkJson} from "@/utils";
+import {Check} from "@/handler/models";
 import {presetTabIsHide} from "@/modules/presets/client/tabs";
 import {customCreateElement} from "@/components/custom";
 import {cn} from "@/lib/utils";
-import {EntryOperation} from "@/business/models";
+import {DisableModel, EntryOperation} from "@/business/models";
 
 const roles = ["system", "user", "assistant", "knowledge"];
 const contentTypes = ["json", "plaintext", "markdown", "yaml", "xml"];
@@ -147,15 +146,16 @@ function Tab() {
             }}
             updateProps={{
                 disableHandler: async (entry, disabled) => {
-                    await put('/presets/{id}/entries/{entryType}/{entryId}/disabled', {
-                        disabled,
-                    }, {
-                        params: {
-                            id: model?.id,
-                            entryType: engineName,
-                            entryId: entry.entryId
-                        }
-                    })
+                    await put<DisableModel>(
+                        '/presets/{id}/entries/{entryType}/{entryId}/disabled', {
+                            disabled,
+                        }, {
+                            params: {
+                                id: model?.id,
+                                entryType: engineName,
+                                entryId: entry.entryId
+                            }
+                        })
                 },
                 deleteHandler: async entry => {
                     await del('/presets/{id}/entries/{entryType}/{entryId}', {
@@ -183,10 +183,7 @@ function Tab() {
                     const content = data.get("content") as string;
                     const type = data.get("type") as string;
                     if (type === "json") {
-                        if (!checkJson(content))
-                            throw new BusinessError("json is invalid",
-                                "default.json_invalid")
-                                .withValue("target", "preset.lorebook");
+                        Check.validJsonOrEmpty(content, "preset.lorebook");
                     }
                     await put<EntryOperation<PresetLorebookModel>>('/presets/{id}/entries/{entryType}/{entryId}',
                         {
