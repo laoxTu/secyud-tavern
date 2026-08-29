@@ -87,7 +87,7 @@ export function EntryList<TEntry extends EntryModel>(
             <div className="flex-1 flex overflow-x-auto scrollbar-none gap-x-2 p-2"
                  key={`entry-loading-${loading}`}>
                 {items?.length ? items.map((entry, i) =>
-                    <EntryUpdate key={`${entry.id}-${i}`} entryState={entryState}
+                    <EntryUpdate key={`${entry.entryId}-${i}`} entryState={entryState}
                                  props={updateProps} entry={entry}/>
                 ) : <Empty className={"m-auto"}>
                     <EmptyHeader>
