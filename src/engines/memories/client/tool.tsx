@@ -145,7 +145,7 @@ export class MemoryGetTool implements LlmapiTool {
         const ids = results.hits
             .map(hit => {
                 const score = hit.score + hit.document.importance / 10
-                    + hit.document.sequence / (this.slot.histories.length + 1);
+                    * hit.document.sequence / (this.slot.histories.length + 1);
                 return {
                     id: hit.document.entryId, score
                 }

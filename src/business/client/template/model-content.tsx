@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import {useErrorHandler} from "@/handler/client/error";
 import {useTranslations} from "next-intl";
-import {ModelState, TabState, UseStoreState} from "@/business/client/models";
+import {ModelState, TabState, useGlobalEntryState, UseStoreState} from "@/business/client/models";
 import {TabConfig, TabManager} from "@/components/custom/tab";
 import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
@@ -18,11 +18,24 @@ import {
 } from "@/components/ui/dialog";
 import {FieldGroup} from "@/components/ui/field";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon} from "lucide-react";
+import {ClipboardPasteIcon, CopyIcon, FileTextIcon, FileUpIcon, FoldHorizontalIcon} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {DeleteDialog} from "@/components/custom/delete-dialog";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {BaseModel} from "@/business/models";
+import {tryParseJson} from "@/utils";
+import {BusinessError} from "@/handler/models";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 export interface ModelContentProps<TModel> {
     // 克隆 FieldGroup 的内部内容
@@ -50,6 +63,7 @@ export function ModelContent<TModel extends BaseModel>(
         collapse,
         modelState: {
             moduleName,
+            pasteEntry,
             useItemState,
             usePagedItemsState,
         },
@@ -66,6 +80,7 @@ export function ModelContent<TModel extends BaseModel>(
     const t = useTranslations();
     const {handleError, handleSuccess} = useErrorHandler();
     const [cloneOpen, setCloneOpen] = useState(false);
+    const [pasteOpen, setPasteOpen] = useState(false);
     const {model, setModel} = useItemState();
     const {fetch} = usePagedItemsState();
     const {tabId, setTabId} = useTabState();
@@ -107,6 +122,26 @@ export function ModelContent<TModel extends BaseModel>(
             }
         } catch (err) {
             handleError(err);
+        }
+    };
+
+    const handlePasteEntry = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            const data = tryParseJson(text);
+            if (!text || !data || !data.type || !data.entry) {
+                handleError(new BusinessError("clipboard has no entry.",
+                    "error.clipboard_no_item"));
+                return;
+            }
+            await pasteEntry?.(data.entry, data.type);
+            setPasteOpen(false);
+            setTabId(data.type);
+            useGlobalEntryState.getState().dirty(true);
+            await setModel(model?.id);
+            handleSuccess(t("default.paste_successfully"));
+        } catch (error) {
+            handleError(error);
         }
     };
 
@@ -217,6 +252,33 @@ export function ModelContent<TModel extends BaseModel>(
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+                <AlertDialog open={pasteOpen} onOpenChange={setPasteOpen}>
+                    <AlertDialogTrigger render={<Tooltip/>}>
+                        <TooltipTrigger onClick={() => setPasteOpen(true)}
+                                        render={<Button variant="secondary"/>}>
+                            <ClipboardPasteIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t('default.paste_entry_tip')}</p>
+                        </TooltipContent>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {t('default.paste_entry_title')}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t('default.paste_entry_description')}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('default.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={handlePasteEntry}>
+                                {t('default.paste')}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <Tooltip>
                     <TooltipTrigger onClick={handleExport}
                                     render={<Button variant={'secondary'}/>}>

@@ -13,6 +13,7 @@
     "copy_description": "将当前{target}复制到新的{target}",
     "copy_successfully": "复制成功",
     "copy_title": "复制{target}",
+    "copy_to_clipboard": "复制到剪切板",
     "cover": "封面",
     "cover_src": "封面地址",
     "create": "创建",
@@ -54,6 +55,11 @@
     "month": "月",
     "more": "更多",
     "name": "名称",
+    "paste": "粘贴",
+    "paste_entry_description": "将复制的条目粘贴到此处",
+    "paste_entry_tip": "粘贴条目",
+    "paste_entry_title": "粘贴条目",
+    "paste_successfully": "成功粘贴",
     "path": "路径",
     "preset": "预设",
     "priority": "优先级",
@@ -93,6 +99,7 @@
     "zh": "简体中文"
   },
   "error": {
+    "clipboard_no_item": "剪切板无内容",
     "duplicate_field": "已经有一个具有相同{field}的{entity_name}！",
     "empty_field": "{field}不可以为空！",
     "json_invalid": "{target} JSON格式错误"

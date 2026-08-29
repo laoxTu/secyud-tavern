@@ -16,7 +16,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {ChevronsDownIcon, ChevronsUpIcon, CopyIcon, PlayIcon, PlayOffIcon} from "lucide-react";
+import {ChevronsDownIcon, ChevronsUpIcon, ClipboardCopyIcon, CopyIcon, PlayIcon, PlayOffIcon} from "lucide-react";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Input} from "@/components/ui/input";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
@@ -84,6 +84,17 @@ export function EntryUpdate<TEntry extends EntryModel>(
         }
     };
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(JSON.stringify({
+                entry, type: entryType
+            }));
+            handleSuccess(t("default.copy_successfully"));
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
     const handleDelete = async () => {
         try {
             await deleteHandler(entry);
@@ -138,6 +149,16 @@ export function EntryUpdate<TEntry extends EntryModel>(
                             <p>{disabled ? t("default.disable_item") : t("default.enable_item")}</p>
                         </TooltipContent>
                     </Tooltip>
+                    {<Tooltip>
+                        <TooltipTrigger onClick={handleCopy}
+                                        render={<Button size={'icon'}
+                                                        variant={'secondary'}/>}>
+                            <ClipboardCopyIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{t("default.copy_to_clipboard")}</p>
+                        </TooltipContent>
+                    </Tooltip>}
                     <Dialog open={cloneOpen} onOpenChange={setCloneOpen}>
                         <DialogTrigger render={<Tooltip/>}>
                             <TooltipTrigger onClick={() => setCloneOpen(true)}

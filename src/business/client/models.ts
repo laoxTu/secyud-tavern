@@ -10,6 +10,7 @@ export type UseStoreState<T> = UseBoundStore<StoreApi<T>>;
 
 export interface ModelState<T> {
     moduleName: string;
+    pasteEntry?: (entry: any, type: string) => Promise<void>;
     useItemState: UseStoreState<ItemState<T>>;
     usePagedItemsState: UseStoreState<PagedItemsState<T>>;
 }
@@ -32,6 +33,17 @@ export const useImagePagedItemsState = createUsePagedItemsState<ImageFile>(
     async options => {
         return await get('/images', {params: options})
     }, 8);
+
+export interface GlobalEntryState {
+    isDirty: boolean;
+    dirty: (isDirty: boolean) => void;
+}
+
+export const useGlobalEntryState =
+    create<GlobalEntryState>()((set) => ({
+        isDirty: false,
+        dirty: (isDirty = true) => set({isDirty}),
+    }));
 
 
 export function createUseItemState<T>(getModel: (t?: string) => Promise<T | undefined>, name?: string) {

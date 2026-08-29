@@ -5,7 +5,7 @@ import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTit
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import {EntryModel} from "@/business/models";
 import {PaginationWrapper} from "@/components/custom/pager/component";
-import {EntryState} from "@/business/client/models";
+import {EntryState, useGlobalEntryState} from "@/business/client/models";
 import {EntryUpdate, EntryUpdateProps} from "@/business/client/template/entry-update";
 import {EntryCreate, EntryCreateProps} from "@/business/client/template/entry-create";
 import {useErrorHandler} from "@/handler/client/error";
@@ -34,6 +34,7 @@ export function EntryList<TEntry extends EntryModel>(
     const [searchInput, setSearchInput] = useState('');
     const {handleError} = useErrorHandler();
     const {items, loading, params, fetch} = usePagedItemsState();
+    const {dirty, isDirty} = useGlobalEntryState();
 
     const searchEntries = async (data: FormData) => {
         try {
@@ -57,10 +58,11 @@ export function EntryList<TEntry extends EntryModel>(
     }
 
     useEffect(() => {
-        if (modelId !== params.id) {
+        if (modelId !== params.id || isDirty) {
+            dirty(false);
             void fetch({params: {entryType: entryState.entryType, id: modelId}});
         }
-    }, [modelId]);
+    }, [modelId, isDirty]);
 
     return (
         <div className={"flex-1 flex flex-col p-2 gap-1 overflow-y-hidden"} key={`${modelId}-${loading}`}>
