@@ -21,6 +21,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {slotContext} from "@/modules/stories/client/context";
 import {StoryModel} from "@/modules/stories/models";
 import {convertToRequire} from "@/modules/llmapis/models";
+import {v4 as uuidv4} from "uuid";
 
 export function HistoryDeleter() {
     const {handleError} = useErrorHandler();
@@ -81,7 +82,9 @@ export function HistoryDeleter() {
                     params: {
                         id: slot.id,
                     }
-                })
+                });
+            } else {
+                slot.id = uuidv4()
             }
             await post<StoryModel>("/stories", {
                 id: slot.id,
@@ -90,6 +93,7 @@ export function HistoryDeleter() {
                 requires: slot.requires,
                 llmapi: convertToRequire(slot.llmapi)
             });
+            window.location.href = `/stories/${slot.id}?_=${Date.now()}`;
             window.location.reload();
         } catch (e) {
             handleError(e);
