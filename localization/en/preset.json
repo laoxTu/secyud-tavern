@@ -1,0 +1,83 @@
+{
+  "lorebook": {
+    "delete_title": "Delete Lorebook",
+    "fit_count": "Match Count",
+    "include_any_word": "Include Any Word",
+    "keywords_groups_length": "Keyword Group Count",
+    "last_message": "Last Message",
+    "match_type": "Match Type",
+    "match_type_always": "Always",
+    "match_type_event": "Event",
+    "match_type_normal": "Normal",
+    "match_type_variable": "Variable",
+    "match_type_vector": "Vector",
+    "max_date": "Max Date",
+    "min_date": "Min Date",
+    "priority_layer": "Layer",
+    "priority_order": "Order",
+    "role": "Role"
+  },
+  "macro": {
+    "key": "Key",
+    "multiple": "Allow Multiple Selection",
+    "selector": "Macro Selector",
+    "show_selector": "Show Macro Selector",
+    "value": "Value"
+  },
+  "preset": {
+    "enter_description": "A story will be created directly from the preset",
+    "enter_title": "Enter from Preset",
+    "input_author": "Input Author",
+    "lorebook": "Lorebook",
+    "macro": "Macro",
+    "regex": "Regex",
+    "script": "Script",
+    "style": "Style",
+    "tool": "Tool"
+  },
+  "rag": {
+    "embedding_generator": "Embedding Generator",
+    "embedding_generator_model": "Embedding Model",
+    "huggingface_mirror": "HuggingFace Mirror"
+  },
+  "regex": {
+    "layer_max": "Max Layers",
+    "layer_min": "Min Layers",
+    "pattern": "Pattern",
+    "replacement": "Replacement",
+    "target": "Replacement Target",
+    "target_both": "Replace All",
+    "target_input": "Replace Input",
+    "target_output": "Replace Output",
+    "unlimit_description": "-1 means no limit"
+  },
+  "script": {
+    "enable_doc": "Access iframe",
+    "enable_variable": "Access variables"
+  },
+  "style": {
+  },
+  "sub_agent": {
+    "disable_preset": "Disable Preset",
+    "disable_tags": "Disable Tags",
+    "generating": "Generate Content (Sub-Agent)",
+    "generating_tool": "Build Parameters (Sub-Agent)",
+    "max_length": "Max Length",
+    "prompt": "Prompt",
+    "thinking": "Generate Thinking (Sub-Agent)"
+  },
+  "tool": {
+    "create_failed": "Tool creation failed ({entry})",
+    "selector": "Tool Selector",
+    "show_selector": "Show Tool Selector"
+  },
+  "url_fetch": {
+    "max_length": "Length Return Limit",
+    "max_results": "Max Search Results",
+    "timeout": "Timeout Setting"
+  },
+  "variable": {
+    "disable_get": "Disable Get",
+    "disable_set": "Disable Set"
+  }
+}

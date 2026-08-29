@@ -1,0 +1,38 @@
+{
+  "deepseek": {
+    "deepseek-v4-flash": "deepseek-v4-flash",
+    "deepseek-v4-pro": "deepseek-v4-pro"
+  },
+  "llmapi": {
+    "apikey": "API Key",
+    "builder": "Prompt Builder",
+    "builder_default": "Default Builder",
+    "builder_layered": "Layered Builder",
+    "extras": "Extra Parameters",
+    "format": "Format",
+    "frequency_penalty": "frequency penalty (word repetition -2.0~2.0)",
+    "logprobs": "logprobs (returns confidence)",
+    "max_iterations": "Max iterations per turn",
+    "max_tokens": "max tokens (output length limit 0~max)",
+    "model": "Model",
+    "presence_penalty": "presence penalty (topic novelty -2.0~2.0)",
+    "provider": "Provider",
+    "provider_anthropic": "Anthropic",
+    "provider_deepseek": "Deepseek",
+    "provider_openai": "Open AI",
+    "reasoning_effort": "reasoning effort (thinking intensity)",
+    "stream": "Streaming",
+    "temperature": "temperature (sampling temperature 0~2)",
+    "thinking": "Thinking Mode",
+    "tool": "Tool",
+    "tool_provider": "Tool Type",
+    "tool_provider_memory": "Memory Tool",
+    "tool_provider_script": "Script",
+    "tool_provider_sub_agent": "Sub-Agent",
+    "tool_provider_url_fetch": "Web Search",
+    "tool_provider_variable": "Variable Tool",
+    "top_logprobs": "top logprobs (max number of confident tokens returned)",
+    "top_p": "top p (nucleus sampling 0~1)",
+    "url": "URL"
+  }
+}
