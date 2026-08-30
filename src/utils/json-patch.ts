@@ -1,3 +1,5 @@
+export type Op = "add" | "replace" | "remove" | "test" | "move" | "copy";
+
 export interface BaseOperation {
     path: string;
 }

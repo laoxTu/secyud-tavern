@@ -1,7 +1,7 @@
 import {LlmapiTool, LlmapiToolProvider} from "@/engines/tools/client/models";
 import {LlmapiToolModel, SlotModel} from "@/modules/stories/models";
 import {Editor} from "./editor";
-import {extract, Operation, validate} from "@/utils/json-patch";
+import {extract, Op, Operation, validate} from "@/utils/json-patch";
 import {VariableConfigModel} from "../models";
 import {historyUtils} from "@/modules/models";
 
@@ -61,6 +61,7 @@ export class VariableGetTool implements LlmapiTool {
 
 abstract class VariableEditToolBase implements LlmapiTool {
     abstract model: LlmapiToolModel;
+    abstract op: Op;
 
     constructor(protected slot: SlotModel) {
 
@@ -70,6 +71,7 @@ abstract class VariableEditToolBase implements LlmapiTool {
         const history = this.slot.histories.at(-1);
         const currentOutput = historyUtils.getOutputs(history)?.at(-1);
         if (currentOutput) {
+            operation.op = this.op;
             // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
             const validation = validate(operation)
             if (validation) {
@@ -86,21 +88,17 @@ abstract class VariableEditToolBase implements LlmapiTool {
 }
 
 export class VariableSetTool extends VariableEditToolBase {
+    op: Op = "replace";
     model: LlmapiToolModel = {
         name: "set_variable",
         description: "use JSON patch to set variable.",
         parameters: {
             type: "object",
-            required: ["op", "path", "value"],
+            required: ["path", "value"],
             properties: {
                 path: {
                     type: "string",
                     description: "A JSON Pointer path. split by '/'",
-                },
-                op: {
-                    description: "The operation to perform.",
-                    type: "string",
-                    enum: ["replace"]
                 },
                 value: {
                     anyOf: [
@@ -125,21 +123,17 @@ export class VariableSetTool extends VariableEditToolBase {
 }
 
 export class VariableDelTool extends VariableEditToolBase {
+    op: Op = "remove";
     model: LlmapiToolModel = {
         name: "del_variable",
         description: "use JSON patch to del variable.",
         parameters: {
             type: "object",
-            required: ["op", "path"],
+            required: ["path"],
             properties: {
                 path: {
                     type: "string",
                     description: "A JSON Pointer path. split by '/'",
-                },
-                op: {
-                    description: "The operation to perform.",
-                    type: "string",
-                    enum: ["remove"]
                 }
             },
         },
