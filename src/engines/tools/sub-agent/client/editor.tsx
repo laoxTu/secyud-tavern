@@ -17,6 +17,7 @@ import React from "react";
 import {PresetRequiresField} from "@/modules/presets/client/tabs";
 import {MonacoEditor} from "@/components/custom/monaco-editor";
 import {cn} from "@/lib/utils";
+import {defaultTags} from "@/modules/presets/client/models";
 
 const defaultConfig: SubAgentConfigModel = {
     disablePreset: false, maxLength: 0,
@@ -82,7 +83,7 @@ export function Editor({defaultValue, entry, formRef}: LlmapiToolProps) {
                     {t('sub_agent.disable_tags')}
                 </FieldLabel>
                 <TagBox id={`${entry.entryId}-disable_tags`} name={"disable_tags"}
-                        defaultValue={config.disableTags}/>
+                        defaultValue={config.disableTags} items={defaultTags}/>
             </Field>
         </>
     );

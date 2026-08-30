@@ -26,6 +26,7 @@ export const modelState: ModelState<PresetModel> = {
         })
     }
 };
+
 export const defaultTags = [
-    "theme", "story", "preset"
+    "theme", "story", "preset", "agent", "app", "component", "setting", "tool"
 ];

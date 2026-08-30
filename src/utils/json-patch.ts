@@ -1,5 +1,3 @@
-export type Op = "add" | "replace" | "remove" | "test" | "move" | "copy";
-
 export interface BaseOperation {
     path: string;
 }
@@ -33,13 +31,15 @@ export interface TestOperation<T> extends BaseOperation {
     value: T;
 }
 
-export type Operation =
-    AddOperation<any>
+export type Operation<T = any> =
+    AddOperation<T>
     | RemoveOperation
-    | ReplaceOperation<any>
+    | ReplaceOperation<T>
     | MoveOperation
     | CopyOperation
-    | TestOperation<any>;
+    | TestOperation<T>;
+
+export type Op = Operation['op'];
 
 export function validate(obj: any): string | null {
     if (!obj || typeof obj !== 'object' || Array.isArray(obj))
