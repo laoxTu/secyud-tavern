@@ -1,0 +1,157 @@
+{
+  "default": {
+    "author": "Author",
+    "base_url": "Address",
+    "cancel": "Cancel",
+    "chars": "Characters",
+    "code": "Encoding",
+    "comfyui_model": "ComfyUI model",
+    "comfyui_workflow": "ComfyUI workflow",
+    "content": "Content",
+    "context_not_found": "Context not found: {target}",
+    "cover": "Cover",
+    "cover_src": "Cover address",
+    "ctrl_enter_submit": "Press Ctrl + Enter to send a message, Enter for a new line",
+    "day": "Day",
+    "delete": "Delete",
+    "delete_description": "Are you sure you want to delete this {target}? This action cannot be undone.",
+    "delete_successfully": "Deleted successfully",
+    "delete_title": "Delete {target}",
+    "description": "Description",
+    "disable": "Disable",
+    "disable_item": "Disabled",
+    "empty_description": "It seems no {target} has been created. You can create one.",
+    "empty_items": "Empty list",
+    "empty_title": "Empty {target} list",
+    "en": "English",
+    "enable": "Enable",
+    "enable_item": "Enabled",
+    "ensure": "Confirm",
+    "entity_not_found": "Target not found (ID: {id})",
+    "export": "Export",
+    "field": "Field",
+    "hidden": "Hidden",
+    "html": "HTML",
+    "id": "ID",
+    "image": "Image",
+    "language": "Language",
+    "layer": "Layer",
+    "link": "Link",
+    "llmapi": "Model",
+    "llmapi_config_notfound": "No model configured",
+    "month": "Month",
+    "more": "More",
+    "name": "Name",
+    "path": "Path",
+    "preset": "Preset",
+    "priority": "Priority",
+    "property": "Property",
+    "regenerate": "Regenerate",
+    "requires": "Dependencies",
+    "reset": "Reset",
+    "schema": "Schema",
+    "script": "Script",
+    "search": "Search",
+    "select_file": "Select a file",
+    "selected_file": "Currently selected file: {name}",
+    "setting": "Settings",
+    "story": "Story",
+    "story_lack_config_llmapi": "No model selected for the story; it cannot start.",
+    "submit": "Submit",
+    "summary": "Summary",
+    "tags": "Tags",
+    "task_failed": "Task failed: {target}",
+    "task_success": "Task completed: {target}",
+    "theme": "Theme",
+    "thinking": "Thinking",
+    "total_chars": "Total characters",
+    "type": "Type",
+    "types": "Types",
+    "url": "Link",
+    "value": "Value",
+    "save": "Save",
+    "variables": "Variables",
+    "version": "Version",
+    "year": "Year",
+    "zh": "Simplified Chinese"
+  },
+  "error": {
+    "entity": {
+      "duplicate_value": "A {entity} with the same {name}({value}) already exists."
+    },
+    "clipboard_no_item": "Clipboard is empty",
+    "duplicate_field": "A {entity_name} with the same {field} already exists!",
+    "empty_field": "{field} cannot be empty!",
+    "json_invalid": "{target} has an invalid JSON format"
+  },
+  "language": {
+    "en": "English",
+    "zh": "Simplified Chinese"
+  },
+  "message": {
+    "clone": {
+      "desc": "Are you sure you want to clone {target}?",
+      "success": "Cloned successfully",
+      "title": "Clone {target}",
+      "tooltip": "Clone"
+    },
+    "empty": {
+      "desc": "No {target} found",
+      "title": "Empty {target}"
+    },
+    "empty_select": {
+      "title": "No {target} selected",
+      "desc": "Click a {target} to edit it."
+    },
+    "update": {
+      "desc": "Update {target}",
+      "success": "Updated successfully",
+      "title": "Update {target}",
+      "tooltip": "Update"
+    },
+    "create": {
+      "desc": "Create {target}",
+      "success": "Created successfully",
+      "title": "Create {target}",
+      "tooltip": "Create"
+    },
+    "delete": {
+      "desc": "Are you sure you want to delete {target}?",
+      "success": "Deleted successfully",
+      "title": "Delete {target}",
+      "tooltip": "Delete"
+    },
+    "export": {
+      "desc": "Are you sure you want to export {target}?",
+      "success": "Exported successfully",
+      "title": "Export {target}",
+      "tooltip": "Export"
+    },
+    "import": {
+      "desc": "Import {target}",
+      "success": "Imported successfully",
+      "title": "Import {target}",
+      "tooltip": "Import"
+    },
+    "paste": {
+      "desc": "Are you sure you want to paste {target}?",
+      "success": "Pasted successfully",
+      "title": "Paste {target}",
+      "tooltip": "Paste"
+    },
+    "copy": {
+      "desc": "Are you sure you want to copy {target}?",
+      "success": "Copied successfully",
+      "title": "Copy {target}",
+      "tooltip": "Copy"
+    }
+  },
+  "setting": {
+    "id": "Settings"
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  }
+}

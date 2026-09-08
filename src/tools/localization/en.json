@@ -1,0 +1,41 @@
+{
+  "agent": {
+    "disable_preset": "Disable preset",
+    "disable_tags": "Disable tags",
+    "generating": "Generating content (sub-agent)",
+    "generating_tool": "Building parameters (sub-agent)",
+    "max_length": "Maximum length",
+    "prompt": "Prompt",
+    "thinking": "Generating thoughts (sub-agent)"
+  },
+  "fetcher": {
+    "max_length": "Maximum return length",
+    "max_results": "Maximum search results",
+    "timeout": "Timeout"
+  },
+  "message": {
+    "tool": {
+      "selector": {
+        "desc": "Tool selection",
+        "success": "Tool selected",
+        "title": "Tool selection",
+        "tooltip": "Tool selection"
+      }
+    }
+  },
+  "tool": {
+    "id": "Tool",
+    "calling_tool": "Calling tool",
+    "create_failed": "Failed to create tool ({entry})",
+    "selector": "Tool selection",
+    "show_selector": "Show tool selector",
+    "provider_type": "Tool type",
+    "provider": {
+      "memory": "Memory tool",
+      "script": "Script",
+      "agent": "Sub-agent",
+      "fetcher": "Web fetcher",
+      "variable": "Variable tool"
+    }
+  }
+}

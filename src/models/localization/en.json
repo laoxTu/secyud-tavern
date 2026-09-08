@@ -1,0 +1,41 @@
+{
+  "deepseek": {
+    "deepseek-v4-flash": "deepseek-v4-flash",
+    "deepseek-v4-pro": "deepseek-v4-pro"
+  },
+  "error": {
+    "model": {
+      "engine_required": "A provider must be selected"
+    }
+  },
+  "model": {
+    "api_key": "API key",
+    "id": "Model",
+    "default": "Default",
+    "iterations": "Number of turns",
+    "builder": "Prompt builder",
+    "builder_default": "Default builder",
+    "builder_layered": "Layered builder",
+    "extras": "Additional parameters",
+    "frequency_penalty": "Frequency penalty (word repetition -2.0~2.0)",
+    "logprobs": "Logprobs (return confidence)",
+    "max_iterations": "Maximum turns per round",
+    "max_tokens": "Max tokens (output length limit 0~max)",
+    "model": "Model",
+    "presence_penalty": "Presence penalty (topic novelty -2.0~2.0)",
+    "provider": "Provider",
+    "provider_anthropic": "Anthropic",
+    "provider_deepseek": "DeepSeek",
+    "provider_openai": "OpenAI",
+    "reasoning_effort": "Reasoning effort",
+    "stream": "Streaming",
+    "temperature": "Temperature (0~2)",
+    "thinking": "Thinking mode",
+    "top_logprobs": "Top logprobs (maximum number of confidence tokens)",
+    "top_p": "Top p (nucleus sampling 0~1)",
+    "url": "URL"
+  },
+  "openai": {
+    "format": "Format"
+  }
+}

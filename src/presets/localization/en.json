@@ -1,0 +1,53 @@
+{
+  "macro": {
+    "id": "Macro",
+    "key": "Key",
+    "multiple": "Allow multiple selection",
+    "selector": "Macro selector",
+    "show_selector": "Show macro selector",
+    "value": "Value"
+  },
+  "message": {
+    "story_enter": {
+      "desc": "Enter the story from {target}",
+      "title": "Enter the story from {target}",
+      "tooltip": "Enter story"
+    },
+    "macro": {
+      "selector": {
+        "desc": "Select macro",
+        "success": "Macro configured",
+        "title": "Macro options",
+        "tooltip": "Configure macro"
+      }
+    }
+  },
+  "preset": {
+    "enter_description": "A story will be created directly from the preset",
+    "enter_title": "Enter from preset",
+    "id": "Preset",
+    "entry": "Entry",
+    "input_author": "Enter author",
+    "opening": "Opening remarks"
+  },
+  "regex": {
+    "id": "Regex",
+    "layer_max": "Maximum layers",
+    "layer_min": "Minimum layers",
+    "pattern": "Pattern",
+    "replacement": "Replace with",
+    "target": "Replacement target",
+    "target_both": "Replace all",
+    "target_input": "Replace input",
+    "target_output": "Replace output",
+    "unlimit_description": "-1 means unlimited"
+  },
+  "script": {
+    "id": "Script",
+    "enable_doc": "Access iframe",
+    "enable_variable": "Access variables"
+  },
+  "style": {
+    "id": "Style"
+  }
+}

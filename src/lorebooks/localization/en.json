@@ -1,0 +1,20 @@
+{
+  "lorebook": {
+    "id": "Lorebook",
+    "fit_count": "Match count",
+    "include_any_word": "Include phrases",
+    "keywords_groups_length": "Number of keyword groups",
+    "last_message": "Last message",
+    "match_type": "Match type",
+    "match_type_always": "Always",
+    "match_type_event": "Event",
+    "match_type_normal": "Normal",
+    "match_type_variable": "Variable",
+    "match_type_vector": "Vector",
+    "max_date": "Maximum date",
+    "min_date": "Minimum date",
+    "priority_layer": "Layer",
+    "priority_order": "Order",
+    "role": "Role"
+  }
+}

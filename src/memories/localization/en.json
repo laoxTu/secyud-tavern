@@ -1,0 +1,11 @@
+{
+  "memory": {
+    "id": "Memory"
+  },
+  "rag": {
+    "embedding_generator": "Embedding generator",
+    "embedding_generator_model": "Embedding generation model",
+    "huggingface_mirror": "Hugging Face mirror",
+    "id": "Knowledge base"
+  }
+}

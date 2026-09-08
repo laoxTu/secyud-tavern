@@ -1,0 +1,88 @@
+{
+  "memory": {
+    "text": "Content",
+    "sequence": "Turn",
+    "importance": "Importance"
+  },
+  "message": {
+    "realm": {
+      "reopen": {
+        "desc": "Restart",
+        "success": "Restarted",
+        "title": "Restart",
+        "tooltip": "Restart"
+      },
+      "viewer": {
+        "desc": "View context",
+        "submit": "View context",
+        "success": "Context viewed",
+        "title": "View context",
+        "tooltip": "View context"
+      },
+      "edit": {
+        "desc": "Edit current history",
+        "success": "History edited",
+        "title": "Edit current history",
+        "tooltip": "Edit current history"
+      },
+      "clone": {
+        "desc": "Archive and reopen",
+        "success": "Archived and reopened",
+        "title": "Archive and reopen",
+        "tooltip": "Archive and reopen"
+      },
+      "delete": {
+        "output": {
+          "desc": "Delete current output",
+          "success": "Current output deleted",
+          "title": "Delete current output",
+          "tooltip": "Delete current output"
+        },
+        "index": {
+          "desc": "Delete current history",
+          "success": "Current history deleted",
+          "title": "Delete current history",
+          "tooltip": "Delete current history"
+        }
+      }
+    },
+    "story": {
+      "image": {
+        "desc": "Image gallery",
+        "success": "Image gallery opened",
+        "title": "Image gallery",
+        "tooltip": "Image gallery"
+      }
+    }
+  },
+  "realm": {
+    "back_home_tip": "Back to home",
+    "calling_tool": "Calling tool",
+    "content_already_initialized": "Slot cache already exists: {key}",
+    "content_not_initialized": "Slot cache is not initialized: {key}",
+    "generating": "Generating content",
+    "generating_tool": "Building parameters",
+    "retry": "Retry",
+    "input": "User input",
+    "input_processing": "Processing input",
+    "is_output_warning": "Output is currently in progress and cannot be operated on",
+    "not_loaded": "Failed to load archive.",
+    "output": "AI output",
+    "pin_chatbox": "Pin chat box",
+    "regenerate_reply_tip": "Regenerate",
+    "thinking": "Generating thoughts",
+    "unpin_chatbox": "Unpin chat box",
+    "variable": "Variable",
+    "variable_invalid_json": "Invalid variable format"
+  },
+  "story": {
+    "id": "Story",
+    "enter": "Enter",
+    "image": "Image",
+    "entry": "Entry",
+    "memory": "Memory",
+    "input_processing": "Processing input",
+    "images": "Image gallery",
+    "opening_remarks": "Opening remarks"
+  }
+}

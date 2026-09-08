@@ -22,9 +22,7 @@ export function UpdateForm({ form, children, onSubmit }: UpdateFormProps) {
         <GridField>{children}</GridField>
       </FieldGroup>
       <Field orientation="horizontal">
-        <Button variant={'outline'} type="submit">
-          {t('default.save')}
-        </Button>
+        <Button type="submit">{t('default.save')}</Button>
       </Field>
     </form>
   );
