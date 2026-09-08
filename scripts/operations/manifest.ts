@@ -109,7 +109,7 @@ async function generateLocalizationResource(
   texts.push(`}`);
 
   await fileUtils.writeFile(
-    path.join(root, 'src', 'localization', 'resources.ts'),
+    path.join(root, 'src', 'generated', 'resources.ts'),
     texts.join('\n'),
   );
 }
@@ -156,7 +156,7 @@ async function generateServerRegisterer(
 
   // 服务端注册
   await fileUtils.writeFile(
-    path.join(root, 'src', 'plugins', 'server', 'registerer.ts'),
+    path.join(root, 'src', 'generated', 'server-registerer.ts'),
     buildModuleImport(
       files,
       (t) => `export async function registerServerPlugin() {\n${t}\n}`,
@@ -183,7 +183,7 @@ async function generateClientRegisterer(
 
   // 服务端注册
   await fileUtils.writeFile(
-    path.join(root, 'src', 'plugins', 'client', 'registerer.ts'),
+    path.join(root, 'src', 'generated', 'client-registerer.ts'),
     buildModuleImport(
       files,
       (t) => `export async function registerClientPlugin() {\n${t}\n}`,

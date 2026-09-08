@@ -1,11 +1,11 @@
 {
+  "memory": {
+    "id": "记忆"
+  },
   "rag": {
     "embedding_generator": "向量生成器",
     "embedding_generator_model": "向量生成模型",
     "huggingface_mirror": "huggingface 镜像",
     "id": "知识库"
-  },
-  "memory": {
-    "id": "记忆"
   }
 }

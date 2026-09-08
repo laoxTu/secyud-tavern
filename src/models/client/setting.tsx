@@ -1,7 +1,7 @@
 ﻿'use client';
 import { BrainCogIcon, CopyIcon, SquarePlusIcon, StarIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import {
   Checkbox,
@@ -104,7 +104,7 @@ function ModelPropertyContent() {
           id={`model-builder`}
           name={'builder'}
           items={['default', 'layered']}
-          defaultValue={item.builder}
+          value={item.builder}
         />
       </Field>
       <Field>

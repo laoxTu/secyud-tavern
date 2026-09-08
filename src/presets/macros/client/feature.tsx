@@ -30,15 +30,9 @@ function Component() {
   const t = useTranslations();
   const { handler } = useHandler();
   const { key, refreshKey } = useRefresh();
-  const realm = realms.realm.realm;
+  const { realm } = realms;
+
   const { checkItems, selections } = macros.property(realm);
-  const changeOpen = handler(async (open: boolean) => {
-    if (!open) {
-      await stories.proxy.update(realm.id, {
-        properties: realm.properties,
-      });
-    }
-  });
   const changeSelection = handler(
     async (item: MacroCacheItem, name: string) => {
       const entry = item.singles[name];
@@ -58,7 +52,13 @@ function Component() {
   return (
     <TooltipDialog
       tooltip={<ListIcon />}
-      onOpen={changeOpen}
+      onOpen={handler(async (open: boolean) => {
+        if (!open) {
+          await stories.proxy.update(realm.id, {
+            properties: realm.properties,
+          });
+        }
+      })}
       className={'flex flex-col overflow-hidden h-5/6'}
       style={{ height: '86%' }}
       info={dialogs.info(t, 'macro.selector')}

@@ -24,7 +24,7 @@ function get(realm: Realm): ToolItem<{
   return {
     name: 'get_memory',
     description:
-      'prepare for get the memory. memory will return by knowledge tool.',
+      'get the titles of memory. memory is injected by knowledge tool.',
     parameters: {
       type: 'object',
       required: ['content'],
@@ -72,9 +72,7 @@ function get(realm: Realm): ToolItem<{
       limit = 3,
       min_relevance = 0.3,
     }) {
-      const outputs = realms.outputs(
-        await realms.history.get(undefined, realm),
-      );
+      const outputs = realms.outputs(await realms.history.get(null, realm));
       const output = outputs?.at(-1);
 
       if (!output) {
@@ -112,23 +110,23 @@ function get(realm: Realm): ToolItem<{
       });
 
       const codes = memories.codes(output)!;
-      const ids = results.hits
+      const data = results.hits
         .map((hit) => {
+          const { entryId, title, importance, sequence } = hit.document;
           const score =
             hit.score +
-            ((hit.document.importance / 10) * hit.document.sequence) /
-              (realm.histories.length + 1);
+            ((importance / 10) * sequence) / (realm.histories.length + 1);
           return {
-            id: hit.document.entryId,
+            entryId,
+            title,
             score,
           };
         })
         .sort((a, b) => b.score - a.score)
-        .slice(0, limit)
-        .map((u) => u.id);
-      codes.push(ids);
+        .slice(0, limit);
+      codes.push(data.map((u) => u.entryId));
 
-      return ids.length ? `success` : 'success: no items.';
+      return JSON.stringify(data.map((u) => u.title));
     },
   };
 }
@@ -216,6 +214,7 @@ function set(realm: Realm): ToolItem<{
       };
       await insert(database, {
         entryId,
+        title,
         tags,
         type,
         importance,

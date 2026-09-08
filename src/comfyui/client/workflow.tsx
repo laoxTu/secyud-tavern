@@ -97,7 +97,7 @@ function Property() {
           </FieldLabel>
           <MonacoEditor
             name={'workflow_content'}
-            defaultValue={item.content ?? ''}
+            value={item.content ?? ''}
             language={'json'}
             formRef={form}
           />

@@ -123,7 +123,7 @@ function SelectInputComponent({
         <Selector
           name={`value_${sequence}`}
           id={`param-value-${sequence}`}
-          defaultValue={value}
+          value={value}
           items={items}
         />
       </Field>

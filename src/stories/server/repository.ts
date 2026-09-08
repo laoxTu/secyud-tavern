@@ -69,6 +69,7 @@ async function update(id: string, story: Partial<Story>) {
   checker.notWhitespace('name', story.name);
   story.id = undefined;
   await db.update(storySchema).set(story).where(eq(storySchema.id, id));
+  return id;
 }
 
 async function _delete(id: string) {

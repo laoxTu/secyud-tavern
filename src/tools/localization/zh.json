@@ -8,6 +8,21 @@
     "prompt": "提示词",
     "thinking": "生成思考(子Agent)"
   },
+  "fetcher": {
+    "max_length": "长度返回限制",
+    "max_results": "最大搜索数量",
+    "timeout": "超时设置"
+  },
+  "message": {
+    "tool": {
+      "selector": {
+        "desc": "工具选择",
+        "success": "工具选择",
+        "title": "工具选择",
+        "tooltip": "工具选择"
+      }
+    }
+  },
   "tool": {
     "id": "工具",
     "calling_tool": "调用工具",
@@ -22,21 +37,5 @@
       "fetcher": "网页抓取",
       "variable": "变量工具"
     }
-  },
-  "message": {
-    "tool": {
-      "selector": {
-        "desc": "工具选择",
-        "submit": "工具选择",
-        "success": "工具选择",
-        "title": "工具选择",
-        "tooltip": "工具选择"
-      }
-    }
-  },
-  "fetcher": {
-    "max_length": "长度返回限制",
-    "max_results": "最大搜索数量",
-    "timeout": "超时设置"
   }
 }

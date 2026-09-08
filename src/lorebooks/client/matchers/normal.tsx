@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { TagBox } from '@/components';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -81,9 +81,7 @@ export function NormalMatcher({
           <TagBox
             id={`lorebook-keywords-${entryId}-${index}`}
             name={`keywords-${index}`}
-            defaultValue={
-              config.keywords.length > index ? config.keywords[index] : []
-            }
+            value={config.keywords.length > index ? config.keywords[index] : []}
           />
         </Field>
       ))}

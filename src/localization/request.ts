@@ -2,8 +2,8 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
+import { resources } from '@/generated/resources';
 import { defaultLocale, locales, timeZones } from '@/localization/config';
-import { resources } from '@/localization/resources';
 import { jsonUtils } from '@/utils';
 
 export default getRequestConfig(async ({}) => {

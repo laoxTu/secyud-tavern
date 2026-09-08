@@ -34,7 +34,9 @@ export default {
       '[id]': {
         GET: route(async (_, record) => {
           const { id } = await record.params;
-          const story = await stories.repository.get(id);
+          const story = await stories.repository.get(id, {
+            entities: true,
+          });
           const realm = await stories.repository.getRealm(story);
           return response.json(realm);
         }),

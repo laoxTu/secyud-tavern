@@ -39,6 +39,7 @@ export interface RealmState {
   setPinned: (pinned: boolean) => void;
   // 历史索引
   index: Page;
+  initPager: () => Promise<void>;
   // 默认不更改页面，只重渲染
   setIndex: (cur?: number) => Promise<void>;
   // 历史索引
@@ -85,8 +86,8 @@ export const useRealmState = create<RealmState>()(
       setPrepare: (prepare: boolean) => set({ prepare }),
       index: { max: 1, cur: 0 },
       async setIndex(cur?: number) {
-        const { histories } = realms.realm;
-        const max = histories.length;
+        const { histories } = realms;
+        const max = histories?.length ?? 0;
         const { index, setOutput } = get();
         cur ??= index.cur;
         if (cur > max) cur = max;
@@ -97,22 +98,38 @@ export const useRealmState = create<RealmState>()(
         await setOutput();
       },
       output: { max: 0, cur: -1 },
+      async initPager() {
+        const {
+          histories,
+          realm,
+          history: { get: getHistory },
+        } = realms;
+        await get().setIndex(histories?.length ?? 0);
+        const current = await getHistory(null, realm);
+        set({
+          output: {
+            cur: current.output,
+            max: current.outputs.length,
+          },
+        });
+      },
       async setOutput(cur?: number) {
         const {
-          realm: { histories },
+          histories,
+          realm,
           history: { get: getHistory, set: setHistory },
         } = realms;
         const { index } = get();
-        if (histories.length < index.cur) return;
+        if (!histories || histories.length < index.cur) return;
         let max = 0;
         if (index.cur > 0) {
-          const history = await getHistory(index.cur);
+          const history = await getHistory(index.cur, realm);
           max = history.outputs.length;
           cur ??= history.output;
           if (cur >= max) cur = max - 1;
           if (history.output != cur) {
             history.output = cur;
-            await setHistory(index.cur);
+            await setHistory(index.cur, realm);
           }
         } else {
           cur = -1;

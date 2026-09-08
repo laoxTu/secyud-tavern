@@ -27,9 +27,11 @@ interface TagBoxProps {
   name?: string;
   placeholder?: string;
   className?: string;
-  defaultValue?: string[] | null;
   value?: string[] | null;
-  onValueChange?: (value: string[] | null) => void;
+  onValueChange?: (
+    value: string[] | null,
+    eventDetails: ComboboxRoot.ChangeEventDetails,
+  ) => void;
   items?: string[];
 }
 
@@ -38,13 +40,13 @@ export function TagBox({
   name,
   placeholder,
   className,
-  defaultValue,
-  value,
+  value: defaultValue,
   onValueChange,
   items,
 }: TagBoxProps) {
   const anchor = useComboboxAnchor();
   const [input, setInput] = useState('');
+  const [value, setValue] = useState(defaultValue ?? null);
 
   return (
     <Combobox
@@ -52,9 +54,11 @@ export function TagBox({
       autoHighlight
       name={name}
       id={id}
-      defaultValue={defaultValue}
       value={value}
-      onValueChange={onValueChange}
+      onValueChange={(value, e) => {
+        onValueChange?.(value as any, e);
+        setValue(value);
+      }}
       inputValue={input}
       onInputValueChange={(e) => setInput(e)}
     >
@@ -102,7 +106,6 @@ interface RemoteSearchComboboxProps {
 
 interface RemoteSearchComboboxMultipleProps extends RemoteSearchComboboxProps {
   multiple: true;
-  defaultValue?: NameValue[] | null;
   value?: NameValue[] | null;
   onValueChange?: (
     value: NameValue[] | null,
@@ -112,7 +115,6 @@ interface RemoteSearchComboboxMultipleProps extends RemoteSearchComboboxProps {
 
 interface RemoteSearchComboboxSingleProps extends RemoteSearchComboboxProps {
   multiple?: false;
-  defaultValue?: NameValue | null;
   value?: NameValue | null;
   onValueChange?: (
     value: NameValue | null,
@@ -178,8 +180,7 @@ export function RemoteSearchCombobox({
   multiple,
   itemHeight,
   size,
-  defaultValue,
-  value,
+  value: defaultValue,
   onValueChange,
   fetcher,
   itemRender,
@@ -189,6 +190,7 @@ export function RemoteSearchCombobox({
   const anchor = useComboboxAnchor();
   const cache = useRef(new SearchCache(size, fetcher));
   const [search, setSearch] = useState<string | null>(null);
+  const [value, setValue] = useState(defaultValue ?? null);
 
   const listRef = useRef<HTMLDivElement>(null);
   // ✅ 新增：配置虚拟滚动器
@@ -230,8 +232,10 @@ export function RemoteSearchCombobox({
           });
         }
       }}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange as any}
+      onValueChange={(value, e) => {
+        onValueChange?.(value as any, e);
+        setValue(value);
+      }}
       value={value}
       onInputValueChange={setSearch}
     >

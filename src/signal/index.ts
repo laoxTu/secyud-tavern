@@ -80,9 +80,9 @@ export type SignalBinder = (c?: AbortController | null) => Promise<void>;
  * @param signal 信号
  * @param action 操作
  */
-function setAbort(signal: AbortSignal, action: () => void) {
-  const abort = () => {
-    action();
+function setAbort(signal: AbortSignal, action: (event: Event) => void) {
+  const abort = (event: Event) => {
+    action(event);
     signal.removeEventListener('abort', abort);
   };
   signal.addEventListener('abort', abort);

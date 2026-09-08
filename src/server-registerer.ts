@@ -1,4 +1,4 @@
-﻿import { registerServerPlugin } from '@/plugins/server/registerer';
+﻿import { registerServerPlugin } from '@/generated/server-registerer';
 
 export async function registerServerPlugins() {
   const global = globalThis as { __initialized?: boolean };

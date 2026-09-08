@@ -46,7 +46,7 @@ function Editor() {
         <Selector
           name={'model'}
           id={`transformers-model`}
-          defaultValue={model ?? models['all-MiniLM-L6-v2'].model}
+          value={model ?? models['all-MiniLM-L6-v2'].model}
           items={[...modelKeys]}
         />
       </Field>
@@ -78,7 +78,7 @@ const embedder: Embedder = {
     return {
       dimension,
       async generate(ctx) {
-        const result = await extractor(ctx.content, {
+        const result = await extractor(ctx.content ?? '', {
           pooling: 'mean',
           normalize: true,
         });

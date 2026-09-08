@@ -42,7 +42,8 @@ export const renderer: Renderer = {
     return cache;
   },
   output: async ({}, cache: ScriptCache) => {
-    const { window, document } = realms.iframe;
+    const { contentWindow, contentDocument: document } = realms.iframe;
+    const window = contentWindow as any;
     if (!window.__injectedScriptInitialized && document) {
       window.__injectedScriptInitialized = true;
       console.debug('[script]: start inject');

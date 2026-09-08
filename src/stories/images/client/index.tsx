@@ -1,7 +1,6 @@
 import { ImagesIcon, SquarePenIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import React from 'react';
 
 import {
   DeleteDialog,
@@ -112,7 +111,7 @@ function ContentItem({
                   id={`story-image-${entryId}`}
                   className={'max-w-52'}
                   accept={'image/png'}
-                  defaultValue={source}
+                  value={source}
                   onChange={onFileChange}
                 />
               </Field>

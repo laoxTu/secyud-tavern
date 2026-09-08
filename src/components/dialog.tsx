@@ -31,7 +31,6 @@ export interface TooltipDialogInfo {
   tooltip: string;
   title: string;
   desc?: string;
-  submit: string;
 }
 
 interface TooltipDialogProps {
@@ -77,7 +76,6 @@ export function TooltipDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Tooltip />}>
         <TooltipTrigger
-          className={'bg-background'}
           onClick={openDialog}
           render={<Button variant={'ghost'} disabled={disabled} />}
         >
@@ -98,7 +96,7 @@ export function TooltipDialog({
         </DialogHeader>
         {children}
         <DialogFooter>
-          {onSubmit && <Button type="submit">{info.submit}</Button>}
+          {onSubmit && <Button type="submit">{t('default.ensure')}</Button>}
           <DialogClose render={<Button variant="outline" />}>
             {t('default.cancel')}
           </DialogClose>
@@ -141,8 +139,7 @@ export function TooltipAlertDialog({
       <AlertDialogTrigger render={<Tooltip />}>
         <TooltipTrigger
           onClick={openDialog}
-          className={'bg-background'}
-          render={<Button variant="ghost" disabled={disabled} />}
+          render={<Button variant="destructive" disabled={disabled} />}
         >
           {children}
         </TooltipTrigger>
@@ -159,7 +156,7 @@ export function TooltipAlertDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction variant={'destructive'} onClick={handleSubmit}>
-            {info.submit}
+            {t('default.ensure')}
           </AlertDialogAction>
           <AlertDialogCancel render={<Button variant="outline" />}>
             {t('default.cancel')}
@@ -200,7 +197,6 @@ function info(t: _Translator, type: string, item?: string): TooltipDialogInfo {
       }
     : undefined;
   return {
-    submit: t(`message.${type}.submit`),
     title: t(`message.${type}.title`, param),
     tooltip: t(`message.${type}.tooltip`, param),
     desc: t(`message.${type}.desc`, param),

@@ -1,6 +1,5 @@
 import { ToolboxIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
 import {
   Checkbox,
@@ -26,15 +25,9 @@ function Component() {
   const t = useTranslations();
   const { handler } = useHandler();
   const { key, refreshKey } = useRefresh();
-  const realm = realms.realm.realm;
+
+  const { realm } = realms;
   const { items } = tools.property(realm);
-  const changeOpen = handler(async (open: boolean) => {
-    if (!open) {
-      await stories.proxy.update(realm.id, {
-        properties: realm.properties,
-      });
-    }
-  });
   const changeCheckItem = handler(
     async (entry: PresetItem<Macro>, checked: boolean) => {
       entry.disabled = !checked;
@@ -46,7 +39,13 @@ function Component() {
   return (
     <TooltipDialog
       tooltip={<ToolboxIcon />}
-      onOpen={changeOpen}
+      onOpen={handler(async (open: boolean) => {
+        if (!open) {
+          await stories.proxy.update(realm.id, {
+            properties: realm.properties,
+          });
+        }
+      })}
       className={'flex flex-col overflow-hidden h-5/6'}
       style={{ height: '86%' }}
       info={dialogs.info(t, 'tool.selector')}

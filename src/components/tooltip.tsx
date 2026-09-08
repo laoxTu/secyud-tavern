@@ -56,7 +56,6 @@ export function IconTooltip({
     <Tooltip>
       <TooltipTrigger
         onClick={onClick}
-        className={'bg-background'}
         render={<Button disabled={disabled} variant={'ghost'} />}
       >
         {children}

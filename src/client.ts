@@ -1,8 +1,9 @@
-﻿import { DelPath, GetPath, PostPath, PutPath } from '@/client-schema';
-/**
- * 此文件只用于client请求server。调用第三方接口请使用fetch。
- */
+﻿import { DelPath, GetPath, PostPath, PutPath } from '@/generated/api-path';
 import { ApiError } from '@/interceptors/client';
+
+/**
+ * 此文件只用于client请求server。调用第三方接口请使用fetch或proxy。
+ */
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'open';
 export const getBaseUrl = () => {
@@ -67,17 +68,17 @@ interface RequestOptions {
  * 统一的 API 请求函数
  * @example
  * // GET 请求
- * const user = await api('/api/users/{id}', 'get', {
+ * const user = await api('users/{id}', 'get', {
  *     params: { id: '123', include: 'posts' }
  * });
  *
  * // POST 请求
- * const newUser = await api('/api/users', 'post', {
+ * const newUser = await api('users', 'post', {
  *     body: { name: 'John' }
  * });
  *
  * // PUT 请求
- * const updated = await api('/api/users/{id}', 'put', {
+ * const updated = await api('users/{id}', 'put', {
  *     params: { id: '123' },
  *     body: { name: 'Jane' }
  * });
@@ -99,7 +100,14 @@ export async function api<M extends HttpMethod>(
   };
 
   if (options?.body) {
-    if (!headers.has('Content-Type')) {
+    if (
+      !headers.has('Content-Type') &&
+      !(options.body instanceof FormData) &&
+      !(options.body instanceof URLSearchParams) &&
+      !(options.body instanceof Blob) &&
+      !(options.body instanceof ArrayBuffer) &&
+      !(options.body instanceof ReadableStream)
+    ) {
       headers.set('Content-Type', 'application/json');
       fetchOptions.body = JSON.stringify(options.body);
     } else {

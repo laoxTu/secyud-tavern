@@ -11,7 +11,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   Button,
@@ -45,12 +45,12 @@ import { PresetEntryState } from './factory';
 import { presets } from '.';
 
 interface PresetNameValuesFieldProps {
-  defaultValue?: NameValue[];
+  value?: NameValue[];
   name: string;
 }
 
 export function PresetNameValuesField({
-  defaultValue,
+  value: defaultValue,
   name,
 }: PresetNameValuesFieldProps) {
   const t = useTranslations();
@@ -62,9 +62,9 @@ export function PresetNameValuesField({
       </FieldLabel>
       <RemoteSearchCombobox
         multiple
+        value={defaultValue}
         name={name}
         id={`${name}-presets`}
-        defaultValue={defaultValue ?? []}
         fetcher={handler(
           async (request: DataRequest, fuzzy?: string | null) => {
             const data = await presets.proxy.list({
@@ -284,6 +284,7 @@ export function PresetEntryList<TData>({
       <div className={cn('flex-1 flex flex-col', className)}>
         <PagedItemList
           custom
+          id={item.id}
           entryName={`${name}.id`}
           className={'flex'}
           itemKey={(item) => item.entryId}

@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import OpenAI from 'openai';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import {
   Field,
@@ -165,12 +165,6 @@ async function promptResponses(
     description: u.description,
     strict: false,
   }));
-  pools.push({
-    type: 'function',
-    ...models.engines.knowledge.info,
-    parameters: models.engines.knowledge.schema,
-    strict: false,
-  });
   const systemPrompts: string[] = [];
   await models.engines.prompt(ctx, {
     builder: realm.model.builder,
@@ -233,13 +227,6 @@ async function promptChatCompletion(
       description: u.description,
     },
   }));
-  pools.push({
-    type: 'function',
-    function: {
-      ...models.engines.knowledge.info,
-      parameters: models.engines.knowledge.schema,
-    },
-  });
   await models.engines.prompt(ctx, {
     builder: realm.model.builder,
     name: (i) => `call_x${i}`,

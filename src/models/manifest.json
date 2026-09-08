@@ -1,5 +1,5 @@
 {
-  "id": "models",
   "client": "client",
+  "id": "models",
   "server": "server"
 }

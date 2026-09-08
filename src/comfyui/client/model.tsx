@@ -155,7 +155,7 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
                 id={`comfyui_model-cover-${item.id}`}
                 className={'max-w-52'}
                 accept={'image/png'}
-                defaultValue={source}
+                value={source}
                 onChange={onFileChange}
               />
             </Field>
@@ -196,7 +196,7 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
               <Selector
                 name={'type'}
                 id={`comfyui_model-type-${item.id}`}
-                defaultValue={item.type}
+                value={item.type}
                 items={comfyuis.model.types}
               />
             </Field>
@@ -244,7 +244,7 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
               <FieldLabel>{t('default.html')}</FieldLabel>
               <MonacoEditor
                 name={'html'}
-                defaultValue={item.html ?? ''}
+                value={item.html ?? ''}
                 language={'html'}
                 formRef={formRef}
               />
@@ -281,7 +281,7 @@ export function ModelContent() {
           })}
         >
           <TagBox
-            defaultValue={[]}
+            value={[]}
             name={'type'}
             className={'min-w-48'}
             placeholder={t('default.types')}

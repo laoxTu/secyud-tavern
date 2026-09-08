@@ -78,7 +78,7 @@ function Editor({
         <FieldLabel>{t('default.content')}</FieldLabel>
         <MonacoEditor
           name={'content'}
-          defaultValue={content}
+          value={content}
           language={language}
           formRef={form}
         />
@@ -118,7 +118,7 @@ function Editor({
         <Selector
           name={'type'}
           id={`script-type-${entryId}`}
-          defaultValue={type}
+          value={type}
           onValueChange={(v) => {
             setLanguage(mapToLanguage(v));
           }}

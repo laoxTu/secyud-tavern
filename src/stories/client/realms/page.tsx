@@ -1,5 +1,6 @@
 'use client';
 import {
+  ArrowBigLeftIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CornerDownLeftIcon,
@@ -8,6 +9,7 @@ import {
   SquareStopIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import {
@@ -32,6 +34,7 @@ import {
 } from '@/components';
 import { Loading } from '@/global/client/loading';
 import { useHandler } from '@/interceptors/client';
+import { models } from '@/models/client';
 import { stories } from '@/stories/client';
 
 import { realms, useRealmState } from '.';
@@ -84,7 +87,7 @@ function UserInput() {
   });
 
   useEffect(() => {
-    const window = realms.iframe.window;
+    const window = realms.iframe?.contentWindow as any;
     if (!window) return;
     window.userInput = {
       text: {
@@ -152,38 +155,19 @@ export function PageControl() {
     useRealmState();
 
   useEffect(() => {
-    handler(async () => {
-      const { index } = useRealmState.getState();
-      const {
-        realm: { realm, histories },
-        history: { get },
-      } = realms;
-      if (histories.length && index.cur > 0) {
-        const current = await get(index.cur, realm);
-        useRealmState.setState({
-          output: {
-            cur: current.output,
-            max: current.outputs.length,
-          },
-        });
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     if (prepare) {
       handler(async () => {
         setPrepare(false);
         console.debug(`[realm](render page): start`);
         const {
-          realm: { realm },
-          iframe: { instance: iframe },
+          iframe,
+          realm,
           history: { get },
         } = realms;
         if (!iframe) return;
         const { index } = useRealmState.getState();
         const history = await get(index.cur, realm);
-        await stories.renderers.content({ history });
+        await stories.renderers.content({ realm, history });
       })();
     }
   }, [prepare]);
@@ -271,19 +255,22 @@ export default function RealmPage({
     success: false,
     started: false,
   });
-  const { pinned, setPinned, setIndex } = useRealmState();
+  const { pinned, setPinned, initPager } = useRealmState();
+  const route = useRouter();
 
   const loadingCurrentSlot = async () => {
     try {
       setLoadingState((u) => ({
         ...u,
         loading: true,
+        success: false,
       }));
       const { id } = await params;
       const realm = await stories.proxy.realm.id(id);
-      realms.realm.realm = realm;
-      await realms.realm.initialize({ realm });
-      await setIndex(realm.histories?.length ?? 0);
+      await models.processers.initialize({ realm });
+      await stories.renderers.initialize({ realm });
+      realms.realm = realm;
+      await initPager();
       setLoadingState((u) => ({
         ...u,
         success: true,
@@ -317,30 +304,44 @@ export default function RealmPage({
       <iframe
         key={1}
         ref={(iframe) => {
-          realms.iframe.instance = iframe;
+          realms.iframe = iframe!;
         }}
         width={'100%'}
         height={'100%'}
       />
       <RealmTips />
       <div className="fixed inset-0 top-auto min-h-20 sc-dc">
-        <div className={`flex-col gap-2 p-2 ${pinned ? 'flex' : 'sc-dc-flex'}`}>
+        <div className={`flex-col ${pinned ? 'flex' : 'sc-dc-flex'}`}>
           <fieldset
-            className={'m-auto flex justify-center flex-wrap gap-2'}
+            className={'m-auto flex justify-center flex-wrap'}
             disabled={!loadingState.started || loadingState.loading}
           >
-            <PageControl />
-            {stories.features.registry.sorted().map((u, i) =>
-              element(u.component, {
-                key: i,
-              }),
+            {loadingState.success && (
+              <>
+                <PageControl />
+                {stories.features.registry.sorted().map((u, i) => (
+                  <div key={u.id} className="bg-background">
+                    {element(u.component)}
+                  </div>
+                ))}
+              </>
             )}
-            <IconTooltip
-              text={pinned ? 'realm.unpin_chatbox' : 'realm.pin_chatbox'}
-              onClick={() => setPinned(!pinned)}
-            >
-              {pinned ? <PinOffIcon /> : <PinIcon />}
-            </IconTooltip>
+            <div className="bg-background">
+              <IconTooltip
+                text={'realm.back_home_tip'}
+                onClick={() => route.replace('/')}
+              >
+                <ArrowBigLeftIcon />
+              </IconTooltip>
+            </div>
+            <div className="bg-background">
+              <IconTooltip
+                text={pinned ? 'realm.unpin_chatbox' : 'realm.pin_chatbox'}
+                onClick={() => setPinned(!pinned)}
+              >
+                {pinned ? <PinOffIcon /> : <PinIcon />}
+              </IconTooltip>
+            </div>
           </fieldset>
           <fieldset className={'w-full'} disabled={!loadingState.success}>
             <UserInput />

@@ -15,7 +15,6 @@ import { models, useModelSettingState } from '@/models/client';
 interface ModelNameValueFieldProps {
   value?: NameValue | null;
   onValueChange?: (value: NameValue | null) => void;
-  defaultValue?: NameValue | null;
   name?: string;
   orientation?: Orientation;
 }
@@ -23,8 +22,7 @@ interface ModelNameValueFieldProps {
 export function ModelNameValueField({
   name,
   orientation,
-  defaultValue,
-  value,
+  value: defaultValue,
   onValueChange,
 }: ModelNameValueFieldProps) {
   const t = useTranslations();
@@ -43,8 +41,7 @@ export function ModelNameValueField({
             `${e.name} ${model?.value === e.value ? `(${t('model.default')})` : ``}`
           }
           onValueChange={onValueChange}
-          defaultValue={defaultValue}
-          value={value}
+          value={defaultValue}
           fetcher={handler(async (request, search) => {
             const data = await models.proxy.list({
               ...request,

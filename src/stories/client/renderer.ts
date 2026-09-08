@@ -34,24 +34,17 @@ const registry = getRegistry<Renderer>('realm-processer');
 
 export const renderers = {
   registry,
-  async initialize({ realm }: { realm?: Realm }) {
-    realm = realms.check(realm);
+  async initialize({ realm }: { realm: Realm }) {
     const context: RealmInitContext = {
       properties: {},
       realm,
     };
     await registry.use(async (p) => {
       const cache = await p.init(context);
-      realms.init(realm, realms.key(p.id), cache);
+      realms.initContext(realm, realms.key(p.id), cache);
     });
   },
-  async content({ history, realm }: { history: RealmHistory; realm?: Realm }) {
-    realm = realms.check(realm);
-    if (!realm.initialized) {
-      // 副作用问题, 开发模式会渲染两次, 第一次渲染会读到第二次设置的slot.
-      // 它还未初始化就会引发错误, 这里直接停止第一次渲染. 让第二次渲染自己渲染.
-      return;
-    }
+  async content({ history, realm }: { history: RealmHistory; realm: Realm }) {
     const context: RealmRenderContext = {
       properties: {},
       history,
@@ -66,8 +59,7 @@ export const renderers = {
     );
     realms.message.variables(history);
   },
-  async stream({ history, realm }: { history: RealmHistory; realm?: Realm }) {
-    realm = realms.check(realm);
+  async stream({ history, realm }: { history: RealmHistory; realm: Realm }) {
     const context: RealmRenderContext = {
       properties: {},
       history,

@@ -1,5 +1,7 @@
 'use client';
-import React from 'react';
+
+import { SelectRootChangeEventDetails } from '@base-ui/react';
+import { useState } from 'react';
 
 import {
   Select,
@@ -12,9 +14,11 @@ import {
 
 interface SelectorProps<T> {
   items: T[];
-  defaultValue?: T | null;
   value?: T | null;
-  onValueChange?: (value: T | null) => void;
+  onValueChange?: (
+    value: T | null,
+    eventDetails?: SelectRootChangeEventDetails,
+  ) => void;
   id?: string;
   name?: string;
   labelAccessor?: (u: T) => string;
@@ -26,25 +30,23 @@ export function Selector<T>({
   id,
   name,
   items,
-  defaultValue,
-  value,
+  value: defaultValue,
   onValueChange,
   labelAccessor,
   valueAccessor,
 }: SelectorProps<T>) {
-  const key =
-    defaultValue && valueAccessor
-      ? valueAccessor(defaultValue)
-      : (defaultValue as string);
+  const [value, setValue] = useState(defaultValue ?? null);
   return (
     <Select
-      key={key}
       name={name}
       itemToStringLabel={labelAccessor}
       itemToStringValue={valueAccessor}
       defaultValue={defaultValue}
       value={value}
-      onValueChange={onValueChange}
+      onValueChange={(value, e) => {
+        onValueChange?.(value as any, e);
+        setValue(value ?? null);
+      }}
     >
       <SelectTrigger className="w-full" id={id}>
         <SelectValue />

@@ -425,31 +425,34 @@ export function MenuContent() {
             onClick={(item) => setItem(item.id)}
             usePager={usePresetState}
           >
-            {(item) => (
-              <>
-                <ItemMedia variant={'image'}>
-                  <Image
-                    src={item.cover ?? 'favicon.svg'}
-                    alt={item.name}
-                    width={32}
-                    height={32}
-                    className="object-contain"
-                  />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="line-clamp-1">
-                    {item.name} -{' '}
-                    <span className="text-muted-foreground">{item.id}</span>
-                  </ItemTitle>
-                  <ItemDescription>
-                    <TextTooltip text={item.description} len={10} />
-                  </ItemDescription>
-                </ItemContent>
-                <ItemContent className="flex-none text-center">
-                  <ItemDescription>{item.version}</ItemDescription>
-                </ItemContent>
-              </>
-            )}
+            {(item) => {
+              const cover = files.proxy.url(item.cover);
+              return (
+                <>
+                  <ItemMedia variant={'image'}>
+                    <Image
+                      src={cover ? cover : 'favicon.svg'}
+                      alt={item.name}
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle className="line-clamp-1">
+                      {item.name} -{' '}
+                      <span className="text-muted-foreground">{item.id}</span>
+                    </ItemTitle>
+                    <ItemDescription>
+                      <TextTooltip text={item.description} len={10} />
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemContent className="flex-none text-center">
+                    <ItemDescription>{item.version}</ItemDescription>
+                  </ItemContent>
+                </>
+              );
+            }}
           </PagedItemList>
         </>
       }
@@ -467,7 +470,7 @@ function PropertyTab() {
   const t = useTranslations();
   const { onFileChange, getImageFileId } = useImageUploaderState('cover');
   const { handler, success } = useHandler();
-  const { item, setItem } = usePresetState();
+  const { item, setItem, refresh } = usePresetState();
   const form = useFormRef();
 
   if (!item) return null;
@@ -476,10 +479,12 @@ function PropertyTab() {
     <UpdateForm
       form={form}
       onSubmit={handler(async (data: FormData) => {
+        const coverId = await getImageFileId(data);
+        const cover = coverId ? coverId : (data.get('cover_src') as string);
         const { id } = await presets.proxy.update(item.id, {
           id: data.get('code') as string,
           name: data.get('name') as string,
-          cover: await getImageFileId(data),
+          cover,
           version: data.get('version') as string,
           description: data.get('description') as string,
           opening: data.get('opening') as string,
@@ -491,6 +496,7 @@ function PropertyTab() {
         });
         success(t('message.update.success'));
         await setItem(id);
+        await refresh();
       })}
     >
       <Field className={rowHalf}>
@@ -502,7 +508,7 @@ function PropertyTab() {
           name="cover-image`"
           className={'pr-2'}
           accept={'image/png'}
-          defaultValue={files.proxy.url(item.cover)}
+          value={files.proxy.url(item.cover)}
           onChange={onFileChange}
         />
       </Field>
@@ -526,11 +532,11 @@ function PropertyTab() {
         <Textarea
           name="description"
           id={`preset-description`}
-          defaultValue={item.description ?? ''}
+          defaultValue={item.description}
           onKeyDown={submitTargetFormOnKey}
         />
       </Field>
-      <PresetNameValuesField name={'require'} defaultValue={item?.requires} />
+      <PresetNameValuesField name={'require'} value={item?.requires} />
       <Field>
         <FieldLabel htmlFor={`preset-version`}>
           {t('default.version')}
@@ -556,7 +562,7 @@ function PropertyTab() {
         <TagBox
           id={`preset-tags`}
           name={'tag'}
-          defaultValue={item.tags}
+          value={item.tags}
           items={presets.tags}
         />
       </Field>
@@ -564,7 +570,7 @@ function PropertyTab() {
         <FieldLabel>{t('default.variables')}</FieldLabel>
         <MonacoEditor
           name={'variables'}
-          defaultValue={item.variables ?? ''}
+          value={item.variables}
           language={'json'}
           formRef={form}
         />

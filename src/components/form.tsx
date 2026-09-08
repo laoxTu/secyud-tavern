@@ -2,7 +2,7 @@
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
-import { Button, Field, FieldGroup, GridField, useRefresh } from '.';
+import { Button, Field, FieldGroup, GridField } from '.';
 
 interface UpdateFormProps {
   form?: React.RefObject<HTMLFormElement | null>;
@@ -12,15 +12,10 @@ interface UpdateFormProps {
 
 export function UpdateForm({ form, children, onSubmit }: UpdateFormProps) {
   const t = useTranslations();
-  const { key, refreshKey } = useRefresh();
   return (
     <form
       ref={form}
-      action={async (data) => {
-        await onSubmit(data);
-        refreshKey();
-      }}
-      key={key}
+      action={onSubmit}
       className={'flex flex-col flex-1 overflow-hidden p-1 gap-1'}
     >
       <FieldGroup className={'flex flex-col flex-1 overflow-auto'}>
@@ -28,7 +23,7 @@ export function UpdateForm({ form, children, onSubmit }: UpdateFormProps) {
       </FieldGroup>
       <Field orientation="horizontal">
         <Button variant={'outline'} type="submit">
-          {t('message.update.submit')}
+          {t('default.save')}
         </Button>
       </Field>
     </form>

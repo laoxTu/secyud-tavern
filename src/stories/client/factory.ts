@@ -22,7 +22,7 @@ export function createStoryEntryState<TData>(name: string, defaultData: TData) {
     defaultData,
     cur: 0,
     loading: false,
-    size: 7,
+    size: 5,
     max: 0,
     fetch: states.createFetch<StoryEntry<TData>, EntryRequestParam>(
       set,

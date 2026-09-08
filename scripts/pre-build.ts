@@ -1,12 +1,12 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { fileUtils } from '@/utils/server/file';
+
 import { generateEnvFile } from './operations/env';
 import { analyzeManifests } from './operations/manifest';
 import { migrate } from './operations/migrate';
 import { downloadModels } from './operations/models';
-
-import { fileUtils } from '@/utils/server/file';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');

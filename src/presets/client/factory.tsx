@@ -25,7 +25,7 @@ export function createPresetEntryState<TData>(
     defaultData,
     cur: 0,
     loading: false,
-    size: 7,
+    size: 5,
     max: 0,
     fetch: states.createFetch<PresetEntry<TData>, EntryRequestParam>(
       set,

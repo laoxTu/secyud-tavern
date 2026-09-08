@@ -24,6 +24,15 @@ export const proxy = {
   },
   url(id?: string | null) {
     if (!id) return '';
-    return validate(id) ? `/api/files/resource/${id}` : id;
+
+    if (validate(id)) {
+      return `/api/files/resource/${id}`;
+    }
+    try {
+      new URL(id);
+      return id;
+    } catch {
+      return '';
+    }
   },
 };

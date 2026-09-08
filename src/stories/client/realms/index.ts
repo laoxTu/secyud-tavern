@@ -8,40 +8,6 @@ import { Operation, patch, validate } from '@/utils/json-patch';
 
 import { useRealmState } from './state';
 
-const instance: {
-  realm: Realm | null;
-  iframe: HTMLIFrameElement | null;
-} = { realm: null, iframe: null };
-
-const realmInstance = {
-  get() {
-    const res = instance.realm;
-    if (!res) throw new BusinessError('[realm](error): failed to get realm.');
-    return res!;
-  },
-  set(realm: Realm | null) {
-    console.info(`[realm](loaded): ${realm?.id ?? 'null'}`);
-    instance.realm = realm;
-  },
-  histories() {
-    const res = instance.realm?.histories;
-    if (!res)
-      throw new BusinessError('[realm](error): failed to get histories.');
-    return res!;
-  },
-};
-
-const iframeInstance = {
-  set(iframe: HTMLIFrameElement | null) {
-    return (instance.iframe = iframe);
-  },
-  get() {
-    const res = instance.iframe;
-    if (!res) throw new BusinessError('[realm](error): failed to get iframe.');
-    return res!;
-  },
-};
-
 function outputs(history?: RealmHistory | null) {
   if (!history?.outputs.length) return null;
   const outputId = Math.min(history.outputs.length - 1, history.output);
@@ -110,7 +76,7 @@ function context<T = any>(realm: Realm, key: string): T {
   if (value === undefined) {
     console.debug('[realm](context): ', realm.context);
     throw new BusinessError(
-      `realm context "${key}" is not initialized`,
+      `realm context "${key}" is not initialized. (${JSON.stringify(Object.keys(realm.context ?? {}))})`,
       'error.story.realm_not_initialized',
     ).withValue('key', key);
   }
@@ -125,7 +91,7 @@ function context<T = any>(realm: Realm, key: string): T {
  * @param key
  * @param value
  */
-function init(realm: Realm, key: string, value: any) {
+function initContext(realm: Realm, key: string, value: any) {
   realm.context ??= {};
   if (realm.context[key] !== undefined || value === undefined) {
     throw new BusinessError(
@@ -182,18 +148,10 @@ function opening(realm: Realm) {
         })),
     );
     // 懒生成写入，setContent 会检测同键重复初始化
-    init(realm, key, opening);
+    initContext(realm, key, opening);
     console.log('[realm](opening): ', opening);
   }
   return opening;
-}
-
-/**
- * 或使用默认
- * @param realm
- */
-function check(realm?: Realm): Realm {
-  return realm ?? realmInstance.get();
 }
 
 /**
@@ -206,8 +164,7 @@ async function model(realm: Realm, model?: NameValue | null) {
   return model ? await models.proxy.get(model.value) : realm.model;
 }
 
-async function getHistory(index?: number, realm?: Realm) {
-  realm = check(realm);
+async function getHistory(index: number | null, realm: Realm) {
   const histories = realm.histories;
   // 渲染开场白
   if (index === 0 || !histories.length) return opening(realm);
@@ -221,15 +178,14 @@ async function getHistory(index?: number, realm?: Realm) {
   return history;
 }
 
-async function setHistory(index?: number, realm?: Realm) {
+async function setHistory(index: number, realm: Realm) {
   if (index === 0) return;
-  realm = check(realm);
   const history = await getHistory(index, realm);
   await stories.proxy.history.set(realm.id, history.sequence, history);
 }
 
 function postMessage(type: string, data: any) {
-  const window = instance.iframe?.contentWindow;
+  const window = realms.iframe?.contentWindow;
   if (!window) {
     console.error('iframe is not accessible this time.');
     return;
@@ -247,6 +203,7 @@ async function generate(create: boolean = false) {
   const get = useRealmState.getState;
   const { generating, content, summary, setIndex, setRealmInfo, setSignal } =
     get();
+  const { realm, histories, iframe } = realms;
   const set = useRealmState.setState;
   set({
     generating: true,
@@ -255,10 +212,6 @@ async function generate(create: boolean = false) {
       content: '',
     },
   });
-  const {
-    realm: { realm, histories },
-    iframe: { iframe },
-  } = realms;
   if (create) {
     try {
       set({ summary: false, content: '' });
@@ -330,7 +283,7 @@ async function generate(create: boolean = false) {
   // 创建并保存历史后需要生成回复
 
   try {
-    const history = await getHistory();
+    const history = await getHistory(null, realm);
     const setIndexCur = async () => {
       history.output = history.outputs.length - 1;
       await setIndex(histories.length);
@@ -339,6 +292,7 @@ async function generate(create: boolean = false) {
     let thoughtLen = 0;
     let toolArgLen = 0;
     for await (const { output } of models.processers.generate({
+      realm,
       signal: async (signal) => {
         await setIndexCur();
         if (signal) setSignal(signal);
@@ -385,18 +339,22 @@ async function generate(create: boolean = false) {
   } finally {
     set({ generating: false });
     await setIndex(histories.length);
-    await setHistory(histories.length);
+    await setHistory(histories.length, realm);
   }
 }
 
 export const realms = {
+  realm: null! as Realm,
+  iframe: null! as HTMLIFrameElement,
+  get histories() {
+    return realms.realm?.histories!;
+  },
   outputs,
   variables,
   fill,
   model,
-  check,
   opening,
-  init,
+  initContext,
   context,
   generate,
   cache<T = any>(realm: Realm, key: string) {
@@ -405,44 +363,6 @@ export const realms = {
   history: {
     get: getHistory,
     set: setHistory,
-  },
-  realm: {
-    async initialize({ realm }: { realm?: Realm }) {
-      realm = realms.check(realm);
-      if (realm.initialized) return;
-      await models.processers.initialize({ realm });
-      await stories.renderers.initialize({ realm });
-      realm.initialized = true;
-    },
-    get realm() {
-      return realmInstance.get();
-    },
-    set realm(data) {
-      realmInstance.set(data);
-    },
-    get histories() {
-      return realmInstance.histories();
-    },
-  },
-  iframe: {
-    get iframe() {
-      return iframeInstance.get();
-    },
-    set iframe(data) {
-      iframeInstance.set(data);
-    },
-    get instance() {
-      return instance.iframe;
-    },
-    set instance(data) {
-      instance.iframe = data;
-    },
-    get window() {
-      return instance.iframe?.contentWindow as any;
-    },
-    get document() {
-      return instance.iframe?.contentDocument ?? null;
-    },
   },
   message: {
     post: postMessage,

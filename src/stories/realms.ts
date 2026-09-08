@@ -38,8 +38,6 @@ export interface RealmHistory {
  * 由故事映射而来
  */
 export interface Realm extends Entity, Properties, Entries {
-  // 是否初始化
-  initialized?: boolean;
   // 名称，用于显示
   name: string;
   // 历史，主要上下文

@@ -92,7 +92,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
         <FieldLabel>{t('default.content')}</FieldLabel>
         <MonacoEditor
           name={'content'}
-          defaultValue={content}
+          value={content}
           language={language ?? 'plaintext'}
           formRef={form}
         />
@@ -148,7 +148,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
         <Selector
           name={'role'}
           id={`lorebook-role-${entryId}`}
-          defaultValue={role}
+          value={role}
           items={roles}
         />
       </Field>

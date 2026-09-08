@@ -39,10 +39,10 @@ const configurator: ParamConfigurator<CallbackConfig> = {
       node: data.get('node') as string,
     };
   },
-  async configureInput(data, { config: { node } }, input) {
+  async configureInput(_, { config: { node } }, input) {
     const inputs = input[node]?.inputs;
     if (inputs) {
-      const { realm } = realms.realm;
+      const { realm } = realms;
       const base = getBaseUrl();
       const url = `${base}/api/stories/${realm.id}/entries/${images.name}`;
       inputs['target_url'] = url;

@@ -82,7 +82,7 @@ export function Editor({
         </FieldLabel>
         <MonacoEditor
           name={'schema'}
-          defaultValue={config.schema}
+          value={config.schema}
           language={'json'}
           formRef={formRef}
         />
@@ -113,11 +113,8 @@ export function Editor({
           />
         </FieldContent>
       </Field>
-      <ModelNameValueField defaultValue={config.model} name={`model`} />
-      <PresetNameValuesField
-        defaultValue={config.presets ?? []}
-        name={`preset`}
-      />
+      <ModelNameValueField value={config.model} name={`model`} />
+      <PresetNameValuesField value={config.presets ?? []} name={`preset`} />
       <Field className={spanHalf}>
         <FieldLabel htmlFor={`${entryId}-disable_tags`}>
           {t('agent.disable_tags')}
@@ -125,7 +122,7 @@ export function Editor({
         <TagBox
           id={`${entryId}-disable_tags`}
           name={'disable_tags'}
-          defaultValue={config.disableTags}
+          value={config.disableTags}
           items={presets.tags}
         />
       </Field>

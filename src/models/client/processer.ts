@@ -1,5 +1,5 @@
 import { BusinessError } from '@/interceptors';
-import { isNetworkError } from '@/interceptors/client';
+import { isAbortError, isNetworkError } from '@/interceptors/client';
 import { getRegistry, Registerable } from '@/plugins';
 import { SignalBinder, signalUtils, sseUtils } from '@/signal';
 import { realms, useRealmState } from '@/stories/client/realms';
@@ -150,11 +150,10 @@ async function prompt({
   args,
   current,
 }: {
-  realm?: Realm;
+  realm: Realm;
   args?: any;
   current: boolean;
 }) {
-  realm = realms.check(realm);
   const { engine } = modelInfo(realm.model);
   const histories: RealmHistory[] = [];
   for (let i = realm.histories.length; i > 0; i--) {
@@ -188,19 +187,17 @@ async function prompt({
 
 export const processers = {
   registry,
-  async initialize({ realm }: { realm?: Realm }) {
-    realm = realms.check(realm);
+  async initialize({ realm }: { realm: Realm }) {
     const context: ModelInitContext = {
       properties: {},
       realm,
     };
     await registry.use(async (p) => {
       const cache = await p.init(context);
-      realms.init(realm, models.key(p.id), cache);
+      realms.initContext(realm, models.key(p.id), cache);
     });
   },
-  async output({ realm }: { realm?: Realm }) {
-    realm = realms.check(realm);
+  async output({ realm }: { realm: Realm }) {
     const outputContext: ModelOutputContext = {
       properties: {},
       realm,
@@ -219,12 +216,11 @@ export const processers = {
   }: {
     args?: any;
     signal: SignalBinder;
-    realm?: Realm;
+    realm: Realm;
   }) {
-    realm = realms.check(realm);
     const { engine, model, iterations } = modelInfo(realm.model);
     const outputs: RealmOutput[] = [];
-    const history = await realms.history.get(undefined, realm);
+    const history = await realms.history.get(null, realm);
     history.output = history.outputs.length;
     history.outputs.push(outputs);
     let iteration = iterations;
@@ -275,40 +271,60 @@ export const processers = {
       };
 
       let retry = 3;
-      let delay = 1000;
       while (retry > 0) {
+        const controller = new AbortController();
+        signalUtils.setAbort(reply.signal, (event) => {
+          controller.abort((event.target as AbortSignal)?.reason);
+        });
+        let finished = false;
+        let updateTime = new Date();
+
+        const checkTime = () => {
+          setTimeout(() => {
+            if (finished) return;
+            const elapsed = (Date.now() - updateTime.getTime()) / 1000;
+            if (elapsed > 1) {
+              controller.abort('retry');
+            } else if (!finished) {
+              checkTime();
+            }
+          }, 1000);
+        };
+        checkTime();
         try {
           const response = await models.proxy.engine.generate(
             model.id,
             input,
-            reply.signal,
+            controller.signal,
           );
           if (realm.model.stream) {
             if (response.body) {
               for await (const chunk of sseUtils.read(response.body)) {
-                if (reply.signal.aborted) {
-                  console.warn('[HistoryChatbox] reply canceled');
-                  break;
-                }
+                updateTime = new Date();
                 yield generate(true, chunk);
               }
             }
           } else {
+            updateTime = new Date();
             yield generate(true, response);
+            updateTime = new Date();
           }
           retry = 0;
         } catch (err) {
-          if (isNetworkError(err)) {
+          if (
+            isNetworkError(err) ||
+            (isAbortError(err) && controller.signal.reason === 'retry')
+          ) {
             useRealmState.getState().setRealmInfo({
               title: `realm.retry`,
               content: `(${4 - retry}/3)`,
             });
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            delay *= 2;
             retry--;
           } else {
             throw err;
           }
+        } finally {
+          finished = true;
         }
       }
     }

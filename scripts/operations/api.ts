@@ -91,7 +91,7 @@ async function generateApiKeys(root: string, descriptors: ApiDescriptor[]) {
   const apiPathsRecord = Object.groupBy(descriptors, (u) => u.method);
 
   await fileUtils.writeFile(
-    path.join(root, 'src', 'client-schema.ts'),
+    path.join(root, 'src', 'generated', 'api-path.ts'),
     `// api path
 const get = [
 ${apiPathsRecord['GET']?.map((u) => `    '${u.path}',`).join('\n')}

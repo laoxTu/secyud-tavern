@@ -220,6 +220,7 @@ export function StoryEntryList<TData>({
       <div className={cn('flex-1 flex flex-col', className)}>
         <PagedItemList
           custom
+          id={item.id}
           entryName={`${name}.id`}
           itemKey={(item) => item.entryId}
           className={'flex'}

@@ -13,9 +13,9 @@ import { processers } from './processer';
 import { setting } from './setting';
 
 export * from './component';
-export * from './state';
 export type * from './engine';
 export type * from './processer';
+export * from './state';
 
 /**
  * 传递message的处理委托，

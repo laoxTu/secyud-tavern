@@ -1,5 +1,4 @@
 import {
-  ArrowBigLeftIcon,
   DeleteIcon,
   EditIcon,
   MessageSquarePlusIcon,
@@ -49,9 +48,6 @@ function Deleter() {
   const { index, setIndex } = useRealmState();
 
   const reopen = handler(async (remain: boolean = true) => {
-    const {
-      realm: { realm },
-    } = realms;
     const { id } = await stories.proxy.clone(realm.id);
     if (!remain) {
       await stories.proxy.delete(realm.id);
@@ -59,12 +55,12 @@ function Deleter() {
     router.replace(`/${id}`);
   });
 
+  const { realm, histories } = realms;
   const trash = handler(async () => {
     const {
-      realm: { realm, histories },
       history: { get },
     } = realms;
-    const history = await get(index.cur);
+    const history = await get(index.cur, realm);
     await stories.proxy.history.del(realm.id, history.sequence);
     histories.splice(index.cur - 1, 1);
     await setIndex();
@@ -77,10 +73,9 @@ function Deleter() {
         disabled={index.cur === 0}
         onSubmit={handler(async () => {
           const {
-            realm: { histories },
             history: { get, set },
           } = realms;
-          const history = await get(index.cur);
+          const history = await get(index.cur, realm);
           if (history.outputs.length) {
             history.outputs.splice(history.output, 1);
             history.output = Math.min(
@@ -90,13 +85,13 @@ function Deleter() {
           }
 
           if (!history.outputs.length && index.cur < histories.length) {
-            const current = await get(index.cur + 1);
+            const current = await get(index.cur + 1, realm);
             current.summary ||= history.summary;
             current.prompts = [...history.prompts, ...current.prompts];
-            await set(index.cur + 1);
+            await set(index.cur + 1, realm);
             await trash();
           } else {
-            await set(index.cur);
+            await set(index.cur, realm);
             await setIndex();
           }
         })}
@@ -149,6 +144,7 @@ function Viewer() {
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [summaries, setSummaries] = useState<ModelInputSummary[] | undefined>();
+  const { realm, histories } = realms;
 
   return (
     <TooltipDialog
@@ -160,10 +156,9 @@ function Viewer() {
         async () => {
           setLoading(true);
           const {
-            realm: { realm, histories },
             history: { get },
           } = realms;
-          const history = await get();
+          const history = await get(null, realm);
           // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
           // 让用户预览这次输入实际会发给模型的上下文
           const virtual: RealmHistory = {
@@ -251,6 +246,7 @@ function Editor() {
   const [history, setHistory] = useState<RealmHistory | undefined>(undefined);
   const formRef = useFormRef();
 
+  const { realm } = realms;
   return (
     <TooltipDialog
       info={dialogs.info(t, 'realm.edit')}
@@ -264,7 +260,7 @@ function Editor() {
           history: { get },
         } = realms;
         if (index.cur <= 0) return;
-        const history = await get(index.cur);
+        const history = await get(index.cur, realm);
         setHistory(history);
       })}
       onSubmit={handler(async (data: FormData) => {
@@ -272,7 +268,7 @@ function Editor() {
           history: { get, set },
         } = realms;
         if (index.cur <= 0) return;
-        const history = await get(index.cur);
+        const history = await get(index.cur, realm);
         const variablesText = data.get('variables') as string;
         history.variables = jsonUtils.parse(variablesText);
         if (!history.variables)
@@ -288,7 +284,7 @@ function Editor() {
             output.content = data.get(`history_output-${i}-${j}`) as string;
           }
         }
-        await set(index.cur);
+        await set(index.cur, realm);
         await setIndex();
       })}
     >
@@ -299,7 +295,7 @@ function Editor() {
               <FieldLabel>{t('realm.variable')}</FieldLabel>
               <MonacoEditor
                 name={'variables'}
-                defaultValue={JSON.stringify(history.variables)}
+                value={JSON.stringify(history.variables)}
                 language={'json'}
                 formRef={formRef}
               />
@@ -349,32 +345,25 @@ function Editor() {
   );
 }
 
-function Navigator() {
-  const route = useRouter();
-  return (
-    <IconTooltip
-      text={'realm.back_home_tip'}
-      onClick={() => route.replace('/')}
-    >
-      <ArrowBigLeftIcon />
-    </IconTooltip>
-  );
-}
-
-function Content() {
-  return (
-    <>
-      <Deleter />
-      <Regenerator />
-      <Viewer />
-      <Editor />
-      <Navigator />
-    </>
-  );
-}
-
-export const feature: Feature = {
-  id: 'story',
-  sequence: 1000,
-  component: Content,
-};
+export const feature: Feature[] = [
+  {
+    id: 'deleter',
+    sequence: 1000,
+    component: Deleter,
+  },
+  {
+    id: 'regenerator',
+    sequence: 1000,
+    component: Regenerator,
+  },
+  {
+    id: 'context-viewer',
+    sequence: 1000,
+    component: Viewer,
+  },
+  {
+    id: 'history-editor',
+    sequence: 1000,
+    component: Editor,
+  },
+];

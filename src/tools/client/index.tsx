@@ -29,7 +29,7 @@ function cache(realm: Realm) {
 export function summary(callings: ToolCall[], items: ModelInputSummary[]) {
   for (const calling of callings) {
     items.push({
-      role: `tool: ${calling.name} }`,
+      role: `tool: ${calling.name}`,
       content: `${calling.id}\narguments: \n${calling.arguments}\nresponse: \n${calling.result ?? 'error'}`,
     });
   }

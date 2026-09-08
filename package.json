@@ -6,7 +6,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 12804",
-    "format": "prettier --write .",
+    "format": "npx prettier --write ./src",
     "prepare": "npx tsx scripts/pre-build.ts",
     "start": "next start -p 12804",
     "test": "vitest"
@@ -57,6 +57,7 @@
     "drizzle-kit": "^0.31.10",
     "prettier": "^3.9.6",
     "prettier-plugin-sort": "^1.1.1",
+    "prettier-plugin-sort-json": "^4.2.0",
     "shadcn": "^4.21.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.13",

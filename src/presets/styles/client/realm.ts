@@ -28,7 +28,8 @@ export const renderer: Renderer = {
     return cache;
   },
   output: async ({}, cache: StyleCache) => {
-    const { window, document } = realms.iframe;
+    const { contentWindow, contentDocument: document } = realms.iframe;
+    const window = contentWindow as any;
     if (!window.__injectedStyleInitialized && document) {
       window.__injectedStyleInitialized = true;
       console.debug('[style]: start inject');

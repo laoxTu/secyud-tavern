@@ -1,6 +1,5 @@
 import { Anthropic } from '@anthropic-ai/sdk';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
 import {
   Field,
@@ -134,10 +133,6 @@ export const engine: ModelEngine = {
       input_schema: u.parameters as any,
       description: u.description,
     }));
-    pools.push({
-      input_schema: models.engines.knowledge.schema as any,
-      ...models.engines.knowledge.info,
-    });
     const systemPrompts: string[] = [];
     await models.engines.prompt(ctx, {
       builder: realm.model.builder,

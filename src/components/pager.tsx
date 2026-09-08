@@ -14,7 +14,6 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  Skeleton,
 } from '.';
 
 export interface PageRefreshOptions {
@@ -166,6 +165,8 @@ interface PagedItemListProps<TItem> extends PaginationWrapperProps<TItem> {
   itemKey?: (item: TItem, i: number) => string | number;
   onClick?: (item: TItem) => void;
   custom?: boolean;
+  // 刷新key，当值改变时，会自动刷新一次
+  id?: string;
   className?: string;
   entryName?: string;
   initialized?: () => Promise<void>;
@@ -175,6 +176,7 @@ interface PagedItemListProps<TItem> extends PaginationWrapperProps<TItem> {
 export function PagedItemList<TItem>({
   itemKey,
   active,
+  id,
   custom,
   entryName,
   onClick,
@@ -183,14 +185,14 @@ export function PagedItemList<TItem>({
   children,
   usePager,
 }: PagedItemListProps<TItem>) {
-  const { items, loading, refresh } = usePager();
+  const { items, refresh } = usePager();
 
   useEffect(() => {
     (async () => {
-      if (!items) await refresh();
+      await refresh();
       await initialized?.();
     })();
-  }, []);
+  }, [id]);
 
   return (
     <>

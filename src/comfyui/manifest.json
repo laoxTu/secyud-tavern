@@ -1,5 +1,5 @@
 {
-  "id": "comfyui",
   "client": "client",
+  "id": "comfyui",
   "server": "server"
 }

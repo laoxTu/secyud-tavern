@@ -1,15 +1,4 @@
 {
-  "message": {
-    "comfyui": {
-      "paint": {
-        "desc": "ComfyUI 绘图",
-        "submit": "绘制",
-        "success": "成功绘图",
-        "title": "绘制",
-        "tooltip": "ComfyUI 绘图"
-      }
-    }
-  },
   "comfyui": {
     "model": {
       "id": "模型",
@@ -70,5 +59,15 @@
     "value_count": "值数量",
     "workflow_invalid": "工作流格式不正确",
     "workflow_need": "需要工作流"
+  },
+  "message": {
+    "comfyui": {
+      "paint": {
+        "desc": "ComfyUI 绘图",
+        "success": "成功绘图",
+        "title": "绘制",
+        "tooltip": "ComfyUI 绘图"
+      }
+    }
   }
 }

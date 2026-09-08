@@ -8,9 +8,6 @@
       "engine_required": "需要选择供应者"
     }
   },
-  "openai": {
-    "format": "格式"
-  },
   "model": {
     "api_key": "api key",
     "id": "模型",
@@ -37,5 +34,8 @@
     "top_logprobs": "top logprobs (最大返回置信词数)",
     "top_p": "top p (核采样 0~1)",
     "url": "URL"
+  },
+  "openai": {
+    "format": "格式"
   }
 }

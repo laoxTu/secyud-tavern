@@ -36,7 +36,7 @@ function Content() {
         <Selector
           name={'model'}
           id={`model-model`}
-          defaultValue={options.model}
+          value={options.model}
           items={deepseeks.models}
           labelAccessor={(e) => e && t(`deepseek.${e}`)}
         />
@@ -102,7 +102,7 @@ function Content() {
         <Selector
           name={'reasoning_effort'}
           id={`model-reasoning_effort`}
-          defaultValue={options.reasoning_effort}
+          value={options.reasoning_effort}
           items={deepseeks.reasoningEfforts}
         />
       </Field>

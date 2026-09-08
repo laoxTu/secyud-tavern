@@ -98,7 +98,7 @@ export function ComfyUIModelSelector({
       <RemoteSearchCombobox
         name={name}
         id={id}
-        defaultValue={defaultValue}
+        value={defaultValue}
         itemRender={(u) => (
           <ComfyUIModelHoverableItem path={u.name} id={u.value} />
         )}
@@ -148,8 +148,7 @@ export function ComfyUIWorkflowNameValueField({
           name={name}
           id={`${name}-workflow`}
           onValueChange={onValueChange}
-          defaultValue={defaultValue}
-          value={value}
+          value={defaultValue}
           fetcher={handler(async (request, search) => {
             const data = await comfyuis.proxy.workflow.list({
               ...request,

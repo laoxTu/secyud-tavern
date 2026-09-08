@@ -1,8 +1,8 @@
 ﻿'use client';
 import { useEffect, useState } from 'react';
 
+import { registerClientPlugin } from '@/generated/client-registerer';
 import { useHandler } from '@/interceptors/client';
-import { registerClientPlugin } from '@/plugins/client/registerer';
 
 async function loadClientPlugins() {
   await registerClientPlugin();

@@ -1,6 +1,5 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
 import {
   Checkbox,
@@ -108,7 +107,7 @@ export function Editor({
         </FieldLabel>
         <MonacoEditor
           name={'script'}
-          defaultValue={config.script}
+          value={config.script}
           language={'javascript'}
           formRef={formRef}
         />
@@ -119,7 +118,7 @@ export function Editor({
         </FieldLabel>
         <MonacoEditor
           name={'schema'}
-          defaultValue={config.schema}
+          value={config.schema}
           language={'json'}
           formRef={formRef}
         />
@@ -161,11 +160,13 @@ function script(config: ScriptConfig, realm: Realm): ToolItem {
     async invoke(args: any) {
       const context: any = {};
       if (config.enableDoc) {
-        context.document = realms.iframe.document;
-        context.window = realms.iframe.window;
+        const { contentDocument = null, contentWindow = null } =
+          realms.iframe ?? {};
+        context.document = contentDocument;
+        context.window = contentWindow;
       }
       if (config.enableVariable) {
-        const history = await realms.history.get(undefined, realm);
+        const history = await realms.history.get(null, realm);
         context.variables = history.variables;
       }
       const result = fn(args, context);

@@ -1,6 +1,6 @@
 import { CornerDownLeftIcon, DicesIcon, SquareStopIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { create } from 'zustand';
 
 import { ComfyUIParamProps, ParamConfigurator } from '@/comfyui/client';
@@ -173,7 +173,7 @@ function AgentTextInputComponent({
                 setThinking(title === 'agent.thinking');
               },
             },
-            realms.realm.realm,
+            realms.realm,
           )
         )[0];
         cache[param.masterId] = tool;

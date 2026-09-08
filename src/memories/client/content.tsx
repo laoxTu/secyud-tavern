@@ -109,14 +109,14 @@ function Editor({
           id={`memory-type-${entryId}`}
           items={main.types}
           name={'type'}
-          defaultValue={type}
+          value={type}
         />
       </Field>
       <Field>
         <FieldLabel htmlFor={`memory-tag-${entryId}`}>
           {t('default.tags')}
         </FieldLabel>
-        <TagBox id={`memory-tag-${entryId}`} name={'tag'} defaultValue={tags} />
+        <TagBox id={`memory-tag-${entryId}`} name={'tag'} value={tags} />
       </Field>
     </UpdateForm>
   );

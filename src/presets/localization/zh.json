@@ -7,6 +7,21 @@
     "show_selector": "显示宏选择",
     "value": "值"
   },
+  "message": {
+    "story_enter": {
+      "desc": "从{target}进入故事",
+      "title": "从{target}进入故事",
+      "tooltip": "进入故事"
+    },
+    "macro": {
+      "selector": {
+        "desc": "选择宏",
+        "success": "宏配置完成",
+        "title": "宏选项",
+        "tooltip": "配置宏"
+      }
+    }
+  },
   "preset": {
     "enter_description": "即将从预设直接创建故事",
     "enter_title": "从预设进入",
@@ -14,23 +29,6 @@
     "entry": "条目",
     "input_author": "输入作者",
     "opening": "开场白"
-  },
-  "message": {
-    "story_enter": {
-      "desc": "从{target}进入故事",
-      "submit": "进入",
-      "title": "从{target}进入故事",
-      "tooltip": "进入故事"
-    },
-    "macro": {
-      "selector": {
-        "desc": "选择宏",
-        "submit": "确定",
-        "success": "宏配置完成",
-        "title": "宏选项",
-        "tooltip": "配置宏"
-      }
-    }
   },
   "regex": {
     "id": "正则",

@@ -22,7 +22,7 @@ interface ImageUploaderProps {
   maxSize?: number;
   accept?: string;
   className?: string;
-  defaultValue?: string;
+  value?: string;
 }
 
 export function useImageUploaderState(name: string) {
@@ -55,7 +55,7 @@ export function ImageUploader({
   id,
   name,
   accept,
-  defaultValue,
+  value: defaultValue,
   onChange,
   aspectRatio = 1,
   maxSize = 5 * 1024 * 1024,
@@ -175,7 +175,7 @@ export function ImageUploader({
 
 interface MonacoEditorProps {
   name: string;
-  defaultValue: string;
+  value?: string | null;
   language: string;
   className?: string;
   formRef: RefObject<HTMLFormElement | null>;
@@ -183,14 +183,14 @@ interface MonacoEditorProps {
 
 export function MonacoEditor({
   name,
-  defaultValue,
+  value,
   language,
   className,
   formRef,
 }: MonacoEditorProps) {
   const editorRef = useRef<IStandaloneCodeEditor>(null);
   const [content, setContent] = useState<string | undefined>(
-    defaultValue ? String(defaultValue) : undefined,
+    value ?? undefined,
   );
   const { theme } = useTheme();
   const handleEditorDidMount: OnMount = (editor) => {

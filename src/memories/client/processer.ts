@@ -10,17 +10,16 @@ import {
   models,
   Processer,
 } from '@/models/client';
-import { Preset } from '@/presets';
-import { StoryItem } from '@/stories';
+import { Realm, StoryItem } from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { ToolCall } from '@/tools';
-import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';
 
 import { Rag, rags } from './rag';
 
 export const memorySchema = {
   entryId: 'number',
+  title: 'string',
   tags: 'string[]',
   type: 'string',
   importance: 'number',
@@ -43,9 +42,7 @@ async function create(
     behind: async (i) => {
       if (i === histories.length - 1) return;
       // 需要注入内容
-      const newMemories: StoryItem<Memory>[] = [];
-      // 只注入Key
-      const keyMemories: StoryItem<Memory>[] = [];
+      const items: StoryItem<Memory>[] = [];
       const visitedKeys = new Set<number>();
       const history = histories[i];
       const outputs = realms.outputs(history);
@@ -59,40 +56,26 @@ async function create(
             visitedKeys.add(id);
             const memory = cache.memories[id];
             if (!memory) continue;
-            keyMemories.push(memory);
             if (visited.has(id)) continue;
             visited.add(id);
-            newMemories.push(memory);
+            items.push(memory);
           }
         }
       }
-      if (!keyMemories.length) return;
-      const callings: ToolCall[] = [];
-      if (newMemories.length) {
+      console.debug(`[memroy]: `, items);
+      if (items.length) {
+        const callings: ToolCall[] = [];
         callings.push({
           index: callings.length,
           id: `${name(simulation++)}m`,
           name: models.engines.knowledge.info.name,
           arguments: models.engines.knowledge.args({
-            type: 'memory_dict',
+            type: 'memory',
           }),
-          result: arrUtils.join(
-            newMemories,
-            '\n',
-            (u) => `- ${u.name}: ${u.text}`,
-          ),
+          result: arrUtils.join(items, '\n', (u) => `- ${u.name}: ${u.text}`),
         });
+        caller('', null, callings);
       }
-      callings.push({
-        index: callings.length,
-        id: `${name(simulation++)}m`,
-        name: models.engines.knowledge.info.name,
-        arguments: models.engines.knowledge.args({
-          type: 'memory',
-        }),
-        result: arrUtils.join(keyMemories, '\n', (u) => u.name),
-      });
-      caller('', null, callings);
     },
   };
 }
@@ -106,14 +89,15 @@ export const processer: Processer<MemoryCache> = {
     };
     if (cache.rag) {
       const { database, embed } = cache.rag;
-      await utils.forEachItemsList<StoryItem<Memory>, Preset>(
-        realm.presets,
-        tools.plural,
+      await utils.forEachItems<StoryItem<Memory>, Realm>(
+        realm,
+        memories.plural,
         async (entry) => {
           cache.memories[entry.entryId] = entry;
           const embedding = await embed.generate({ content: entry.text });
           await insert(database, {
             entryId: entry.entryId,
+            title: entry.name,
             tags: entry.tags,
             type: entry.type,
             importance: entry.importance,
@@ -127,6 +111,7 @@ export const processer: Processer<MemoryCache> = {
     return cache;
   },
   async prompt(ctx, cache) {
+    console.debug(`[memory](cache): `, cache);
     ctx.injects.push((injectCtx) => create(ctx, injectCtx, cache));
   },
 };

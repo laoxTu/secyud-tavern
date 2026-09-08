@@ -69,13 +69,10 @@
     "types": "类型",
     "url": "链接",
     "value": "值",
+    "save": "保存",
     "variables": "变量",
     "version": "版本",
     "year": "年",
-    "zh": "简体中文"
-  },
-  "language": {
-    "en": "English",
     "zh": "简体中文"
   },
   "error": {
@@ -87,13 +84,13 @@
     "empty_field": "{field}不可以为空！",
     "json_invalid": "{target} JSON格式错误"
   },
-  "setting": {
-    "id": "设置"
+  "language": {
+    "en": "English",
+    "zh": "简体中文"
   },
   "message": {
     "clone": {
       "desc": "确定要克隆{target}吗?",
-      "submit": "确定",
       "success": "克隆成功",
       "title": "克隆{target}",
       "tooltip": "克隆"
@@ -108,53 +105,49 @@
     },
     "update": {
       "desc": "更新{target}",
-      "submit": "更新",
       "success": "更新成功",
       "title": "更新{target}",
       "tooltip": "更新"
     },
     "create": {
       "desc": "创建{target}",
-      "submit": "创建",
       "success": "创建成功",
       "title": "创建{target}",
       "tooltip": "创建"
     },
     "delete": {
       "desc": "确定要删除{target}吗?",
-      "submit": "删除",
       "success": "删除成功",
       "title": "删除{target}",
       "tooltip": "删除"
     },
     "export": {
       "desc": "确定要导出{target}吗?",
-      "submit": "导出",
       "success": "导出成功",
       "title": "导出{target}",
       "tooltip": "导出"
     },
     "import": {
       "desc": "导入{target}",
-      "submit": "导入",
       "success": "导入成功",
       "title": "导入{target}",
       "tooltip": "导入"
     },
     "paste": {
       "desc": "确定要粘贴{target}吗?",
-      "submit": "粘贴",
       "success": "粘贴成功",
       "title": "粘贴{target}",
       "tooltip": "粘贴"
     },
     "copy": {
       "desc": "确定要复制{target}吗?",
-      "submit": "复制",
       "success": "复制成功",
       "title": "复制{target}",
       "tooltip": "复制"
     }
+  },
+  "setting": {
+    "id": "设置"
   },
   "theme": {
     "dark": "暗色",

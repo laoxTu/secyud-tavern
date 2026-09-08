@@ -70,7 +70,7 @@ function Editor({
         <Selector
           name={'target'}
           id={`regex-target-${entryId}`}
-          defaultValue={target}
+          value={target}
           items={targets}
           labelAccessor={(e) => t(`regex.target_${e}`)}
         />

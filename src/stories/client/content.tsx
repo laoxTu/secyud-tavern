@@ -91,8 +91,8 @@ function PropertyTab() {
         <FieldLabel htmlFor={`story-name`}>{t('default.name')}</FieldLabel>
         <Input name="name" id={`story-name`} defaultValue={item.name} />
       </Field>
-      <ModelNameValueField defaultValue={item.model} name={'model'} />
-      <PresetNameValuesField defaultValue={item.presets} name={'preset'} />
+      <ModelNameValueField value={item.model} name={'model'} />
+      <PresetNameValuesField value={item.presets} name={'preset'} />
     </UpdateForm>
   );
 }
