@@ -1,7 +1,3 @@
-/*
-!/.vscode/
-!/src/
-/src/app/api/*
-!/scripts/
-/scripts/*
-!/scripts/operations/
+node_modules
+.*
+.vscode

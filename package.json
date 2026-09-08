@@ -7,7 +7,7 @@
     "build": "next build",
     "dev": "next dev -p 12804",
     "format": "prettier --write .",
-    "pre-build": "npx tsx scripts/pre-build.ts",
+    "prepare": "npx tsx scripts/pre-build.ts",
     "start": "next start -p 12804",
     "test": "vitest"
   },

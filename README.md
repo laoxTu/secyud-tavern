@@ -12,8 +12,7 @@ A highly customizable AI role-playing and interactive storytelling platform.
 
 ```bash
 pnpm install          # 安装依赖
-pnpm pre-build        # 前置
-pnpm gen-db-migrate   # 生成数据库迁移
+pnpm prepare          # 前置脚本
 pnpm build            # 生产构建
 pnpm start -p 12804   # 启动 → http://localhost:12804
 ```

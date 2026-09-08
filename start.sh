@@ -1,6 +1,6 @@
 git pull
 npm install -g pnpm
 pnpm install
-pnpm pre-build
+pnpm prepare
 pnpm build
 pnpm start -p 12804
