@@ -1,0 +1,41 @@
+{
+  "deepseek": {
+    "deepseek-v4-flash": "deepseek-v4-flash",
+    "deepseek-v4-pro": "deepseek-v4-pro"
+  },
+  "error": {
+    "model": {
+      "engine_required": "需要选择供应者"
+    }
+  },
+  "openai": {
+    "format": "格式"
+  },
+  "model": {
+    "api_key": "api key",
+    "id": "模型",
+    "default": "默认",
+    "iterations": "回合次数",
+    "builder": "提示词构造器",
+    "builder_default": "默认构造器",
+    "builder_layered": "层级构造器",
+    "extras": "额外参数",
+    "frequency_penalty": "frequency penalty (用词重复度 -2.0~2.0)",
+    "logprobs": "logprobs (返回置信度)",
+    "max_iterations": "单回合最大轮次",
+    "max_tokens": "max tokens (输出长度上限 0~max)",
+    "model": "模型",
+    "presence_penalty": "presence penalty (话题新颖度 -2.0~2.0)",
+    "provider": "供应者",
+    "provider_anthropic": "Anthropic",
+    "provider_deepseek": "Deepseek",
+    "provider_openai": "Open AI",
+    "reasoning_effort": "reasoning effort (思考强度)",
+    "stream": "流式传输",
+    "temperature": "temperature (温度 0~2)",
+    "thinking": "思考模式",
+    "top_logprobs": "top logprobs (最大返回置信词数)",
+    "top_p": "top p (核采样 0~1)",
+    "url": "URL"
+  }
+}

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- 1. 杯座（真正的椭圆，顶部预留缺口） -->
+        <!-- 底部弧线（向下凸） -->
+        <path d="M 26 84
+                 Q 26 96 50 96
+                 Q 74 96 74 84"
+              stroke-width="4"/>
+        <!-- 顶部弧线（向上凸，中间断开预留缺口） -->
+        <path d="M 26 84
+                 Q 26 74 44 74"
+              stroke-width="4"/>
+        <path d="M 56 74
+                 Q 74 74 74 84"
+              stroke-width="4"/>
+
+        <!-- 2. 杯脚（中层，缩短） -->
+        <path d="M 46 66 Q 45 74 46 80" stroke-width="4"/>
+        <path d="M 54 66 Q 55 74 54 80" stroke-width="4"/>
+
+        <!-- 3. 杯身（上层） -->
+        <path d="M 22 32 Q 17 50 46 66" stroke-width="4"/>
+        <path d="M 78 32 Q 83 50 54 66" stroke-width="4"/>
+
+        <!-- 4. 杯口（最上层） -->
+        <path d="M 22 32 Q 22 40 50 40 Q 78 40 78 32 Q 78 24 50 24 Q 22 24 22 32"
+              stroke-width="4"/>
+
+    </g>
+</svg>

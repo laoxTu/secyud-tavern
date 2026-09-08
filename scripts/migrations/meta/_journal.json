@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788696819886,
+      "tag": "0000_even_tana_nile",
+      "breakpoints": true
+    }
+  ]
+}

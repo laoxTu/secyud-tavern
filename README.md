@@ -1,0 +1,32 @@
+# Secyud Tavern
+
+一个高度可定制化的 AI 角色扮演与互动叙事平台。
+
+A highly customizable AI role-playing and interactive storytelling platform.
+
+🔗 [详细文档](https://github.com/laoxTu/secyud-tavern-docs)
+
+---
+
+## 快速开始 / Quick Start
+
+```bash
+pnpm install          # 安装依赖
+pnpm pre-build        # 前置
+pnpm gen-db-migrate   # 生成数据库迁移
+pnpm build            # 生产构建
+pnpm start -p 12804   # 启动 → http://localhost:12804
+```
+
+## 开源 / License
+
+本项目使用GNU Affero General Public License v3.0开源协议
+你可以学习，分发，修改，商用，但请了解其中的限制以及免责条款。
+
+## 插件
+
+> 本项目插件默认为编译期插件，下载插件后需要调用start脚本重启项目。
+> 若要禁用插件，可在manifest.json配置`"disabled": false`，然后重新调用start脚本即可。
+
+- [secyud-tavern-importer](https://github.com/laoxTu/secyud-tavern-importer)
+  导入插件，可以导入SillyTavern格式的角色卡和预设。目前只可以导入文字描述之类的内容，不能复刻脚本，需要自行调整。

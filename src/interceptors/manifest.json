@@ -1,0 +1,5 @@
+{
+  "id": "interceptor",
+  "sequence": -1000,
+  "server": "server/register"
+}

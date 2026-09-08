@@ -1,0 +1,99 @@
+{
+  "realm": {
+    "back_home_tip": "回到主页",
+    "calling_tool": "调用工具",
+    "content_already_initialized": "插槽缓存已存在：{key}",
+    "content_not_initialized": "插槽缓存未初始化：{key}",
+    "create_chat": "创建",
+    "create_chat_delete_origin": "创建并删除原会话",
+    "current_history": "当前历史",
+    "edit_history": "编辑历史",
+    "edit_history_tip": "编辑当前历史",
+    "generating": "生成内容",
+    "generating_tool": "构造参数",
+    "retry": "重试",
+    "input": "用户输入",
+    "input_processing": "处理输入",
+    "is_output_warning": "当前正在输出中，无法操作",
+    "not_loaded": "存档加载失败。",
+    "output": "AI输出",
+    "pin_chatbox": "固定聊天框",
+    "regenerate_reply_tip": "重新生成",
+    "thinking": "生成思考",
+    "unpin_chatbox": "取消固定聊天框",
+    "variable": "变量",
+    "variable_invalid_json": "变量格式错误"
+  },
+  "story": {
+    "id": "故事",
+    "enter": "进入",
+    "image": "图片",
+    "entry": "条目",
+    "memory": "记忆",
+    "input_processing": "输入处理",
+    "images": "图库",
+    "opening_remarks": "开场白"
+  },
+  "message": {
+    "realm": {
+      "reopen": {
+        "desc": "重新开始",
+        "submit": "重新开始",
+        "success": "重新开始",
+        "title": "重新开始",
+        "tooltip": "重新开始"
+      },
+      "viewer": {
+        "desc": "查看上下文",
+        "submit": "查看上下文",
+        "success": "查看上下文",
+        "title": "查看上下文",
+        "tooltip": "查看上下文"
+      },
+      "edit": {
+        "desc": "编辑当前历史",
+        "submit": "编辑当前历史",
+        "success": "编辑当前历史",
+        "title": "编辑当前历史",
+        "tooltip": "编辑当前历史"
+      },
+      "clone": {
+        "desc": "归档重开",
+        "submit": "归档重开",
+        "success": "归档重开",
+        "title": "归档重开",
+        "tooltip": "归档重开"
+      },
+      "delete": {
+        "output": {
+          "desc": "删除当前输出",
+          "submit": "删除当前输出",
+          "success": "删除当前输出",
+          "title": "删除当前输出",
+          "tooltip": "删除当前输出"
+        },
+        "index": {
+          "desc": "删除当前历史",
+          "submit": "删除当前历史",
+          "success": "删除当前历史",
+          "title": "删除当前历史",
+          "tooltip": "删除当前历史"
+        }
+      }
+    },
+    "story": {
+      "image": {
+        "desc": "图集",
+        "submit": "图集",
+        "success": "图集",
+        "title": "图集",
+        "tooltip": "图集"
+      }
+    }
+  },
+  "memory": {
+    "text": "内容",
+    "sequence": "回合",
+    "importance": "重要性"
+  }
+}

@@ -1,0 +1,44 @@
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 180;
+  }
+  50% {
+    stroke-dashoffset: 45;
+  }
+  100% {
+    stroke-dashoffset: 180;
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: rotate 1.6s linear infinite;
+}
+
+.spinner circle {
+  fill: none;
+  stroke: var(--color-foreground);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  animation: dash 1.6s ease-in-out infinite;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.dot-fade {
+  animation: fade 1.4s ease-in-out infinite;
+}

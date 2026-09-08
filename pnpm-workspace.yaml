@@ -1,0 +1,10 @@
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': true
+  esbuild: true
+  onnxruntime-node: true
+  protobufjs: false
+  sharp: true
+  unrs-resolver: false
+packages:
+  - 'plugins/*'

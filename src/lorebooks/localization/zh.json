@@ -1,0 +1,20 @@
+{
+  "lorebook": {
+    "id": "世界书",
+    "fit_count": "匹配数量",
+    "include_any_word": "包含词组",
+    "keywords_groups_length": "关键词组数量",
+    "last_message": "最后一条消息",
+    "match_type": "匹配类型",
+    "match_type_always": "常驻",
+    "match_type_event": "事件",
+    "match_type_normal": "一般",
+    "match_type_variable": "变量",
+    "match_type_vector": "向量",
+    "max_date": "最大日期",
+    "min_date": "最小日期",
+    "priority_layer": "层级",
+    "priority_order": "顺序",
+    "role": "角色"
+  }
+}

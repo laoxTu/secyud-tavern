@@ -1,0 +1,5 @@
+{
+  "plugins": ["prettier-plugin-sort"],
+  "singleQuote": true,
+  "printWidth": 80
+}

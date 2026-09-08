@@ -1,0 +1,55 @@
+{
+  "macro": {
+    "id": "宏",
+    "key": "键",
+    "multiple": "允许多选",
+    "selector": "宏选择",
+    "show_selector": "显示宏选择",
+    "value": "值"
+  },
+  "preset": {
+    "enter_description": "即将从预设直接创建故事",
+    "enter_title": "从预设进入",
+    "id": "预设",
+    "entry": "条目",
+    "input_author": "输入作者",
+    "opening": "开场白"
+  },
+  "message": {
+    "story_enter": {
+      "desc": "从{target}进入故事",
+      "submit": "进入",
+      "title": "从{target}进入故事",
+      "tooltip": "进入故事"
+    },
+    "macro": {
+      "selector": {
+        "desc": "选择宏",
+        "submit": "确定",
+        "success": "宏配置完成",
+        "title": "宏选项",
+        "tooltip": "配置宏"
+      }
+    }
+  },
+  "regex": {
+    "id": "正则",
+    "layer_max": "最大层数",
+    "layer_min": "最小层数",
+    "pattern": "表达式",
+    "replacement": "替换为",
+    "target": "替换目标",
+    "target_both": "全部替换",
+    "target_input": "替换输入",
+    "target_output": "替换输出",
+    "unlimit_description": "-1表示不限制"
+  },
+  "script": {
+    "id": "脚本",
+    "enable_doc": "访问iframe",
+    "enable_variable": "访问变量"
+  },
+  "style": {
+    "id": "样式"
+  }
+}

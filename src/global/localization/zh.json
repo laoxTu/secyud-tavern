@@ -1,0 +1,164 @@
+{
+  "default": {
+    "author": "作者",
+    "base_url": "地址",
+    "cancel": "取消",
+    "chars": "字符",
+    "code": "编码",
+    "comfyui_model": "ComfyUI模型",
+    "comfyui_workflow": "ComfyUI工作流",
+    "content": "内容",
+    "context_not_found": "上下文未找到：{target}",
+    "cover": "封面",
+    "cover_src": "封面地址",
+    "ctrl_enter_submit": "按 Ctrl + Enter 发送消息，Enter 换行",
+    "day": "日",
+    "delete": "删除",
+    "delete_description": "您确定要删除这个{target}吗？这个操作是不可逆的。",
+    "delete_successfully": "删除成功",
+    "delete_title": "删除{target}",
+    "description": "描述",
+    "disable": "禁用",
+    "disable_item": "已禁用",
+    "empty_description": "似乎没有创建过{target}，您可以进行创建。",
+    "empty_items": "空列表",
+    "empty_title": "空的{target}列表",
+    "en": "English",
+    "enable": "启用",
+    "enable_item": "已启用",
+    "ensure": "确定",
+    "entity_not_found": "目标未找到（ID：{id}）",
+    "export": "导出",
+    "field": "字段",
+    "hidden": "隐藏",
+    "html": "Html",
+    "id": "ID",
+    "image": "图片",
+    "language": "语言",
+    "layer": "层级",
+    "link": "链接",
+    "llmapi": "模型",
+    "llmapi_config_notfound": "未配置模型",
+    "month": "月",
+    "more": "更多",
+    "name": "名称",
+    "path": "路径",
+    "preset": "预设",
+    "priority": "优先级",
+    "property": "属性",
+    "regenerate": "重新生成",
+    "requires": "依赖",
+    "reset": "重置",
+    "schema": "结构",
+    "script": "脚本",
+    "search": "搜索",
+    "select_file": "选择一个文件",
+    "selected_file": "当前选择的文件：{name}",
+    "setting": "设置",
+    "story": "故事",
+    "story_lack_config_llmapi": "故事没有选择模型，无法开始。",
+    "submit": "提交",
+    "summary": "总结",
+    "tags": "标签",
+    "task_failed": "任务失败：{target}",
+    "task_success": "任务完成：{target}",
+    "theme": "主题",
+    "thinking": "思考中",
+    "total_chars": "总字符",
+    "type": "类型",
+    "types": "类型",
+    "url": "链接",
+    "value": "值",
+    "variables": "变量",
+    "version": "版本",
+    "year": "年",
+    "zh": "简体中文"
+  },
+  "language": {
+    "en": "English",
+    "zh": "简体中文"
+  },
+  "error": {
+    "entity": {
+      "duplicate_value": "已经有相同{name}({value})的{entity}."
+    },
+    "clipboard_no_item": "剪切板无内容",
+    "duplicate_field": "已经有一个具有相同{field}的{entity_name}！",
+    "empty_field": "{field}不可以为空！",
+    "json_invalid": "{target} JSON格式错误"
+  },
+  "setting": {
+    "id": "设置"
+  },
+  "message": {
+    "clone": {
+      "desc": "确定要克隆{target}吗?",
+      "submit": "确定",
+      "success": "克隆成功",
+      "title": "克隆{target}",
+      "tooltip": "克隆"
+    },
+    "empty": {
+      "desc": "没有搜索到任何{target}",
+      "title": "空{target}"
+    },
+    "empty_select": {
+      "title": "没有选择{target}",
+      "desc": "点击一个{target}，然后您可以对它进行编辑。"
+    },
+    "update": {
+      "desc": "更新{target}",
+      "submit": "更新",
+      "success": "更新成功",
+      "title": "更新{target}",
+      "tooltip": "更新"
+    },
+    "create": {
+      "desc": "创建{target}",
+      "submit": "创建",
+      "success": "创建成功",
+      "title": "创建{target}",
+      "tooltip": "创建"
+    },
+    "delete": {
+      "desc": "确定要删除{target}吗?",
+      "submit": "删除",
+      "success": "删除成功",
+      "title": "删除{target}",
+      "tooltip": "删除"
+    },
+    "export": {
+      "desc": "确定要导出{target}吗?",
+      "submit": "导出",
+      "success": "导出成功",
+      "title": "导出{target}",
+      "tooltip": "导出"
+    },
+    "import": {
+      "desc": "导入{target}",
+      "submit": "导入",
+      "success": "导入成功",
+      "title": "导入{target}",
+      "tooltip": "导入"
+    },
+    "paste": {
+      "desc": "确定要粘贴{target}吗?",
+      "submit": "粘贴",
+      "success": "粘贴成功",
+      "title": "粘贴{target}",
+      "tooltip": "粘贴"
+    },
+    "copy": {
+      "desc": "确定要复制{target}吗?",
+      "submit": "复制",
+      "success": "复制成功",
+      "title": "复制{target}",
+      "tooltip": "复制"
+    }
+  },
+  "theme": {
+    "dark": "暗色",
+    "light": "亮色",
+    "system": "系统"
+  }
+}

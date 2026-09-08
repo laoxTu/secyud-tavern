@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "react-jsx",
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./src/utils/lib/*"],
+      "@/hooks/*": ["./src/utils/client/hooks/*"],
+      "@tests/*": ["./tests/*"],
+      "@plugins/*": ["./plugins/*"]
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "resolveJsonModule": true,
+
+    "allowJs": true,
+
+    "noEmit": true,
+
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    "strict": true,
+
+    "skipLibCheck": true,
+
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

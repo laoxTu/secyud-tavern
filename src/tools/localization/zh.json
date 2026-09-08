@@ -1,0 +1,42 @@
+{
+  "agent": {
+    "disable_preset": "禁用预设",
+    "disable_tags": "禁用标签",
+    "generating": "生成内容(子Agent)",
+    "generating_tool": "构造参数(子Agent)",
+    "max_length": "最大长度",
+    "prompt": "提示词",
+    "thinking": "生成思考(子Agent)"
+  },
+  "tool": {
+    "id": "工具",
+    "calling_tool": "调用工具",
+    "create_failed": "工具创建失败({entry})",
+    "selector": "工具选择",
+    "show_selector": "显示工具选择",
+    "provider_type": "工具类型",
+    "provider": {
+      "memory": "记忆工具",
+      "script": "脚本",
+      "agent": "子Agent",
+      "fetcher": "网页抓取",
+      "variable": "变量工具"
+    }
+  },
+  "message": {
+    "tool": {
+      "selector": {
+        "desc": "工具选择",
+        "submit": "工具选择",
+        "success": "工具选择",
+        "title": "工具选择",
+        "tooltip": "工具选择"
+      }
+    }
+  },
+  "fetcher": {
+    "max_length": "长度返回限制",
+    "max_results": "最大搜索数量",
+    "timeout": "超时设置"
+  }
+}
