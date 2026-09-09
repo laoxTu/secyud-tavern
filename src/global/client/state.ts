@@ -17,7 +17,7 @@ export const useGlobalState = create<GlobalState>()(
       setOpen: (open) => set({ open }),
     }),
     {
-      name: 'global_state',
+      name: 'global',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         menu: state.menu,

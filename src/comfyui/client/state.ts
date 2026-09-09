@@ -6,6 +6,8 @@ import {
   ComfyUIModel,
   ComfyUIModelRequestParam,
   ComfyUIModelSetting,
+  ComfyUIParam,
+  ComfyUIParamRequestParam,
   comfyuis,
   ComfyUIWorkflow,
   ComfyUIWorkflowRequestParam,
@@ -42,12 +44,23 @@ export interface ComfyUIState {
   setPage: (page: string) => void;
 }
 
-export const useComfyUIState = create<ComfyUIState>((set) => ({
-  page: comfyuis.model.name,
-  setPage(page: string) {
-    set({ page });
-  },
-}));
+export const useComfyUIState = create<ComfyUIState>()(
+  persist(
+    (set) => ({
+      page: comfyuis.model.name,
+      setPage(page: string) {
+        set({ page });
+      },
+    }),
+    {
+      name: 'comfyui',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        page: state.page,
+      }),
+    },
+  ),
+);
 
 export interface ComfyUIModelState extends FetchState<
   ComfyUIModel,
@@ -57,7 +70,7 @@ export interface ComfyUIModelState extends FetchState<
 export const useComfyUIModelState = create<ComfyUIModelState>((set, get) => ({
   cur: 0,
   loading: false,
-  size: 12,
+  size: 10,
   max: 0,
   fetch: states.createFetch<ComfyUIModel, ComfyUIModelRequestParam>(
     set,
@@ -98,3 +111,25 @@ export const useComfyUIWorkflowState = create<ComfyUIWorkflowState>(
     refresh: (options) => get().fetch(options),
   }),
 );
+
+export interface ComfyUIParamState extends FetchState<
+  ComfyUIParam,
+  ComfyUIParamRequestParam
+> {}
+
+export const useComfyUIParamState = create<ComfyUIParamState>((set, get) => ({
+  cur: 0,
+  items: [],
+  loading: false,
+  size: 5,
+  max: 0,
+  fetch: states.createFetch<ComfyUIParam, ComfyUIParamRequestParam>(
+    set,
+    get,
+    async (request) => {
+      const { item } = useComfyUIWorkflowState.getState();
+      return await proxy.workflow.param.list(item!.id, request);
+    },
+  ),
+  refresh: (options) => get().fetch(options),
+}));

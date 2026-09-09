@@ -18,7 +18,11 @@ export function UpdateForm({ form, children, onSubmit }: UpdateFormProps) {
       action={onSubmit}
       className={'flex flex-col flex-1 overflow-hidden p-1 gap-1'}
     >
-      <FieldGroup className={'flex flex-col flex-1 overflow-auto'}>
+      <FieldGroup
+        className={
+          'flex flex-col flex-1 basis-0 overflow-y-auto overflow-x-clip'
+        }
+      >
         <GridField>{children}</GridField>
       </FieldGroup>
       <Field orientation="horizontal">

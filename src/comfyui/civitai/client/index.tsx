@@ -32,6 +32,40 @@ export function Component() {
   );
 }
 
+/**
+ * 从civital的json信息中解析
+ */
+export function _extract(
+  meta: any,
+  modelMeta: any,
+  items: ComfyUIModel[],
+  url: string,
+) {
+  const imageSrc = meta.images.length > 0 ? meta.images[0].url : null;
+  for (const fileInfo of meta.files) {
+    const { name: fileName } = fileInfo;
+    const type =
+      civitais.type.map[
+        fileInfo.type === 'Model' ? modelMeta.type : fileInfo.type
+      ];
+    if (!type) continue;
+    const model: ComfyUIModel = {
+      id: '',
+      code: fileName,
+      name: modelMeta.name,
+      type,
+      url,
+      path: fileName,
+      html: meta.description,
+      download: meta.downloadUrl,
+      cover: imageSrc,
+      model: meta.baseModel,
+      importer: main.name,
+    };
+    items.push(model);
+  }
+}
+
 const importer: ModelImporter = {
   id: main.name,
   configComponent: Component,
@@ -51,11 +85,16 @@ const importer: ModelImporter = {
     const modelId = data.get('model_id');
     if (modelVersionId) {
       try {
-        const response = await fetch(
-          `${civitais.url}/api/v1/model-versions/${modelVersionId}`,
-        );
+        const url = `${civitais.url}/api/v1/model-versions/${modelVersionId}`;
+        console.debug('fetch from', url);
+        const response = await fetch(url);
         const modelVersionMeta = await response.json();
-        extract(modelVersionMeta, modelVersionMeta.model ?? {});
+        _extract(
+          modelVersionMeta,
+          modelVersionMeta.model ?? {},
+          items,
+          `${civitais.url}/model-versions/${modelVersionId}`,
+        );
       } catch (err) {
         throw new BusinessError(
           'api fetch failed',
@@ -65,12 +104,17 @@ const importer: ModelImporter = {
       }
     } else if (modelId) {
       try {
-        const response = await fetch(
-          `${civitais.url}/api/v1/models/${modelId}`,
-        );
+        const url = `${civitais.url}/api/v1/models/${modelId}`;
+        console.debug('fetch from', url);
+        const response = await fetch(url);
         const modelMeta = await response.json();
         for (const modelVersionMeta of modelMeta.modelVersions) {
-          extract(modelVersionMeta, modelMeta);
+          _extract(
+            modelVersionMeta,
+            modelMeta,
+            items,
+            `${civitais.url}/model/${modelId}`,
+          );
         }
       } catch (err) {
         throw new BusinessError(
@@ -80,36 +124,7 @@ const importer: ModelImporter = {
         );
       }
     } else {
-      throw new BusinessError('model id or model version id needed', '');
-    }
-
-    /**
-     * 从civital的json信息中解析
-     */
-    function extract(meta: any, modelMeta: any) {
-      const imageSrc = meta.images.length > 0 ? meta.images[0].url : null;
-      for (const fileInfo of meta.files) {
-        const { name: fileName } = fileInfo;
-        const type =
-          civitais.type.map[
-            fileInfo.type === 'Model' ? modelMeta.type : fileInfo.type
-          ];
-        if (!type) continue;
-        const model: ComfyUIModel = {
-          id: '',
-          code: fileName,
-          name: modelMeta.name,
-          type,
-          url: `${civitais}/model-versions/${modelVersionId}`,
-          path: fileName,
-          html: meta.description,
-          download: meta.downloadUrl,
-          cover: imageSrc,
-          model: meta.baseModel,
-          importer: main.name,
-        };
-        items.push(model);
-      }
+      throw new BusinessError('model id or model version id needed');
     }
   },
 };

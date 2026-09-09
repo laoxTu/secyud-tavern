@@ -1,12 +1,12 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import { ComfyUIModel } from '@/comfyui';
 import { comfyuis } from '@/comfyui/client';
 import {
-  AspectRatio,
+  Badge,
   Field,
   FieldContent,
   FieldLabel,
@@ -20,21 +20,26 @@ import { DataRequest, NameValue, utils } from '@/database';
 import { files } from '@/files/client';
 import { useHandler } from '@/interceptors/client';
 
+interface ComfyUIModelHoverableItemProps {
+  id: string;
+  path: string;
+  setItem?: (item: ComfyUIModel) => void;
+  children?: (item: ComfyUIModel) => React.ReactNode;
+}
+
 export function ComfyUIModelHoverableItem({
   id,
   path,
+  setItem: changeItem,
   children,
-}: {
-  id: string;
-  path: string;
-  children?: (item: ComfyUIModel) => React.ReactNode;
-}) {
+}: ComfyUIModelHoverableItemProps) {
   const [item, setItem] = useState<ComfyUIModel | null>(null);
   const { handler } = useHandler();
   useEffect(() => {
     handler(async () => {
       const model = await comfyuis.proxy.model.cache(id);
       setItem(model);
+      changeItem?.(model);
     })();
   }, []);
 
@@ -51,32 +56,43 @@ export function ComfyUIModelHoverableItem({
   const source = files.proxy.url(item.cover);
   return (
     <HoverCard>
-      <HoverCardTrigger>
+      <HoverCardTrigger className={'w-full'}>
         {children?.(item) ?? `${item.path}(${item.model}-${item.name})`}
       </HoverCardTrigger>
-      <HoverCardContent className={'bg-card w-full'}>
-        <div>{`${item.path}(${item.model}-${item.name})`}</div>
-        {source && (
-          <AspectRatio ratio={1}>
-            {source.endsWith('mp4') ? (
-              <video
-                src={source}
-                controls
-                preload="metadata"
-                className="object-cover rounded-sm aspect-square"
-              />
-            ) : (
-              <Image
-                src={source}
-                alt={item.name}
-                fill
-                unoptimized
-                className="object-cover rounded-sm"
-              />
-            )}
-          </AspectRatio>
+      <HoverCardContent
+        className={
+          'bg-card relative overflow-auto w-96 max-h-96 [&_a]:text-blue-600 wrap-break-word'
+        }
+      >
+        {source &&
+          (source.endsWith('mp4') ? (
+            <video
+              src={source}
+              controls
+              preload="metadata"
+              className="object-contain w-full"
+            />
+          ) : (
+            <img
+              src={source}
+              alt={item.name}
+              className="object-contain w-full"
+            />
+          ))}
+        <div>{item.code}</div>
+        <div>{item.name}</div>
+        {item.url && <Link href={item.url}>{item.url}</Link>}
+        {item.html && (
+          <div
+            className={'max-w-96'}
+            dangerouslySetInnerHTML={{ __html: item.html }}
+          />
         )}
-        {item.html && <div dangerouslySetInnerHTML={{ __html: item.html }} />}
+
+        <div className={'absolute top-4 left-3.5 flex flex-col gap-2'}>
+          <Badge variant="secondary">{item.type}</Badge>
+          <Badge variant="secondary">{item.model}</Badge>
+        </div>
       </HoverCardContent>
     </HoverCard>
   );
@@ -123,7 +139,6 @@ export function ComfyUIModelSelector({
 interface ComfyUIWorkflowNameValueFieldProps {
   value?: NameValue | null;
   onValueChange?: (value: NameValue | null) => void;
-  defaultValue?: NameValue | null;
   name?: string;
   className?: string;
   orientation?: Orientation;
@@ -133,8 +148,7 @@ export function ComfyUIWorkflowNameValueField({
   name,
   className,
   orientation,
-  defaultValue,
-  value,
+  value: defaultValue,
   onValueChange,
 }: ComfyUIWorkflowNameValueFieldProps) {
   const t = useTranslations();

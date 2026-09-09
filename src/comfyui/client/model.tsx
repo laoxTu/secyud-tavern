@@ -43,29 +43,31 @@ import {
   TagBox,
   TooltipDialog,
   useImageUploaderState,
-  useRefresh,
 } from '@/components';
 import { files } from '@/files/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 
-function ContentItem({ item }: { item: ComfyUIModel }) {
+function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
   const { handler, success } = useHandler();
   const t = useTranslations();
   const { getImageFileId, onFileChange } = useImageUploaderState('cover');
   const { fetch } = useComfyUIModelState();
+  const [item, setItem] = useState<ComfyUIModel>(nameValueItem);
   const formRef = useRef<HTMLFormElement>(null);
-  const { key, refreshKey } = useRefresh();
 
   const source = files.proxy.url(item.cover);
   return (
     <Item
-      key={key}
       variant={'outline'}
-      className={'min-w-1/4 w-64 overflow-hidden relative sc-dc'}
+      className={'min-w-1/5 w-64 overflow-hidden relative sc-dc'}
     >
       <ItemHeader>
-        <ComfyUIModelHoverableItem id={item.id} path={item.path}>
+        <ComfyUIModelHoverableItem
+          id={item.id}
+          path={item.path}
+          setItem={setItem}
+        >
           {(item) => (
             <AspectRatio ratio={1}>
               {source.endsWith('mp4') ? (
@@ -73,7 +75,7 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
                   src={source}
                   controls
                   preload="metadata"
-                  className="object-cover rounded-sm aspect-square"
+                  className="object-cover aspect-square"
                 />
               ) : (
                 <Image
@@ -81,17 +83,17 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
                   alt={item.name}
                   fill
                   unoptimized
-                  className="object-cover rounded-sm"
+                  className="object-cover"
                 />
               )}
             </AspectRatio>
           )}
         </ComfyUIModelHoverableItem>
       </ItemHeader>
-      <ItemContent className={'h-24'}>
+      <ItemContent>
         <ItemTitle>{item.name}</ItemTitle>
       </ItemContent>
-      <div className={'absolute top-1 left-1 flex flex-col gap-2'}>
+      <div className={'absolute top-3 left-3.5 flex flex-col gap-2'}>
         <Badge variant="secondary">{item.type}</Badge>
         <Badge variant="secondary">{item.model}</Badge>
       </div>
@@ -139,7 +141,6 @@ function ContentItem({ item }: { item: ComfyUIModel }) {
               cover,
             });
 
-            refreshKey();
             success(t('message.update.success'));
             await fetch();
           })}
@@ -262,7 +263,7 @@ export function ModelContent() {
   const { fetch, search } = useComfyUIModelState();
   // 受控组件，解决搜索刷新后光标位置问题
   const [fuzzy, setFuzzy] = useState(search?.fuzzy ?? '');
-  const [editor, setEditor] = useState(
+  const [importer, setImporter] = useState(
     comfyuis.importers.registry.record(civitais.name),
   );
 
@@ -341,17 +342,15 @@ export function ModelContent() {
         <TooltipDialog
           tooltip={<FileDownIcon />}
           onSubmit={handler(async (data: FormData) => {
-            if (!editor) {
+            if (!importer) {
               throw new BusinessError(
                 'importer is required.',
                 'comfyui.importer_invalid',
               );
             }
             const items: ComfyUIModel[] = [];
-            await editor.configureObject(data, items);
-            for (const item of items) {
-              await comfyuis.proxy.model.create(item);
-            }
+            await importer.configureObject(data, items);
+            await comfyuis.proxy.model.import(items);
             await fetch();
             success(t('message.import.success'));
           })}
@@ -366,13 +365,13 @@ export function ModelContent() {
                 id={`comfyui_model-importer`}
                 items={comfyuis.importers.registry.sorted()}
                 name="importer"
-                value={editor}
-                onValueChange={setEditor}
+                value={importer}
+                onValueChange={setImporter}
                 labelAccessor={(e) => t(`comfyui.model.importer_${e.id}`)}
                 valueAccessor={(e) => e.id}
               />
             </Field>
-            {element(editor?.configComponent)}
+            {element(importer?.configComponent)}
           </FieldGroup>
         </TooltipDialog>
       </div>

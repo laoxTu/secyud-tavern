@@ -7,6 +7,8 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true, // 原生支持 tsconfig.json 的 paths
     alias: {
+      '@/lib': path.resolve(__dirname, './src/utils/lib'),
+      '@/hooks': path.resolve(__dirname, './src/utils/client/hooks'),
       '@': path.resolve(__dirname, './src'),
       '@plugins': path.resolve(__dirname, './plugins'),
     },
@@ -14,6 +16,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    pool: 'forks',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
   },

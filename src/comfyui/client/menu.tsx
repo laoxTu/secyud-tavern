@@ -29,6 +29,13 @@ function Label() {
         tooltip={t(`${name}.id`)}
         onClick={() => {
           setMenu(name);
+          if (menu === name) {
+            setPage(
+              page === comfyuis.model.name
+                ? comfyuis.workflow.name
+                : comfyuis.model.name,
+            );
+          }
         }}
       >
         <BrushIcon />

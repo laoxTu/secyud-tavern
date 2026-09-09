@@ -25,6 +25,9 @@ export const proxy = {
     return await globals.proxy.fetch('POST', `${setting.url}/prompt`, body);
   },
   model: {
+    async import(models: ComfyUIModel[]): Promise<Entity[]> {
+      return await post('comfyuis/models/import', models);
+    },
     async download(id: string) {
       await post(
         'comfyuis/models/{id}/download',

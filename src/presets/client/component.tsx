@@ -1,7 +1,5 @@
 ﻿'use client';
 import {
-  ChevronsDownIcon,
-  ChevronsUpIcon,
   ClipboardCopyIcon,
   CopyIcon,
   PlayIcon,
@@ -14,11 +12,6 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 import {
-  Button,
-  Card,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   DeleteDialog,
   dialogs,
   Field,
@@ -34,6 +27,7 @@ import {
   spanHalf,
   TooltipDialog,
 } from '@/components';
+import { EntryCollapsiable } from '@/components/collapsible';
 import { DataRequest, NameValue, utils } from '@/database';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -93,40 +87,13 @@ export function PresetEntryUpdate<TData>({
   const t = useTranslations();
   const { handler, success } = useHandler();
   const { name, refresh } = state();
-  const [open, setOpen] = useState(true);
 
   const { masterId, entryType, entryId, disabled } = entry;
   return (
-    <Collapsible
-      className={'flex-row shrink-0'}
-      render={<Card />}
-      open={open}
-      onOpenChange={setOpen}
-    >
-      <div className={'flex flex-col'}>
-        <Button
-          size={'icon'}
-          variant={'ghost'}
-          className={'m-auto'}
-          onClick={() => setOpen((u) => !u)}
-        >
-          {open ? <ChevronsUpIcon /> : <ChevronsDownIcon />}
-        </Button>
-        <CollapsibleTrigger
-          nativeButton={false}
-          render={<div />}
-          className={'flex-1 overflow-hidden cursor-pointer hover:bg-gray-100'}
-        >
-          <p
-            className={'flex-1 text-xs px-2 m-auto'}
-            style={{
-              writingMode: 'vertical-lr',
-            }}
-          >
-            {entry.name}
-          </p>
-        </CollapsibleTrigger>
-        <div className={'flex flex-col m-auto'}>
+    <EntryCollapsiable
+      title={entry.name}
+      tools={
+        <>
           <IconTooltip
             text={disabled ? 'default.disable_item' : 'default.enable_item'}
             onClick={handler(async () => {
@@ -201,12 +168,11 @@ export function PresetEntryUpdate<TData>({
             })}
             itemName={`${name}.id`}
           />
-        </div>
-      </div>
-      <CollapsibleContent className={'flex flex-col'} style={{ width: '72vw' }}>
-        {children}
-      </CollapsibleContent>
-    </Collapsible>
+        </>
+      }
+    >
+      {children}
+    </EntryCollapsiable>
   );
 }
 

@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+
 import {
   ComfyUIModel,
   ComfyUIModelSetting,
@@ -7,7 +9,8 @@ import {
   ComfyUIWorkflowInput,
 } from '@/comfyui';
 import { comfyuis } from '@/comfyui/server';
-import { DataRequest, InDto } from '@/database';
+import { DataRequest, Entity, InDto } from '@/database';
+import { databases } from '@/database/server';
 import { settings } from '@/global/server';
 import { BusinessError, checker } from '@/interceptors';
 import { route } from '@/interceptors/server';
@@ -15,6 +18,8 @@ import { jsonUtils } from '@/utils';
 import { fileUtils, response, task } from '@/utils/server';
 
 import { LoraConfig } from '../select';
+
+import { comfyuiModelSchema } from './schema';
 
 export default {
   comfyuis: {
@@ -29,6 +34,28 @@ export default {
         const id = await comfyuis.repository.model.create(model);
         return response.json({ id });
       }),
+      import: {
+        POST: route(async (request) => {
+          const models: ComfyUIModel[] = await request.json();
+          const res: Entity[] = [];
+          for (const model of models) {
+            const exist = await databases.db
+              .select({ id: comfyuiModelSchema.id })
+              .from(comfyuiModelSchema)
+              .where(eq(comfyuiModelSchema.code, model.id))
+              .get();
+            if (exist?.id) {
+              await comfyuis.repository.model.update(exist.id, model);
+              res.push(exist);
+            } else {
+              const id = await comfyuis.repository.model.create(model);
+              res.push({ id });
+            }
+          }
+
+          return response.json(res);
+        }),
+      },
       '[id]': {
         download: {
           POST: route(async (_, records) => {
@@ -100,7 +127,7 @@ export default {
           return response.json(model);
         }),
         PUT: route(async (request, record) => {
-          const { originId } = await record.params;
+          const { id: originId } = await record.params;
           const model: InDto<ComfyUIModel> = await request.json();
           const id = await comfyuis.repository.model.update(originId, model);
           return response.json({ id });
@@ -157,7 +184,7 @@ export default {
           return response.json(workflow);
         }),
         PUT: route(async (request, record) => {
-          const { originId } = await record.params;
+          const { id: originId } = await record.params;
           const workflow: InDto<ComfyUIWorkflow> = await request.json();
           const id = await comfyuis.repository.workflow.update(
             originId,
@@ -290,7 +317,7 @@ export default {
           GET: route(async (request, record) => {
             const { id } = await record.params;
             const param: DataRequest<ComfyUIParamRequestParam> =
-              await request.json();
+              record.searchParams;
             const result = await comfyuis.repository.workflow.param.list(
               id,
               param,

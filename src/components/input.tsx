@@ -62,7 +62,14 @@ export function ImageUploader({
   className,
 }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(defaultValue ?? null);
+
+  const validate = (value?: string | null) => {
+    if (value && !value.startsWith('http')) {
+      return value;
+    }
+    return null;
+  };
+  const [preview, setPreview] = useState<string | null>(validate(defaultValue));
 
   // 处理文件选择
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

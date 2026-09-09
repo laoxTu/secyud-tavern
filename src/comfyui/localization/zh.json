@@ -7,13 +7,26 @@
       "importer_invalid": "导入方式不可为空"
     },
     "workflow": {
-      "id": "工作流"
+      "id": "工作流",
+      "generate_params": "生成参数"
     },
     "id": "ComfyUI",
     "base_model": "基础模型",
     "civitai": {
       "model_id": "模型ID (二选一)",
       "model_version_id": "版本ID (二选一)"
+    },
+    "param": {
+      "id": "参数",
+      "key": "参数键",
+      "node": "节点",
+      "type": "类型",
+      "type_text": "文本",
+      "type_number": "数字",
+      "type_power_lora_select": "Lora 选择",
+      "type_select": "选择",
+      "type_callback": "回调",
+      "type_model_select": "模型选择"
     },
     "directory": "模型目录",
     "client_id": "客户端标识",
@@ -26,8 +39,6 @@
     "file_exists": "文件已存在",
     "generate": "生成",
     "generate_img": "生成图片",
-    "generate_parameter": "生成参数",
-    "generate_parameter_successfully": "成功生成参数",
     "invalid_download_url": "下载地址为空",
     "invalid_model_dir": "模型下载目录为空",
     "invalid_path": "路径名为空",
