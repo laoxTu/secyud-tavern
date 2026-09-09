@@ -18,7 +18,7 @@ const eta = new Eta({
 });
 
 export interface MacroItem extends PresetItem<Macro> {
-  value: any;
+  content: any;
 }
 
 export interface MacroCacheItem {
@@ -51,23 +51,29 @@ async function apply(
     if (macro.select) entries.unshift(macro.singles[macro.select]);
     /**
      * 规则，如果有json，则合并所有json，
-     * 并将字符串拼接到json中的_text中。
+     * 并将字符串拼接到json中的toString()中。
      * 如果全是字符串，才拼接所有字符串直接作为值。
      */
     let json: any = null;
     const texts: string[] = [];
     for (const item of entries) {
       if (item.json) {
-        json = jsonUtils.merge(json, item.value);
+        json = jsonUtils.merge(json, item.content);
       } else {
-        texts.push(item.value);
+        texts.push(item.content);
       }
     }
     const text = arrUtils.join(texts, '');
+    /**
+     * 使用toString()方法，让对象
+     * 可以直接作为内插字符串
+     */
     variables[macro.key] = json
       ? {
           ...json,
-          _text: text,
+          toString() {
+            return text;
+          },
         }
       : text;
   }
@@ -93,10 +99,14 @@ async function cache(realm: Realm) {
     async (entry, model) => {
       entry.id = model.id;
       const { key, hidden, multiple, name, json, value } = entry;
-      // json 值可以直接作为json访问
+      /**
+       * json 值可以直接作为json访问
+       * 使用content，因为value可能
+       * 被其他地方访问，例如宏选择器
+       */
       const item: MacroItem = {
         ...entry,
-        value: json ? jsonUtils.parse(value) : value,
+        content: json ? jsonUtils.parse(value) : value,
       };
       const cacheItem = (cache.macros[key] ??= {
         key: key,

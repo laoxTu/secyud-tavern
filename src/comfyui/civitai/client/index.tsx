@@ -47,8 +47,8 @@ const importer: ModelImporter = {
    * 不过应该够用了。
    */
   async configureObject(data: FormData, items) {
-    const modelVersionId = data.get('modelVersionId');
-    const modelId = data.get('modelId');
+    const modelVersionId = data.get('model_version_id');
+    const modelId = data.get('model_id');
     if (modelVersionId) {
       try {
         const response = await fetch(

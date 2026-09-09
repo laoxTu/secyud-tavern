@@ -10,4 +10,26 @@ describe('Eta', () => {
     const testCases = eta.renderString('Hi <%= it.name %>!', { name: 'Ben' });
     expect(testCases).toBe('Hi Ben!');
   });
+
+  it('应当使用正确的字符串', () => {
+    const testCases = eta.renderString('Hi <%~ it.name %>!', {
+      name: {
+        toString() {
+          return 'Ben';
+        },
+      },
+    });
+    expect(testCases).toBe('Hi Ben!');
+  });
+
+  it('应当使用正确的字符串2', () => {
+    const testCases = eta.renderString('Hi <%= it.name %>!', {
+      name: {
+        toString() {
+          return 'Ben';
+        },
+      },
+    });
+    expect(testCases).toBe('Hi Ben!');
+  });
 });
