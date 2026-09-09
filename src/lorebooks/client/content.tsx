@@ -56,7 +56,6 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
 
   return (
     <UpdateForm
-      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!editor) return;
@@ -193,7 +192,7 @@ export function Content() {
     <PresetEntryList<Lorebook> state={state}>
       {(entry) => (
         <PresetEntryUpdate entry={entry} state={state}>
-          <Editor entry={entry} />
+          <Editor key={`${entry.masterId}-${entry.entryId}`} entry={entry} />
         </PresetEntryUpdate>
       )}
     </PresetEntryList>

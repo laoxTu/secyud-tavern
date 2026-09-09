@@ -106,6 +106,7 @@ async function cache(realm: Realm) {
        */
       const item: MacroItem = {
         ...entry,
+        id: model.id,
         content: json ? jsonUtils.parse(value) : value,
       };
       const cacheItem = (cache.macros[key] ??= {
@@ -118,11 +119,11 @@ async function cache(realm: Realm) {
       if (multiple) {
         cacheItem.multiples.push(item);
         const checked = checkItems[name];
-        if (checked !== undefined) entry.disabled = !checked;
+        if (checked !== undefined) item.disabled = !checked;
       } else {
         cacheItem.singles[name] = item;
         if (
-          (!entry.disabled && !cacheItem.select) ||
+          (!item.disabled && !cacheItem.select) ||
           // 防止缓存中的值没有对应的item，校验后添加
           selections[cacheItem.key] === name
         )

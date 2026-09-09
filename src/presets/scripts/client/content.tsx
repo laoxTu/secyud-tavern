@@ -60,7 +60,6 @@ function Editor({
 
   return (
     <UpdateForm
-      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         await presets.proxy.entry.set<Script>(masterId, entryType, entryId, {
@@ -139,7 +138,7 @@ export function Content() {
     <PresetEntryList<Script> state={state}>
       {(entry) => (
         <PresetEntryUpdate entry={entry} state={state}>
-          <Editor entry={entry} />
+          <Editor key={`${entry.masterId}-${entry.entryId}`} entry={entry} />
         </PresetEntryUpdate>
       )}
     </PresetEntryList>

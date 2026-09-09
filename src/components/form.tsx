@@ -5,17 +5,15 @@ import React from 'react';
 import { Button, Field, FieldGroup, GridField } from '.';
 
 interface UpdateFormProps {
-  id: string;
   form?: React.RefObject<HTMLFormElement | null>;
   onSubmit: (data: FormData) => Promise<void>;
   children: React.ReactNode;
 }
 
-export function UpdateForm({ id, form, children, onSubmit }: UpdateFormProps) {
+export function UpdateForm({ form, children, onSubmit }: UpdateFormProps) {
   const t = useTranslations();
   return (
     <form
-      key={id}
       ref={form}
       action={onSubmit}
       className={'flex flex-col flex-1 overflow-hidden p-1 gap-1'}

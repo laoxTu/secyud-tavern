@@ -1,7 +1,7 @@
 'use client';
 import { Trash2Icon } from 'lucide-react';
 import { _Translator, useTranslations } from 'next-intl';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   AlertDialog,
@@ -37,7 +37,7 @@ interface TooltipDialogProps {
   tooltip: React.ReactNode;
   children?: React.ReactNode;
   disabled?: boolean;
-  onOpen?: () => Promise<void>;
+  onOpen?: (open: boolean) => Promise<void>;
   onSubmit?: (data: FormData) => Promise<void>;
   info: TooltipDialogInfo;
   className?: string;
@@ -59,24 +59,16 @@ export function TooltipDialog({
   const [open, setOpen] = useState(false);
   const t = useTranslations();
 
-  const openDialog = useCallback(async () => {
-    await onOpen?.();
-    setOpen(true);
-  }, [setOpen, onOpen]);
-
-  const handleSubmit = useCallback(
-    async (data: FormData) => {
-      await onSubmit?.(data);
-      setOpen(false);
-    },
-    [setOpen, onSubmit],
-  );
+  const changeOpen = async (open: boolean) => {
+    setOpen(open);
+    await onOpen?.(open);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={changeOpen}>
       <DialogTrigger render={<Tooltip />}>
         <TooltipTrigger
-          onClick={openDialog}
+          onClick={() => changeOpen(true)}
           render={<Button variant={'ghost'} disabled={disabled} />}
         >
           {tooltip}
@@ -88,7 +80,15 @@ export function TooltipDialog({
       <DialogContent
         className={className}
         style={style}
-        render={<form action={handleSubmit} ref={formRef} />}
+        render={
+          <form
+            action={async (data: FormData) => {
+              await onSubmit?.(data);
+              setOpen(false);
+            }}
+            ref={formRef}
+          />
+        }
       >
         <DialogHeader>
           <DialogTitle>{info.title}</DialogTitle>
@@ -110,7 +110,7 @@ interface TooltipAlertDialogProps {
   children: React.ReactNode;
   info: TooltipDialogInfo;
   disabled?: boolean;
-  onOpen?: () => Promise<void>;
+  onOpen?: (open: boolean) => Promise<void>;
   onSubmit: () => Promise<void>;
 }
 
@@ -124,21 +124,16 @@ export function TooltipAlertDialog({
   const [open, setOpen] = useState(false);
   const t = useTranslations();
 
-  const openDialog = useCallback(async () => {
-    await onOpen?.();
-    setOpen(true);
-  }, [setOpen, onOpen]);
-
-  const handleSubmit = useCallback(async () => {
-    await onSubmit();
-    setOpen(false);
-  }, [setOpen, onSubmit]);
+  const changeOpen = async (open: boolean) => {
+    await onOpen?.(open);
+    setOpen(open);
+  };
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={open} onOpenChange={changeOpen}>
       <AlertDialogTrigger render={<Tooltip />}>
         <TooltipTrigger
-          onClick={openDialog}
+          onClick={() => changeOpen(true)}
           render={<Button variant="destructive" disabled={disabled} />}
         >
           {children}
@@ -155,7 +150,13 @@ export function TooltipAlertDialog({
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction variant={'destructive'} onClick={handleSubmit}>
+          <AlertDialogAction
+            variant={'destructive'}
+            onClick={async () => {
+              await onSubmit();
+              setOpen(false);
+            }}
+          >
             {t('default.ensure')}
           </AlertDialogAction>
           <AlertDialogCancel render={<Button variant="outline" />}>

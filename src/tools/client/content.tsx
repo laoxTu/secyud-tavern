@@ -45,7 +45,6 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
 
   return (
     <UpdateForm
-      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!editor) return;
@@ -100,7 +99,7 @@ function Content() {
     <PresetEntryList<Tool> state={state}>
       {(entry) => (
         <PresetEntryUpdate entry={entry} state={state}>
-          <Editor entry={entry} />
+          <Editor key={`${entry.masterId}-${entry.entryId}`} entry={entry} />
         </PresetEntryUpdate>
       )}
     </PresetEntryList>

@@ -76,7 +76,6 @@ function PropertyTab() {
 
   return (
     <UpdateForm
-      id={item.id}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         const { id } = await stories.proxy.update(item.id, {

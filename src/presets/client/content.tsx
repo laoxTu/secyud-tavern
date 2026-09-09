@@ -477,7 +477,6 @@ function PropertyTab() {
 
   return (
     <UpdateForm
-      id={item.id}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         const coverId = await getImageFileId(data);

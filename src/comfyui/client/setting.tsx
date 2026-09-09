@@ -14,7 +14,6 @@ function Content() {
 
   return (
     <UpdateForm
-      id={`comfyui`}
       onSubmit={handler(async (data: FormData) => {
         useComfyUIModelSettingState.setState({
           url: data.get('base_url') as string,

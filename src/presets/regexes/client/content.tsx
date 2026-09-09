@@ -45,7 +45,6 @@ function Editor({
 
   return (
     <UpdateForm
-      id={`${masterId}-${entryId}`}
       onSubmit={handler(async (data: FormData) => {
         await presets.proxy.entry.set<Regex>(masterId, entryType, entryId, {
           data: {
@@ -110,7 +109,7 @@ export function Content() {
     <PresetEntryList<Regex> state={state}>
       {(entry) => (
         <PresetEntryUpdate entry={entry} state={state}>
-          <Editor entry={entry} />
+          <Editor key={`${entry.masterId}-${entry.entryId}`} entry={entry} />
         </PresetEntryUpdate>
       )}
     </PresetEntryList>

@@ -168,6 +168,7 @@ async function generate(create: boolean = false) {
     get();
   const { realm, histories, iframe } = realms;
   const set = useRealmState.setState;
+  if (generating) return;
   set({
     generating: true,
     realmInfo: {
@@ -178,7 +179,6 @@ async function generate(create: boolean = false) {
   if (create) {
     try {
       set({ summary: false, content: '' });
-      if (generating || !content.trim()) return;
       let variables = undefined;
       let input = content.trim();
       if (iframe.contentWindow) {
@@ -239,7 +239,6 @@ async function generate(create: boolean = false) {
     }
   }
   // 创建并保存历史后需要生成回复
-
   try {
     const history = await getHistory(null, realm);
     const setIndexCur = async () => {

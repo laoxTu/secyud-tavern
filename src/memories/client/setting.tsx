@@ -27,7 +27,6 @@ function Setting() {
 
   return (
     <UpdateForm
-      id={'rag'}
       onSubmit={handler(async (data: FormData) => {
         useRagState.setState({
           disabled: !!data.get('disabled'),

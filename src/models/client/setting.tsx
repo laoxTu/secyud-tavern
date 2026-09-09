@@ -42,7 +42,6 @@ function ModelPropertyContent() {
 
   return (
     <UpdateForm
-      id={item.id}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!engine)
