@@ -15,7 +15,6 @@ import { BusinessError, checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { ModelEngine, ModelInputSummary, models } from '@/models/client';
 import { useModelState } from '@/models/client/state';
-import { realms } from '@/stories/client/realms';
 import { tools } from '@/tools/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
@@ -244,7 +243,7 @@ export const engine: ModelEngine = {
           case 'text_delta':
             properties.content ??= '';
             properties.content += delta.text;
-            realms.fill(output, properties.content);
+            output.content = properties.content;
             break;
           case 'signature_delta':
             output.properties ??= {};

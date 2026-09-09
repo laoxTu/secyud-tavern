@@ -1,10 +1,10 @@
 import { NameValue } from '@/database';
 import { BusinessError } from '@/interceptors';
 import { models } from '@/models/client';
-import { Realm, RealmHistory, RealmMessage } from '@/stories';
+import { Realm, RealmHistory } from '@/stories';
 import { stories } from '@/stories/client';
 import { arrUtils, jsonUtils } from '@/utils';
-import { Operation, patch, validate } from '@/utils/json-patch';
+import { patch } from '@/utils/json-patch';
 
 import { useRealmState } from './state';
 
@@ -29,39 +29,6 @@ function variables(history: RealmHistory, output: boolean = true) {
       }
   }
   return variables;
-}
-
-function fill(message: RealmMessage, text?: string | null) {
-  if (!text || text.trim() == '') {
-    message.variables = [];
-    message.content = '';
-    return message;
-  }
-
-  const regex = /<variable_changes>([\s\S]*?)<\/variable_changes>/g;
-  const results: Operation[] = [];
-  text = text.trim().replace(regex, (_, element) => {
-    try {
-      console.debug('[variables](extract element): ', element);
-      const obj = JSON.parse(element.trim());
-      const items = Array.isArray(obj) ? obj : [obj];
-      for (const item of items) {
-        const validation = validate(item);
-        if (validation) {
-          console.warn('[variables](validation): ', validation);
-        } else {
-          results.push(item);
-        }
-      }
-    } catch (e) {
-      console.warn('[variables](extract error): ', e);
-    }
-    return ''; // 删除匹配的内容
-  });
-
-  message.variables = results.map((u) => u);
-  message.content = text;
-  return message;
 }
 
 /**
@@ -136,14 +103,9 @@ function opening(realm: Realm) {
         .map((u) => u.opening?.trim())
         .filter((u) => u)
         .map((v) => ({
-          ...fill(
-            {
-              content: '',
-              variables: [],
-              properties: {},
-            },
-            v,
-          ),
+          content: v!,
+          variables: [],
+          properties: {},
           thought: '',
         })),
     );
@@ -258,16 +220,11 @@ async function generate(create: boolean = false) {
         histories.push(history);
       }
 
-      history.prompts.push(
-        realms.fill(
-          {
-            content: '',
-            variables: [],
-            properties: {},
-          },
-          input,
-        ),
-      );
+      history.prompts.push({
+        content: input,
+        variables: [],
+        properties: {},
+      });
       // 用户输入后立即跳转到最新页面，先渲染用户输入。
       await setIndex(histories.length);
       // 有开场variables，新历史需要保存
@@ -351,7 +308,6 @@ export const realms = {
   },
   outputs,
   variables,
-  fill,
   model,
   opening,
   initContext,

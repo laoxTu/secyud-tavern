@@ -277,27 +277,39 @@ export const processers = {
           controller.abort((event.target as AbortSignal)?.reason);
         });
         let finished = false;
-        let updateTime = new Date();
-
-        const checkTime = () => {
-          setTimeout(() => {
-            if (finished) return;
-            const elapsed = (Date.now() - updateTime.getTime()) / 1000;
-            if (elapsed > 1) {
-              controller.abort('retry');
-            } else if (!finished) {
-              checkTime();
-            }
-          }, 1000);
-        };
-        checkTime();
         try {
-          const response = await models.proxy.engine.generate(
-            model.id,
-            input,
-            controller.signal,
-          );
           if (realm.model.stream) {
+            /**
+             * 通过时间对比进行判断
+             * 最新输出时间和当前时间
+             * 差值超过1s，则提出重试
+             * 中断后会自动重试
+             */
+            let updateTime = new Date();
+            const checkTime = () => {
+              setTimeout(() => {
+                if (finished) return;
+                const elapsed = (Date.now() - updateTime.getTime()) / 1000;
+                if (elapsed > 1) {
+                  controller.abort('retry');
+                } else if (!finished) {
+                  checkTime();
+                }
+              }, 1000);
+            };
+            const response = await models.proxy.engine.generate(
+              model.id,
+              input,
+              controller.signal,
+            );
+
+            /**
+             * 流式请求可能会中途卡住
+             * 卡住超过一秒就重新请求
+             * 这个属于用户体验方面
+             */
+            checkTime();
+
             if (response.body) {
               for await (const chunk of sseUtils.read(response.body)) {
                 updateTime = new Date();
@@ -305,9 +317,13 @@ export const processers = {
               }
             }
           } else {
-            updateTime = new Date();
+            const response = await models.proxy.engine.generate(
+              model.id,
+              input,
+              reply.signal,
+            );
+
             yield generate(true, response);
-            updateTime = new Date();
           }
           retry = 0;
         } catch (err) {

@@ -31,7 +31,11 @@ const options: DeepseekOptions = {
 
 export const deepseeks = {
   name: 'deepseek',
-  models: ['deepseek-v4-flash', 'deepseek-v4-pro'],
+  models: [
+    'deepseek-v4-flash',
+    'deepseek-v4-pro',
+    'deepseek-v4.1-flash-expires-on-0910',
+  ],
   reasoningEfforts: ['high', 'max'],
   default: {
     options,

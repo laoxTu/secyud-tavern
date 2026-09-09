@@ -23,7 +23,6 @@ import {
   models,
   useModelState,
 } from '@/models/client';
-import { realms } from '@/stories/client/realms';
 import { ToolCall } from '@/tools';
 import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';
@@ -289,7 +288,7 @@ async function resultResponses(ctx: ModelResultContext) {
       case 'response.output_text.delta':
         properties.content ??= '';
         properties.content += event.delta;
-        realms.fill(output, properties.content);
+        output.content = properties.content;
         break;
       // 新增 Item（消息或工具调用）
       case 'response.output_item.added':
@@ -334,13 +333,10 @@ async function resultResponses(ctx: ModelResultContext) {
           }
           break;
         case 'message':
-          realms.fill(
-            output,
-            arrUtils.join(
-              delta.content.filter((u) => u.type === 'output_text'),
-              '',
-              (u) => u.text,
-            ),
+          output.content = arrUtils.join(
+            delta.content.filter((u) => u.type === 'output_text'),
+            '',
+            (u) => u.text,
           );
           break;
         case 'reasoning':
@@ -369,7 +365,7 @@ async function resultChatCompletion(ctx: ModelResultContext) {
     if (delta.content) {
       properties.content ??= '';
       properties.content += delta.content;
-      realms.fill(output, properties.content);
+      output.content = properties.content;
     }
     // 流式 tool_calls 分片到达，按 index 归并，arguments 逐段拼接。
     if (delta.tool_calls?.length) {
@@ -405,7 +401,7 @@ async function resultChatCompletion(ctx: ModelResultContext) {
     }
     const thought: string = (delta as any).reasoning_content;
     output.thought += thought ?? '';
-    realms.fill(output, delta.content);
+    output.content = delta.content ?? '';
     if (delta.tool_calls)
       for (let i = 0; i < delta.tool_calls.length; i++) {
         const tool_call = delta.tool_calls[i];
