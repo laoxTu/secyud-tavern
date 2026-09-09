@@ -55,6 +55,7 @@ function Property() {
   return (
     <>
       <UpdateForm
+        id={item.id}
         form={form}
         onSubmit={handler(async (data: FormData) => {
           await comfyuis.proxy.workflow.update(item.id, {
@@ -172,6 +173,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
       }
     >
       <UpdateForm
+        id={`${masterId}-${sequence}`}
         form={form}
         onSubmit={handler(async (data: FormData) => {
           const param: ComfyUIParam = {

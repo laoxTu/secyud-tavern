@@ -56,6 +56,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
 
   return (
     <UpdateForm
+      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!editor) return;

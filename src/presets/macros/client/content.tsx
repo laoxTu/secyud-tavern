@@ -49,6 +49,7 @@ function Editor({
 
   return (
     <UpdateForm
+      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         const json = !!data.get('json');

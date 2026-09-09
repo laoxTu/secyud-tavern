@@ -45,6 +45,7 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
 
   return (
     <UpdateForm
+      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!editor) return;

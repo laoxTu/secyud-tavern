@@ -18,7 +18,6 @@ import {
   TooltipDialog,
   UpdateForm,
   useFormRef,
-  useRefresh,
 } from '@/components';
 import { SettingTab } from '@/global/client';
 import { BusinessError } from '@/interceptors';
@@ -39,13 +38,11 @@ function ModelPropertyContent() {
   );
   const form = useFormRef();
 
-  const { key, refreshKey } = useRefresh();
-
   if (!item) return null;
 
   return (
     <UpdateForm
-      key={key}
+      id={item.id}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         if (!engine)
@@ -66,7 +63,6 @@ function ModelPropertyContent() {
           }),
         );
         await setItem(item.id);
-        refreshKey();
         success(t('message.update.success'));
       })}
     >

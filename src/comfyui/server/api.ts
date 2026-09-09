@@ -42,7 +42,7 @@ export default {
             const exist = await databases.db
               .select({ id: comfyuiModelSchema.id })
               .from(comfyuiModelSchema)
-              .where(eq(comfyuiModelSchema.code, model.id))
+              .where(eq(comfyuiModelSchema.code, model.code))
               .get();
             if (exist?.id) {
               await comfyuis.repository.model.update(exist.id, model);

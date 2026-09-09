@@ -59,6 +59,7 @@ function Editor({
 
   return (
     <UpdateForm
+      id={`${masterId}-${entryId}`}
       form={form}
       onSubmit={handler(async (data: FormData) => {
         await presets.proxy.entry.set<Style>(masterId, entryType, entryId, {

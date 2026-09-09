@@ -43,6 +43,7 @@ function Editor({
 
   return (
     <UpdateForm
+      id={`${masterId}-${entryId}`}
       onSubmit={handler(async (data: FormData) => {
         await stories.proxy.entry.set<Memory>(masterId, entryType, entryId, {
           data: {
