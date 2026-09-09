@@ -1,3 +1,4 @@
+'use client';
 import { models } from '@/models/client';
 import { presets } from '@/presets/client';
 

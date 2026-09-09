@@ -1,3 +1,4 @@
+'use client';
 import { useTranslations } from 'next-intl';
 
 import { InputGroup, InputGroupInput, InputGroupText } from '@/components';

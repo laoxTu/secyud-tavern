@@ -1,4 +1,5 @@
-﻿import { globals } from '@/global/client';
+﻿'use client';
+import { globals } from '@/global/client';
 import { models } from '@/models/client';
 import { macros } from '@/presets/macros/client';
 import { regexes } from '@/presets/regexes/client';
@@ -11,9 +12,9 @@ import { presets as main } from '..';
 import { menu, property, tabs } from './content';
 import { proxy } from './proxy';
 
-export * from './state';
 export * from './component';
 export type * from './content';
+export * from './state';
 
 export const presets = {
   ...main,

@@ -1,3 +1,4 @@
+'use client';
 import { Anthropic } from '@anthropic-ai/sdk';
 import { useTranslations } from 'next-intl';
 

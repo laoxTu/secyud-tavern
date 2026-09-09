@@ -1,3 +1,4 @@
+'use client';
 import { BrainIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

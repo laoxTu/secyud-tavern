@@ -1,3 +1,4 @@
+'use client';
 import { CornerDownLeftIcon, DicesIcon, SquareStopIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

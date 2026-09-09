@@ -1,12 +1,13 @@
+'use client';
 import { create } from 'zustand';
 
 import { EntryRequestParam } from '@/database';
-import { FetchState } from '@/database/client';
-import { states } from '@/database/client/factory';
+import { FetchState, states } from '@/database/client/factory';
 
 import { PresetEntry } from '..';
 
-import { presets, usePresetState } from '.';
+import { proxy } from './proxy';
+import { usePresetState } from './state';
 
 export interface PresetEntryState<TData> extends FetchState<
   PresetEntry<TData>,
@@ -27,21 +28,23 @@ export function createPresetEntryState<TData>(
     loading: false,
     size: 5,
     max: 0,
-    fetch: states.createFetch<PresetEntry<TData>, EntryRequestParam>(
-      set,
-      get,
-      async (request) => {
-        const { item } = usePresetState.getState();
+    get fetch() {
+      return states.createFetch<PresetEntry<TData>, EntryRequestParam>(
+        set,
+        get,
+        async (request) => {
+          const { item } = usePresetState.getState();
 
-        return await presets.proxy.entry.list(item!.id, {
-          ...request,
-          search: {
-            ...(request?.search ?? {}),
-            entryType: name,
-          },
-        });
-      },
-    ),
+          return await proxy.entry.list(item!.id, {
+            ...request,
+            search: {
+              ...(request?.search ?? {}),
+              entryType: name,
+            },
+          });
+        },
+      );
+    },
     refresh: (options) => get().fetch(options),
   }));
 }

@@ -1,3 +1,4 @@
+'use client';
 import { utils } from '@/database';
 import { ModelInputSummary, models } from '@/models/client';
 import { presets } from '@/presets/client';

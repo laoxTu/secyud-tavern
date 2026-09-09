@@ -1,3 +1,4 @@
+'use client';
 import { globals } from '@/global/client';
 import { features } from '@/stories/client/feature';
 import { feature } from '@/stories/client/realms/feature';

@@ -1,3 +1,4 @@
+'use client';
 import { StateStorage } from 'zustand/middleware';
 
 import { settings } from '@/global/client';

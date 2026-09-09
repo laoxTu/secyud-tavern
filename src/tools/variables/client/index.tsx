@@ -1,3 +1,4 @@
+'use client';
 import { Realm } from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { ToolItem, ToolProvider } from '@/tools/client';

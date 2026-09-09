@@ -1,3 +1,4 @@
+'use client';
 import { settings } from '@/global/client';
 import { anthropics } from '@/models/anthropic/client';
 import { proxy } from '@/models/client/proxy';

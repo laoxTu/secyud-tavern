@@ -1,3 +1,4 @@
+'use client';
 import { menu } from '@/files/client/content';
 import { proxy } from '@/files/client/proxy';
 import { globals } from '@/global/client';

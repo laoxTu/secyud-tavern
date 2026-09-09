@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
+import { registerServerPlugin } from '@/generated/server-registerer';
 import { getRegistry, Registerable } from '@/plugins';
-import { registerServerPlugins } from '@/server-registerer';
 
 export interface NextContext {
   params: Promise<Record<string, any>>;
@@ -83,7 +83,20 @@ export const manager = getRegistry<InterceptorHandler>('interceptor');
 
 export function route(route: NextHandler): NextHandlerResult {
   return async (request: NextRequest, context: NextContext) => {
-    await registerServerPlugins();
+    const global = globalThis as { __initialized?: boolean };
+    if (!global.__initialized) {
+      global.__initialized = true;
+
+      if (process.env.NODE_ENV === 'development') {
+        // ✅ 替换为 console.log（带时间戳和前缀）
+        console.debug = (...args: any[]) => {
+          console.log(`[DEBUG] ${new Date().toISOString()}`, ...args);
+        };
+      }
+
+      await registerServerPlugin();
+    }
+
     console.debug(`[interceptor](${request.method}): ${request.url}`);
     const interceptors = manager.sorted();
     const handler = composeInterceptors(interceptors, route);

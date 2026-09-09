@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import React from 'react';
 
-import './globals.css';
 import './app.css';
+import './globals.css';
 
 import { Geist, JetBrains_Mono } from 'next/font/google';
 

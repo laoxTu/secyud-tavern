@@ -1,3 +1,4 @@
+'use client';
 import { NameValue } from '@/database';
 import { BusinessError } from '@/interceptors';
 import { models } from '@/models/client';

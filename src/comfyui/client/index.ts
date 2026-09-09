@@ -1,3 +1,4 @@
+'use client';
 import { callbacks } from '@/comfyui/callback/client';
 import { civitais } from '@/comfyui/civitai/client';
 import { configurators } from '@/comfyui/client/configurator';
@@ -15,9 +16,9 @@ import { comfyuis as main } from '..';
 import { importers } from './importers';
 
 export * from './components';
-export * from './state';
-export type * from './importers';
 export type * from './configurator';
+export type * from './importers';
+export * from './state';
 
 export const comfyuis = {
   ...main,

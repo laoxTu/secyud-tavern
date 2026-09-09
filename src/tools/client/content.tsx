@@ -1,3 +1,4 @@
+'use client';
 import { ToolboxIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

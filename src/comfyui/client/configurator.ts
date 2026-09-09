@@ -1,3 +1,4 @@
+'use client';
 import React, { RefObject } from 'react';
 
 import { ComfyUIParam, ComfyUIWorkflowInput } from '@/comfyui';

@@ -1,3 +1,4 @@
+'use client';
 import { useTranslations } from 'next-intl';
 import OpenAI from 'openai';
 import { useState } from 'react';

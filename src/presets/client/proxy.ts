@@ -1,3 +1,4 @@
+'use client';
 import { v4 } from 'uuid';
 
 import { del, get, open, post, put } from '@/client';

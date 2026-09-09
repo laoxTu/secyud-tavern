@@ -1,3 +1,4 @@
+'use client';
 import { utils } from '@/database';
 import { settings } from '@/global/client';
 import { models } from '@/models/client';

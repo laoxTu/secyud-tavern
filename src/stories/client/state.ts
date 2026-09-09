@@ -1,7 +1,7 @@
-﻿import { create } from 'zustand';
+﻿'use client';
+import { create } from 'zustand';
 
-import { FetchState } from '@/database/client';
-import { states } from '@/database/client/factory';
+import { FetchState, states } from '@/database/client/factory';
 import { Story, StoryRequestParam } from '@/stories';
 import { stories } from '@/stories/client';
 
