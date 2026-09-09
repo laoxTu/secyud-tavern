@@ -16,6 +16,8 @@ import {
 import { GlobalMenuLabel } from '@/global/client';
 import { getRegistry, Registerable } from '@/plugins';
 
+import styles from './setting.module.css';
+
 export interface SettingTab extends Registerable {
   icon: React.ComponentType;
   label: string;
@@ -123,7 +125,9 @@ function Content() {
               {element(tab.icon)}
               <CardTitle className={'text-base'}>{t(tab.label)}</CardTitle>
             </CardHeader>
-            <CardContent>{element(tab.content)}</CardContent>
+            <CardContent className={styles.setting}>
+              {element(tab.content)}
+            </CardContent>
           </Card>
         ))}
       </div>

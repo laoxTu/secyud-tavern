@@ -39,7 +39,6 @@ function Content() {
           id={`model-model`}
           value={options.model}
           items={deepseeks.models}
-          labelAccessor={(e) => e && t(`deepseek.${e}`)}
         />
       </Field>
       <Field>

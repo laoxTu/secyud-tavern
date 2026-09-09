@@ -192,9 +192,7 @@ export function RemoteSearchCombobox({
   const [search, setSearch] = useState<string | null>(null);
   const [value, setValue] = useState(defaultValue ?? null);
   const [inputValue, setInputValue] = useState(
-    (Array.isArray(defaultValue)
-      ? defaultValue?.at(0)?.name
-      : defaultValue?.name) ?? '',
+    (Array.isArray(defaultValue) ? undefined : defaultValue?.name) ?? '',
   );
 
   const listRef = useRef<HTMLDivElement>(null);
