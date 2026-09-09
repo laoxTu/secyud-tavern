@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 import {
   Checkbox,
@@ -6,11 +7,11 @@ import {
   FieldContent,
   FieldLabel,
   Input,
+  MonacoEditor,
   rowHalf,
   spanHalf,
-  submitTargetFormOnKey,
-  Textarea,
   UpdateForm,
+  useFormRef,
 } from '@/components';
 import { checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -34,7 +35,7 @@ function Editor({
     entryType,
     entryId,
     name,
-    data: { key, multiple, hidden, value, code },
+    data: { key, multiple, hidden, value, code, json: jsonDefault },
   },
 }: {
   entry: PresetEntry<Macro>;
@@ -42,15 +43,21 @@ function Editor({
   const t = useTranslations();
   const { refresh } = state();
   const { handler, success } = useHandler();
+  const [json, setJson] = useState(jsonDefault);
+  const form = useFormRef();
 
   return (
     <UpdateForm
+      form={form}
       onSubmit={handler(async (data: FormData) => {
+        const json = !!data.get('json');
+        const value = data.get('value') as string;
         await presets.proxy.entry.set<Macro>(masterId, entryType, entryId, {
           data: {
             key: data.get('key') as string,
             code: data.get('code') as string,
-            value: data.get('value') as string,
+            value: json ? checker.validJson(value) : value,
+            json,
             multiple: !!data.get('multiple'),
             hidden: !!data.get('hidden'),
           },
@@ -81,11 +88,11 @@ function Editor({
         <FieldLabel htmlFor={`macro-value-${entryId}`}>
           {t('macro.value')}
         </FieldLabel>
-        <Textarea
+        <MonacoEditor
+          language={json ? 'json' : 'plaintext'}
+          formRef={form}
           name="value"
-          id={`macro-value-${entryId}`}
-          defaultValue={value}
-          onKeyDown={submitTargetFormOnKey}
+          value={value}
         />
       </Field>
       <Field className={spanHalf}>
@@ -98,6 +105,19 @@ function Editor({
           id={`macro-key-${entryId}`}
           defaultValue={key}
         />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`macro-json-${entryId}`}>
+          {t('macro.is_json')}
+        </FieldLabel>
+        <FieldContent>
+          <Checkbox
+            name="json"
+            id={`macro-json-${entryId}`}
+            checked={json}
+            onCheckedChange={setJson}
+          />
+        </FieldContent>
       </Field>
       <Field>
         <FieldLabel htmlFor={`macro-multiple-${entryId}`}>

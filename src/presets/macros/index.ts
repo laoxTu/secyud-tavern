@@ -3,6 +3,8 @@ export interface Macro {
   code: string;
   key: string;
   value: string;
+  // 这个宏是否为json变量
+  json: boolean;
   multiple: boolean;
   hidden: boolean;
 }
@@ -10,6 +12,7 @@ export interface Macro {
 const defaultEntry: Macro = {
   code: 'macro',
   key: 'macro',
+  json: false,
   multiple: false,
   hidden: false,
   value: '',

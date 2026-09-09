@@ -4,10 +4,11 @@ import { utils } from '@/database';
 import { ConvertContent, Processer } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
 import { Macro, macros as main } from '@/presets/macros';
+import { regexes as regexMain } from '@/presets/regexes';
 import { Realm, RealmHistory } from '@/stories';
 import { Renderer } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
-import { arrUtils } from '@/utils';
+import { arrUtils, jsonUtils } from '@/utils';
 
 import { macros } from '.';
 
@@ -16,10 +17,14 @@ const eta = new Eta({
   rmWhitespace: false,
 });
 
+export interface MacroItem extends PresetItem<Macro> {
+  value: any;
+}
+
 export interface MacroCacheItem {
   key: string;
-  singles: Record<string, PresetItem<Macro>>;
-  multiples: PresetItem<Macro>[];
+  singles: Record<string, MacroItem>;
+  multiples: MacroItem[];
   select?: string;
   hidden: boolean;
 }
@@ -44,7 +49,27 @@ async function apply(
   for (const macro of Object.values(cache.macros)) {
     const entries = macro.multiples.filter((v) => !v.disabled);
     if (macro.select) entries.unshift(macro.singles[macro.select]);
-    variables[macro.key] = arrUtils.join(entries, '', (u) => u.value);
+    /**
+     * 规则，如果有json，则合并所有json，
+     * 并将字符串拼接到json中的_text中。
+     * 如果全是字符串，才拼接所有字符串直接作为值。
+     */
+    let json: any = null;
+    const texts: string[] = [];
+    for (const item of entries) {
+      if (item.json) {
+        json = jsonUtils.merge(json, item.value);
+      } else {
+        texts.push(item.value);
+      }
+    }
+    const text = arrUtils.join(texts, '');
+    variables[macro.key] = json
+      ? {
+          ...json,
+          _text: text,
+        }
+      : text;
   }
   const obj = {
     ...variables,
@@ -67,26 +92,31 @@ async function cache(realm: Realm) {
     macros.plural,
     async (entry, model) => {
       entry.id = model.id;
-      const { key, hidden, multiple, name } = entry;
-      const item = (cache.macros[key] ??= {
+      const { key, hidden, multiple, name, json, value } = entry;
+      // json 值可以直接作为json访问
+      const item: MacroItem = {
+        ...entry,
+        value: json ? jsonUtils.parse(value) : value,
+      };
+      const cacheItem = (cache.macros[key] ??= {
         key: key,
         multiples: [],
         singles: {},
         hidden: true,
       });
-      if (!hidden) item.hidden = false;
+      if (!hidden) cacheItem.hidden = false;
       if (multiple) {
-        item.multiples.push(entry);
+        cacheItem.multiples.push(item);
         const checked = checkItems[name];
         if (checked !== undefined) entry.disabled = !checked;
       } else {
-        item.singles[name] = entry;
+        cacheItem.singles[name] = item;
         if (
-          (!entry.disabled && !item.select) ||
+          (!entry.disabled && !cacheItem.select) ||
           // 防止缓存中的值没有对应的item，校验后添加
-          selections[item.key] === name
+          selections[cacheItem.key] === name
         )
-          item.select = name;
+          cacheItem.select = name;
       }
     },
   );
@@ -95,6 +125,7 @@ async function cache(realm: Realm) {
 
 export const processer: Processer = {
   id: main.name,
+  requires: [regexMain.name],
   async init({ realm }) {
     return cache(realm);
   },
@@ -103,6 +134,7 @@ export const processer: Processer = {
 
 export const renderer: Renderer = {
   id: main.name,
+  requires: [regexMain.name],
   async init({ realm }) {
     return cache(realm);
   },
