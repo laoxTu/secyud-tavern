@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { ComfyUIModel } from '@/comfyui';
 import { comfyuis } from '@/comfyui/client';
 import {
+  AutoMedia,
   Badge,
   Field,
   FieldContent,
@@ -17,7 +18,6 @@ import {
   RemoteSearchCombobox,
 } from '@/components';
 import { DataRequest, NameValue, utils } from '@/database';
-import { files } from '@/files/client';
 import { useHandler } from '@/interceptors/client';
 
 interface ComfyUIModelHoverableItemProps {
@@ -52,8 +52,6 @@ export function ComfyUIModelHoverableItem({
         </HoverCardContent>
       </HoverCard>
     );
-
-  const source = files.proxy.url(item.cover);
   return (
     <HoverCard>
       <HoverCardTrigger className={'w-full'}>
@@ -64,21 +62,7 @@ export function ComfyUIModelHoverableItem({
           'bg-card relative overflow-auto w-96 max-h-96 [&_a]:text-blue-600 wrap-break-word'
         }
       >
-        {source &&
-          (source.endsWith('mp4') ? (
-            <video
-              src={source}
-              controls
-              preload="metadata"
-              className="object-contain w-full"
-            />
-          ) : (
-            <img
-              src={source}
-              alt={item.name}
-              className="object-contain w-full"
-            />
-          ))}
+        <AutoMedia filename={item.cover} className={'object-contain w-full'} />
         <div>{item.code}</div>
         <div>{item.name}</div>
         {item.url && <Link href={item.url}>{item.url}</Link>}

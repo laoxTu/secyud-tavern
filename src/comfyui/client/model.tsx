@@ -8,7 +8,6 @@ import {
   XIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 import { ComfyUIModel } from '@/comfyui';
@@ -17,6 +16,7 @@ import { ComfyUIModelHoverableItem, comfyuis } from '@/comfyui/client';
 import { useComfyUIModelState } from '@/comfyui/client/state';
 import {
   AspectRatio,
+  AutoMedia,
   Badge,
   DeleteDialog,
   dialogs,
@@ -44,7 +44,6 @@ import {
   TooltipDialog,
   useImageUploaderState,
 } from '@/components';
-import { files } from '@/files/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 
@@ -56,7 +55,6 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
   const [item, setItem] = useState<ComfyUIModel>(nameValueItem);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const source = files.proxy.url(item.cover);
   return (
     <Item
       variant={'outline'}
@@ -69,23 +67,11 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
           setItem={setItem}
         >
           {(item) => (
-            <AspectRatio ratio={1}>
-              {source.endsWith('mp4') ? (
-                <video
-                  src={source}
-                  controls
-                  preload="metadata"
-                  className="object-cover aspect-square"
-                />
-              ) : (
-                <Image
-                  src={source}
-                  alt={item.name}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
-              )}
+            <AspectRatio className={'w-full'} ratio={1}>
+              <AutoMedia
+                filename={item.cover}
+                className={'object-cover aspect-square'}
+              />
             </AspectRatio>
           )}
         </ComfyUIModelHoverableItem>
@@ -126,9 +112,6 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
           style={{ maxWidth: '86%', height: '86%' }}
           tooltip={<SquarePenIcon />}
           onSubmit={handler(async (data: FormData) => {
-            const id = await getImageFileId(data);
-            const cover = id ? id : (data.get('cover_src') as string);
-
             await comfyuis.proxy.model.update(item.id, {
               code: item.code,
               name: data.get('name') as string,
@@ -138,7 +121,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
               html: data.get('html') as string,
               download: data.get('download') as string,
               model: data.get('model') as string,
-              cover,
+              cover: await getImageFileId(data, 'cover_src'),
             });
 
             success(t('message.update.success'));
@@ -156,7 +139,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
                 id={`comfyui_model-cover-${item.id}`}
                 className={'max-w-52'}
                 accept={'image/png'}
-                value={source}
+                value={item.cover}
                 onChange={onFileChange}
               />
             </Field>

@@ -17,13 +17,17 @@ export interface StoryEntryState<TData> extends FetchState<
   defaultData: TData;
 }
 
-export function createStoryEntryState<TData>(name: string, defaultData: TData) {
+export function createStoryEntryState<TData>(
+  name: string,
+  defaultData: TData,
+  size: number = 5,
+) {
   return create<StoryEntryState<TData>>((set, get) => ({
     name,
     defaultData,
     cur: 0,
     loading: false,
-    size: 5,
+    size,
     max: 0,
     fetch: states.createFetch<StoryEntry<TData>, EntryRequestParam>(
       set,

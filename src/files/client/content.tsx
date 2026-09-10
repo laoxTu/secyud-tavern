@@ -1,11 +1,11 @@
 'use client';
 import { FilesIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
-import React from 'react';
 import { create } from 'zustand';
 
 import {
+  AspectRatio,
+  AutoMedia,
   DeleteDialog,
   Item,
   ItemActions,
@@ -25,7 +25,7 @@ interface FileState extends FetchState<FileModel, FileRequestParam> {}
 const useFileState = create<FileState>((set, get) => ({
   cur: 0,
   loading: false,
-  size: 7,
+  size: 10,
   max: 0,
   fetch: states.createFetch<FileModel, FileRequestParam>(
     set,
@@ -37,67 +37,39 @@ const useFileState = create<FileState>((set, get) => ({
   refresh: (options) => get().fetch(options),
 }));
 
-function ContentHeader({ file: { id, type } }: { file: FileModel }) {
-  const source = files.proxy.url(id);
-  if (type.startsWith('image')) {
-    return (
-      <Image
-        src={source}
-        alt={id}
-        width={100}
-        height={100}
-        className="w-full h-auto"
-      />
-    );
-  } else if (type.startsWith('video')) {
-    return (
-      <video
-        src={source}
-        controls
-        preload="metadata"
-        className="object-cover rounded-sm aspect-square"
-      />
-    );
-  }
-
-  return (
-    <Image
-      src={'favicon.svg'}
-      alt={id}
-      width={100}
-      height={100}
-      className="w-full h-auto rounded-sm"
-    />
-  );
-}
-
 function ContentItem({ file }: { file: FileModel }) {
   const t = useTranslations();
   const { handler, success } = useHandler();
   const { fetch } = useFileState();
-  const source = files.proxy.url(file.id);
 
   return (
-    <div className={'min-w-1/4 w-96 h-auto p-2'}>
-      <Item className={'relative sc-dc'} variant={'outline'}>
-        <ItemHeader>
-          <ContentHeader file={file} />
-        </ItemHeader>
-        <ItemActions
-          className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}
-        >
-          {source && <LinkTooltip href={source} />}
-          <DeleteDialog
-            onDelete={handler(async () => {
-              await files.proxy.delete(file.id);
-              success(t('message.delete.success'));
-              await fetch();
-            })}
-            itemName={`file.id`}
+    <Item
+      variant={'outline'}
+      className={'min-w-1/5 w-64 overflow-hidden relative sc-dc'}
+    >
+      <ItemHeader>
+        <AspectRatio className={'w-full'} ratio={1}>
+          <AutoMedia
+            filename={file.id}
+            type={file.type}
+            className={'object-cover aspect-square'}
           />
-        </ItemActions>
-      </Item>
-    </div>
+        </AspectRatio>
+      </ItemHeader>
+      <ItemActions
+        className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}
+      >
+        {file.id && <LinkTooltip href={file.id} />}
+        <DeleteDialog
+          onDelete={handler(async () => {
+            await files.proxy.delete(file.id);
+            success(t('message.delete.success'));
+            await fetch();
+          })}
+          itemName={`file.id`}
+        />
+      </ItemActions>
+    </Item>
   );
 }
 

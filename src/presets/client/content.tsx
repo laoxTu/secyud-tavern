@@ -12,11 +12,12 @@ import {
   XIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import {
+  AspectRatio,
+  AutoMedia,
   Button,
   Checkbox,
   combobox,
@@ -63,7 +64,6 @@ import {
   useTabs,
 } from '@/components';
 import { NameValue } from '@/database';
-import { files } from '@/files/client';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -426,17 +426,15 @@ export function MenuContent() {
             usePager={usePresetState}
           >
             {(item) => {
-              const cover = files.proxy.url(item.cover);
               return (
                 <>
                   <ItemMedia variant={'image'}>
-                    <Image
-                      src={cover ? cover : 'favicon.svg'}
-                      alt={item.name}
-                      width={32}
-                      height={32}
-                      className="object-contain"
-                    />
+                    <AspectRatio className={'w-8'} ratio={1}>
+                      <AutoMedia
+                        filename={item.cover}
+                        className={'object-cover aspect-square'}
+                      />
+                    </AspectRatio>
                   </ItemMedia>
                   <ItemContent>
                     <ItemTitle className="line-clamp-1">
@@ -479,12 +477,10 @@ function PropertyTab() {
     <UpdateForm
       form={form}
       onSubmit={handler(async (data: FormData) => {
-        const coverId = await getImageFileId(data);
-        const cover = coverId ? coverId : (data.get('cover_src') as string);
         const { id } = await presets.proxy.update(item.id, {
           id: data.get('code') as string,
           name: data.get('name') as string,
-          cover,
+          cover: await getImageFileId(data, 'cover_src'),
           version: data.get('version') as string,
           description: data.get('description') as string,
           opening: data.get('opening') as string,
@@ -508,7 +504,7 @@ function PropertyTab() {
           name="cover-image`"
           className={'pr-2'}
           accept={'image/png'}
-          value={files.proxy.url(item.cover)}
+          value={item.cover}
           onChange={onFileChange}
         />
       </Field>

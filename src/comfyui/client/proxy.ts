@@ -28,7 +28,11 @@ export const proxy = {
       client_id: setting.client,
       prompt,
     });
-    return await globals.proxy.fetch('POST', `${setting.url}/prompt`, body);
+    return await globals.proxy.fetch({
+      method: 'POST',
+      url: `${setting.url}/prompt`,
+      body,
+    });
   },
   model: {
     /**

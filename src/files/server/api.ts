@@ -24,13 +24,13 @@ export default {
       resource: {
         GET: route(async (_, records) => {
           const { id } = await records.params;
-          const file = await files.repository.get(id);
+          const file = await files.repository.get(id, true);
           return response.resource(file.id, file.type, file.buffer);
         }),
       },
       GET: route(async (_, records) => {
         const { id } = await records.params;
-        const file = await files.repository.get(id);
+        const file = await files.repository.get(id, false);
         return response.json(file);
       }),
       DELETE: route(async (_, records) => {

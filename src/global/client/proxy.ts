@@ -1,5 +1,7 @@
 import { get, post, put } from '@/client';
 
+import { ProxyParam } from '..';
+
 export const settingProxy = {
   get: async <T>(id: string): Promise<T> => {
     return await get('settings/{id}', {
@@ -14,11 +16,7 @@ export const settingProxy = {
 };
 
 export const proxy = {
-  fetch: async <T = any>(
-    method: string,
-    url: string,
-    body?: any,
-  ): Promise<T> => {
-    return await post('proxy', { method, url, body });
+  fetch: async <T = any>(param: ProxyParam): Promise<T> => {
+    return await post('proxy', param);
   },
 };

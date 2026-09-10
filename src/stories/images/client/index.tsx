@@ -1,9 +1,10 @@
 'use client';
 import { ImagesIcon, SquarePenIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 
 import {
+  AspectRatio,
+  AutoMedia,
   DeleteDialog,
   dialogs,
   Field,
@@ -20,9 +21,7 @@ import {
   LinkTooltip,
   TooltipDialog,
   useImageUploaderState,
-  useRefresh,
 } from '@/components';
-import { files } from '@/files/client';
 import { useHandler } from '@/interceptors/client';
 import { StoryEntry } from '@/stories';
 import {
@@ -35,14 +34,14 @@ import { StoryTab } from '@/stories/client/content';
 import { createStoryEntryState } from '@/stories/client/factory';
 import { images as main, StoryImage } from '@/stories/images';
 
-const state = createStoryEntryState<StoryImage>(main.name, main.default);
+const state = createStoryEntryState<StoryImage>(main.name, main.default, 10);
 function ContentItem({
   entry: {
     masterId,
     entryType,
     entryId,
     name,
-    data: { id: image, updateAt },
+    data: { image, updateAt },
   },
 }: {
   entry: StoryEntry<StoryImage>;
@@ -50,20 +49,20 @@ function ContentItem({
   const { handler, success } = useHandler();
   const { refresh } = state();
   const t = useTranslations();
-  const { key, refreshKey } = useRefresh();
   const { onFileChange, getImageFileId } = useImageUploaderState('image');
-  const source = files.proxy.url(image);
   return (
-    <div className={'min-w-1/4 w-96 h-auto p-2'}>
-      <Item key={key} variant={'outline'} className={'relative sc-dc'}>
+    <div className={'min-w-1/5 w-96 h-auto p-2'}>
+      <Item
+        variant={'outline'}
+        className={'min-w-1/5 w-64 overflow-hidden relative sc-dc'}
+      >
         <ItemHeader>
-          <Image
-            src={source}
-            alt={name}
-            width={100}
-            height={100}
-            className="w-full h-auto rounded-sm"
-          />
+          <AspectRatio className={'w-full'} ratio={1}>
+            <AutoMedia
+              filename={image}
+              className={'object-cover aspect-square'}
+            />
+          </AspectRatio>
         </ItemHeader>
         <ItemContent>
           <ItemTitle>{name}</ItemTitle>
@@ -72,7 +71,7 @@ function ContentItem({
         <ItemActions
           className={`absolute top-4 right-4 rounded bg-white/70 sc-dc-flex`}
         >
-          {source && <LinkTooltip href={source} />}
+          {image && <LinkTooltip href={image} />}
           <DeleteDialog
             onDelete={handler(async () => {
               await stories.proxy.entry.del(masterId, entryType, entryId);
@@ -91,12 +90,11 @@ function ContentItem({
                 {
                   name: data.get('name') as string,
                   data: {
-                    id: await getImageFileId(data),
-                    updateAt,
+                    image: await getImageFileId(data, 'image_src'),
+                    updateAt: Date(),
                   },
                 },
               );
-              refreshKey();
               success(t('message.update.success'));
               await refresh();
             })}
@@ -104,26 +102,36 @@ function ContentItem({
           >
             <FieldGroup className="p-4 overflow-auto flex-1">
               <Field>
-                <FieldLabel htmlFor={`story-image-${entryId}`}>
-                  {t('default.cover')}
-                </FieldLabel>
-                <ImageUploader
-                  name="image`"
-                  id={`story-image-${entryId}`}
-                  className={'max-w-52'}
-                  accept={'image/png'}
-                  value={source}
-                  onChange={onFileChange}
-                />
-              </Field>
-              <Field>
                 <FieldLabel htmlFor={`story-name-${entryId}`}>
                   {t('default.name')}
                 </FieldLabel>
                 <Input
                   id={`story-name-${entryId}`}
                   defaultValue={name}
-                  name="name"
+                  name={'name'}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`story-image-${entryId}`}>
+                  {t('default.cover')}
+                </FieldLabel>
+                <ImageUploader
+                  name={'image'}
+                  id={`story-image-${entryId}`}
+                  className={'max-w-52'}
+                  accept={'image/png'}
+                  value={image}
+                  onChange={onFileChange}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`story-image_src-${entryId}`}>
+                  {t('default.cover_src')}
+                </FieldLabel>
+                <Input
+                  id={`story-image_src-${entryId}`}
+                  defaultValue={image ?? undefined}
+                  name={'image_src'}
                 />
               </Field>
             </FieldGroup>
@@ -141,9 +149,7 @@ function Content() {
   return (
     <StoryEntryList<StoryImage>
       state={state}
-      className={
-        'overflow-x-hidden overflow-y-auto flex-wrap items-start gap-0'
-      }
+      className={'overflow-x-hidden overflow-y-auto flex-wrap'}
     >
       {(entry) => <ContentItem entry={entry} />}
     </StoryEntryList>

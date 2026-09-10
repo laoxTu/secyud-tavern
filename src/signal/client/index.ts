@@ -13,8 +13,11 @@ export interface SseConnection {
  * 获取sse信号，所有事件在一个客户端通过单例访问
  */
 export const useSseConnection = create<SseConnection>(() => {
+  let es = null;
   return {
-    eventSource: new EventSource('/api/sse'),
+    get eventSource() {
+      return (es ??= new EventSource('/api/sse'));
+    },
   };
 });
 

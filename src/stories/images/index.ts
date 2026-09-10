@@ -1,11 +1,10 @@
 export interface StoryImage {
-  id: string | null;
+  image?: string | null;
   updateAt: string;
 }
 
 const defaultValue: StoryImage = {
   updateAt: '',
-  id: null,
 };
 
 export const images = {

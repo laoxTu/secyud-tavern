@@ -1,6 +1,5 @@
 import { eq } from 'drizzle-orm';
 import { PNG } from 'pngjs';
-import { buffer } from 'stream/consumers';
 import { validate } from 'uuid';
 
 import { InDto } from '@/database';
@@ -9,7 +8,6 @@ import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { Preset, PresetEntry, PresetRequestOptions } from '@/presets';
 import { jsonUtils } from '@/utils';
-import { splitPNGAndDataUniversal } from '@/utils/png';
 import { cache, fileUtils, response } from '@/utils/server';
 
 import { presets } from '.';
@@ -117,7 +115,7 @@ export default {
             const cover = source.at(-1)?.cover;
             if (cover && validate(cover)) {
               try {
-                const file = await files.repository.get(cover);
+                const file = await files.repository.get(cover, true);
                 return file.buffer;
               } catch (error) {}
             }

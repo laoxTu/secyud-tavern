@@ -97,6 +97,7 @@ export * from './empty';
 export * from './field';
 export * from './form';
 export * from './input';
+export * from './media';
 export * from './pager';
 export * from './resizeable';
 export * from './selector';

@@ -4,6 +4,7 @@ import { Plus, X } from 'lucide-react';
 import { editor } from 'monaco-editor';
 import Image from 'next/image';
 import React, { RefObject, useRef, useState } from 'react';
+import { validate } from 'uuid';
 
 import { files } from '@/files/client';
 import { cn } from '@/lib/utils';
@@ -22,7 +23,7 @@ interface ImageUploaderProps {
   maxSize?: number;
   accept?: string;
   className?: string;
-  value?: string;
+  value?: string | null;
 }
 
 export function useImageUploaderState(name: string) {
@@ -30,10 +31,16 @@ export function useImageUploaderState(name: string) {
     file: File;
     changed: boolean;
   } | null>(null);
-  const getImageFileId = async (data: FormData) => {
+  const getImageFileId = async (data: FormData, srcName?: string) => {
     if (imageFile?.changed) {
       const { id } = await files.proxy.create(imageFile.file);
       return id;
+    }
+    if (srcName) {
+      const src = data.get(srcName) as string;
+      if (files.outer(src)) {
+        return src;
+      }
     }
     return data.get(name) as string;
   };
@@ -63,13 +70,9 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validate = (value?: string | null) => {
-    if (value && !value.startsWith('http')) {
-      return value;
-    }
-    return null;
-  };
-  const [preview, setPreview] = useState<string | null>(validate(defaultValue));
+  const [preview, setPreview] = useState<string | null>(
+    validate(defaultValue) ? (defaultValue ?? null) : null,
+  );
 
   // 处理文件选择
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

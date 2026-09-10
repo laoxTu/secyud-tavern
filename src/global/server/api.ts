@@ -4,6 +4,8 @@ import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { response } from '@/utils/server/response';
 
+import { ProxyParam } from '..';
+
 import { settings } from '.';
 
 export default {
@@ -14,7 +16,13 @@ export default {
      * 也可对接第三方接口
      */
     POST: route(async (request) => {
-      const { url, method = 'GET', body, headers = {} } = await request.json();
+      const {
+        url,
+        method = 'GET',
+        body,
+        headers = {},
+        ignore,
+      }: ProxyParam = await request.json();
       if (!url) throw new BusinessError('missing url');
 
       // 转发请求
@@ -31,8 +39,12 @@ export default {
       // 获取原始响应的所有信息
       const responseHeaders = new Headers(result.headers);
 
+      const response = ignore
+        ? result.body?.cancel().catch(() => {}) && null
+        : result.body;
+
       // 关键：直接返回原始响应
-      return new NextResponse(result.body, {
+      return new NextResponse(response, {
         status: result.status,
         statusText: result.statusText,
         headers: responseHeaders,
