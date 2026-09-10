@@ -37,6 +37,7 @@ function ModelPropertyContent() {
     models.engines.registry.record(item?.engine),
   );
   const form = useFormRef();
+  const { retry, interval } = useModelSettingState();
 
   if (!item) return null;
 
@@ -61,10 +62,40 @@ function ModelPropertyContent() {
             iterations: parseInt(data.get('iterations') as string),
           }),
         );
+        useModelSettingState.setState({
+          retry: parseInt(data.get('retry') as string),
+          interval: parseInt(data.get('interval') as string),
+        });
         await setItem(item.id);
         success(t('message.update.success'));
       })}
     >
+      <Field>
+        <FieldLabel htmlFor={`model-name`}>{t('default.name')}</FieldLabel>
+        <Input name="name" id={`model-name`} defaultValue={item.name} />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-interval`}>
+          {t('model.retry_interval')}
+        </FieldLabel>
+        <Input
+          name={'interval'}
+          id={`model-interval`}
+          type={'number'}
+          defaultValue={interval}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-retry`}>
+          {t('model.retry_count')}
+        </FieldLabel>
+        <Input
+          name={'retry'}
+          id={`model-retry`}
+          type={'number'}
+          defaultValue={retry}
+        />
+      </Field>
       <Field>
         <FieldLabel htmlFor={`model-name`}>{t('default.name')}</FieldLabel>
         <Input name="name" id={`model-name`} defaultValue={item.name} />

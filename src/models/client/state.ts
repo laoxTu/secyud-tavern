@@ -15,6 +15,8 @@ export const useModelSettingState = create<ModelSettingState>()(
   persist(
     (set) => ({
       model: null,
+      interval: 5,
+      retry: 3,
       setModel: (model: NameValue | null): void => {
         set({ model });
       },

@@ -19,6 +19,16 @@ export interface Model extends Entity, Properties {
 
 export interface ModelSetting {
   model: NameValue | null;
+  /**
+   * 重试间隔，当流式返回超出
+   * 此间隔即会重试，推荐5s
+   */
+  interval: number;
+  /**
+   * 重试最大次数，单次请求失败
+   * 重试的最大次数，推荐2-3次
+   */
+  retry: number;
 }
 
 export interface ModelRequestParam {

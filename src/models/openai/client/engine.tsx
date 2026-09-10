@@ -144,7 +144,7 @@ function Content() {
         <Textarea
           id={`model-extras`}
           name={'extras'}
-          defaultValue={JSON.stringify(config.extras)}
+          defaultValue={config.extras}
           onKeyDown={submitTargetFormOnKey}
         />
       </Field>

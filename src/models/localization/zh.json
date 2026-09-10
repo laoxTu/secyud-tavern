@@ -9,6 +9,8 @@
     }
   },
   "model": {
+    "retry_count": "重试次数",
+    "retry_interval": "重试间隔(s)",
     "api_key": "api key",
     "id": "模型",
     "default": "默认",

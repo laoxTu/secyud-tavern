@@ -15,7 +15,7 @@ import { Model } from '..';
 
 import { engines } from './engine';
 
-import { ConvertContent, models } from '.';
+import { ConvertContent, models, useModelSettingState } from '.';
 
 export interface ModelInjectContext {
   /**
@@ -209,6 +209,10 @@ export const processers = {
     });
   },
   prompt,
+  /**
+   * 这个函数包含了生成的流程规则，非常复杂，包含重试机制，
+   * 流式和非流式判断等。
+   */
   async *generate({
     args,
     signal,
@@ -219,27 +223,42 @@ export const processers = {
     realm: Realm;
   }) {
     const { engine, model, iterations } = modelInfo(realm.model);
+    const setting = useModelSettingState.getState();
+    // 重试最大次数，小于0其实不碍事，但是显示不好看
+    const maxRetry = Math.max(0, setting.retry);
+    // 注意单位换算为毫秒，最低一秒，最高10秒
+    const interval = Math.min(Math.max(setting.interval, 1), 10) * 1000;
+    /**
+     * 先准备输出组，注意一轮对话不止有一个输出
+     * ai的一次请求可能会输出工具调用，调用
+     * 的结果需要返回给ai继续进行调用，除非
+     * ai明确返回stop。
+     * 这里也取设定中的最大迭代次数，做了一个
+     * 限制
+     */
     const outputs: RealmOutput[] = [];
     const history = await realms.history.get(null, realm);
     history.output = history.outputs.length;
     history.outputs.push(outputs);
+
     let iteration = iterations;
+    // 剩余轮次限制
     while (iteration > 0) {
       iteration--;
+      console.debug(`[realm]: iterations ${iteration}`);
       const current = outputs.length > 0;
+      /**
+       * 构造输入上下文，这里的输入上下文应当包含本次的工具调用
+       */
       useRealmState.getState().setRealmInfo({
         title: 'story.input_processing',
         content: '',
       });
-
       const { input } = await prompt({ args, current, realm });
-      const reply = new AbortController();
-      await signal(reply);
-      signals.setAbort(reply.signal, () => {
-        console.debug('[realm]: reset signal');
-        iteration = 0;
-      });
-      console.debug(`[realm]: iterations ${iteration}`);
+
+      /**
+       * 准备单次输出
+       */
       const output: RealmOutput = {
         content: '',
         thought: '',
@@ -247,7 +266,10 @@ export const processers = {
         properties: {},
       };
       outputs.push(output);
+
+      // 输出的属性缓存
       const properties: Record<string, any> = {};
+      // 预备生成函数，以复用
       const generate = async (stream: boolean, delta: any) => {
         const context: ModelResultContext = {
           properties,
@@ -270,32 +292,55 @@ export const processers = {
         return { outputs, output };
       };
 
-      let retry = 3;
+      /**
+       * 设置信号，当外部中断，如用户取消输出时，
+       * 应当中断请求，并将iteration设置为0，
+       * 以退出ai的整体回复
+       */
+      const reply = new AbortController();
+      await signal(reply);
+      signals.setAbort(reply.signal, () => {
+        console.debug('[realm]: reset signal');
+        iteration = 0;
+      });
+      /**
+       * 如果网络错误或者中间间隔太长，可以重试
+       */
+      let retry = maxRetry;
       while (retry > 0) {
+        /**
+         * 这是内部关联信号，因为和外部信号有
+         * 轮次差异，使用关联的方式而不是复用
+         * 外部信号
+         */
         const controller = new AbortController();
         signals.setAbort(reply.signal, (event) => {
           controller.abort((event.target as AbortSignal)?.reason);
         });
+        /**
+         * 这是重试信号的标记，如果已经结束了
+         * 就不用再检查是否需要重试了
+         */
         let finished = false;
         try {
           if (realm.model.stream) {
             /**
              * 通过时间对比进行判断
              * 最新输出时间和当前时间
-             * 差值超过1s，则提出重试
-             * 中断后会自动重试
+             * 差值超过setting.interval s，
+             * 则提出重试中断后会自动重试
              */
             let updateTime = new Date();
             const checkTime = () => {
               setTimeout(() => {
                 if (finished) return;
-                const elapsed = (Date.now() - updateTime.getTime()) / 1000;
-                if (elapsed > 1) {
+                const elapsed = Date.now() - updateTime.getTime();
+                if (elapsed > interval) {
                   controller.abort('retry');
                 } else if (!finished) {
                   checkTime();
                 }
-              }, 1000);
+              }, interval / 2);
             };
             const response = await models.proxy.engine.generate(
               model.id,
@@ -333,7 +378,7 @@ export const processers = {
           ) {
             useRealmState.getState().setRealmInfo({
               title: `realm.retry`,
-              content: `(${4 - retry}/3)`,
+              content: `(${maxRetry + 1 - retry}/${maxRetry})`,
             });
             retry--;
           } else {
