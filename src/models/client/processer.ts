@@ -1,7 +1,7 @@
 import { BusinessError } from '@/interceptors';
 import { isAbortError, isNetworkError } from '@/interceptors/client';
 import { getRegistry, Registerable } from '@/plugins';
-import { SignalBinder, signalUtils, sseUtils } from '@/signal';
+import { SignalBinder, signals, sseUtils } from '@/signal';
 import { realms, useRealmState } from '@/stories/client/realms';
 import {
   Realm,
@@ -235,7 +235,7 @@ export const processers = {
       const { input } = await prompt({ args, current, realm });
       const reply = new AbortController();
       await signal(reply);
-      signalUtils.setAbort(reply.signal, () => {
+      signals.setAbort(reply.signal, () => {
         console.debug('[realm]: reset signal');
         iteration = 0;
       });
@@ -273,7 +273,7 @@ export const processers = {
       let retry = 3;
       while (retry > 0) {
         const controller = new AbortController();
-        signalUtils.setAbort(reply.signal, (event) => {
+        signals.setAbort(reply.signal, (event) => {
           controller.abort((event.target as AbortSignal)?.reason);
         });
         let finished = false;

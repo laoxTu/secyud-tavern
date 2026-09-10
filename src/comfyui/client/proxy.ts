@@ -16,6 +16,12 @@ import { globals } from '@/global/client';
 const cache: Record<string, any> = {};
 
 export const proxy = {
+  /**
+   * 将ComfyUI的API工作流发送给
+   * ComfyUI进行处理
+   * @param prompt ComfyUI 入参
+   * @returns ComfyUI的返回类型
+   */
   async generate(prompt: any) {
     const setting = useComfyUIModelSettingState.getState();
     const body = JSON.stringify({
@@ -25,9 +31,18 @@ export const proxy = {
     return await globals.proxy.fetch('POST', `${setting.url}/prompt`, body);
   },
   model: {
+    /**
+     * 批量导入模型，会根据code进行去重
+     * @param models 模型
+     * @returns 模型的ID对象
+     */
     async import(models: ComfyUIModel[]): Promise<Entity[]> {
       return await post('comfyuis/models/import', models);
     },
+    /**
+     * 后台下载相应的模型到客户端
+     * @param id 模型ID
+     */
     async download(id: string) {
       await post(
         'comfyuis/models/{id}/download',

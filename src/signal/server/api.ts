@@ -1,8 +1,9 @@
 import { v4 } from 'uuid';
 
 import { route } from '@/interceptors/server';
-import { SseEvent, sseRegistry } from '@/signal/server/manager';
 import { response } from '@/utils/server/response';
+
+import { signals, SseEvent } from '.';
 
 export default {
   sse: {
@@ -13,14 +14,14 @@ export default {
     GET: route(async (request) => {
       const id = v4();
       const unregisterEvent = () => {
-        sseRegistry.unregister(id);
+        signals.registry.unregister(id);
       };
       const encoder = new TextEncoder();
       const stream = new ReadableStream({
         start(controller) {
           const event: SseEvent = {
             id,
-            send: (message) => {
+            async send(message) {
               controller.enqueue(
                 encoder.encode(
                   `event: ${message.type}\ndata: ${JSON.stringify(message.data)}\n\n`,
@@ -28,7 +29,10 @@ export default {
               );
             },
           };
-          sseRegistry.register(event);
+          signals.registry.register(event);
+          /**
+           * 断联时清理
+           */
           request.signal.addEventListener('abort', unregisterEvent);
         },
         cancel() {

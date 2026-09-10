@@ -65,15 +65,14 @@ export default {
             const setting = await settings.repository.get<ComfyUIModelSetting>(
               comfyuis.model.setting,
             );
-
+            checker.notNullOrWhitespace(
+              'model.download',
+              model.download,
+              'comfyui',
+            );
             const directory = checker.notNullOrWhitespace(
               'setting.directory',
               setting?.data?.directory,
-              'comfyui',
-            );
-            const download = checker.notNullOrWhitespace(
-              'model.download',
-              model.download,
               'comfyui',
             );
             const path = checker.notNullOrWhitespace(
@@ -96,27 +95,9 @@ export default {
               throw new BusinessError('file is exists.', 'comfyui.file_exists');
             }
 
-            const importer = comfyuis.importers.registry.record(model.importer);
-
-            await task.create(
-              `comfyui_model_download ${download}`,
-              async () => {
-                try {
-                  if (importer) {
-                    console.info(
-                      `[comfyui](download): ${model.path} (${importer.id})`,
-                    );
-                    await importer.download(model, download);
-                  } else {
-                    console.info(`[comfyui](download): ${model.path}`);
-                    await fileUtils.download(download, download);
-                  }
-                } catch (error) {
-                  console.error(`[comfyui](download): `, error);
-                  throw error;
-                }
-              },
-            );
+            await task.create(`comfyui_model_download ${path}`, async () => {
+              await comfyuis.importers.download(model, filename);
+            });
 
             return response.null();
           }),

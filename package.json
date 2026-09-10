@@ -1,13 +1,13 @@
 {
   "name": "secyud-tavern",
-  "version": "1.3.1.1",
+  "version": "1.3.1.2",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 12804",
     "format": "npx prettier --write ./src",
-    "prepare": "npx tsx scripts/pre-build.ts",
+    "prepare": "npx tsx scripts/prepare.ts",
     "start": "next start -p 12804",
     "test": "vitest"
   },

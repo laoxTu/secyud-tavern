@@ -10,6 +10,8 @@ export function element<T extends {}>(
 
 export * from './hooks';
 
+export type ToastType = 'info' | 'success' | 'warning' | 'error';
+
 interface IKeyboardEvent {
   ctrlKey: boolean;
   metaKey: boolean;

@@ -1,3 +1,4 @@
+import { ToastType } from '@/components';
 import { jsonUtils } from '@/utils/json';
 
 export interface SseMessage<T = any> {
@@ -5,7 +6,12 @@ export interface SseMessage<T = any> {
   data: T;
 }
 
-export async function pack(items: AsyncIterable<any>) {
+export interface ToastMessage {
+  type: ToastType;
+  message: string;
+}
+
+async function pack(items: AsyncIterable<any>) {
   return new ReadableStream({
     async start(controller) {
       try {
@@ -27,7 +33,7 @@ export async function pack(items: AsyncIterable<any>) {
  * sse 流解析
  * @param stream
  */
-export async function* read(stream: ReadableStream) {
+async function* read(stream: ReadableStream) {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   try {
@@ -88,6 +94,6 @@ function setAbort(signal: AbortSignal, action: (event: Event) => void) {
   signal.addEventListener('abort', abort);
 }
 
-export const signalUtils = {
+export const signals = {
   setAbort,
 };

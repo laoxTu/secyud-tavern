@@ -60,13 +60,19 @@ function handleError(t: _Translator, err: any) {
     toast.error(err.message, {
       richColors: true,
     });
-  } else if (isNetworkError(err)) {
+  } else if (isNetworkError(err) || isHttpError(err)) {
     // 网络错误 → 静默处理
-    console.error(err);
-  } else if (isHttpError(err)) {
-    // HTTP 错误 → 根据状态码处理
+    toast.error(err.message, {
+      richColors: true,
+    });
     console.error(err);
   } else {
+    /**
+     * 继续抛出意味着页面崩溃，进入notfound
+     */
+    toast.error(err?.message, {
+      richColors: true,
+    });
     throw err;
   }
 }

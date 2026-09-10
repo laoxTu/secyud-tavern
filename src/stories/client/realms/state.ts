@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { signalUtils } from '@/signal';
+import { signals } from '@/signal';
 
 import { realms } from '.';
 
@@ -75,7 +75,7 @@ export const useRealmState = create<RealmState>()(
           return;
         }
         console.debug(`[signal]: set abort`);
-        signalUtils.setAbort(signal, action);
+        signals.setAbort(signal, action);
       },
       realmInfo: { title: 'realm.generating', content: '' },
       setRealmInfo: (realmInfo) => get().generating && set({ realmInfo }),

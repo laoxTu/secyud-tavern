@@ -7,6 +7,7 @@ import { registerClientPlugin } from '@/generated/client-registerer';
 import { Loading } from '@/global/client/loading';
 import { useHandler } from '@/interceptors/client';
 
+let bootstrap: Promise<void> | null = null;
 export function Client({
   children,
 }: Readonly<{
@@ -16,7 +17,7 @@ export function Client({
   const { handler } = useHandler();
   useEffect(() => {
     handler(async () => {
-      await registerClientPlugin();
+      await (bootstrap ??= registerClientPlugin());
       setInitialized(true);
     })();
     // handler 是纯辅助函数，只做 try-catch 包装，不依赖外部状态
