@@ -1,3 +1,5 @@
+export type LorebookRole = 'assistant' | 'user' | 'system' | 'knowledge';
+
 export interface Lorebook<TExpression = any> {
   // 编码，去重用
   code: string;
@@ -13,7 +15,7 @@ export interface Lorebook<TExpression = any> {
   priority: number;
   // 层级，表示插入位置
   layer: number;
-  role: 'assistant' | 'user' | 'system' | 'knowledge';
+  role: LorebookRole;
 }
 
 const defaultEntry: Lorebook = {
