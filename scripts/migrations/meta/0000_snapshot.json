@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1b28f4c1-2ad3-403e-a503-42821240f767",
+  "id": "1059172c-c1be-4ceb-b0c4-9a6b274a2ad2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comfyui_model": {
@@ -97,7 +97,7 @@
         "comfyui_model_code_idx": {
           "name": "comfyui_model_code_idx",
           "columns": [
-            "name"
+            "code"
           ],
           "isUnique": false
         },
@@ -138,8 +138,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "content": {
-          "name": "content",
+        "type": {
+          "name": "type",
           "type": "text",
           "primaryKey": false,
           "notNull": true,

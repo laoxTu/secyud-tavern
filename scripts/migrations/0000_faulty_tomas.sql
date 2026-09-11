@@ -13,13 +13,13 @@ CREATE TABLE `comfyui_model` (
 	`properties` text DEFAULT '{}'
 );
 --> statement-breakpoint
-CREATE INDEX `comfyui_model_code_idx` ON `comfyui_model` (`name`);--> statement-breakpoint
+CREATE INDEX `comfyui_model_code_idx` ON `comfyui_model` (`code`);--> statement-breakpoint
 CREATE INDEX `comfyui_model_name_idx` ON `comfyui_model` (`name`);--> statement-breakpoint
 CREATE INDEX `comfyui_model_type_idx` ON `comfyui_model` (`type`);--> statement-breakpoint
 CREATE TABLE `comfyui_param` (
 	`master_id` text NOT NULL,
 	`sequence` integer NOT NULL,
-	`content` text NOT NULL,
+	`type` text NOT NULL,
 	`name` text NOT NULL,
 	`config` text,
 	PRIMARY KEY(`master_id`, `sequence`),
