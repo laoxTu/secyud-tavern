@@ -5,7 +5,8 @@
     "multiple": "允许多选",
     "selector": "宏选择",
     "show_selector": "显示宏选择",
-    "value": "值"
+    "value": "值",
+    "is_json": "JSON数据"
   },
   "message": {
     "story_enter": {
