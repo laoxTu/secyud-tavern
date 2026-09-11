@@ -25,7 +25,7 @@ export const comfyuiModelSchema = sqliteTable(
     properties: json('properties').default({}),
   },
   (t) => [
-    index(`comfyui_model_code_idx`).on(t.name),
+    index(`comfyui_model_code_idx`).on(t.code),
     index(`comfyui_model_name_idx`).on(t.name),
     index(`comfyui_model_type_idx`).on(t.type),
   ],
@@ -51,7 +51,7 @@ export const comfyuiParamSchema = sqliteTable(
   {
     masterId: foreignKey('master_id', () => comfyuiWorkflowSchema.id).notNull(),
     sequence: integer('sequence').notNull(),
-    type: text('content').notNull(),
+    type: text('type').notNull(),
     name: text('name').notNull(),
     config: json('config'),
   },

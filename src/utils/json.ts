@@ -23,14 +23,12 @@ export function minify(text?: string) {
 }
 
 /**
- * 原地合并JSON对象
- * lft为空则返回rht
- * 同时为空返回空对象
- * 否则返回lft
+ * 原地合并JSON对象，lft为空则返回rht的深度拷贝，
+ * 同时为空返回空对象，否则返回lft
  */
 export function merge(lft: any, rht: any) {
   if (!lft && !rht) return {};
-  if (!lft) return rht;
+  if (!lft) return structuredClone(rht);
 
   const result = lft;
 
