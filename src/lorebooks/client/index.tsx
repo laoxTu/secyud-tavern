@@ -11,7 +11,7 @@ import { eventMatcher } from './matchers/event';
 import { normalMatcher } from './matchers/normal';
 import { variableMatcher } from './matchers/variable';
 import { vectorMatcher } from './matchers/vector';
-import { processer } from './processer';
+import { processer } from './realm';
 
 export type * from './matcher';
 

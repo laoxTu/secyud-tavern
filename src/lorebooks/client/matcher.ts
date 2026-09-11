@@ -9,7 +9,7 @@ import { RealmHistory, RealmMessage, RealmOutput } from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { arrUtils } from '@/utils';
 
-import { LorebookCache } from './processer';
+import { LorebookCache } from './realm';
 
 export interface MatchContext extends Properties {
   history: RealmHistory;

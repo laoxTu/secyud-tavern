@@ -98,17 +98,6 @@ async function create(
   }
 
   /**
-   * 世界书内容也需要转换
-   * 因为它的角色可能是user，ai或system
-   * @param str
-   * @param role
-   * @param type
-   */
-  async function convert(str: string, role: string, type: string) {
-    return await models.convert(converts, { str, role, type });
-  }
-
-  /**
    * 注入世界书
    * @param items
    */
@@ -118,7 +107,12 @@ async function create(
     for (const group of groups) {
       const contents: string[] = [];
       for (const item of group.items) {
-        contents.push(await convert(item.content, group.key, 'output'));
+        const content = await models.convert(converts, item.content, {
+          role: group.key,
+          type: 'output',
+          history: null,
+        });
+        contents.push(content);
       }
       const content = arrUtils.join(contents, '\n\n');
       switch (group.key) {

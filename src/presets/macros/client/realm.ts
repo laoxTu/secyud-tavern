@@ -82,13 +82,16 @@ async function apply(
     ...(properties?.args ?? {}),
     variables: realms.variables(history, false),
   };
+  /**
+   * 世界书也会经过转化
+   */
   const generate = async (str: string) => {
     return await eta.renderStringAsync(str, obj);
   };
   converts.push(generate);
 }
 
-async function cache(realm: Realm) {
+async function init({ realm }: { realm: Realm }) {
   const cache: MacroCache = {
     macros: {},
   };
@@ -137,18 +140,14 @@ async function cache(realm: Realm) {
 export const processer: Processer = {
   id: main.name,
   requires: [regexMain.name],
-  async init({ realm }) {
-    return cache(realm);
-  },
+  init,
   prompt: apply,
 };
 
 export const renderer: Renderer = {
   id: main.name,
   requires: [regexMain.name],
-  async init({ realm }) {
-    return cache(realm);
-  },
+  init,
   output: apply,
   stream: apply,
 };
