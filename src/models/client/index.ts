@@ -4,7 +4,7 @@ import { anthropics } from '@/models/anthropic/client';
 import { proxy } from '@/models/client/proxy';
 import { deepseeks } from '@/models/deepseek/client';
 import { openais } from '@/models/openai/client';
-import { Realm } from '@/stories';
+import { Realm, RealmHistory } from '@/stories';
 import { realms } from '@/stories/client/realms';
 
 import { models as main } from '..';
@@ -18,6 +18,12 @@ export type * from './engine';
 export type * from './processer';
 export * from './state';
 
+interface ConvertContext {
+  role: string;
+  type: string;
+  history: RealmHistory | null;
+}
+
 /**
  * 传递message的处理委托，
  * 用于批量替换或更改文字
@@ -27,25 +33,17 @@ export * from './state';
  */
 export type ConvertContent = (
   text: string,
-  role: string,
-  type: string,
+  ctx: ConvertContext,
 ) => Promise<string>;
 
 async function convert(
   converts: ConvertContent[],
-  {
-    str,
-    role,
-    type,
-  }: {
-    str: string;
-    role: string;
-    type: string;
-  },
+  text: string,
+  ctx: ConvertContext,
 ) {
-  let res = str;
+  let res = text;
   for (const convert of converts) {
-    res = await convert(res, role, type);
+    res = await convert(res, ctx);
   }
   return res.trim();
 }

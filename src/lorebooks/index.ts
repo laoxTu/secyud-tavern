@@ -1,3 +1,6 @@
+/**
+ * knowledge 为知识，意思是通过工具调用的方式注入。
+ */
 export type LorebookRole = 'assistant' | 'user' | 'system' | 'knowledge';
 
 export interface Lorebook<TExpression = any> {

@@ -1,7 +1,7 @@
 'use client';
 import { NameValue } from '@/database';
 import { BusinessError } from '@/interceptors';
-import { models } from '@/models/client';
+import { ConvertContent, models } from '@/models/client';
 import { Realm, RealmHistory } from '@/stories';
 import { stories } from '@/stories/client';
 import { arrUtils, jsonUtils } from '@/utils';
@@ -325,21 +325,27 @@ export const realms = {
     variables(history: RealmHistory) {
       postMessage('variables', variables(history));
     },
-    async content(
-      history: RealmHistory,
-      handler: (str: string, role: string, type: string) => Promise<string>,
-    ) {
+    async content(history: RealmHistory, handler: ConvertContent) {
       const messages = outputs(history) ?? [];
       const res = {
         inputs: await Promise.all(
           history.prompts
             .filter((u) => u.content)
-            .map((u) => handler(u.content, 'user', 'input')),
+            .map((u) =>
+              handler(u.content, {
+                role: 'user',
+                type: 'input',
+                history,
+              }),
+            ),
         ),
         output: await handler(
           arrUtils.join(messages, '\n', (u) => u.content).trim(),
-          'assistant',
-          'output',
+          {
+            role: 'assistant',
+            type: 'output',
+            history,
+          },
         ),
         thought: arrUtils.join(messages, '\n', (u) => u.thought).trim(),
       };

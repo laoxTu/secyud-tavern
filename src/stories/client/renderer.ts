@@ -54,8 +54,8 @@ export const renderers = {
     await registry.use(async (p) => {
       await p.output?.(context, realms.cache(realm, p.id));
     });
-    await realms.message.content(history, async (str, type, role) =>
-      models.convert(context.converts, { str, type, role }),
+    await realms.message.content(history, async (text, ctx) =>
+      models.convert(context.converts, text, ctx),
     );
     realms.message.variables(history);
   },
@@ -69,8 +69,8 @@ export const renderers = {
     await registry.use(async (p) => {
       await p.stream?.(context, realms.cache(realm, p.id));
     });
-    await realms.message.content(history, async (str, type, role) =>
-      models.convert(context.converts, { str, type, role }),
+    await realms.message.content(history, async (text, ctx) =>
+      models.convert(context.converts, text, ctx),
     );
   },
 };
