@@ -351,10 +351,12 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
       node: data.get('node') as string,
       value: Array.from(
         { length: parseInt(data.get(`count_${sequence}`) as string) },
-        () => ({
-          lora: combobox.get(data, `lora_${sequence}`),
-          strength: parseFloat(data.get(`lora_strength_${sequence}`) as string),
-          on: !!data.get(`lora_on_${sequence}`),
+        (_, i) => ({
+          lora: combobox.get(data, `lora_${sequence}_${i}`),
+          strength: parseFloat(
+            data.get(`lora_strength_${sequence}_${i}`) as string,
+          ),
+          on: !!data.get(`lora_on_${sequence}_${i}`),
         }),
       ),
     };
@@ -368,9 +370,11 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
       if (i < count) {
         inputs[`lora_${i + 1}`] = {
           // value 是 id， name才是path
-          lora: combobox.get(data, `lora_${sequence}`).name,
-          strength: parseFloat(data.get(`lora_strength_${sequence}`) as string),
-          on: !!data.get(`lora_on_${sequence}`),
+          lora: combobox.get(data, `lora_${sequence}_${i}`).name,
+          strength: parseFloat(
+            data.get(`lora_strength_${sequence}_${i}`) as string,
+          ),
+          on: !!data.get(`lora_on_${sequence}_${i}`),
         };
       } else {
         delete inputs[`lora_${i + 1}`];
