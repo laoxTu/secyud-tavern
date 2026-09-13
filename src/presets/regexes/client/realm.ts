@@ -7,12 +7,12 @@ import { Realm } from '@/stories';
 import { Renderer } from '@/stories/client/renderer';
 
 export interface RegexCache {
-  prompts: PresetItem<Regex>[];
+  regexes: PresetItem<Regex>[];
 }
 
 async function apply(
   { converts }: { converts: ConvertContent[] },
-  cache: RegexRealmCache,
+  cache: RegexCache,
 ) {
   /**
    * 只有工具调用不会被转化，这里渲染其实不会有工具调用，也许可以去掉
@@ -20,7 +20,7 @@ async function apply(
   const generate: ConvertContent = async (text, { role }) => {
     if (role === 'tool') return text;
     if (!text || text == '') return '';
-    for (const { pattern, replacement } of cache.renders) {
+    for (const { pattern, replacement } of cache.regexes) {
       text = text.replace(pattern, replacement);
     }
     return text;
@@ -30,7 +30,7 @@ async function apply(
 
 async function init({ realm }: { realm: Realm }) {
   const cache: RegexCache = {
-    prompts: [],
+    regexes: [],
   };
   await utils.forEachItemsList<PresetItem<Regex>, Preset>(
     realm.presets,
@@ -39,7 +39,7 @@ async function init({ realm }: { realm: Realm }) {
       const { disabled, target } = entry;
       if (disabled) return;
       if (target == 'both' || target == 'input') {
-        cache.prompts.push(entry);
+        cache.regexes.push(entry);
       }
     },
   );
@@ -51,10 +51,6 @@ export const processer: Processer = {
   init,
   prompt: apply,
 };
-
-export interface RegexRealmCache {
-  renders: PresetItem<Regex>[];
-}
 
 export const renderer: Renderer = {
   id: regexes.name,

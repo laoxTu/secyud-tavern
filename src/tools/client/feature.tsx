@@ -80,4 +80,5 @@ function Component() {
 export const feature: Feature = {
   id: main.name,
   component: Component,
+  sequence: 100,
 };

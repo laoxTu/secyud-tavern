@@ -173,6 +173,7 @@ export function FeatureContent() {
 const feature: Feature = {
   component: FeatureContent,
   id: main.name,
+  sequence: 10,
 };
 
 const storyTab: StoryTab = {
