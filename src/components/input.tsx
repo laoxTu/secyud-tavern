@@ -71,7 +71,7 @@ export function ImageUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [preview, setPreview] = useState<string | null>(
-    validate(defaultValue) ? (defaultValue ?? null) : null,
+    validate(defaultValue) ? files.url(defaultValue) : null,
   );
 
   // 处理文件选择

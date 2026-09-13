@@ -28,6 +28,8 @@ import {
   useModelState,
 } from '@/models/client';
 
+import { ModelProperty } from '..';
+
 function ModelPropertyContent() {
   const t = useTranslations();
   const { handler, success } = useHandler();
@@ -36,7 +38,13 @@ function ModelPropertyContent() {
     models.engines.registry.record(item?.engine),
   );
   const form = useFormRef();
-  const { retry, interval } = useModelSettingState();
+
+  if (!item) return null;
+
+  const properties: ModelProperty = item?.properties ?? {
+    retry: { max: 3, interval: 5 },
+  };
+  const { max = 3, interval = 5 } = properties.retry ?? {};
 
   return (
     <UpdateForm
@@ -48,10 +56,6 @@ function ModelPropertyContent() {
             'error.model.engine_required',
           );
         const key = data.get('api_key') as string | undefined;
-        useModelSettingState.setState({
-          retry: parseInt(data.get('retry') as string),
-          interval: parseInt(data.get('interval') as string),
-        });
         if (item) {
           await models.proxy.update(
             item.id,
@@ -62,6 +66,13 @@ function ModelPropertyContent() {
               stream: !!data.get('stream'),
               key: item.key === key || !key ? undefined : key,
               iterations: parseInt(data.get('iterations') as string),
+              properties: {
+                ...properties,
+                retry: {
+                  max: parseInt(data.get('retry_max') as string),
+                  interval: parseInt(data.get('interval') as string),
+                },
+              },
             }),
           );
           await setItem(item.id);
@@ -70,103 +81,93 @@ function ModelPropertyContent() {
       })}
     >
       <Field>
+        <FieldLabel htmlFor={`model-name`}>{t('default.name')}</FieldLabel>
+        <Input name="name" id={`model-name`} defaultValue={item.name} />
+      </Field>
+      <Field>
         <FieldLabel htmlFor={`model-interval`}>
           {t('model.retry_interval')}
         </FieldLabel>
         <Input
           name={'interval'}
+          min={1}
+          max={10}
+          step={0.5}
           id={`model-interval`}
           type={'number'}
           defaultValue={interval}
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor={`model-retry`}>
-          {t('model.retry_count')}
-        </FieldLabel>
+        <FieldLabel htmlFor={`model-retry`}>{t('model.retry_max')}</FieldLabel>
         <Input
           name={'retry'}
           id={`model-retry`}
+          min={0}
+          max={10}
+          step={1}
           type={'number'}
-          defaultValue={retry}
+          defaultValue={max}
         />
       </Field>
-      {item && (
-        <>
-          <Field>
-            <FieldLabel htmlFor={`model-name`}>{t('default.name')}</FieldLabel>
-            <Input name="name" id={`model-name`} defaultValue={item.name} />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-name`}>{t('default.name')}</FieldLabel>
-            <Input name="name" id={`model-name`} defaultValue={item.name} />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-iterations`}>
-              {t('model.iterations')}
-            </FieldLabel>
-            <Input
-              name="iterations"
-              id={`model-iterations`}
-              type="number"
-              min={2}
-              max={100}
-              step={1}
-              defaultValue={item.iterations}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-stream`}>
-              {t(`model.stream`)}
-            </FieldLabel>
-            <FieldContent>
-              <Checkbox
-                id={`model-stream`}
-                name={'stream'}
-                defaultChecked={item.stream}
-              />
-            </FieldContent>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-builder`}>
-              {t(`model.builder`)}
-            </FieldLabel>
-            <Selector
-              id={`model-builder`}
-              name={'builder'}
-              items={['default', 'layered']}
-              value={item.builder}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-provider`}>
-              {t(`model.provider`)}
-            </FieldLabel>
-            <Selector
-              id={`model-provider`}
-              items={models.engines.registry.sorted()}
-              name={'provider'}
-              value={engine}
-              onValueChange={setEngine}
-              valueAccessor={(u) => u.id}
-              labelAccessor={(u) => t(`model.provider_${u.id}`)}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor={`model-api_key`}>
-              {t(`model.api_key`)}
-            </FieldLabel>
-            <Input
-              id={`model-api_key`}
-              name={'api_key'}
-              type={'password'}
-              autoComplete={'off'}
-              defaultValue={item?.key}
-            />
-          </Field>
-          {element(engine?.configComponent)}{' '}
-        </>
-      )}
+      <Field>
+        <FieldLabel htmlFor={`model-iterations`}>
+          {t('model.iterations')}
+        </FieldLabel>
+        <Input
+          name="iterations"
+          id={`model-iterations`}
+          type="number"
+          min={2}
+          max={100}
+          step={1}
+          defaultValue={item.iterations}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-stream`}>{t(`model.stream`)}</FieldLabel>
+        <FieldContent>
+          <Checkbox
+            id={`model-stream`}
+            name={'stream'}
+            defaultChecked={item.stream}
+          />
+        </FieldContent>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-builder`}>{t(`model.builder`)}</FieldLabel>
+        <Selector
+          id={`model-builder`}
+          name={'builder'}
+          items={['default', 'layered']}
+          value={item.builder}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-provider`}>
+          {t(`model.provider`)}
+        </FieldLabel>
+        <Selector
+          id={`model-provider`}
+          items={models.engines.registry.sorted()}
+          name={'provider'}
+          value={engine}
+          onValueChange={setEngine}
+          valueAccessor={(u) => u.id}
+          labelAccessor={(u) => t(`model.provider_${u.id}`)}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-api_key`}>{t(`model.api_key`)}</FieldLabel>
+        <Input
+          id={`model-api_key`}
+          name={'api_key'}
+          type={'password'}
+          autoComplete={'off'}
+          defaultValue={item?.key}
+        />
+      </Field>
+      {element(engine?.configComponent)}{' '}
     </UpdateForm>
   );
 }

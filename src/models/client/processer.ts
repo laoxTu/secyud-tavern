@@ -15,7 +15,7 @@ import { Model } from '..';
 
 import { engines } from './engine';
 
-import { ConvertContent, models, useModelSettingState } from '.';
+import { ConvertContent, models } from '.';
 
 export interface ModelInjectContext {
   /**
@@ -223,11 +223,8 @@ export const processers = {
     realm: Realm;
   }) {
     const { engine, model, iterations } = modelInfo(realm.model);
-    const setting = useModelSettingState.getState();
-    // 重试最大次数，小于0其实不碍事，但是显示不好看
-    const maxRetry = Math.max(0, setting.retry);
-    // 注意单位换算为毫秒，最低一秒，最高10秒
-    const interval = Math.min(Math.max(setting.interval, 1), 10) * 1000;
+    // 重试最大次数
+    const { max: maxRetry = 3, interval = 5 } = model.properties?.retry ?? {};
     /**
      * 先准备输出组，注意一轮对话不止有一个输出
      * ai的一次请求可能会输出工具调用，调用
@@ -327,7 +324,7 @@ export const processers = {
             /**
              * 通过时间对比进行判断
              * 最新输出时间和当前时间
-             * 差值超过setting.interval s，
+             * 差值超过interval s，
              * 则提出重试中断后会自动重试
              */
             let updateTime = new Date();
@@ -335,12 +332,12 @@ export const processers = {
               setTimeout(() => {
                 if (finished) return;
                 const elapsed = Date.now() - updateTime.getTime();
-                if (elapsed > interval) {
+                if (elapsed > interval * 1000) {
                   controller.abort('retry');
                 } else if (!finished) {
                   checkTime();
                 }
-              }, interval / 2);
+              }, interval * 500);
             };
             const response = await models.proxy.engine.generate(
               model.id,

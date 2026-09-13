@@ -5,11 +5,12 @@
   },
   "error": {
     "model": {
-      "engine_required": "需要选择供应者"
+      "engine_required": "需要选择供应者",
+      "default_required": "需要设置默认的模型"
     }
   },
   "model": {
-    "retry_count": "重试次数",
+    "retry_max": "最大重试次数",
     "retry_interval": "重试间隔(s)",
     "api_key": "api key",
     "id": "模型",

@@ -15,20 +15,33 @@ export interface Model extends Entity, Properties {
   // api key secret
   key?: string;
   iv?: Buffer;
+  properties?: Record<string, any> & ModelProperty;
+}
+/**
+ * 这里把设置放到动态模型设置
+ * 不增加字段了
+ * 而且区段使用分段
+ */
+export interface ModelProperty {
+  retry: {
+    /**
+     * 重试间隔，当流式返回超出
+     * 此间隔即会重试，推荐5s
+     */
+    interval: number;
+    /**
+     * 重试最大次数，单次请求失败
+     * 重试的最大次数，推荐2-3次
+     */
+    max: number;
+  };
 }
 
 export interface ModelSetting {
+  /**
+   * 默认模型设置
+   */
   model: NameValue | null;
-  /**
-   * 重试间隔，当流式返回超出
-   * 此间隔即会重试，推荐5s
-   */
-  interval: number;
-  /**
-   * 重试最大次数，单次请求失败
-   * 重试的最大次数，推荐2-3次
-   */
-  retry: number;
 }
 
 export interface ModelRequestParam {
