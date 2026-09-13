@@ -56,7 +56,7 @@ export default {
       GET: route(async (_, records) => {
         const { id } = await records.params;
         const setting = await settings.repository.get(id);
-        return response.json(setting?.data);
+        return response.json(setting?.data ?? {});
       }),
       PUT: route(async (request, records) => {
         const { id } = await records.params;
