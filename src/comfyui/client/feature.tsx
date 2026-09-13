@@ -106,4 +106,5 @@ function Generator() {
 export const feature: Feature = {
   id: main.name,
   component: Generator,
+  sequence: 10,
 };
