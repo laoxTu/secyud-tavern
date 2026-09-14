@@ -31,6 +31,7 @@ export interface MacroCacheItem {
 
 export interface MacroCache {
   macros: Record<string, MacroCacheItem>;
+  multiples: Record<string, MacroItem[]>;
 }
 
 async function apply(
@@ -96,6 +97,7 @@ async function apply(
 async function init({ realm }: { realm: Realm }) {
   const cache: MacroCache = {
     macros: {},
+    multiples: {},
   };
   const { selections, checkItems } = macros.property(realm);
   await utils.forEachItemsList<PresetItem<Macro>, Preset>(
@@ -129,7 +131,7 @@ async function init({ realm }: { realm: Realm }) {
             : selections[key] === code;
         },
         set disabled(b: boolean) {
-          if (!multiple) {
+          if (multiple) {
             checkItems[code] = b;
           }
         },
@@ -138,7 +140,7 @@ async function init({ realm }: { realm: Realm }) {
        * 单选规则相对简单，就是key中会选择一个code
        * 并且后面的会覆盖前面的
        */
-      const cacheItem = (cache.macros[key] ??= {
+      const cacheItem = utils.get<MacroCacheItem>(cache.macros, key, () => ({
         key,
         multiples: [],
         singles: {},
@@ -149,10 +151,16 @@ async function init({ realm }: { realm: Realm }) {
         set select(value: string) {
           selections[key] = value;
         },
-      });
+      }));
       if (!hidden) cacheItem.hidden = false;
       if (multiple) {
         cacheItem.multiples.push(item);
+        const list = utils.get<MacroItem[]>(
+          cache.multiples,
+          item.code,
+          () => [],
+        );
+        list.push(item);
       } else {
         cacheItem.singles[code] = item;
         if (!item.disabled || !cacheItem.select) cacheItem.select = code;

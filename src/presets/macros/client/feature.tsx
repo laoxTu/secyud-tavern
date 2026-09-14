@@ -1,4 +1,4 @@
-import { ListIcon } from 'lucide-react';
+import { CircleAlertIcon, ListIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -10,6 +10,7 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
+  IconTooltip,
   RadioGroup,
   RadioGroupItem,
   Separator,
@@ -33,6 +34,7 @@ function Component() {
   const { realm } = realms;
 
   const { selections } = macros.property(realm);
+  const cache = macros.cache(realm);
   const changeSelection = handler(
     async (item: MacroCacheItem, name: string) => {
       const entry = item.singles[name];
@@ -63,75 +65,90 @@ function Component() {
       info={dialogs.info(t, 'macro.selector')}
     >
       <div className={'overflow-auto p-1 flex-1'}>
-        {Object.values(macros.cache(realm).macros)
+        {Object.values(cache.macros)
           .filter((u) => !u.hidden)
-          .map((item, i) => (
-            <FieldSet key={item.key ?? i} className="border p-1">
-              <FieldLegend className="text-sm font-semibold">
-                {item.key}
-              </FieldLegend>
-              <RadioGroup
-                value={item.select}
-                onValueChange={(id) => changeSelection(item, id)}
-                className="flex flex-col"
-              >
-                {arrUtils.intersperse(
-                  Object.values(item.singles),
-                  (_, i) => (
-                    <Separator key={`s-${i}`} />
-                  ),
-                  (t, i) => (
-                    <Field key={i}>
-                      <FieldContent key={key} className="flex-row">
-                        <RadioGroupItem
-                          id={`macro-r-${item.key}-${i}`}
-                          value={t.code}
-                        />
-                        <FieldLabel
-                          htmlFor={`macro-r-${item.key}-${i}`}
-                          className="m-auto flex-1"
-                        >
-                          {t.name}
-                        </FieldLabel>
-                      </FieldContent>
-                      <FieldDescription>
-                        <TextTooltip text={t.value} />
-                      </FieldDescription>
-                    </Field>
-                  ),
+          .map((item, i) => {
+            const singles = Object.values(item.singles);
+            return (
+              <FieldSet key={item.key ?? i} className="border p-1">
+                <FieldLegend className="text-sm font-semibold">
+                  {item.key}
+                </FieldLegend>
+                {!!singles.length && (
+                  <RadioGroup
+                    value={item.select}
+                    onValueChange={(id) => changeSelection(item, id)}
+                    className="flex flex-col"
+                  >
+                    {arrUtils.intersperse(
+                      Object.values(item.singles),
+                      (_, i) => (
+                        <Separator key={`s-${i}`} />
+                      ),
+                      (t, i) => (
+                        <Field key={i}>
+                          <FieldContent key={key} className="flex-row">
+                            <RadioGroupItem
+                              id={`macro-r-${item.key}-${i}`}
+                              value={t.code}
+                            />
+                            <FieldLabel
+                              htmlFor={`macro-r-${item.key}-${i}`}
+                              className="m-auto flex-1"
+                            >
+                              {t.name}
+                            </FieldLabel>
+                          </FieldContent>
+                          <FieldDescription className={'pl-4'}>
+                            <TextTooltip text={t.value} />
+                          </FieldDescription>
+                        </Field>
+                      ),
+                    )}
+                  </RadioGroup>
                 )}
-              </RadioGroup>
-              {arrUtils.intersperse(
-                item.multiples,
-                (_, i) => (
-                  <Separator key={`s-${i}`} />
-                ),
-                (t, i) => (
-                  <Field key={i}>
-                    <FieldContent
-                      key={key}
-                      className="flex-row hover:bg-primary-foreground"
-                    >
-                      <Checkbox
-                        id={`macro-c-${item.key}-${i}`}
-                        checked={!t.disabled}
-                        onCheckedChange={(b) => changeCheckItem(t, b)}
-                      />
-                      <FieldLabel
-                        htmlFor={`macro-c-${item.key}-${i}`}
-                        className="m-auto flex-1"
-                      >
-                        {t.name}
-                      </FieldLabel>
-                    </FieldContent>
-                    <FieldDescription>
-                      <TextTooltip text={t.value} />
-                    </FieldDescription>
-                  </Field>
-                ),
-              )}
-            </FieldSet>
-          ))}
+                {!!item.multiples.length &&
+                  arrUtils.intersperse(
+                    item.multiples,
+                    (_, i) => <Separator key={`s-${i}`} />,
+                    (t, i) => {
+                      const list = cache.multiples[t.code];
+                      return (
+                        <Field key={i}>
+                          <FieldContent
+                            key={key}
+                            className="flex-row hover:bg-primary-foreground"
+                          >
+                            <Checkbox
+                              className={'m-auto'}
+                              id={`macro-c-${item.key}-${i}`}
+                              checked={!t.disabled}
+                              onCheckedChange={(b) => changeCheckItem(t, b)}
+                            />
+                            <FieldLabel
+                              htmlFor={`macro-c-${item.key}-${i}`}
+                              className={'m-auto flex-1'}
+                            >
+                              {t.name}
+                            </FieldLabel>
+                            {list && list.length > 1 && (
+                              <IconTooltip
+                                label={arrUtils.join(list, '\n', (e) => e.name)}
+                              >
+                                <CircleAlertIcon />
+                              </IconTooltip>
+                            )}
+                          </FieldContent>
+                          <FieldDescription className={'pl-4'}>
+                            <TextTooltip text={t.value} />
+                          </FieldDescription>
+                        </Field>
+                      );
+                    },
+                  )}
+              </FieldSet>
+            );
+          })}
       </div>
     </TooltipDialog>
   );
