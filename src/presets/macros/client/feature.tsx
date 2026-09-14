@@ -32,7 +32,7 @@ function Component() {
   const { key, refreshKey } = useRefresh();
   const { realm } = realms;
 
-  const { checkItems, selections } = macros.property(realm);
+  const { selections } = macros.property(realm);
   const changeSelection = handler(
     async (item: MacroCacheItem, name: string) => {
       const entry = item.singles[name];
@@ -44,7 +44,6 @@ function Component() {
   const changeCheckItem = handler(
     async (entry: PresetItem<Macro>, checked: boolean) => {
       entry.disabled = !checked;
-      checkItems[entry.name] = checked;
       refreshKey();
     },
   );
@@ -86,7 +85,7 @@ function Component() {
                       <FieldContent key={key} className="flex-row">
                         <RadioGroupItem
                           id={`macro-r-${item.key}-${i}`}
-                          value={t.name}
+                          value={t.code}
                         />
                         <FieldLabel
                           htmlFor={`macro-r-${item.key}-${i}`}
