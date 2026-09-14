@@ -44,6 +44,7 @@ import {
   TooltipDialog,
   useImageUploaderState,
 } from '@/components';
+import { globals } from '@/global/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 
@@ -138,7 +139,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
                 name={'cover'}
                 id={`comfyui_model-cover-${item.id}`}
                 className={'max-w-52'}
-                accept={'image/png'}
+                accept={globals.accessImageType}
                 value={item.cover}
                 onChange={onFileChange}
               />

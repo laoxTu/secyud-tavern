@@ -22,6 +22,7 @@ import {
   TooltipDialog,
   useImageUploaderState,
 } from '@/components';
+import { globals } from '@/global/client';
 import { useHandler } from '@/interceptors/client';
 import { StoryEntry } from '@/stories';
 import {
@@ -119,7 +120,7 @@ function ContentItem({
                   name={'image'}
                   id={`story-image-${entryId}`}
                   className={'max-w-52'}
-                  accept={'image/png'}
+                  accept={globals.accessImageType}
                   value={image}
                   onChange={onFileChange}
                 />

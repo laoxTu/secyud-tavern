@@ -4,8 +4,11 @@ import { realms } from '@/stories/client/realms';
 import { ToolItem, ToolProvider } from '@/tools/client';
 import { extract, Operation, validate } from '@/utils';
 
+import { variables as main } from '..';
+
 export const variables: ToolProvider = {
-  id: 'variable',
+  ...main,
+  id: main.name,
   async create(entry, realm) {
     return [getVariable(realm), setVariable(realm), delVariable(realm)];
   },

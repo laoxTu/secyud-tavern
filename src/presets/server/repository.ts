@@ -117,7 +117,10 @@ async function list(request: DataRequest<PresetRequestParam>) {
   );
 }
 
-async function listWithRequires(codes: string[]) {
+async function listWithRequires(
+  codes: string[],
+  options?: PresetRequestOptions,
+) {
   const presetList: Preset[] = [];
   const visited: Set<string> = new Set<string>();
   const queue = [...codes];
@@ -133,7 +136,7 @@ async function listWithRequires(codes: string[]) {
       .where(eq(presetSchema.id, code))
       .get()) as Preset | undefined;
     if (!preset) continue;
-    await fillPreset(preset, { entities: true });
+    await fillPreset(preset, options);
     presetList.push(preset);
 
     for (const require of preset.requires) {
