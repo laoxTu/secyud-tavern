@@ -46,9 +46,11 @@ async function apply(
   cache: MacroCache,
 ) {
   const variables: Record<string, any> = {};
-  for (const macro of Object.values(cache.macros)) {
-    const entries = macro.multiples.filter((v) => !v.disabled);
-    if (macro.select) entries.unshift(macro.singles[macro.select]);
+  for (const { select, multiples, singles, key } of Object.values(
+    cache.macros,
+  )) {
+    const entries = multiples.filter((v) => !v.disabled);
+    if (select) entries.unshift(singles[select]);
     /**
      * 规则，如果有json，则合并所有json，
      * 并将字符串拼接到json中的toString()中。
@@ -68,7 +70,7 @@ async function apply(
      * 使用toString()方法，让对象
      * 可以直接作为内插字符串
      */
-    variables[macro.key] = json
+    variables[key] = json
       ? {
           ...json,
           toString() {
@@ -101,36 +103,59 @@ async function init({ realm }: { realm: Realm }) {
     macros.plural,
     async (entry, model) => {
       entry.id = model.id;
-      const { key, hidden, multiple, name, json, value } = entry;
+      const { key, hidden, multiple, code, json, value, disabled } = entry;
       /**
        * json 值可以直接作为json访问
        * 使用content，因为value可能
        * 被其他地方访问，例如宏选择器
        */
+      /**
+       * 复选的规则很复杂，
+       * 1，相同的code，不同的key共享一个禁用
+       * 2，不同的code，相同的key是正常情况
+       * 3，相同的code，相同的key，会追加且共享
+       * 这是为多preset设计的，可以继承，共享
+       * 同样，tools会共用池子，也可以享受相同code
+       * 设置不同的key，以添加不同的宏
+       * 这里暂时没有好的界面去控制，先这样
+       */
       const item: MacroItem = {
         ...entry,
         id: model.id,
         content: json ? jsonUtils.parse(value) : value,
+        get disabled() {
+          return multiple
+            ? (checkItems[code] ?? disabled)
+            : selections[key] === code;
+        },
+        set disabled(b: boolean) {
+          if (!multiple) {
+            checkItems[code] = b;
+          }
+        },
       };
+      /**
+       * 单选规则相对简单，就是key中会选择一个code
+       * 并且后面的会覆盖前面的
+       */
       const cacheItem = (cache.macros[key] ??= {
-        key: key,
+        key,
         multiples: [],
         singles: {},
         hidden: true,
+        get select() {
+          return selections[key] ?? '';
+        },
+        set select(value: string) {
+          selections[key] = value;
+        },
       });
       if (!hidden) cacheItem.hidden = false;
       if (multiple) {
         cacheItem.multiples.push(item);
-        const checked = checkItems[name];
-        if (checked !== undefined) item.disabled = !checked;
       } else {
-        cacheItem.singles[name] = item;
-        if (
-          (!item.disabled && !cacheItem.select) ||
-          // 防止缓存中的值没有对应的item，校验后添加
-          selections[cacheItem.key] === name
-        )
-          cacheItem.select = name;
+        cacheItem.singles[code] = item;
+        if (!item.disabled || !cacheItem.select) cacheItem.select = code;
       }
     },
   );

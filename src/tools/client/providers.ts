@@ -10,7 +10,6 @@ export interface ToolItem<TArgs = any> {
   name: string;
   description: string;
   parameters: JsonSchema;
-  disabled?: boolean;
   /**
    * 调用工具，获取返回信息
    */

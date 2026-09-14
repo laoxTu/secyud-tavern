@@ -1,5 +1,7 @@
 export interface Tool<T = any> {
   type: string;
+  // 绑定同名宏，宏的状态会和工具同步
+  macro?: boolean;
   config: T;
 }
 
@@ -17,6 +19,7 @@ export interface ToolCall {
 
 const defaultValue: Tool = {
   type: 'variable',
+  macro: false,
   config: {},
 };
 

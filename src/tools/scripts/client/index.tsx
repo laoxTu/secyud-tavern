@@ -94,9 +94,9 @@ export function Editor({
         <FieldLabel htmlFor={`${entryId}-code`}>{t('default.code')}</FieldLabel>
         <FieldContent>
           <Input
-            name="code"
-            pattern={checker.code}
             id={`${entryId}-code`}
+            name={'code'}
+            pattern={checker.code}
             defaultValue={config.code}
           />
         </FieldContent>

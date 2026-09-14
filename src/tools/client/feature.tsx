@@ -27,11 +27,9 @@ function Component() {
   const { key, refreshKey } = useRefresh();
 
   const { realm } = realms;
-  const { items } = tools.property(realm);
   const changeCheckItem = handler(
     async (entry: PresetItem<Macro>, checked: boolean) => {
       entry.disabled = !checked;
-      items[entry.name] = checked;
       refreshKey();
     },
   );
