@@ -108,6 +108,16 @@ async function forEachItemsList<TEntry extends EntryItem, T extends Entries>(
   }
 }
 
+function get<T = any>(
+  properties?: Record<string, any>,
+  key?: string,
+): T | undefined;
+// 重载签名2：有 init，返回 T（一定存在）
+function get<T = any>(
+  properties: Record<string, any>,
+  key: string,
+  init: () => T,
+): T;
 /**
  * 获取item的属性
  */
@@ -146,7 +156,7 @@ function getProperty<T = any>(
 ): T | undefined {
   if (!item || !key) return undefined;
   item.properties ??= {};
-  return get(item.properties, key, init);
+  return get(item.properties, key, init!);
 }
 
 /**
