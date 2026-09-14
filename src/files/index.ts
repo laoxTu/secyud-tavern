@@ -25,7 +25,7 @@ export const files = {
     if (!id) return '';
 
     if (validate(id)) {
-      return `/api/files/resource/${id}`;
+      return `/api/files/${id}/resource`;
     }
     try {
       new URL(id);

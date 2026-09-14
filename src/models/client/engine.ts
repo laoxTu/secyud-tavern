@@ -105,11 +105,11 @@ export const engines = {
       const outputs = realms.outputs(history);
       if (!outputs) return;
       for (const output of outputs) {
-        const content = await generateContent(
-          output.content,
-          'assistant',
-          'output',
-        );
+        const content = await models.convert(converts, output.content, {
+          role: 'assistant',
+          type: 'output',
+          history,
+        });
         // 检验工具是否触发
         await tools.calling(realm, output.callings);
         if (output.callings?.length) {
@@ -123,12 +123,12 @@ export const engines = {
     async function generateInput(history: RealmHistory) {
       if (!history.prompts.length) return;
       const input = arrUtils.join(history.prompts, '\n', (u) => u.content);
-      const content = await generateContent(input, 'user', 'input');
+      const content = await models.convert(converts, input, {
+        role: 'user',
+        type: 'input',
+        history,
+      });
       if (content) prompt(content);
-    }
-
-    async function generateContent(str: string, role: string, type: string) {
-      return await models.convert(converts, { str, role, type });
     }
   },
 };

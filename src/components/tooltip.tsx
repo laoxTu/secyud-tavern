@@ -42,10 +42,12 @@ interface IconTooltipProps {
   label?: React.ReactNode;
   disabled?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
 export function IconTooltip({
   children,
+  className,
   label,
   text,
   onClick,
@@ -56,6 +58,7 @@ export function IconTooltip({
     <Tooltip>
       <TooltipTrigger
         onClick={onClick}
+        className={className}
         render={<Button disabled={disabled} variant={'ghost'} />}
       >
         {children}

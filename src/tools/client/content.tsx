@@ -4,8 +4,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import {
+  Checkbox,
   element,
   Field,
+  FieldContent,
   FieldLabel,
   Input,
   Selector,
@@ -35,7 +37,7 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
     entryType,
     entryId,
     name,
-    data: { type },
+    data: { type, macro },
   } = entry;
   const t = useTranslations();
   const { refresh } = state();
@@ -50,6 +52,7 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
         if (!editor) return;
         const entry: Partial<PresetEntry<Tool>> = {
           data: {
+            macro: !!data.get('macro'),
             type: editor.id,
             config: {},
           },
@@ -67,10 +70,22 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
       })}
     >
       <Field>
-        <FieldLabel htmlFor={`macro-name-${entryId}`}>
+        <FieldLabel htmlFor={`tool-name-${entryId}`}>
           {t('default.name')}
         </FieldLabel>
-        <Input name="name" id={`macro-name-${entryId}`} defaultValue={name} />
+        <Input name="name" id={`tool-name-${entryId}`} defaultValue={name} />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`tool-macro-${entryId}`}>
+          {t('tool.bind_macro')}
+        </FieldLabel>
+        <FieldContent>
+          <Checkbox
+            name="macro"
+            id={`tool-macro-${entryId}`}
+            defaultChecked={macro}
+          />
+        </FieldContent>
       </Field>
       <Field>
         <FieldLabel htmlFor={`model-tool_provider-${entry.entryId}`}>

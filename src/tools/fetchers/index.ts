@@ -3,3 +3,7 @@ export interface FetchConfig {
   timeout: number;
   maxLength: number;
 }
+
+export const fetchers = {
+  name: 'fetcher',
+};

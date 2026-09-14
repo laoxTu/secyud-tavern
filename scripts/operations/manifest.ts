@@ -43,8 +43,6 @@ async function getManifests(dir: string, alias: string) {
       alias,
       dir: subDir,
     });
-
-    console.info(`[manifest]: find ${folder}`);
   }
   return descriptors;
 }

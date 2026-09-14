@@ -7,3 +7,7 @@ export interface ScriptConfig {
   enableDoc?: boolean;
   enableVariable?: boolean;
 }
+
+export const scripts = {
+  name: 'script',
+};

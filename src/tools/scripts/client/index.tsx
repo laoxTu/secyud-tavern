@@ -19,8 +19,9 @@ import { cn } from '@/lib/utils';
 import { Realm } from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
-import { ScriptConfig } from '@/tools/scripts';
 import { jsonUtils } from '@/utils';
+
+import { scripts as main, ScriptConfig } from '..';
 
 const defaultConfig: ScriptConfig = {
   code: '',
@@ -94,9 +95,9 @@ export function Editor({
         <FieldLabel htmlFor={`${entryId}-code`}>{t('default.code')}</FieldLabel>
         <FieldContent>
           <Input
-            name="code"
-            pattern={checker.code}
             id={`${entryId}-code`}
+            name={'code'}
+            pattern={checker.code}
             defaultValue={config.code}
           />
         </FieldContent>
@@ -128,7 +129,7 @@ export function Editor({
 }
 
 const tool: ToolProvider<ScriptConfig> = {
-  id: 'script',
+  id: main.name,
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
@@ -146,7 +147,7 @@ const tool: ToolProvider<ScriptConfig> = {
   },
 };
 export const scripts = {
-  name: 'script',
+  ...main,
   default: defaultConfig,
   tool,
 };

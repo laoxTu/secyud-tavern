@@ -84,11 +84,6 @@ export class Registry<T extends Registerable> {
     const recordList = Object.values(records).sort(
       (a, b) => (a.sequence ?? 0) - (b.sequence ?? 0),
     );
-    console.debug(`[${this.name}] (count): ${recordList.length} items`);
-    console.debug(
-      `[${this.name}] (items): `,
-      recordList.map((u) => u.id),
-    );
     const sorted: T[] = [];
     const visited = new Set<string>();
 
@@ -155,6 +150,12 @@ export class Registry<T extends Registerable> {
         `[Sort Error] Circular dependency detected involving: ${remaining.join(', ')}`,
       );
     }
+
+    console.debug(`[${this.name}] (count): ${sorted.length} items`);
+    console.debug(
+      `[${this.name}] (items): `,
+      sorted.map((u) => u.id),
+    );
 
     return sorted;
   }

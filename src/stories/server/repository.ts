@@ -201,6 +201,7 @@ async function getRealm(story: Story) {
 
   const requires: Preset[] = await presets.repository.listWithRequires(
     story.presets.map((u) => u.value),
+    { entities: true },
   );
 
   const realm: Realm = {

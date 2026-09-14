@@ -1,15 +1,18 @@
-import { utils } from '@/database';
+import { DisableDto, utils } from '@/database';
 import { BusinessError } from '@/interceptors';
 import { Processer } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
+import { macros } from '@/presets/macros/client';
 import { realms } from '@/stories/client/realms';
 import { tools as main, Tool } from '@/tools';
 import { tools } from '@/tools/client';
 
 import { ToolItem } from './providers';
 
+interface ToolCacheItem extends ToolItem, DisableDto {}
+
 export interface ToolCache {
-  tools: Record<string, ToolItem>;
+  tools: Record<string, ToolCacheItem>;
 }
 
 export const processer: Processer = {
@@ -19,12 +22,13 @@ export const processer: Processer = {
       tools: {},
     };
     const { items } = tools.property(realm);
+    const { checkItems } = macros.property(realm);
     await utils.forEachItemsList<PresetItem<Tool>, Preset>(
       realm.presets,
       tools.plural,
       async (entry) => {
-        const { disabled, type } = entry;
-        if (disabled || !type) return;
+        const { disabled, type, macro } = entry;
+        if (!type) return;
         // 工具未注册则报错中断，防止模型反复调用不存在的工具白耗 token。
         const provider = tools.providers.registry.record(type);
         if (!provider) {
@@ -35,9 +39,21 @@ export const processer: Processer = {
           const tools = await provider.create(entry, realm);
           console.debug('[tool]: ', tools);
           for (const tool of tools) {
-            const checked = items[tool.name];
-            if (checked !== undefined) tool.disabled = !checked;
-            cache.tools[tool.name] = tool;
+            const { name } = tool;
+            // checked
+            cache.tools[name] = {
+              ...tool,
+              get disabled() {
+                return (macro ? checkItems[name] : items[name]) ?? disabled;
+              },
+              set disabled(b: boolean) {
+                if (macro) {
+                  checkItems[name] = b;
+                } else {
+                  items[name] = b;
+                }
+              },
+            };
           }
         } catch (error) {
           throw new BusinessError(

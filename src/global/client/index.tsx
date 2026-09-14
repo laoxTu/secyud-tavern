@@ -14,6 +14,7 @@ export const globals = {
   menu: {
     setting: menu,
   },
+  accessImageType: 'image/png,image/jpeg,image/webp,image/gif',
 };
 
 export const settings = {
