@@ -134,7 +134,7 @@ export default {
       import: {
         POST: route(async (request) => {
           const buffer = await request.arrayBuffer();
-          const input = JSON.parse(new TextDecoder().decode(buffer));
+          const input = jsonUtils.buffer(buffer);
           const params = input.params;
 
           const id = await comfyuis.repository.workflow.create({

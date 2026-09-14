@@ -29,6 +29,8 @@ import { AgentConfig } from '@/tools/agents';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { jsonUtils } from '@/utils';
 
+import { agents as main } from '..';
+
 const defaultConfig: AgentConfig = {
   disablePreset: false,
   maxLength: 0,
@@ -145,8 +147,8 @@ async function create(
   if (properties?.agent) return [];
   const disableTags = new Set(config.disableTags);
   const story: Story = {
-    id: 'agent',
-    name: 'agent',
+    id: main.name,
+    name: main.name,
     presets: [
       ...(config.presets ?? []),
       ...(config.disablePreset ? [] : parents.map(presets.toNameValue)),
@@ -189,7 +191,7 @@ async function create(
 }
 
 const tool: ToolProvider<AgentConfig> = {
-  id: 'agent',
+  id: main.name,
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
@@ -207,7 +209,7 @@ const tool: ToolProvider<AgentConfig> = {
 };
 
 export const agents = {
-  name: 'agent',
+  ...main,
   default: defaultConfig,
   tool,
   create,

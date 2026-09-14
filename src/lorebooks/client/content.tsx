@@ -33,7 +33,6 @@ import { Lorebook, lorebooks as main } from '..';
 import { lorebooks } from '.';
 
 const roles = ['system', 'user', 'assistant', 'knowledge'];
-const contentTypes = ['json', 'plaintext', 'markdown', 'yaml', 'xml'];
 
 const state = createPresetEntryState<Lorebook>(main.name, main.default);
 
@@ -162,7 +161,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
           id={`lorebook-type-${entryId}`}
           value={language}
           onValueChange={setLanguage}
-          items={contentTypes}
+          items={main.types}
         />
       </Field>
       <Field>

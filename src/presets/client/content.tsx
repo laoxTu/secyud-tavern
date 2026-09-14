@@ -64,7 +64,7 @@ import {
   useTabs,
 } from '@/components';
 import { NameValue } from '@/database';
-import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
+import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
 import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -140,7 +140,7 @@ function ImportDialog() {
             id={`preset-filename`}
             name="filename"
             type="file"
-            accept={'.json,.png'}
+            accept={'.zip'}
             onChange={handlePrepare}
             required
           />
@@ -503,7 +503,7 @@ function PropertyTab() {
           id={`preset-cover-image`}
           name="cover-image`"
           className={'pr-2'}
-          accept={'image/png'}
+          accept={globals.accessImageType}
           value={item.cover}
           onChange={onFileChange}
         />

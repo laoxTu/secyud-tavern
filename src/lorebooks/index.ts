@@ -40,10 +40,22 @@ function compare(lft: Lorebook, rht: Lorebook) {
   return sequence(lft) - sequence(rht);
 }
 
+const typeMap: Record<string, string> = {
+  json: 'json',
+  plaintext: 'txt',
+  markdown: 'md',
+  yaml: 'yaml',
+  xml: 'xml',
+};
+
 export const lorebooks = {
   default: defaultEntry,
   name: 'lorebook',
   plural: 'lorebooks',
   sequence,
   compare,
+  types: ['json', 'plaintext', 'markdown', 'yaml', 'xml'],
+  typeToExt(type: string) {
+    return typeMap[type] ?? 'txt';
+  },
 };

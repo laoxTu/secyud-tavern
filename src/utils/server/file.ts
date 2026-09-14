@@ -157,6 +157,19 @@ export function createOnceStream(
   });
 }
 
+/**
+ * 一次性流，用于导出小文件
+ * @param action
+ */
+export function createBufferStream(buffer: Buffer) {
+  return new ReadableStream({
+    async start(controller) {
+      controller.enqueue(buffer);
+      controller.close();
+    },
+  });
+}
+
 export function execute(cmd: string, options?: ExecOptionsWithStringEncoding) {
   return new Promise<{ stdout?: string; stderr?: string }>(
     (resolve, reject) => {
@@ -182,5 +195,6 @@ export const fileUtils = {
   listDirs,
   listFiles,
   writeFile,
+  createBufferStream,
   createOnceStream,
 };

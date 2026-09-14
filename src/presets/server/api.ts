@@ -1,5 +1,4 @@
 import { eq } from 'drizzle-orm';
-import { PNG } from 'pngjs';
 import { validate } from 'uuid';
 
 import { InDto } from '@/database';
@@ -7,8 +6,10 @@ import { files } from '@/files/server';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { Preset, PresetEntry, PresetRequestOptions } from '@/presets';
-import { jsonUtils } from '@/utils';
+import { archive, ArchiveFolder, ArchiveNode } from '@/utils/archive';
 import { cache, fileUtils, response } from '@/utils/server';
+
+import { storage } from './storage';
 
 import { presets } from '.';
 
@@ -31,23 +32,29 @@ export default {
         const { sessionId } = records.searchParams;
         const data = await request.formData();
         const file = data.get('file') as File;
-        let items: Preset[] = [];
-        const fileInfo = files.deserializeMimeType(file.type);
+        const items: Preset[] = [];
         const uint8 = await file.arrayBuffer();
-        if (fileInfo.type === 'image/png') {
-          const png = PNG.sync.read(Buffer.from(uint8)) as any;
-          items = png.text;
-          png.text = {};
-          const buffer = PNG.sync.write(png);
-          const cover = await files.repository.create({
-            ...fileInfo,
-            buffer,
-          });
-          items.at(-1)!.cover = cover;
-        } else {
-          const decoder = new TextDecoder();
-          const text = decoder.decode(uint8);
-          items = jsonUtils.parse(text);
+        const archives = await archive.zipToArchive(Buffer.from(uint8));
+
+        for (const node of Object.values(archives)) {
+          if (node.type !== 'folder') continue;
+          const item = archive.getJson<Preset>(node.nodes, 'meta.json');
+          if (!item) continue;
+          const type = (item as any).coverType;
+          if (type) {
+            const image = node.nodes[`cover.${type}`];
+            if (image?.type === 'file' && typeof image.content !== 'string') {
+              const cover = await files.repository.create({
+                type: `image/${type}`,
+                args: null,
+                buffer: image.content,
+              });
+              item.cover = cover;
+            }
+          }
+
+          await storage.manager.saveArchive(item, node);
+          items.push(item);
         }
 
         await cache.set(importKey(sessionId), items);
@@ -88,39 +95,56 @@ export default {
       export: {
         GET: route(async (_, records) => {
           const { id } = await records.params;
-          const source = await presets.repository.listWithRequires([id]);
+          const source = await presets.repository.listWithRequires([id], {
+            entities: true,
+          });
           if (!source.length) {
             throw new BusinessError('no entity found.');
           }
-          const image = await getImage();
-          const stream = fileUtils.createOnceStream(async (controller) => {
-            if (image) {
-              const png = PNG.sync.read(image);
-              (png as any).text = source;
-              const buffer = PNG.sync.write(png);
-              controller.enqueue(buffer);
-            } else {
-              // 将 JSON 字符串编码为 Uint8Array 并加入流
-              controller.enqueue(
-                new TextEncoder().encode(JSON.stringify(source)),
-              );
-            }
-          });
-          return response.download(
-            `preset_${source.at(-1)?.name}.${image ? 'png' : 'json'}`,
-            stream,
-          );
+          const archives: Record<string, ArchiveNode> = {};
 
-          async function getImage() {
-            const cover = source.at(-1)?.cover;
-            if (cover && validate(cover)) {
+          for (const item of source) {
+            const node: ArchiveFolder = {
+              type: 'folder',
+              name: item.id,
+              nodes: {},
+            };
+            archives[item.id] = node;
+
+            let coverType: string | undefined = undefined;
+            // 封面
+            if (item.cover && validate(item.cover)) {
               try {
-                const file = await files.repository.get(cover, true);
-                return file.buffer;
-              } catch (error) {}
+                const cover = await files.repository.get(item.cover, true);
+                coverType = cover.type.split('/').at(-1);
+                const name = `cover.${coverType}`;
+                node.nodes[name] = {
+                  type: 'file',
+                  name: name,
+                  content: cover.buffer,
+                  level: 0,
+                };
+              } catch (err) {
+                console.error(err);
+              }
             }
-            return null;
+
+            // 元数据
+            node.nodes['meta.json'] = archive.text(
+              'meta.json',
+              JSON.stringify({
+                ...item,
+                coverExt: coverType,
+              }),
+            );
+
+            // 压入工作区
+            await storage.manager.loadArchive(item, node);
           }
+
+          const buffer = await archive.archiveToZip(archives);
+          const stream = fileUtils.createBufferStream(buffer);
+          return response.download(`preset_${source.at(-1)?.name}.zip`, stream);
         }),
       },
       GET: route(async (_, record) => {

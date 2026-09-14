@@ -8,7 +8,7 @@ import { Field, FieldContent, FieldLabel, Input } from '@/components';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
-import { FetchConfig } from '..';
+import { FetchConfig, fetchers as main } from '..';
 
 const defaultConfig: FetchConfig = {
   maxResults: 3,
@@ -71,7 +71,7 @@ export function Editor({ entry: { entryId, data } }: ToolProps<FetchConfig>) {
 }
 
 export const fetchers: ToolProvider<FetchConfig> = {
-  id: 'fetcher',
+  id: main.name,
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {

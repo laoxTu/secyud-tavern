@@ -21,7 +21,12 @@ export function wrap(
   return template(pad ? pad + text.replace('\n', `\n${pad}`) : text);
 }
 
+const textDecoder = new TextDecoder();
+
 export const strUtils = {
   random,
   wrap,
+  buffer(buffer?: Buffer | ArrayBuffer | string) {
+    return typeof buffer === 'string' ? buffer : textDecoder.decode(buffer);
+  },
 };

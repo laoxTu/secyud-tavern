@@ -1,3 +1,5 @@
+import { strUtils } from './str';
+
 /**
  * 安全解析json，失败会静默warning
  * @param text 要解析的字符串
@@ -60,4 +62,7 @@ export const jsonUtils = {
   parse,
   minify,
   merge,
+  buffer(buffer?: Buffer | ArrayBuffer | string) {
+    return parse(strUtils.buffer(buffer));
+  },
 };

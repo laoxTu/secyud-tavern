@@ -13,3 +13,7 @@ export interface AgentConfig {
   model: NameValue | null;
   presets: NameValue[];
 }
+
+export const agents = {
+  name: 'agent',
+};
