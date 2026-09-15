@@ -29,21 +29,24 @@ async function archiveToZip(archives: Record<string, ArchiveNode>) {
 
   return await zip.generateAsync({
     type: 'nodebuffer',
+    compression: 'DEFLATE',
+    compressionOptions: {
+      level: 6,
+    },
   });
 
   function appendNode(node: ArchiveNode, parent: string) {
     if (node.type === 'file') {
-      zip.file(
-        `${parent}/${node.name}`,
-        node.content,
-        node.level
-          ? {
+      const option: JSZip.JSZipFileOptions | undefined =
+        node.level === undefined
+          ? undefined
+          : {
+              compression: node.level === 0 ? 'STORE' : 'DEFLATE',
               compressionOptions: {
-                level: node.level,
+                level: node.level ?? 9,
               },
-            }
-          : undefined,
-      );
+            };
+      zip.file(`${parent}/${node.name}`, node.content, option);
     } else {
       for (const sub of Object.values(node.nodes)) {
         appendNode(sub, `${parent}/${node.name}`);
