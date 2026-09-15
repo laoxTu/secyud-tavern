@@ -4,22 +4,20 @@ import { archive } from '@/utils/archive';
 import { scripts as main, ScriptConfig } from '..';
 
 const provider: ToolProvider<ScriptConfig> = {
-  async loadArchive(item, name) {
-    const res = [
-      archive.text(`${name}.desc.txt`, item.config.description),
-      archive.text(`${name}.schema.json`, item.config.schema),
-      archive.text(`${name}.script.js`, item.config.script),
-    ];
+  async loadArchive(nodes, item, name) {
+    const { description, schema, script } = item.config;
+    archive.set.text(nodes, `${name}.desc.txt`, description);
+    archive.set.text(nodes, `${name}.schema.json`, schema);
 
+    archive.set.text(nodes, `${name}.script.js`, script);
     item.config.description = undefined!;
     item.config.schema = undefined!;
-
-    return res;
+    item.config.script = undefined!;
   },
   async saveArchive(nodes, item, name) {
-    item.config.description = archive.get(nodes, `${name}.desc.txt`);
-    item.config.schema = archive.get(nodes, `${name}.schema.json`);
-    item.config.script = archive.get(nodes, `${name}.script.js`);
+    item.config.description = await archive.get.text(nodes, `${name}.desc.txt`);
+    item.config.schema = await archive.get.text(nodes, `${name}.schema.json`);
+    item.config.script = await archive.get.text(nodes, `${name}.script.js`);
   },
   id: main.name,
 };

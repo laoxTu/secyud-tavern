@@ -28,7 +28,7 @@ export const renderer: Renderer = {
         if (disabled) return;
         if (type === 'importmap') {
           try {
-            jsonUtils.merge(map, JSON.parse(content));
+            jsonUtils.merge(map, JSON.parse(content ?? '{}'));
           } catch (err) {
             console.error(`import map error for script ${id}.${code}.`, err);
           }
@@ -65,7 +65,7 @@ export const renderer: Renderer = {
         // 内联脚本则同步执行
         if (type === 'link') {
           script.async = true;
-          script.src = content.trim();
+          script.src = content?.trim() ?? '';
           await new Promise((resolve, reject) => {
             script.onload = resolve;
             script.onerror = reject;
@@ -74,7 +74,7 @@ export const renderer: Renderer = {
         } else {
           script.async = false;
           script.type = type ?? '';
-          script.textContent = content;
+          script.textContent = content ?? '';
           document.body.appendChild(script);
         }
       }

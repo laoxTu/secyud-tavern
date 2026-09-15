@@ -153,10 +153,10 @@ export const scripts = {
 };
 
 function script(config: ScriptConfig, realm: Realm): ToolItem {
-  const fn = new Function('input', 'context', config.script);
+  const fn = new Function('input', 'context', config.script ?? '');
   return {
     name: config.code,
-    description: config.description,
+    description: config.description ?? '',
     parameters: JSON.parse(config.schema || '{}'),
     async invoke(args: any) {
       const context: any = {};

@@ -223,7 +223,7 @@ function agent(
 ): ToolItem {
   return {
     name: config.code,
-    description: config.description,
+    description: config.description ?? '',
     parameters: jsonUtils.parse(config.schema),
     async invoke(args: any) {
       let result: string = 'error: empty content';

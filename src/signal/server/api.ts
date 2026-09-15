@@ -1,6 +1,7 @@
 import { v4 } from 'uuid';
 
 import { route } from '@/interceptors/server';
+import { strUtils } from '@/utils';
 import { response } from '@/utils/server/response';
 
 import { signals, SseEvent } from '.';
@@ -16,14 +17,13 @@ export default {
       const unregisterEvent = () => {
         signals.registry.unregister(id);
       };
-      const encoder = new TextEncoder();
       const stream = new ReadableStream({
         start(controller) {
           const event: SseEvent = {
             id,
             async send(message) {
               controller.enqueue(
-                encoder.encode(
+                strUtils.toBuffer(
                   `event: ${message.type}\ndata: ${JSON.stringify(message.data)}\n\n`,
                 ),
               );

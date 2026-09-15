@@ -4,29 +4,40 @@ import { archive } from '@/utils/archive';
 
 import { Script, scripts } from '..';
 
+function mapToExt(type: string | null) {
+  switch (type) {
+    case 'link':
+      return 'txt';
+    case 'importmap':
+      return 'json';
+    default:
+      return 'js';
+  }
+}
 export const storage = storages.create<Script>(
   scripts,
   ({ name, data: { code, type, priority } }) => ({
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async (item, s) => {
+  async (nodes, item, s) => {
     const name = `${item.code}-${s}`;
-    return [
-      archive.json(`${name}.meta.json`, {
-        ...item,
-        content: undefined,
-      }),
-      archive.text(`${name}.script.js`, item.content),
-    ];
+
+    archive.set.json(nodes, `${name}.meta.json`, {
+      ...item,
+      content: undefined,
+    });
+    const ext = mapToExt(item.type);
+    archive.set.text(nodes, `${name}.script.${ext}`, item.content);
   },
   async (nodes, name) => {
-    const item = archive.getJson<PresetItem<Script>>(
+    const item = await archive.get.json<PresetItem<Script>>(
       nodes,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = archive.get(nodes, `${name}.script.js`);
+      const ext = mapToExt(item.type);
+      item.content = await archive.get.text(nodes, `${name}.script.${ext}`);
     }
     return item;
   },

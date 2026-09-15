@@ -19,15 +19,16 @@ export const storage = storages.create<Tool>(
     sorter: `${type}${name}`,
     filter: `${type}${name}`,
   }),
-  async (item, s) => {
+  async (nodes, item, s) => {
     const name = `${item.name}-${s}`;
-    return [
-      ...(await provider(item.type).loadArchive(item, name)),
-      archive.json(`${name}.meta.json`, item),
-    ];
+    await provider(item.type).loadArchive(nodes, item, name);
+    archive.set.json(nodes, `${name}.meta.json`, item);
   },
   async (nodes, name) => {
-    const item = archive.getJson<PresetItem<Tool>>(nodes, `${name}.meta.json`);
+    const item = await archive.get.json<PresetItem<Tool>>(
+      nodes,
+      `${name}.meta.json`,
+    );
     if (item) {
       await provider(item.type).saveArchive(nodes, item, name);
     }
