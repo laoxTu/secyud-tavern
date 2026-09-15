@@ -16,7 +16,7 @@ export const storage = storages.create<Macro>(
 
     archive.set.json(nodes, `${name}.meta.json`, {
       ...item,
-      content: undefined,
+      value: undefined,
     });
     archive.set.text(nodes, `${name}.value.${ext}`, item.value);
   },
