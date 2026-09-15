@@ -26,7 +26,7 @@ export const storage = storages.create<Style>(
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(nodes, `${name}.style`);
+      item.content = await archive.get.fuzzy(nodes, `${name}.style.`);
     }
     return item;
   },
