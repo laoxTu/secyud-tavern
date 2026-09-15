@@ -36,7 +36,7 @@ export const storage = storages.create<Script>(
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(nodes, `${name}.script`);
+      item.content = await archive.get.fuzzy(nodes, `${name}.script.`);
     }
     return item;
   },

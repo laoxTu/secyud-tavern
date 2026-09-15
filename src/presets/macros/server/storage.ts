@@ -26,7 +26,7 @@ export const storage = storages.create<Macro>(
       `${name}.meta.json`,
     );
     if (item) {
-      item.value = await archive.get.fuzzy(nodes, `${name}.value`);
+      item.value = await archive.get.fuzzy(nodes, `${name}.value.`);
     }
     return item;
   },

@@ -109,7 +109,7 @@ async function importPreset(buffer: Buffer): Promise<Preset[]> {
     const item = await archive.get.json<Preset>(node.nodes, 'meta.json');
     if (!item) continue;
     item.variables = await archive.get.text(node.nodes, 'variables.json');
-    item.opening = await archive.get.fuzzy(node.nodes, 'opening');
+    item.opening = await archive.get.fuzzy(node.nodes, 'opening.');
     const type = (item as any).coverType;
     const buffer = await archive.get.buffer(
       node.nodes,

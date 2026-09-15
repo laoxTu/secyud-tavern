@@ -15,9 +15,9 @@ const provider: ToolProvider<ScriptConfig> = {
     item.config.script = undefined!;
   },
   async saveArchive(nodes, item, name) {
-    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc`);
-    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema`);
-    item.config.script = await archive.get.fuzzy(nodes, `${name}.script`);
+    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc.`);
+    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema.`);
+    item.config.script = await archive.get.fuzzy(nodes, `${name}.script.`);
   },
   id: main.name,
 };

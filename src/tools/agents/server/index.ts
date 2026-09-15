@@ -12,8 +12,8 @@ const provider: ToolProvider<AgentConfig> = {
     item.config.schema = undefined!;
   },
   async saveArchive(nodes, item, name) {
-    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc`);
-    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema`);
+    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc.`);
+    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema.`);
   },
   id: main.name,
 };
