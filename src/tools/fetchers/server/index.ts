@@ -3,9 +3,7 @@ import { ToolProvider } from '@/tools/server';
 import { FetchConfig, fetchers as main } from '..';
 
 const provider: ToolProvider<FetchConfig> = {
-  async loadArchive() {
-    return [];
-  },
+  async loadArchive() {},
   async saveArchive() {},
   id: main.name,
 };

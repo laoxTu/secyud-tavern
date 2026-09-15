@@ -6,9 +6,9 @@ export interface AgentConfig {
   // 子agent只考虑上下文构筑
   disableTags: string[];
   code: string;
-  description: string;
+  description?: string;
   maxLength: number;
-  schema: string;
+  schema?: string;
   disablePreset: boolean;
   model: NameValue | null;
   presets: NameValue[];

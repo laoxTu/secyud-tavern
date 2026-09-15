@@ -22,11 +22,15 @@ export function wrap(
 }
 
 const textDecoder = new TextDecoder();
+const textEncoder = new TextEncoder();
 
 export const strUtils = {
   random,
   wrap,
   buffer(buffer?: Buffer | ArrayBuffer | string) {
     return typeof buffer === 'string' ? buffer : textDecoder.decode(buffer);
+  },
+  toBuffer(text?: string) {
+    return Buffer.from(textEncoder.encode(text));
   },
 };

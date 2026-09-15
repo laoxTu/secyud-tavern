@@ -10,20 +10,24 @@ export const storage = storages.create<Style>(
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async (item, s) => {
+  async (nodes, item, s) => {
     const name = `${item.code}-${s}`;
-    return [
-      archive.json(`${name}.meta.json`, {
-        ...item,
-        content: undefined,
-      }),
-      archive.text(`${name}.style.css`, item.content),
-    ];
+
+    archive.set.json(nodes, `${name}.meta.json`, {
+      ...item,
+      content: undefined,
+    });
+    const ext = item.type === 'link' ? 'txt' : 'css';
+    archive.set.text(nodes, `${name}.style.${ext}`, item.content);
   },
   async (nodes, name) => {
-    const item = archive.getJson<PresetItem<Style>>(nodes, `${name}.meta.json`);
+    const item = await archive.get.json<PresetItem<Style>>(
+      nodes,
+      `${name}.meta.json`,
+    );
     if (item) {
-      item.content = archive.get(nodes, `${name}.style.css`);
+      const ext = item.type === 'link' ? 'txt' : 'css';
+      item.content = await archive.get.text(nodes, `${name}.style.${ext}`);
     }
     return item;
   },

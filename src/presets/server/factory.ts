@@ -15,9 +15,10 @@ export const storages = {
      * 请保证左右文件名前缀一致
      */
     loadArchive: (
+      nodes: Record<string, ArchiveNode>,
       entry: PresetItem<TData>,
       sequence: number,
-    ) => Promise<ArchiveNode[]>,
+    ) => Promise<void>,
     /**
      * 注意name是.之前的名称 可能是 name-1
      * 只做解析用，真正的code在meta中
@@ -80,10 +81,7 @@ export const storages = {
 
           for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            const nodes = await loadArchive(entry, i);
-            for (const node of nodes) {
-              folder.nodes[node.name] = node;
-            }
+            await loadArchive(folder.nodes, entry, i);
           }
         }
       },

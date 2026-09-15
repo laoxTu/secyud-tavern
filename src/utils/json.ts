@@ -65,4 +65,7 @@ export const jsonUtils = {
   buffer(buffer?: Buffer | ArrayBuffer | string) {
     return parse(strUtils.buffer(buffer));
   },
+  toBuffer(json?: any) {
+    return strUtils.toBuffer(json ? JSON.stringify(json) : undefined);
+  },
 };

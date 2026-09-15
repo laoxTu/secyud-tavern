@@ -6,9 +6,10 @@ import { Tool } from '..';
 
 export interface ToolProvider<T = any> extends Registerable {
   loadArchive: (
+    nodes: Record<string, ArchiveNode>,
     item: PresetItem<Tool<T>>,
     name: string,
-  ) => Promise<ArchiveNode[]>;
+  ) => Promise<void>;
 
   saveArchive: (
     nodes: Record<string, ArchiveNode>,

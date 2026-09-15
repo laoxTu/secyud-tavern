@@ -40,12 +40,12 @@ export const renderer: Renderer = {
         if (type === 'link') {
           const link = document.createElement('link');
           link.rel = 'stylesheet';
-          link.href = content.trim();
+          link.href = content?.trim() ?? '';
           link.id = id;
           document.head.appendChild(link);
         } else {
           const style = document.createElement('style');
-          style.innerHTML = content;
+          style.innerHTML = content ?? '';
           style.id = id;
           document.head.appendChild(style);
         }

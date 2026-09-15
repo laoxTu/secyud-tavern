@@ -1,4 +1,5 @@
 import { ToastType } from '@/components';
+import { strUtils } from '@/utils';
 import { jsonUtils } from '@/utils/json';
 
 export interface SseMessage<T = any> {
@@ -17,10 +18,10 @@ async function pack(items: AsyncIterable<any>) {
       try {
         for await (const item of items) {
           controller.enqueue(
-            new TextEncoder().encode(`data: ${JSON.stringify(item)}\n\n`),
+            strUtils.toBuffer(`data: ${JSON.stringify(item)}\n\n`),
           );
         }
-        controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+        controller.enqueue(strUtils.toBuffer('data: [DONE]\n\n'));
         controller.close();
       } catch (error) {
         controller.error(error);

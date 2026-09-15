@@ -1,6 +1,6 @@
 export interface Style {
   code: string;
-  content: string;
+  content?: string;
   priority: number;
   type: string;
 }
