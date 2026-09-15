@@ -11,7 +11,7 @@ export const storage = storages.create<Macro>(
     filter: `${key}${name}`,
   }),
   async (nodes, item, s) => {
-    const name = `${item.code}-${s}`;
+    const name = `${item.code}-${item.key}-${s}`;
     const ext = item.json ? 'json' : 'txt';
 
     archive.set.json(nodes, `${name}.meta.json`, {
