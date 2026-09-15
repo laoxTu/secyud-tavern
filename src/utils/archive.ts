@@ -152,6 +152,20 @@ const get = {
     }
     return undefined;
   },
+  /**
+   * 提供一个模糊前缀的取法，可以忽略它的后缀去读
+   * @returns
+   */
+  async fuzzy(nodes: Archive, prefix: string): Promise<string | undefined> {
+    const name = Object.keys(nodes).find((u) => u.startsWith(prefix));
+    if (name) {
+      const buffer = await get.buffer(nodes, name);
+      if (buffer) {
+        return strUtils.buffer(buffer);
+      }
+    }
+    return undefined;
+  },
   async json<T = any>(nodes: Archive, name: string): Promise<T | undefined> {
     return jsonUtils.parse(await get.text(nodes, name));
   },

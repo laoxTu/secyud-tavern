@@ -26,8 +26,7 @@ export const storage = storages.create<Style>(
       `${name}.meta.json`,
     );
     if (item) {
-      const ext = item.type === 'link' ? 'txt' : 'css';
-      item.content = await archive.get.text(nodes, `${name}.style.${ext}`);
+      item.content = await archive.get.fuzzy(nodes, `${name}.style`);
     }
     return item;
   },
