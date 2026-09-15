@@ -26,8 +26,7 @@ export const storage = storages.create<Lorebook>(
       `${name}.meta.json`,
     );
     if (item) {
-      const ext = lorebooks.typeToExt(item.type);
-      item.content = await archive.get.text(nodes, `${name}.content.${ext}`);
+      item.content = await archive.get.fuzzy(nodes, `${name}.content`);
     }
     return item;
   },

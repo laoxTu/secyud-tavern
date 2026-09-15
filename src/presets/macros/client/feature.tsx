@@ -109,7 +109,7 @@ function Component() {
                 )}
                 {!!item.multiples.length &&
                   arrUtils.intersperse(
-                    item.multiples,
+                    item.multiples.filter((t) => !t.hidden),
                     (_, i) => <Separator key={`s-${i}`} />,
                     (t, i) => {
                       const list = cache.multiples[t.code];
