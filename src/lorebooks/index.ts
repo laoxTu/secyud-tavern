@@ -13,7 +13,7 @@ export interface Lorebook<TExpression = any> {
   // 匹配表达式
   expression: TExpression;
   // 世界书内容
-  content: string;
+  content?: string;
   // 优先级, 表示插入顺序
   priority: number;
   // 层级，表示插入位置

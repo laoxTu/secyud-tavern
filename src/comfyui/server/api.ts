@@ -186,16 +186,14 @@ export default {
             const stream = fileUtils.createOnceStream(async (controller) => {
               // 将 JSON 字符串编码为 Uint8Array 并加入流
               controller.enqueue(
-                new TextEncoder().encode(
-                  JSON.stringify({
-                    ...source,
-                    params: params.items.map((u) => ({
-                      ...u,
-                      masterId: undefined,
-                      sequence: undefined,
-                    })),
-                  }),
-                ),
+                jsonUtils.toBuffer({
+                  ...source,
+                  params: params.items.map((u) => ({
+                    ...u,
+                    masterId: undefined,
+                    sequence: undefined,
+                  })),
+                }),
               );
             });
             return response.download(`workflow_${source.name}.json`, stream);

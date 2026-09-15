@@ -10,22 +10,23 @@ export const storage = storages.create<Macro>(
     sorter: `${key}${+multiple}${+hidden}`,
     filter: `${key}${name}`,
   }),
-  async (item, s) => {
-    const name = `${item.code}-${s}`;
+  async (nodes, item, s) => {
+    const name = `${item.code}-${item.key}-${s}`;
     const ext = item.json ? 'json' : 'txt';
-    return [
-      archive.json(`${name}.meta.json`, {
-        ...item,
-        content: undefined,
-      }),
-      archive.text(`${name}.value.${ext}`, item.value),
-    ];
+
+    archive.set.json(nodes, `${name}.meta.json`, {
+      ...item,
+      value: undefined,
+    });
+    archive.set.text(nodes, `${name}.value.${ext}`, item.value);
   },
   async (nodes, name) => {
-    const item = archive.getJson<PresetItem<Macro>>(nodes, `${name}.meta.json`);
+    const item = await archive.get.json<PresetItem<Macro>>(
+      nodes,
+      `${name}.meta.json`,
+    );
     if (item) {
-      const ext = item.json ? 'json' : 'txt';
-      item.value = archive.get(nodes, `${name}.value.${ext}`);
+      item.value = await archive.get.fuzzy(nodes, `${name}.value.`);
     }
     return item;
   },

@@ -107,7 +107,7 @@ async function create(
     for (const group of groups) {
       const contents: string[] = [];
       for (const item of group.items) {
-        const content = await models.convert(converts, item.content, {
+        const content = await models.convert(converts, item.content ?? '', {
           role: group.key,
           type: 'output',
           history: null,
@@ -222,7 +222,9 @@ export const processer: Processer = {
 
         if (cache.rag && entry.match === vectorMatcher.id) {
           const { embed, database } = cache.rag;
-          const embedding = await embed.generate({ content: entry.content });
+          const embedding = await embed.generate({
+            content: entry.content ?? '',
+          });
           await insert(database, {
             name: entry.name,
             embedding,

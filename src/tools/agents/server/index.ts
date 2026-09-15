@@ -4,20 +4,16 @@ import { archive } from '@/utils/archive';
 import { AgentConfig, agents as main } from '..';
 
 const provider: ToolProvider<AgentConfig> = {
-  async loadArchive(item, name) {
-    const res = [
-      archive.text(`${name}.desc.txt`, item.config.description),
-      archive.text(`${name}.schema.json`, item.config.schema),
-    ];
-
+  async loadArchive(nodes, item, name) {
+    const { description, schema } = item.config;
+    archive.set.text(nodes, `${name}.desc.txt`, description);
+    archive.set.text(nodes, `${name}.schema.json`, schema);
     item.config.description = undefined!;
     item.config.schema = undefined!;
-
-    return res;
   },
   async saveArchive(nodes, item, name) {
-    item.config.description = archive.get(nodes, `${name}.desc.txt`);
-    item.config.schema = archive.get(nodes, `${name}.schema.json`);
+    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc.`);
+    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema.`);
   },
   id: main.name,
 };
