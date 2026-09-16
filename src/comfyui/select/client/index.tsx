@@ -150,6 +150,19 @@ const select: ParamConfigurator<SelectConfig> = {
       inputs[config.key] = data.get(`value_${sequence}`);
     }
   },
+  async configureSchema({ config }, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+      enum: config.items,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
+    }
+  },
 };
 
 function ModelSelectConfigComponent({
@@ -238,6 +251,7 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
       node: data.get('node') as string,
       key: data.get('key') as string,
       type: data.get('type') as string,
+      fuzzy: data.get('fuzzy') as string,
       value: combobox.get(data, `value_${param.sequence}`),
     };
   },
@@ -248,6 +262,18 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
       inputs[config.key] = data.get(`value_${sequence}`);
     }
   },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
+    }
+  },
 };
 
 function PowerLoraSelectConfigComponent({
@@ -255,7 +281,7 @@ function PowerLoraSelectConfigComponent({
   formRef,
 }: ComfyUIParamProps<PowerLoraSelectConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(main.select.default, param.config);
+  const config = jsonUtils.merge(main.powerLoraSelect.default, param.config);
   const { sequence } = param;
   return (
     <>
@@ -380,6 +406,45 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
         delete inputs[`lora_${i + 1}`];
       }
     }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'array',
+      description: paint.description,
+      items: {
+        type: 'object',
+        properties: {
+          lora: {
+            type: 'string',
+            description: 'the lora name, need to use the result from search',
+          },
+          strength: {
+            type: 'number',
+            maximum: 5,
+            minimum: -5,
+            description: 'the strength of the lora',
+          },
+        },
+      },
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    const items: { lora: string; strength: number }[] = args[paint.code];
+    if (!inputs || !items) return;
+    const { model, PowerLoraLoaderHeaderWidget } = inputs;
+
+    input[config.node].inputs = {
+      model,
+      PowerLoraLoaderHeaderWidget,
+      '➕ Add Lora': '',
+      ...Object.fromEntries(
+        items.map((u, i) => [
+          `lora_${i + 1}`,
+          { lora: u.lora, strength: u.strength, on: true },
+        ]),
+      ),
+    };
   },
 };
 

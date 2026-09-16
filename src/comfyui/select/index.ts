@@ -25,6 +25,7 @@ export interface ModelSelectConfig extends SelectConfigBase<
   NameValue | null | undefined
 > {
   type?: string | null;
+  fuzzy?: string | null;
 }
 
 const defaultModelSelectConfig: ModelSelectConfig = {

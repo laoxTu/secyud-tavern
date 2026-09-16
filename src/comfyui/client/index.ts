@@ -10,10 +10,12 @@ import { editors } from '@/comfyui/editor/client';
 import { selects } from '@/comfyui/select/client';
 import { globals, settings } from '@/global/client';
 import { stories } from '@/stories/client';
+import { tools } from '@/tools/client';
 
 import { comfyuis as main } from '..';
 
 import { importers } from './importers';
+import { tool } from './tool';
 
 export * from './components';
 export type * from './configurator';
@@ -28,6 +30,7 @@ export const comfyuis = {
   setting,
   menu,
   feature,
+  tool,
 };
 
 export default async function () {
@@ -44,4 +47,5 @@ export default async function () {
     editors.configurator.agentText,
     editors.configurator.number,
   );
+  tools.providers.registry.register(tool);
 }

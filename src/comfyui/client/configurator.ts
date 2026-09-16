@@ -1,8 +1,9 @@
 'use client';
 import React, { RefObject } from 'react';
 
-import { ComfyUIParam, ComfyUIWorkflowInput } from '@/comfyui';
+import { AutoPaintParam, ComfyUIParam, ComfyUIWorkflowInput } from '@/comfyui';
 import { getRegistry, Registerable } from '@/plugins';
+import { JsonSchema } from '@/utils';
 
 export interface ComfyUIParamProps<TConfig = any> {
   param: ComfyUIParam<TConfig>;
@@ -32,6 +33,23 @@ export interface ParamConfigurator<TConfig = any> extends Registerable {
    * 放在这里
    */
   inputComponent?: React.ComponentType<ComfyUIParamProps<TConfig>>;
+  /**
+   * 初始化Schema
+   */
+  configureSchema?: (
+    param: ComfyUIParam<TConfig>,
+    paint: AutoPaintParam,
+    schema: JsonSchema,
+  ) => Promise<void>;
+  /**
+   * 通过输入改变input，这里是给工具调用用的
+   */
+  generateCalling?: (
+    param: ComfyUIParam<TConfig>,
+    paint: AutoPaintParam,
+    input: ComfyUIWorkflowInput,
+    args: any,
+  ) => Promise<void>;
 }
 
 const registry = getRegistry<ParamConfigurator>('comfyui-param-configurator');
