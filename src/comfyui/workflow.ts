@@ -61,7 +61,7 @@ const defaultWorkflow: ComfyUIWorkflow = {
 export const workflow = {
   toNameValue(item: ComfyUIWorkflow): NameValue {
     return {
-      name: item.name,
+      name: `${item.name}-${item.id}`,
       value: item.id,
     };
   },

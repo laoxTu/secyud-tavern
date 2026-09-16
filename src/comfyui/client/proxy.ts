@@ -1,5 +1,5 @@
 'use client';
-import { del, get, post, put } from '@/client';
+import { del, get, open, post, put } from '@/client';
 import {
   ComfyUIModel,
   ComfyUIModelRequestParam,
@@ -99,6 +99,16 @@ export const proxy = {
     },
   },
   workflow: {
+    async export(id: string): Promise<void> {
+      await open('comfyuis/workflows/{id}/export', {
+        params: { id },
+      });
+    },
+    async import(file: File): Promise<ComfyUIWorkflow> {
+      const data = new FormData();
+      data.append('file', file);
+      return await post('comfyuis/workflows/import', data);
+    },
     async get(id: string): Promise<ComfyUIWorkflow> {
       return await get('comfyuis/workflows/{id}', {
         params: { id },
