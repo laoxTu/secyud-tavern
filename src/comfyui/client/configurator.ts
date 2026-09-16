@@ -26,7 +26,7 @@ export interface ParamConfigurator<TConfig = any> extends Registerable {
     data: FormData,
     param: ComfyUIParam<TConfig>,
     input: ComfyUIWorkflowInput,
-  ) => void;
+  ) => Promise<void>;
   /**
    * input组件，comfyui在生图框中可以在此输入，
    * 以此改变模型，提示词等，llm生成提示词也可

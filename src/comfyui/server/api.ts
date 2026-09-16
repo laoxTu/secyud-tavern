@@ -17,7 +17,8 @@ import { route } from '@/interceptors/server';
 import { jsonUtils } from '@/utils';
 import { fileUtils, response, task } from '@/utils/server';
 
-import { LoraConfig } from '../select';
+import { callbacks } from '../callback';
+import { LoraConfig, selects } from '../select';
 
 import { comfyuiModelSchema } from './schema';
 
@@ -217,15 +218,19 @@ export default {
                   // 生成参数，positive，power lora， diffusion model 是必须的。回调也检测一下。
                   if (nodeValue.inputs['unet_name']) {
                     const name = nodeValue.inputs['unet_name'];
-                    await push('model_selector', `diffusion_model_${node}`, {
-                      type: 'diffusion_model',
-                      node,
-                      key: 'unet_name',
-                      value: {
-                        name,
-                        value: name,
+                    await push(
+                      selects.modelSelect.name,
+                      `diffusion_model_${node}`,
+                      {
+                        type: 'diffusion_model',
+                        node,
+                        key: 'unet_name',
+                        value: {
+                          name,
+                          value: name,
+                        },
                       },
-                    });
+                    );
                   }
                   if (
                     nodeValue._meta.title
@@ -260,13 +265,17 @@ export default {
                         break;
                       }
                     }
-                    await push('power_lora_selector', `power_lora_${node}`, {
-                      node,
-                      value: loras,
-                    });
+                    await push(
+                      selects.powerLoraSelect.name,
+                      `power_lora_${node}`,
+                      {
+                        node,
+                        value: loras,
+                      },
+                    );
                   }
                   if (nodeValue.class_type === 'Form Post Request Node') {
-                    await push('image_callback', `callback_${node}`, {
+                    await push(callbacks.name, `callback_${node}`, {
                       node,
                     });
                   }

@@ -1,3 +1,5 @@
+import { NameValue } from '@/database';
+
 export interface AutoPaintParam {
   id: number;
   disabled: boolean;
@@ -13,7 +15,7 @@ export interface AutoPaintConfig {
   // 描述
   description?: string;
   // 使用的工作流
-  workflow: string;
+  workflow: NameValue | null;
   // 参数设置
   params: AutoPaintParam[];
 }
@@ -21,7 +23,7 @@ export interface AutoPaintConfig {
 const defaultConfig: AutoPaintConfig = {
   code: '',
   description: '',
-  workflow: '',
+  workflow: null,
   params: [],
 };
 

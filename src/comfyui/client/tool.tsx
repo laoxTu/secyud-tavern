@@ -1,9 +1,10 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Checkbox,
+  combobox,
   Field,
   FieldContent,
   FieldLabel,
@@ -33,7 +34,6 @@ import { comfyuis, ComfyUIWorkflowNameValueField } from '.';
 
 export function Editor({
   entry: { entryId, data },
-  formRef,
 }: ToolProps<AutoPaintConfig>) {
   const t = useTranslations();
   const config = jsonUtils.merge<AutoPaintConfig>(
@@ -46,7 +46,22 @@ export function Editor({
         params: ComfyUIParam[];
       })
     | null
-  >(null);
+    | undefined
+  >(undefined);
+
+  useEffect(() => {
+    void (async () => {
+      if (config.workflow && workflow === undefined) {
+        const { value } = config.workflow;
+        const workflow = await comfyuis.proxy.workflow.get(value);
+        const params = await comfyuis.proxy.workflow.param.list(value);
+        setWorkflow({
+          ...workflow,
+          params: params.items,
+        });
+      }
+    })();
+  }, []);
 
   return (
     <>
@@ -89,24 +104,31 @@ export function Editor({
           const { description, disabled, code } = config.params.at(i) ?? {};
           return (
             <Field key={i}>
-              <input hidden name={'param_id'} value={u.sequence} />
-              <FieldLabel htmlFor={`${entryId}-${u.sequence}-disabled`}>
-                {t('comfyui.param')}
+              <input hidden name={'param_id'} defaultValue={u.sequence} />
+              <FieldLabel htmlFor={`${entryId}-${u.sequence}-enabled`}>
                 {u.name}
-                {t('default.disable')}
-                <Checkbox
-                  defaultChecked={disabled}
-                  id={`${entryId}-${u.sequence}-disabled`}
-                  name={`param_disabled_${u.sequence}`}
-                />
               </FieldLabel>
-              <Input
-                name={`param_code_${u.sequence}`}
-                pattern={checker.code}
-                defaultValue={code}
-              />
+              <FieldContent className="flex-row">
+                <Input
+                  className="flex-1"
+                  id={`${entryId}-${u.sequence}-code`}
+                  name={`param_code_${u.sequence}`}
+                  pattern={checker.code}
+                  defaultValue={code}
+                />
+                <Checkbox
+                  className={'m-auto'}
+                  defaultChecked={!disabled}
+                  id={`${entryId}-${u.sequence}-enabled`}
+                  name={`param_enabled_${u.sequence}`}
+                />
+              </FieldContent>
+              <FieldLabel htmlFor={`${entryId}-${u.sequence}-description`}>
+                {t('default.description')}
+              </FieldLabel>
               <Textarea
                 name={`param_description_${u.sequence}`}
+                id={`${entryId}-${u.sequence}-description`}
                 defaultValue={description}
                 onKeyDown={submitTargetFormOnKey}
               />
@@ -124,12 +146,12 @@ export const tool: ToolProvider<AutoPaintConfig> = {
     tool.config = {
       code: forms.str(data, 'code'),
       description: forms.str(data, 'description'),
-      workflow: forms.str(data, 'workflow'),
+      workflow: combobox.get(data, 'workflow'),
       params: forms.ints(data, 'param_id').map((u) => ({
         id: u,
         code: forms.str(data, `param_code_${u}`),
         description: forms.str(data, `param_description_${u}`),
-        disabled: forms.bool(data, `param_disabled_${u}`),
+        disabled: !forms.bool(data, `param_enabled_${u}`),
       })),
     };
   },
@@ -190,8 +212,13 @@ function modelFetcher(): ToolItem {
 }
 
 async function painter(config: AutoPaintConfig): Promise<ToolItem> {
-  const workflow = await comfyuis.proxy.workflow.get(config.workflow);
-  const params = await comfyuis.proxy.workflow.param.list(config.workflow);
+  if (!config.workflow) {
+    throw new BusinessError('workflow is not selected');
+  }
+  const workflow = await comfyuis.proxy.workflow.get(config.workflow.value);
+  const params = await comfyuis.proxy.workflow.param.list(
+    config.workflow.value,
+  );
   const schema: JsonSchema = {
     type: 'object',
     properties: {},
@@ -199,11 +226,14 @@ async function painter(config: AutoPaintConfig): Promise<ToolItem> {
   };
   for (const paintParam of config.params) {
     if (paintParam.disabled) continue;
-    const param = params.items.find((u) => (u.sequence = paintParam.id));
+    const param = params.items.find((u) => u.sequence === paintParam.id);
     const editor = comfyuis.configurators.registry.record(param?.type);
-    if (!editor || !param) continue;
+    if (!editor || !param?.type) continue;
+    console.debug(param, editor);
     await editor.configureSchema?.(param, paintParam, schema);
   }
+
+  console.debug(`[comfyui] schema:`, schema);
 
   return {
     name: config.code,
@@ -217,15 +247,17 @@ async function painter(config: AutoPaintConfig): Promise<ToolItem> {
       if (!input) throw new BusinessError('workflow is not serializable');
 
       for (const paintParam of config.params) {
-        if (paintParam.disabled) continue;
-        const param = params.items.find((u) => (u.sequence = paintParam.id));
+        const param = params.items.find((u) => u.sequence === paintParam.id);
         const editor = comfyuis.configurators.registry.record(param?.type);
         if (!editor || !param) continue;
         await editor.generateCalling?.(param, paintParam, input, args);
       }
-      const response = await comfyuis.proxy.generate(input);
-
-      return JSON.stringify(response);
+      try {
+        const response = await comfyuis.proxy.generate(input);
+        return JSON.stringify(response);
+      } catch (err) {
+        return JSON.stringify(err);
+      }
     },
   };
 }

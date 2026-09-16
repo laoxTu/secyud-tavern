@@ -19,14 +19,20 @@
     "param": {
       "id": "参数",
       "key": "参数键",
+      "model_type": "模型类型",
       "node": "节点",
       "type": "类型",
       "type_text": "文本",
       "type_number": "数字",
+      "type_agent_text": "AI生成文本",
+      "type_image_callback": "图片回调",
       "type_power_lora_select": "Lora 选择",
       "type_select": "选择",
       "type_callback": "回调",
-      "type_model_select": "模型选择"
+      "type_model_select": "模型选择",
+      "title_node": "标题节点",
+      "title_key": "标题键",
+      "title_value": "标题值"
     },
     "directory": "模型目录",
     "client_id": "客户端标识",
@@ -78,7 +84,17 @@
         "success": "成功绘图",
         "title": "绘制",
         "tooltip": "ComfyUI 绘图"
+      },
+      "param": {
+        "generate": {
+          "success": "生成成功"
+        }
       }
+    }
+  },
+  "tool": {
+    "provider": {
+      "comfyui": "ComfyUI"
     }
   }
 }

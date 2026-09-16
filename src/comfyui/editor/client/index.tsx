@@ -96,7 +96,7 @@ export const text: ParamConfigurator<TextConfig> = {
     };
   },
   inputComponent: TextInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`prompt_${sequence}`);
@@ -261,7 +261,7 @@ function AgentTextInputComponent({
 }
 
 export const agentText: ParamConfigurator<AgentTextConfig> = {
-  id: main.text.name,
+  id: main.agentText.name,
   configComponent: AgentTextConfigComponent,
   async configureObject(data, param) {
     const agent = { ...param };
@@ -274,7 +274,7 @@ export const agentText: ParamConfigurator<AgentTextConfig> = {
     };
   },
   inputComponent: AgentTextInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`text_${sequence}`);
@@ -373,7 +373,7 @@ export const number: ParamConfigurator<NumberConfig> = {
     };
   },
   inputComponent: NumberInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = parseInt(data.get(`value_${sequence}`) as string);

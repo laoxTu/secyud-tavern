@@ -101,7 +101,7 @@ function ModelPropertyContent() {
       <Field>
         <FieldLabel htmlFor={`model-retry`}>{t('model.retry_max')}</FieldLabel>
         <Input
-          name={'retry'}
+          name={'retry_max'}
           id={`model-retry`}
           min={0}
           max={10}
