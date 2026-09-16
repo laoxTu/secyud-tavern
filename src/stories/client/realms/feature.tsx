@@ -33,6 +33,7 @@ import {
   TooltipAlertDialog,
   TooltipDialog,
   useFormRef,
+  useRefresh,
 } from '@/components';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -242,6 +243,7 @@ function Editor() {
   const t = useTranslations();
   const { index, setIndex } = useRealmState();
   const [history, setHistory] = useState<RealmHistory | undefined>(undefined);
+  const { key, refreshKey } = useRefresh();
   const formRef = useFormRef();
 
   const { realm } = realms;
@@ -260,6 +262,7 @@ function Editor() {
         if (index.cur <= 0) return;
         const history = await get(index.cur, realm);
         setHistory(history);
+        refreshKey();
       })}
       onSubmit={handler(async (data: FormData) => {
         const {
@@ -287,7 +290,7 @@ function Editor() {
       })}
     >
       {history && (
-        <FieldSet className={'overflow-auto p-2 flex-1'}>
+        <FieldSet key={key} className={'overflow-auto p-2 flex-1'}>
           <FieldGroup className={'p-1'}>
             <Field>
               <FieldLabel>{t('realm.variable')}</FieldLabel>

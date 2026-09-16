@@ -3,8 +3,9 @@ export interface ScriptConfig {
   script?: string;
   schema?: string;
   description?: string;
-  hidden: boolean;
+  // 引入doc
   enableDoc?: boolean;
+  // 引入变量
   enableVariable?: boolean;
 }
 

@@ -28,11 +28,11 @@ export function minify(text?: string) {
  * 原地合并JSON对象，lft为空则返回rht的深度拷贝，
  * 同时为空返回空对象，否则返回lft
  */
-export function merge(lft: any, rht: any) {
-  if (!lft && !rht) return {};
+export function merge<T = any>(lft: T, rht: T): T {
+  if (!lft && !rht) return {} as T;
   if (!lft) return structuredClone(rht);
 
-  const result = lft;
+  const result = lft as any;
 
   if (rht) {
     for (const key in rht) {
@@ -55,7 +55,7 @@ export function merge(lft: any, rht: any) {
       }
     }
   }
-  return result;
+  return result as T;
 }
 
 export const jsonUtils = {

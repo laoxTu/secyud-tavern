@@ -102,6 +102,18 @@ export const text: ParamConfigurator<TextConfig> = {
       inputs[config.key] = data.get(`prompt_${sequence}`);
     }
   },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.prompt;
+    }
+  },
 };
 
 const cache: Record<string, ToolItem> = {};
@@ -268,6 +280,18 @@ export const agentText: ParamConfigurator<AgentTextConfig> = {
       inputs[config.key] = data.get(`text_${sequence}`);
     }
   },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs && args[paint.code]) {
+      inputs[config.key] = args[paint.code];
+    }
+  },
 };
 
 export function NumberConfigComponent({
@@ -353,6 +377,18 @@ export const number: ParamConfigurator<NumberConfig> = {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = parseInt(data.get(`value_${sequence}`) as string);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'number',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
     }
   },
 };
