@@ -9,6 +9,7 @@ import {
   StoryEntry,
   StoryRequestOptions,
 } from '@/stories';
+import { image } from '@/stories/images/server/api';
 import { response } from '@/utils/server';
 
 import { stories } from '.';
@@ -60,6 +61,7 @@ export default {
         await stories.repository.delete(id);
         return response.json(null);
       }),
+      image,
       clone: {
         POST: route(async (_, record) => {
           const { id: originId } = await record.params;

@@ -42,6 +42,7 @@ interface TooltipDialogProps {
   info: TooltipDialogInfo;
   className?: string;
   style?: React.CSSProperties;
+  disableForm?: boolean;
   formRef?: React.RefObject<HTMLFormElement | null>;
 }
 
@@ -52,6 +53,7 @@ export function TooltipDialog({
   children,
   onOpen,
   onSubmit,
+  disableForm,
   className,
   style,
   formRef,
@@ -81,13 +83,15 @@ export function TooltipDialog({
         className={className}
         style={style}
         render={
-          <form
-            action={async (data: FormData) => {
-              await onSubmit?.(data);
-              setOpen(false);
-            }}
-            ref={formRef}
-          />
+          disableForm ? undefined : (
+            <form
+              action={async (data: FormData) => {
+                await onSubmit?.(data);
+                setOpen(false);
+              }}
+              ref={formRef}
+            />
+          )
         }
       >
         <DialogHeader>
@@ -96,7 +100,9 @@ export function TooltipDialog({
         </DialogHeader>
         {children}
         <DialogFooter>
-          {onSubmit && <Button type="submit">{t('default.ensure')}</Button>}
+          {onSubmit && !disableForm && (
+            <Button type="submit">{t('default.ensure')}</Button>
+          )}
           <DialogClose render={<Button variant="outline" />}>
             {t('default.cancel')}
           </DialogClose>

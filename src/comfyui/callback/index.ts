@@ -1,13 +1,24 @@
 /**
  * 回调，用于ComfyUI保存到本应用
  */
-export interface CallbackConfig {
+export interface ImageCallbackConfig {
   // 节点
   node: string;
+  // 标题节点
+  title: string;
+  // 标题key
+  key: string;
+  // 默认值
+  value: string;
 }
 
-const defaultConfig: CallbackConfig = { node: '' };
+const defaultConfig: ImageCallbackConfig = {
+  node: '',
+  title: '',
+  key: '',
+  value: 'image',
+};
 export const callbacks = {
   default: defaultConfig,
-  name: 'callback',
+  name: 'image_callback',
 };

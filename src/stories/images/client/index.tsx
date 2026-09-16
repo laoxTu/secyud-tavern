@@ -161,6 +161,7 @@ export function FeatureContent() {
   const t = useTranslations();
   return (
     <TooltipDialog
+      disableForm
       className={'overflow-hidden'}
       style={{ maxWidth: '86%', height: '86%' }}
       tooltip={<ImagesIcon />}
