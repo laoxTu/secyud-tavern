@@ -97,7 +97,7 @@ CREATE TABLE `realm_history` (
 	`sequence` integer NOT NULL,
 	`summary` integer DEFAULT false NOT NULL,
 	`variables` text DEFAULT '{}' NOT NULL,
-	`inputs` text DEFAULT '[]' NOT NULL,
+	`prompts` text DEFAULT '[]' NOT NULL,
 	`output` integer DEFAULT -1 NOT NULL,
 	`outputs` text DEFAULT '[]' NOT NULL,
 	PRIMARY KEY(`master_id`, `sequence`),
