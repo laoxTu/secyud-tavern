@@ -8,11 +8,6 @@
     "value": "Value"
   },
   "message": {
-    "story_enter": {
-      "desc": "Enter the story from {target}",
-      "title": "Enter the story from {target}",
-      "tooltip": "Enter story"
-    },
     "macro": {
       "selector": {
         "desc": "Select macro",
@@ -20,13 +15,18 @@
         "title": "Macro options",
         "tooltip": "Configure macro"
       }
+    },
+    "story_enter": {
+      "desc": "Enter the story from {target}",
+      "title": "Enter the story from {target}",
+      "tooltip": "Enter story"
     }
   },
   "preset": {
     "enter_description": "A story will be created directly from the preset",
     "enter_title": "Enter from preset",
-    "id": "Preset",
     "entry": "Entry",
+    "id": "Preset",
     "input_author": "Enter author",
     "opening": "Opening remarks"
   },
@@ -43,9 +43,9 @@
     "unlimit_description": "-1 means unlimited"
   },
   "script": {
-    "id": "Script",
     "enable_doc": "Access iframe",
-    "enable_variable": "Access variables"
+    "enable_variable": "Access variables",
+    "id": "Script"
   },
   "style": {
     "id": "Style"

@@ -49,6 +49,7 @@
     "regenerate": "Regenerate",
     "requires": "Dependencies",
     "reset": "Reset",
+    "save": "Save",
     "schema": "Schema",
     "script": "Script",
     "search": "Search",
@@ -69,19 +70,18 @@
     "types": "Types",
     "url": "Link",
     "value": "Value",
-    "save": "Save",
     "variables": "Variables",
     "version": "Version",
     "year": "Year",
     "zh": "Simplified Chinese"
   },
   "error": {
-    "entity": {
-      "duplicate_value": "A {entity} with the same {name}({value}) already exists."
-    },
     "clipboard_no_item": "Clipboard is empty",
     "duplicate_field": "A {entity_name} with the same {field} already exists!",
     "empty_field": "{field} cannot be empty!",
+    "entity": {
+      "duplicate_value": "A {entity} with the same {name}({value}) already exists."
+    },
     "json_invalid": "{target} has an invalid JSON format"
   },
   "language": {
@@ -95,19 +95,11 @@
       "title": "Clone {target}",
       "tooltip": "Clone"
     },
-    "empty": {
-      "desc": "No {target} found",
-      "title": "Empty {target}"
-    },
-    "empty_select": {
-      "title": "No {target} selected",
-      "desc": "Click a {target} to edit it."
-    },
-    "update": {
-      "desc": "Update {target}",
-      "success": "Updated successfully",
-      "title": "Update {target}",
-      "tooltip": "Update"
+    "copy": {
+      "desc": "Are you sure you want to copy {target}?",
+      "success": "Copied successfully",
+      "title": "Copy {target}",
+      "tooltip": "Copy"
     },
     "create": {
       "desc": "Create {target}",
@@ -120,6 +112,14 @@
       "success": "Deleted successfully",
       "title": "Delete {target}",
       "tooltip": "Delete"
+    },
+    "empty": {
+      "desc": "No {target} found",
+      "title": "Empty {target}"
+    },
+    "empty_select": {
+      "desc": "Click a {target} to edit it.",
+      "title": "No {target} selected"
     },
     "export": {
       "desc": "Are you sure you want to export {target}?",
@@ -139,11 +139,11 @@
       "title": "Paste {target}",
       "tooltip": "Paste"
     },
-    "copy": {
-      "desc": "Are you sure you want to copy {target}?",
-      "success": "Copied successfully",
-      "title": "Copy {target}",
-      "tooltip": "Copy"
+    "update": {
+      "desc": "Update {target}",
+      "success": "Updated successfully",
+      "title": "Update {target}",
+      "tooltip": "Update"
     }
   },
   "setting": {

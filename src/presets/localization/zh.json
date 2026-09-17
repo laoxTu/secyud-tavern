@@ -1,19 +1,14 @@
 {
   "macro": {
     "id": "宏",
+    "is_json": "JSON数据",
     "key": "键",
     "multiple": "允许多选",
     "selector": "宏选择",
     "show_selector": "显示宏选择",
-    "value": "值",
-    "is_json": "JSON数据"
+    "value": "值"
   },
   "message": {
-    "story_enter": {
-      "desc": "从{target}进入故事",
-      "title": "从{target}进入故事",
-      "tooltip": "进入故事"
-    },
     "macro": {
       "selector": {
         "desc": "选择宏",
@@ -21,13 +16,18 @@
         "title": "宏选项",
         "tooltip": "配置宏"
       }
+    },
+    "story_enter": {
+      "desc": "从{target}进入故事",
+      "title": "从{target}进入故事",
+      "tooltip": "进入故事"
     }
   },
   "preset": {
     "enter_description": "即将从预设直接创建故事",
     "enter_title": "从预设进入",
-    "id": "预设",
     "entry": "条目",
+    "id": "预设",
     "input_author": "输入作者",
     "opening": "开场白"
   },
@@ -44,9 +44,9 @@
     "unlimit_description": "-1表示不限制"
   },
   "script": {
-    "id": "脚本",
     "enable_doc": "访问iframe",
-    "enable_variable": "访问变量"
+    "enable_variable": "访问变量",
+    "id": "脚本"
   },
   "style": {
     "id": "样式"
