@@ -27,8 +27,13 @@ async function apply(
   };
   converts.push(generate);
 }
-
-async function init({ realm }: { realm: Realm }) {
+/**
+ *
+ * @param param0
+ * @param t 初始化时应该给出作用域
+ * @returns
+ */
+async function init({ realm }: { realm: Realm }, t: string) {
   const cache: RegexCache = {
     regexes: [],
   };
@@ -38,7 +43,7 @@ async function init({ realm }: { realm: Realm }) {
     async (entry) => {
       const { disabled, target } = entry;
       if (disabled) return;
-      if (target == 'both' || target == 'input') {
+      if (target == 'both' || target == t) {
         cache.regexes.push(entry);
       }
     },
@@ -48,13 +53,13 @@ async function init({ realm }: { realm: Realm }) {
 
 export const processer: Processer = {
   id: regexes.name,
-  init,
+  init: (ctx) => init(ctx, 'input'),
   prompt: apply,
 };
 
 export const renderer: Renderer = {
   id: regexes.name,
-  init,
+  init: (ctx) => init(ctx, 'output'),
   output: apply,
   stream: apply,
 };

@@ -38,7 +38,9 @@ function Component() {
     <TooltipDialog
       tooltip={<ToolboxIcon />}
       onOpen={handler(async (open: boolean) => {
-        if (!open) {
+        if (open) {
+          refreshKey();
+        } else {
           await stories.proxy.update(realm.id, {
             properties: realm.properties,
           });
