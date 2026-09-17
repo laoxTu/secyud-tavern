@@ -1,7 +1,7 @@
 {
   "lorebook": {
-    "id": "世界书",
     "fit_count": "匹配数量",
+    "id": "世界书",
     "include_any_word": "包含词组",
     "keywords_groups_length": "关键词组数量",
     "last_message": "最后一条消息",

@@ -96,6 +96,7 @@ type Fetcher = (
 ) => Promise<DataResponse<NameValue>>;
 
 interface RemoteSearchComboboxProps {
+  className?: string;
   name?: string;
   id?: string;
   itemHeight?: number;
@@ -180,6 +181,7 @@ export function RemoteSearchCombobox({
   multiple,
   itemHeight,
   size,
+  className,
   value: defaultValue,
   onValueChange,
   fetcher,
@@ -247,7 +249,7 @@ export function RemoteSearchCombobox({
       }}
     >
       {multiple ? (
-        <ComboboxChips ref={anchor} className="w-full">
+        <ComboboxChips ref={anchor} className={className}>
           <ComboboxValue>
             {(values?: NameValue[] | null) => (
               <>
@@ -262,7 +264,7 @@ export function RemoteSearchCombobox({
           </ComboboxValue>
         </ComboboxChips>
       ) : (
-        <ComboboxInput showClear />
+        <ComboboxInput className={className} showClear />
       )}
       <ComboboxContent anchor={anchor}>
         {!cache.current.length && (

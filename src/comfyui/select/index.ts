@@ -25,11 +25,12 @@ export interface ModelSelectConfig extends SelectConfigBase<
   NameValue | null | undefined
 > {
   type?: string | null;
+  fuzzy?: string | null;
 }
 
 const defaultModelSelectConfig: ModelSelectConfig = {
   ...defaultSelectConfigBase,
-  type: 'unet',
+  type: 'diffusion_model',
 };
 
 export interface LoraConfig {

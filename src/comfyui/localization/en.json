@@ -1,24 +1,14 @@
 {
   "comfyui": {
-    "model": {
-      "id": "Model",
-      "importer": "Import method",
-      "importer_civitai": "Civitai",
-      "importer_invalid": "Import method cannot be empty"
-    },
-    "workflow": {
-      "id": "Workflow"
-    },
-    "id": "ComfyUI",
     "base_model": "Base model",
     "civitai": {
       "model_id": "Model ID (choose one)",
       "model_version_id": "Version ID (choose one)"
     },
-    "directory": "Model directory",
     "client_id": "Client ID",
     "count": "Count",
     "default_value": "Default value",
+    "directory": "Model directory",
     "download_server": "Download to server",
     "download_started": "Download started",
     "download_url": "Download URL",
@@ -28,11 +18,18 @@
     "generate_img": "Generate image",
     "generate_parameter": "Generate parameters",
     "generate_parameter_successfully": "Parameters generated successfully",
+    "id": "ComfyUI",
     "invalid_download_url": "Download URL is empty",
     "invalid_model_dir": "Model download directory is empty",
     "invalid_path": "Path name is empty",
     "lora": "LoRA",
     "lora_count": "LoRA count",
+    "model": {
+      "id": "Model",
+      "importer": "Import method",
+      "importer_civitai": "Civitai",
+      "importer_invalid": "Import method cannot be empty"
+    },
     "model_dir": "Model path",
     "model_path": "Model subpath",
     "model_type": "Model type",
@@ -57,6 +54,9 @@
     "text_prompt": "Prompt",
     "value": "Value",
     "value_count": "Value count",
+    "workflow": {
+      "id": "Workflow"
+    },
     "workflow_invalid": "Invalid workflow format",
     "workflow_need": "Workflow required"
   },

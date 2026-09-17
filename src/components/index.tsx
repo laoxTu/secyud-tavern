@@ -52,6 +52,27 @@ export function submitFormOnKey(
   }
 }
 
+export const forms = {
+  int(data: FormData, name: string) {
+    return parseInt(data.get(name) as string);
+  },
+  float(data: FormData, name: string) {
+    return parseFloat(data.get(name) as string);
+  },
+  str(data: FormData, name: string) {
+    return data.get(name) as string;
+  },
+  bool(data: FormData, name: string) {
+    return !!data.get(name);
+  },
+  strs(data: FormData, name: string) {
+    return data.getAll(name) as string[];
+  },
+  ints(data: FormData, name: string) {
+    return data.getAll(name).map((u) => parseInt(u as string));
+  },
+};
+
 export type Orientation =
   'horizontal' | 'responsive' | 'vertical' | null | undefined;
 

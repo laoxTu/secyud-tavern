@@ -1,5 +1,5 @@
 import { and, count, eq, like, sql, SQL } from 'drizzle-orm';
-import { v4 } from 'uuid';
+import { v4, validate } from 'uuid';
 
 import {
   ComfyUIParam,
@@ -149,7 +149,7 @@ async function get(id: string) {
 
 async function create(comfyuiWorkflow: ComfyUIWorkflow) {
   checker.notNullOrWhitespace('name', comfyuiWorkflow.name);
-  if (!comfyuiWorkflow.id) comfyuiWorkflow.id = v4();
+  if (!validate(comfyuiWorkflow.id)) comfyuiWorkflow.id = v4();
   await db.insert(comfyuiWorkflowSchema).values(comfyuiWorkflow);
   return comfyuiWorkflow.id;
 }

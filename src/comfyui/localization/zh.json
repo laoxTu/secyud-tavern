@@ -1,37 +1,14 @@
 {
   "comfyui": {
-    "model": {
-      "id": "模型",
-      "importer": "导入方式",
-      "importer_civitai": "civitai",
-      "importer_invalid": "导入方式不可为空"
-    },
-    "workflow": {
-      "id": "工作流",
-      "generate_params": "生成参数"
-    },
-    "id": "ComfyUI",
     "base_model": "基础模型",
     "civitai": {
       "model_id": "模型ID (二选一)",
       "model_version_id": "版本ID (二选一)"
     },
-    "param": {
-      "id": "参数",
-      "key": "参数键",
-      "node": "节点",
-      "type": "类型",
-      "type_text": "文本",
-      "type_number": "数字",
-      "type_power_lora_select": "Lora 选择",
-      "type_select": "选择",
-      "type_callback": "回调",
-      "type_model_select": "模型选择"
-    },
-    "directory": "模型目录",
     "client_id": "客户端标识",
     "count": "数量",
     "default_value": "默认值",
+    "directory": "模型目录",
     "download_server": "下载到服务器",
     "download_started": "开始下载",
     "download_url": "下载地址",
@@ -39,17 +16,42 @@
     "file_exists": "文件已存在",
     "generate": "生成",
     "generate_img": "生成图片",
+    "id": "ComfyUI",
     "invalid_download_url": "下载地址为空",
     "invalid_model_dir": "模型下载目录为空",
     "invalid_path": "路径名为空",
     "lora": "Lora",
     "lora_count": "Lora数量",
+    "model": {
+      "id": "模型",
+      "importer": "导入方式",
+      "importer_civitai": "civitai",
+      "importer_invalid": "导入方式不可为空"
+    },
     "model_dir": "模型路径",
     "model_path": "模型子路径",
     "model_type": "模型类型",
     "node_id": "节点ID",
     "node_name": "参数名称",
     "number": "数字",
+    "param": {
+      "id": "参数",
+      "key": "参数键",
+      "model_type": "模型类型",
+      "node": "节点",
+      "title_key": "标题键",
+      "title_node": "标题节点",
+      "title_value": "标题值",
+      "type": "类型",
+      "type_agent_text": "AI生成文本",
+      "type_callback": "回调",
+      "type_image_callback": "图片回调",
+      "type_model_select": "模型选择",
+      "type_number": "数字",
+      "type_power_lora_select": "Lora 选择",
+      "type_select": "选择",
+      "type_text": "文本"
+    },
     "parameter": "参数",
     "parameter_type": "参数类型",
     "parameter_type_image_callback": "图片回调",
@@ -68,6 +70,10 @@
     "text_prompt": "提示词",
     "value": "值",
     "value_count": "值数量",
+    "workflow": {
+      "generate_params": "生成参数",
+      "id": "工作流"
+    },
     "workflow_invalid": "工作流格式不正确",
     "workflow_need": "需要工作流"
   },
@@ -78,7 +84,17 @@
         "success": "成功绘图",
         "title": "绘制",
         "tooltip": "ComfyUI 绘图"
+      },
+      "param": {
+        "generate": {
+          "success": "生成成功"
+        }
       }
+    }
+  },
+  "tool": {
+    "provider": {
+      "comfyui": "ComfyUI"
     }
   }
 }

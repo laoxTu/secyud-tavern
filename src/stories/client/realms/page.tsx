@@ -106,8 +106,6 @@ function UserInput() {
         <InputGroup className={'bg-white'}>
           <InputGroupTextarea
             ref={inputRef}
-            id="slot-user-input"
-            name="slot-user-input"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t('default.ctrl_enter_submit')}
@@ -258,7 +256,7 @@ export default function RealmPage({
   const { pinned, setPinned, initPager } = useRealmState();
   const route = useRouter();
 
-  const loadingCurrentSlot = async () => {
+  const load = async () => {
     try {
       setLoadingState((u) => ({
         ...u,
@@ -292,7 +290,7 @@ export default function RealmPage({
   useEffect(() => {
     (async () => {
       setLoadingState((u) => ({ ...u, started: true }));
-      await loadingCurrentSlot();
+      await load();
     })();
   }, []);
 

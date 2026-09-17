@@ -96,10 +96,22 @@ export const text: ParamConfigurator<TextConfig> = {
     };
   },
   inputComponent: TextInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`prompt_${sequence}`);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.prompt;
     }
   },
 };
@@ -249,7 +261,7 @@ function AgentTextInputComponent({
 }
 
 export const agentText: ParamConfigurator<AgentTextConfig> = {
-  id: main.text.name,
+  id: main.agentText.name,
   configComponent: AgentTextConfigComponent,
   async configureObject(data, param) {
     const agent = { ...param };
@@ -262,10 +274,22 @@ export const agentText: ParamConfigurator<AgentTextConfig> = {
     };
   },
   inputComponent: AgentTextInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`text_${sequence}`);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs && args[paint.code]) {
+      inputs[config.key] = args[paint.code];
     }
   },
 };
@@ -349,10 +373,22 @@ export const number: ParamConfigurator<NumberConfig> = {
     };
   },
   inputComponent: NumberInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = parseInt(data.get(`value_${sequence}`) as string);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'number',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
     }
   },
 };

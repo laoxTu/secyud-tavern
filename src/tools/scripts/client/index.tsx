@@ -27,7 +27,6 @@ const defaultConfig: ScriptConfig = {
   code: '',
   description: '',
   script: 'return input;',
-  hidden: false,
   enableDoc: false,
   schema: `{
     "type": "object",
@@ -54,18 +53,6 @@ export function Editor({
           defaultValue={config.description}
           onKeyDown={submitTargetFormOnKey}
         />
-      </Field>
-      <Field>
-        <FieldLabel htmlFor={`${entryId}-hidden`}>
-          {t('default.hidden')}
-        </FieldLabel>
-        <FieldContent>
-          <Checkbox
-            name="hidden"
-            id={`${entryId}-hidden`}
-            defaultChecked={config.hidden}
-          />
-        </FieldContent>
       </Field>
       <Field>
         <FieldLabel htmlFor={`${entryId}-enable_doc`}>
@@ -133,7 +120,6 @@ const tool: ToolProvider<ScriptConfig> = {
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
-      hidden: !!data.get('hidden'),
       enableDoc: !!data.get('enable_doc'),
       enableVariable: !!data.get('enable_variable'),
       script: data.get('script') as string,

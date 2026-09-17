@@ -37,7 +37,7 @@ export const realmHistorySchema = sqliteTable(
     sequence: integer('sequence').notNull(),
     summary: boolean('summary').default(false).notNull(),
     variables: json<Record<string, any>>('variables').default({}).notNull(),
-    prompts: json<RealmPrompt[]>('inputs').default([]).notNull(),
+    prompts: json<RealmPrompt[]>('prompts').default([]).notNull(),
     output: integer('output').default(-1).notNull(),
     outputs: json<RealmOutput[][]>('outputs').default([]).notNull(),
   },

@@ -46,7 +46,7 @@ function throwInvalidJson(name?: string): string {
 export const checker = {
   code: '[A-Za-z0-9_]+',
   validateCode(fieldName: string, value?: string | null, namespace?: string) {
-    if (value && /^[A-Za-z0-9_]$/.test(value)) return value;
+    if (value && /^[A-Za-z0-9_]+$/.test(value)) return value;
     throw new BusinessError(`code is invalid`, 'error.invalid_code').withValue(
       'field',
       `${namespace ?? 'default'}.${fieldName}`,

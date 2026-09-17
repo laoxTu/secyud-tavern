@@ -86,17 +86,20 @@ export function ComfyUIModelSelector({
   types,
   defaultValue,
   id,
+  className,
   name,
 }: {
   types: string[];
   name: string;
   id?: string;
+  className?: string;
   defaultValue?: NameValue;
 }) {
   const { handler } = useHandler();
   return (
     <>
       <RemoteSearchCombobox
+        className={className}
         name={name}
         id={id}
         value={defaultValue}

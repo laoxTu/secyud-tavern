@@ -2,6 +2,8 @@
 import {
   ClipboardCopyIcon,
   CopyIcon,
+  FileDownIcon,
+  FileUpIcon,
   SearchIcon,
   SquarePlusIcon,
   TriangleIcon,
@@ -18,6 +20,7 @@ import {
   useComfyUIWorkflowState,
 } from '@/comfyui/client/state';
 import {
+  Button,
   DeleteDialog,
   dialogs,
   element,
@@ -49,6 +52,7 @@ function Property() {
   const { handler, success } = useHandler();
   const { item, setItem } = useComfyUIWorkflowState();
   const form = useFormRef();
+  const { refresh } = useComfyUIParamState();
 
   if (!item) return null;
 
@@ -93,7 +97,9 @@ function Property() {
               text={'comfyui.workflow.generate_params'}
               onClick={handler(async () => {
                 await comfyuis.proxy.workflow.param.generate(item.id);
+                await setItem(item.id);
                 success(t('message.comfyui.param.generate.success'));
+                refresh();
               })}
             >
               <TriangleIcon />
@@ -117,6 +123,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
   const { handler, success } = useHandler();
   const { item } = useComfyUIWorkflowState();
   const { refresh } = useComfyUIParamState();
+  console.debug(type, comfyuis.configurators.registry.records);
   const [editor, setEditor] = useState<ParamConfigurator | null>(
     comfyuis.configurators.registry.record(type),
   );
@@ -165,6 +172,8 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
           <DeleteDialog
             onDelete={handler(async () => {
               await comfyuis.proxy.workflow.param.del(masterId, sequence);
+              success(t('message.delete.success'));
+              await refresh();
             })}
             itemName={`comfyui.param.id`}
           />
@@ -183,6 +192,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
           };
           await editor?.configureObject?.(data, param);
           await comfyuis.proxy.workflow.param.set(item.id, sequence, param);
+          success(t('message.update.success'));
           await refresh();
         })}
       >
@@ -281,6 +291,7 @@ function Params() {
             <Input name={'name'} required id={`preset-${name}-create-name`} />
           </Field>
         </TooltipDialog>
+        <Button className={'opacity-0'}></Button>
       </div>
       <div className={'flex-1 flex flex-col'}>
         <PagedItemList<ComfyUIParam>
@@ -346,16 +357,6 @@ export function WorkflowContent() {
                 <Input id={`model-name`} name="name" required />
               </Field>
             </TooltipDialog>
-            <DeleteDialog
-              itemName={`model.id`}
-              disabled={!item}
-              onDelete={handler(async () => {
-                if (!item) return;
-                await comfyuis.proxy.workflow.delete(item.id);
-                await setItem(undefined);
-                success(t('message.delete.success'));
-              })}
-            />
             <TooltipDialog
               tooltip={<CopyIcon />}
               disabled={!item}
@@ -381,6 +382,47 @@ export function WorkflowContent() {
                 />
               </Field>
             </TooltipDialog>
+            <IconTooltip
+              disabled={!item}
+              text={'default.export'}
+              onClick={handler(async () => {
+                if (item) await comfyuis.proxy.workflow.export(item?.id);
+              })}
+            >
+              <FileUpIcon />
+            </IconTooltip>
+            <TooltipDialog
+              tooltip={<FileDownIcon />}
+              onSubmit={handler(async (data: FormData) => {
+                await comfyuis.proxy.workflow.import(data.get('file') as File);
+                success(t('message.import.success'));
+                await refresh();
+              })}
+              info={dialogs.info(t, 'import', `comfyui.param.id`)}
+            >
+              <Field>
+                <FieldLabel htmlFor={`import-filename`}>
+                  {t('default.name')}
+                </FieldLabel>
+                <Input
+                  id={`import-filename`}
+                  name="file"
+                  type="file"
+                  accept={'.zip'}
+                  required
+                />
+              </Field>
+            </TooltipDialog>
+            <DeleteDialog
+              itemName={`model.id`}
+              disabled={!item}
+              onDelete={handler(async () => {
+                if (!item) return;
+                await comfyuis.proxy.workflow.delete(item.id);
+                await setItem(undefined);
+                success(t('message.delete.success'));
+              })}
+            />
           </div>
           {item && <Property key={item.id} />}
         </div>

@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import {
   ComfyUIModelSelector,
@@ -18,6 +18,7 @@ import {
   Checkbox,
   combobox,
   Field,
+  FieldContent,
   FieldLabel,
   Input,
   Selector,
@@ -144,10 +145,23 @@ const select: ParamConfigurator<SelectConfig> = {
     };
   },
   inputComponent: SelectInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`value_${sequence}`);
+    }
+  },
+  async configureSchema({ config }, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+      enum: config.items,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
     }
   },
 };
@@ -238,14 +252,27 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
       node: data.get('node') as string,
       key: data.get('key') as string,
       type: data.get('type') as string,
+      fuzzy: data.get('fuzzy') as string,
       value: combobox.get(data, `value_${param.sequence}`),
     };
   },
   inputComponent: ModelSelectInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = data.get(`value_${sequence}`);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = args[paint.code] ?? config.value;
     }
   },
 };
@@ -255,7 +282,7 @@ function PowerLoraSelectConfigComponent({
   formRef,
 }: ComfyUIParamProps<PowerLoraSelectConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(main.select.default, param.config);
+  const config = jsonUtils.merge(main.powerLoraSelect.default, param.config);
   const { sequence } = param;
   return (
     <>
@@ -285,7 +312,7 @@ function PowerLoraSelectInputComponent({
   const [count, setCount] = useState(value.length);
   return (
     <>
-      <Field className={spanHalf}>
+      <Field>
         <FieldLabel
           htmlFor={`param-count-${sequence}`}
         >{`${name} ${t('comfyui.lora_count')}`}</FieldLabel>
@@ -305,27 +332,20 @@ function PowerLoraSelectInputComponent({
         const cfg = value.length > i ? value[i] : null;
         const lora = cfg?.lora;
         return (
-          <React.Fragment key={i}>
-            <Field key={`${i}-lora`}>
-              <FieldLabel htmlFor={`param-lora-${sequence}-${i}`}>
-                {`${name} ${t('comfyui.lora')} ${i + 1}`}
-                <Checkbox
-                  name={`lora_on_${sequence}_${i}`}
-                  defaultChecked={cfg?.on ?? true}
-                />
-              </FieldLabel>
+          <Field key={i} className={spanHalf}>
+            <FieldLabel htmlFor={`param-lora-${sequence}-${i}`}>
+              {`${name} ${t('comfyui.lora')} ${i + 1}`}
+            </FieldLabel>
+            <FieldContent className={'flex-row'}>
               <ComfyUIModelSelector
+                className="w-full"
                 types={['lora']}
                 defaultValue={lora}
                 id={`param-lora-${sequence}-${i}`}
                 name={`lora_${sequence}_${i}`}
               />
-            </Field>
-            <Field key={`${i}-strength`}>
-              <FieldLabel htmlFor={`param-lora_strength-${sequence}-${i}`}>
-                {`${t('comfyui.strength')} ${i + 1}`}
-              </FieldLabel>
               <Input
+                className="max-w-16"
                 name={`lora_strength_${sequence}_${i}`}
                 type={'number'}
                 defaultValue={cfg?.strength ?? 1}
@@ -334,8 +354,13 @@ function PowerLoraSelectInputComponent({
                 step={0.05}
                 id={`param-lora_strength-${sequence}-${i}`}
               />
-            </Field>
-          </React.Fragment>
+              <Checkbox
+                className={'m-auto'}
+                name={`lora_on_${sequence}_${i}`}
+                defaultChecked={cfg?.on ?? true}
+              />
+            </FieldContent>
+          </Field>
         );
       })}
     </>
@@ -362,7 +387,7 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
     };
   },
   inputComponent: PowerLoraSelectInputComponent,
-  configureInput(data, { config, sequence }, input): void {
+  async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (!inputs) return;
     const count = parseInt(data.get(`count_${sequence}`) as string);
@@ -380,6 +405,45 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
         delete inputs[`lora_${i + 1}`];
       }
     }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'array',
+      description: paint.description,
+      items: {
+        type: 'object',
+        properties: {
+          lora: {
+            type: 'string',
+            description: 'the lora name, need to use the result from search',
+          },
+          strength: {
+            type: 'number',
+            maximum: 5,
+            minimum: -5,
+            description: 'the strength of the lora',
+          },
+        },
+      },
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    const items: { lora: string; strength: number }[] = args[paint.code];
+    if (!inputs || !items) return;
+    const { model, PowerLoraLoaderHeaderWidget } = inputs;
+
+    input[config.node].inputs = {
+      model,
+      PowerLoraLoaderHeaderWidget,
+      '➕ Add Lora': '',
+      ...Object.fromEntries(
+        items.map((u, i) => [
+          `lora_${i + 1}`,
+          { lora: u.lora, strength: u.strength, on: true },
+        ]),
+      ),
+    };
   },
 };
 

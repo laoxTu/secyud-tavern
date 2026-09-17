@@ -24,18 +24,18 @@
     }
   },
   "tool": {
-    "id": "Tool",
     "calling_tool": "Calling tool",
     "create_failed": "Failed to create tool ({entry})",
-    "selector": "Tool selection",
-    "show_selector": "Show tool selector",
-    "provider_type": "Tool type",
+    "id": "Tool",
     "provider": {
-      "memory": "Memory tool",
-      "script": "Script",
       "agent": "Sub-agent",
       "fetcher": "Web fetcher",
+      "memory": "Memory tool",
+      "script": "Script",
       "variable": "Variable tool"
-    }
+    },
+    "provider_type": "Tool type",
+    "selector": "Tool selection",
+    "show_selector": "Show tool selector"
   }
 }

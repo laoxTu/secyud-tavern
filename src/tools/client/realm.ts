@@ -59,6 +59,7 @@ export const processer: Processer = {
           throw new BusinessError(
             'tool create failed',
             'tool.create_failed',
+            error,
           ).withValue('entry', entry.name);
         }
       },
