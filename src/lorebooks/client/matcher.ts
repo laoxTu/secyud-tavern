@@ -28,7 +28,7 @@ export interface Matcher extends Registerable {
   ) => Promise<boolean>;
 }
 
-const registry = getRegistry<Matcher>('lorebook-macher');
+const registry = getRegistry<Matcher>('lorebook-matcher');
 
 function content({ properties, output, message }: MatchContext) {
   const variableName = 'content';

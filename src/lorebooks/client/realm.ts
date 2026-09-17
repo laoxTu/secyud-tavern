@@ -226,7 +226,7 @@ export const processer: Processer = {
             content: entry.content ?? '',
           });
           await insert(database, {
-            name: entry.name,
+            name: entry.id,
             embedding,
           });
         }

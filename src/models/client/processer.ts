@@ -365,7 +365,7 @@ export const processers = {
               reply.signal,
             );
 
-            yield generate(true, response);
+            yield generate(false, response);
           }
           retry = 0;
         } catch (err) {

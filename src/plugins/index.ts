@@ -1,4 +1,5 @@
 ﻿import { DisableDto, VersionDto } from '@/database';
+import { arrUtils } from '@/utils';
 
 export interface Registerable {
   id: string;
@@ -147,7 +148,7 @@ export class Registry<T extends Registerable> {
     if (sorted.length !== recordList.length) {
       const remaining = recordList.filter((t) => !visited.has(t.id));
       throw new Error(
-        `[Sort Error] Circular dependency detected involving: ${remaining.join(', ')}`,
+        `[Sort Error] Circular dependency detected involving: ${arrUtils.join(remaining, ', ', (u) => u.id)}`,
       );
     }
 

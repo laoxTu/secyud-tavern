@@ -9,7 +9,7 @@ const defaultEntry: Script = {
   code: '',
   content: '',
   priority: 100,
-  type: 'text/css',
+  type: 'application/javascript',
 };
 
 export const scripts = {

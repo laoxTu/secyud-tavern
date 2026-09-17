@@ -49,6 +49,6 @@ export const files = {
     type: string;
     args: string | null;
   }): string {
-    return `${type}; ${args}`;
+    return args ? `${type}; ${args}` : type;
   },
 };
