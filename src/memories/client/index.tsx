@@ -9,8 +9,8 @@ import { tools } from '@/tools/client';
 import { memories as main } from '..';
 
 import { storyTab } from './content';
-import { MemoryCache, processer } from './processer';
 import { rags } from './rag';
+import { MemoryCache, processer } from './realm';
 import { setting } from './setting';
 import { provider } from './tool';
 import { transformers } from './transformer';
