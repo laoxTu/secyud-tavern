@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 
 import { Field, FieldLabel, Selector } from '@/components';
 
-import { Embed, Embedder, useRagState } from './rag';
+import { Embed, Embedder, rags, useRagState } from './rag';
 
 const name = 'transformer';
 
@@ -78,11 +78,14 @@ const embedder: Embedder = {
     return {
       dimension,
       async generate(ctx) {
-        const result = await extractor(ctx.content ?? '', {
-          pooling: 'mean',
-          normalize: true,
+        const result = await rags.cache(ctx.content, model, async () => {
+          const extract = await extractor(ctx.content ?? '', {
+            pooling: 'mean',
+            normalize: true,
+          });
+          return extract.tolist()[0];
         });
-        return result.tolist()[0];
+        return [...result.vector];
       },
     };
   },
