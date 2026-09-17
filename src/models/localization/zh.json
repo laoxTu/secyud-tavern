@@ -5,22 +5,20 @@
   },
   "error": {
     "model": {
-      "engine_required": "需要选择供应者",
-      "default_required": "需要设置默认的模型"
+      "default_required": "需要设置默认的模型",
+      "engine_required": "需要选择供应者"
     }
   },
   "model": {
-    "retry_max": "最大重试次数",
-    "retry_interval": "重试间隔(s)",
     "api_key": "api key",
-    "id": "模型",
-    "default": "默认",
-    "iterations": "回合次数",
     "builder": "提示词构造器",
     "builder_default": "默认构造器",
     "builder_layered": "层级构造器",
+    "default": "默认",
     "extras": "额外参数",
     "frequency_penalty": "frequency penalty (用词重复度 -2.0~2.0)",
+    "id": "模型",
+    "iterations": "回合次数",
     "logprobs": "logprobs (返回置信度)",
     "max_iterations": "单回合最大轮次",
     "max_tokens": "max tokens (输出长度上限 0~max)",
@@ -31,6 +29,8 @@
     "provider_deepseek": "Deepseek",
     "provider_openai": "Open AI",
     "reasoning_effort": "reasoning effort (思考强度)",
+    "retry_interval": "重试间隔(s)",
+    "retry_max": "最大重试次数",
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
     "thinking": "思考模式",

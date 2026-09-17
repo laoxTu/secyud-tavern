@@ -49,6 +49,7 @@
     "regenerate": "重新生成",
     "requires": "依赖",
     "reset": "重置",
+    "save": "保存",
     "schema": "结构",
     "script": "脚本",
     "search": "搜索",
@@ -69,19 +70,18 @@
     "types": "类型",
     "url": "链接",
     "value": "值",
-    "save": "保存",
     "variables": "变量",
     "version": "版本",
     "year": "年",
     "zh": "简体中文"
   },
   "error": {
-    "entity": {
-      "duplicate_value": "已经有相同{name}({value})的{entity}."
-    },
     "clipboard_no_item": "剪切板无内容",
     "duplicate_field": "已经有一个具有相同{field}的{entity_name}！",
     "empty_field": "{field}不可以为空！",
+    "entity": {
+      "duplicate_value": "已经有相同{name}({value})的{entity}."
+    },
     "json_invalid": "{target} JSON格式错误"
   },
   "language": {
@@ -95,19 +95,11 @@
       "title": "克隆{target}",
       "tooltip": "克隆"
     },
-    "empty": {
-      "desc": "没有搜索到任何{target}",
-      "title": "空{target}"
-    },
-    "empty_select": {
-      "title": "没有选择{target}",
-      "desc": "点击一个{target}，然后您可以对它进行编辑。"
-    },
-    "update": {
-      "desc": "更新{target}",
-      "success": "更新成功",
-      "title": "更新{target}",
-      "tooltip": "更新"
+    "copy": {
+      "desc": "确定要复制{target}吗?",
+      "success": "复制成功",
+      "title": "复制{target}",
+      "tooltip": "复制"
     },
     "create": {
       "desc": "创建{target}",
@@ -120,6 +112,14 @@
       "success": "删除成功",
       "title": "删除{target}",
       "tooltip": "删除"
+    },
+    "empty": {
+      "desc": "没有搜索到任何{target}",
+      "title": "空{target}"
+    },
+    "empty_select": {
+      "desc": "点击一个{target}，然后您可以对它进行编辑。",
+      "title": "没有选择{target}"
     },
     "export": {
       "desc": "确定要导出{target}吗?",
@@ -139,11 +139,11 @@
       "title": "粘贴{target}",
       "tooltip": "粘贴"
     },
-    "copy": {
-      "desc": "确定要复制{target}吗?",
-      "success": "复制成功",
-      "title": "复制{target}",
-      "tooltip": "复制"
+    "update": {
+      "desc": "更新{target}",
+      "success": "更新成功",
+      "title": "更新{target}",
+      "tooltip": "更新"
     }
   },
   "setting": {

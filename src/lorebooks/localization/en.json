@@ -1,7 +1,7 @@
 {
   "lorebook": {
-    "id": "Lorebook",
     "fit_count": "Match count",
+    "id": "Lorebook",
     "include_any_word": "Include phrases",
     "keywords_groups_length": "Number of keyword groups",
     "last_message": "Last message",

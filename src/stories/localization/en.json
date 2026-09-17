@@ -1,11 +1,37 @@
 {
   "memory": {
-    "text": "Content",
+    "importance": "Importance",
     "sequence": "Turn",
-    "importance": "Importance"
+    "text": "Content"
   },
   "message": {
     "realm": {
+      "clone": {
+        "desc": "Archive and reopen",
+        "success": "Archived and reopened",
+        "title": "Archive and reopen",
+        "tooltip": "Archive and reopen"
+      },
+      "delete": {
+        "index": {
+          "desc": "Delete current history",
+          "success": "Current history deleted",
+          "title": "Delete current history",
+          "tooltip": "Delete current history"
+        },
+        "output": {
+          "desc": "Delete current output",
+          "success": "Current output deleted",
+          "title": "Delete current output",
+          "tooltip": "Delete current output"
+        }
+      },
+      "edit": {
+        "desc": "Edit current history",
+        "success": "History edited",
+        "title": "Edit current history",
+        "tooltip": "Edit current history"
+      },
       "reopen": {
         "desc": "Restart",
         "success": "Restarted",
@@ -18,32 +44,6 @@
         "success": "Context viewed",
         "title": "View context",
         "tooltip": "View context"
-      },
-      "edit": {
-        "desc": "Edit current history",
-        "success": "History edited",
-        "title": "Edit current history",
-        "tooltip": "Edit current history"
-      },
-      "clone": {
-        "desc": "Archive and reopen",
-        "success": "Archived and reopened",
-        "title": "Archive and reopen",
-        "tooltip": "Archive and reopen"
-      },
-      "delete": {
-        "output": {
-          "desc": "Delete current output",
-          "success": "Current output deleted",
-          "title": "Delete current output",
-          "tooltip": "Delete current output"
-        },
-        "index": {
-          "desc": "Delete current history",
-          "success": "Current history deleted",
-          "title": "Delete current history",
-          "tooltip": "Delete current history"
-        }
       }
     },
     "story": {
@@ -62,7 +62,6 @@
     "content_not_initialized": "Realm cache is not initialized: {key}",
     "generating": "Generating content",
     "generating_tool": "Building parameters",
-    "retry": "Retry",
     "input": "User input",
     "input_processing": "Processing input",
     "is_output_warning": "Output is currently in progress and cannot be operated on",
@@ -70,19 +69,20 @@
     "output": "AI output",
     "pin_chatbox": "Pin chat box",
     "regenerate_reply_tip": "Regenerate",
+    "retry": "Retry",
     "thinking": "Generating thoughts",
     "unpin_chatbox": "Unpin chat box",
     "variable": "Variable",
     "variable_invalid_json": "Invalid variable format"
   },
   "story": {
-    "id": "Story",
     "enter": "Enter",
-    "image": "Image",
     "entry": "Entry",
-    "memory": "Memory",
-    "input_processing": "Processing input",
+    "id": "Story",
+    "image": "Image",
     "images": "Image gallery",
+    "input_processing": "Processing input",
+    "memory": "Memory",
     "opening_remarks": "Opening remarks"
   }
 }

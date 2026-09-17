@@ -83,6 +83,7 @@ function Setting() {
             type="number"
             id={'setting-rag-similarity'}
             max={1}
+            step={0.01}
             min={0}
             name="similarity"
             defaultValue={similarity}
