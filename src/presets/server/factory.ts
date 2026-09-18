@@ -68,7 +68,7 @@ export const storages = {
           );
         }
       },
-      async loadArchive({ item, cur, root }) {
+      async loadArchive({ item, cur, root, append }) {
         if (!item.entries) return;
         const entries: PresetItem<TData>[] = item.entries[plural];
         if (entries?.length) {
@@ -86,6 +86,7 @@ export const storages = {
                 cur: folder.nodes,
                 root,
                 item,
+                append,
               },
               entry,
               i,
@@ -93,7 +94,7 @@ export const storages = {
           }
         }
       },
-      async saveArchive({ item, cur, root }) {
+      async saveArchive({ item, cur, root, append }) {
         const folder = cur[plural];
         if (!folder || folder.type === 'file') return;
         const codes = [
@@ -106,6 +107,7 @@ export const storages = {
               cur: folder.nodes,
               root,
               item,
+              append,
             },
             code,
           );

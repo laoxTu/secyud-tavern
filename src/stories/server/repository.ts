@@ -199,7 +199,8 @@ async function getRealm(story: Story) {
 
   const histories = new Array<RealmHistory | null>(historyCount).fill(null);
 
-  const requires: Preset[] = await presets.repository.listWithRequires(
+  const requires: Preset[] = await presets.repository.traversal(
+    {},
     story.presets.map((u) => u.value),
     { entities: true },
   );

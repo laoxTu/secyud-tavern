@@ -6,6 +6,7 @@ import { comfyuis as main } from '..';
 import { importers } from './importers';
 import { modelRepository } from './repository-model';
 import { workflowRepository } from './repository-workflow';
+import { storage } from './storage';
 import { provider } from './tool';
 
 export type * from './importers';
@@ -16,6 +17,7 @@ export const comfyuis = {
     model: modelRepository,
     workflow: workflowRepository,
   },
+  storage,
 };
 
 export default async function () {

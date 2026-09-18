@@ -7,37 +7,12 @@ import { Preset, PresetEntry, PresetRequestOptions } from '@/presets';
 import { Archive, archive } from '@/utils/archive';
 import { cache, fileUtils, response } from '@/utils/server';
 
+import { PresetTraversalContext } from './repository';
 import { storage } from './storage';
 
 import { presets } from '.';
 
 const importKey = (id: string) => `preset_import_${id}`;
-
-async function exportPreset(items: Preset[]): Promise<Buffer> {
-  const root: Archive = {};
-
-  for (const item of items) {
-    const node = await storage.load(root, item);
-    if (node) root[item.id] = node;
-  }
-  console.debug(root);
-
-  const buffer = await archive.archiveToZip(root);
-
-  return buffer;
-}
-
-async function importPreset(buffer: Buffer): Promise<Preset[]> {
-  const items: Preset[] = [];
-  const root = await archive.zipToArchive(buffer);
-
-  for (const node of Object.values(root)) {
-    const item = await storage.save(root, node);
-    if (item) items.push(item);
-  }
-
-  return items;
-}
 
 export default {
   presets: {
@@ -57,7 +32,15 @@ export default {
         const data = await request.formData();
         const file = data.get('file') as File;
         const uint8 = await file.arrayBuffer();
-        const items = await importPreset(Buffer.from(uint8));
+
+        const items: Preset[] = [];
+        const root = await archive.zipToArchive(Buffer.from(uint8));
+        const append = () => {};
+        for (const node of Object.values(root)) {
+          const item = await storage.save(root, node, append);
+          if (item) items.push(item);
+        }
+
         await cache.set(importKey(sessionId), items);
         return response.json(items.map(presets.toNameValue));
       }),
@@ -96,13 +79,19 @@ export default {
       export: {
         GET: route(async (_, records) => {
           const { id } = await records.params;
-          const source = await presets.repository.listWithRequires([id], {
+
+          const root: Archive = {};
+          const context: PresetTraversalContext = {
+            async action(item) {
+              const node = await storage.load(root, item, context.append!);
+              if (node) root[item.id] = node;
+            },
+          };
+          const source = await presets.repository.traversal(context, [id], {
             entities: true,
           });
-          if (!source.length) {
-            throw new BusinessError('no entity found.');
-          }
-          const buffer = await exportPreset(source);
+          console.debug(root);
+          const buffer = await archive.archiveToZip(root);
           const stream = fileUtils.createBufferStream(buffer);
           return response.download(`preset_${source.at(-1)?.name}.zip`, stream);
         }),
