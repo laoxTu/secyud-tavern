@@ -10,13 +10,13 @@ export const storage = storages.create<Regex>(
     sorter: `${name}`,
     filter: `${target}${name}`,
   }),
-  async (nodes, item, s) => {
+  async ({ cur }, item, s) => {
     const name = `${item.name}-${s}`;
-    archive.set.json(nodes, `${name}.meta.json`, async () => item);
+    archive.set.json(cur, `${name}.meta.json`, async () => item);
   },
-  async (nodes, name) => {
+  async ({ cur }, name) => {
     const item = await archive.get.json<PresetItem<Regex>>(
-      nodes,
+      cur,
       `${name}.meta.json`,
     );
     return item;

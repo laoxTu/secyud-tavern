@@ -2,29 +2,40 @@ import { eq } from 'drizzle-orm';
 
 import { Model } from '@/models';
 import { models } from '@/models/server';
+import { presets } from '@/presets/server';
 import { ToolProvider } from '@/tools/server';
 import { archive } from '@/utils/archive';
 
 import { AgentConfig, agents as main } from '..';
 
 const provider: ToolProvider<AgentConfig> = {
-  async loadArchive(nodes, item, name) {
-    const { description, schema } = item.config;
-    archive.set.text(nodes, `${name}.desc.txt`, description);
-    archive.set.text(nodes, `${name}.schema.json`, schema);
-    item.config.description = undefined!;
-    item.config.schema = undefined!;
+  async loadArchive({ cur, entry, name, root }) {
+    const { description, schema } = entry.config;
+    archive.set.text(cur, `${name}.desc.txt`, description);
+    archive.set.text(cur, `${name}.schema.json`, schema);
+    entry.config.description = undefined!;
+    entry.config.schema = undefined!;
 
-    const id = item.config.model?.value;
+    const id = entry.config.model?.value;
     if (id) {
       const model = await models.repository.get(id);
-      archive.set.json(nodes, `${name}.model.json`, model);
+      archive.set.json(cur, `${name}.model.json`, model);
+    }
+    const codes = entry.config.presets.map((u) => u.value);
+    if (codes.length) {
+      const source = await presets.repository.listWithRequires(codes, {
+        entities: true,
+      });
+      for (const item of source) {
+        const node = await presets.storage.load(root, item);
+        if (node) root[item.id] = node;
+      }
     }
   },
-  async saveArchive(nodes, item, name) {
-    item.config.description = await archive.get.fuzzy(nodes, `${name}.desc.`);
-    item.config.schema = await archive.get.fuzzy(nodes, `${name}.schema.`);
-    const model = await archive.get.json<Model>(nodes, `${name}.model.json`);
+  async saveArchive({ cur, entry, name }) {
+    entry.config.description = await archive.get.fuzzy(cur, `${name}.desc.`);
+    entry.config.schema = await archive.get.fuzzy(cur, `${name}.schema.`);
+    const model = await archive.get.json<Model>(cur, `${name}.model.json`);
     if (model) {
       const exist = await models.repository.exist((t) => eq(t.id, model.id));
       if (exist) {

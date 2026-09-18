@@ -10,23 +10,23 @@ export const storage = storages.create<Style>(
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async (nodes, item, s) => {
+  async ({ cur }, item, s) => {
     const name = `${item.code}-${s}`;
 
-    archive.set.json(nodes, `${name}.meta.json`, {
+    archive.set.json(cur, `${name}.meta.json`, {
       ...item,
       content: undefined,
     });
     const ext = item.type === 'link' ? 'txt' : 'css';
-    archive.set.text(nodes, `${name}.style.${ext}`, item.content);
+    archive.set.text(cur, `${name}.style.${ext}`, item.content);
   },
-  async (nodes, name) => {
+  async ({ cur }, name) => {
     const item = await archive.get.json<PresetItem<Style>>(
-      nodes,
+      cur,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(nodes, `${name}.style.`);
+      item.content = await archive.get.fuzzy(cur, `${name}.style.`);
     }
     return item;
   },

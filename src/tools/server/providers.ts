@@ -1,21 +1,18 @@
 import { getRegistry, Registerable } from '@/plugins';
 import { PresetItem } from '@/presets';
-import { ArchiveNode } from '@/utils/archive';
+import { PresetArchiveContext } from '@/presets/server/storage';
 
 import { Tool } from '..';
 
-export interface ToolProvider<T = any> extends Registerable {
-  loadArchive: (
-    nodes: Record<string, ArchiveNode>,
-    item: PresetItem<Tool<T>>,
-    name: string,
-  ) => Promise<void>;
+interface ToolArchiveContext<T = any> extends PresetArchiveContext {
+  entry: PresetItem<Tool<T>>;
+  name: string;
+}
 
-  saveArchive: (
-    nodes: Record<string, ArchiveNode>,
-    item: PresetItem<Tool<T>>,
-    name: string,
-  ) => Promise<void>;
+export interface ToolProvider<T = any> extends Registerable {
+  loadArchive: (context: ToolArchiveContext<T>) => Promise<void>;
+
+  saveArchive: (context: ToolArchiveContext<T>) => Promise<void>;
 }
 
 const registry = getRegistry<ToolProvider>('tool-provider');
