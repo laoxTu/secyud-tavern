@@ -1,3 +1,6 @@
 [submodule "docs"]
 	path = docs
 	url = https://github.com/laoxTu/secyud-tavern-docs
+[submodule "tests"]
+	path = tests
+	url = https://github.com/laoxTu/secyud-tavern-test.git

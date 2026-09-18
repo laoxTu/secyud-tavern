@@ -35,7 +35,7 @@ export function Component() {
 /**
  * 从civital的json信息中解析
  */
-export function _extract(
+function extract(
   meta: any,
   modelMeta: any,
   items: ComfyUIModel[],
@@ -89,7 +89,7 @@ const importer: ModelImporter = {
         console.debug('fetch from', url);
         const response = await fetch(url);
         const modelVersionMeta = await response.json();
-        _extract(
+        extract(
           modelVersionMeta,
           modelVersionMeta.model ?? {},
           items,
@@ -109,7 +109,7 @@ const importer: ModelImporter = {
         const response = await fetch(url);
         const modelMeta = await response.json();
         for (const modelVersionMeta of modelMeta.modelVersions) {
-          _extract(
+          extract(
             modelVersionMeta,
             modelMeta,
             items,
@@ -132,4 +132,5 @@ const importer: ModelImporter = {
 export const civitais = {
   ...main,
   importer,
+  extract,
 };
