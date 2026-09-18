@@ -73,7 +73,7 @@ function Content() {
     if (!tab) {
       setTab(tabs.firstId()!);
     }
-    const distance = 60;
+    const distance = 10;
     const observer = new IntersectionObserver(
       (entries) => {
         if (scrolling.current) {
@@ -84,6 +84,7 @@ function Content() {
           const {
             boundingClientRect: { top, bottom },
           } = entry;
+          console.debug(`[tab]: ${id} ${distance} ${top} ${bottom}`);
           if (top <= distance && bottom >= distance) {
             if (id && id !== tab) {
               setTab(id);
@@ -102,9 +103,11 @@ function Content() {
   }, []);
 
   return (
-    <div className={'flex flex-col h-full'}>
-      <Tabs value={tab} onValueChange={scroll}>
-        <TabsList className={'overflow-x-auto scrollbar-none justify-normal'}>
+    <div className={'h-full overflow-auto relative'}>
+      <Tabs className={'sticky top-0 z-10'} value={tab} onValueChange={scroll}>
+        <TabsList
+          className={'overflow-x-auto scrollbar-none justify-normal self-end'}
+        >
           {tabs.sorted().map((tab) => {
             return (
               <TabsTrigger key={tab.id} value={tab.id}>
@@ -114,23 +117,21 @@ function Content() {
           })}
         </TabsList>
       </Tabs>
-      <div className={'flex-1 overflow-auto'}>
-        {tabs.sorted().map((tab) => (
-          <Card
-            key={tab.id}
+      {tabs.sorted().map((tab) => (
+        <Card key={tab.id}>
+          <CardHeader
+            className={'flex'}
             data-tab-id={tab.id}
             ref={(el) => observe(tab.id, el)}
           >
-            <CardHeader className={'flex'}>
-              {element(tab.icon)}
-              <CardTitle className={'text-base'}>{t(tab.label)}</CardTitle>
-            </CardHeader>
-            <CardContent className={styles.setting}>
-              {element(tab.content)}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            {element(tab.icon)}
+            <CardTitle className={'text-base'}>{t(tab.label)}</CardTitle>
+          </CardHeader>
+          <CardContent className={styles.setting}>
+            {element(tab.content)}
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

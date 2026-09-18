@@ -10,7 +10,6 @@ import {
   FieldLabel,
   forms,
   Input,
-  rowQuat,
   spanHalf,
   submitTargetFormOnKey,
   Textarea,
@@ -18,7 +17,6 @@ import {
 import { NameValue, utils } from '@/database';
 import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
-import { cn } from '@/lib/utils';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { JsonSchema, jsonUtils } from '@/utils';
 
@@ -65,7 +63,7 @@ export function Editor({
 
   return (
     <>
-      <Field className={cn(spanHalf, rowQuat)}>
+      <Field className={spanHalf}>
         <FieldLabel htmlFor={`${entryId}-description`}>
           {t('default.description')}
         </FieldLabel>

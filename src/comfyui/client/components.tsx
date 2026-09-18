@@ -93,7 +93,7 @@ export function ComfyUIModelSelector({
   name: string;
   id?: string;
   className?: string;
-  defaultValue?: NameValue;
+  defaultValue?: NameValue | null;
 }) {
   const { handler } = useHandler();
   return (
