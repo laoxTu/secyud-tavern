@@ -1,5 +1,6 @@
 import { validate } from 'uuid';
 
+import { Properties } from '@/database';
 import { Storage } from '@/database/server';
 import { storages } from '@/database/server/factory';
 import { files } from '@/files/server';
@@ -7,10 +8,12 @@ import { getRegistry } from '@/plugins';
 import { Preset } from '@/presets';
 import { archive, Archive, ArchiveFolder, ArchiveNode } from '@/utils/archive';
 
-export interface PresetArchiveContext {
+export interface PresetArchiveContext extends Properties {
   root: Archive;
   cur: Archive;
   item: Preset;
+  // 追加code
+  append(id: string): void;
 }
 
 const extensionMap: Record<string, string> = {
@@ -82,7 +85,11 @@ const manager = {
 export const storage = {
   registry,
   manager,
-  async load(root: Archive, item: Preset): Promise<ArchiveNode | null> {
+  async load(
+    root: Archive,
+    item: Preset,
+    append: (code: string) => void,
+  ): Promise<ArchiveNode | null> {
     if (root[item.id]) return null;
     const node: ArchiveFolder = {
       type: 'folder',
@@ -122,11 +129,16 @@ export const storage = {
       root,
       item,
       cur: node.nodes,
+      append,
     });
 
     return node;
   },
-  async save(root: Archive, node: ArchiveNode): Promise<Preset | null> {
+  async save(
+    root: Archive,
+    node: ArchiveNode,
+    append: (code: string) => void,
+  ): Promise<Preset | null> {
     if (node.type !== 'folder') return null;
     const item = await archive.get.json<Preset>(node.nodes, 'meta.json');
     if (!item) return null;
@@ -149,6 +161,7 @@ export const storage = {
       item,
       cur: node.nodes,
       root,
+      append,
     });
 
     return item;

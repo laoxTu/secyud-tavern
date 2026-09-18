@@ -58,6 +58,11 @@ const defaultWorkflow: ComfyUIWorkflow = {
   name: '',
 };
 
+export interface ComfyUIPortModel {
+  workflow: ComfyUIWorkflow;
+  params: ComfyUIParam[];
+}
+
 export const workflow = {
   toNameValue(item: ComfyUIWorkflow): NameValue {
     return {

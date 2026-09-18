@@ -117,7 +117,13 @@ async function list(request: DataRequest<PresetRequestParam>) {
   );
 }
 
-async function listWithRequires(
+export interface PresetTraversalContext {
+  action?: (item: Preset) => Promise<void>;
+  append?: (code: string) => void;
+}
+
+async function traversal(
+  ctx: PresetTraversalContext,
   codes: string[],
   options?: PresetRequestOptions,
 ) {
@@ -125,6 +131,12 @@ async function listWithRequires(
   const visited: Set<string> = new Set<string>();
   const queue = [...codes];
   let head = 0; // 头指针
+
+  const append = (code: string) => {
+    if (!visited.has(code)) queue.push(code);
+  };
+
+  ctx.append = append;
 
   while (head < queue.length) {
     const code = queue[head++];
@@ -138,9 +150,10 @@ async function listWithRequires(
     if (!preset) continue;
     await fillPreset(preset, options);
     presetList.push(preset);
+    await ctx.action?.(preset);
 
     for (const require of preset.requires) {
-      if (!visited.has(require.value)) queue.push(require.value);
+      append(require.value);
     }
   }
 
@@ -155,5 +168,5 @@ export const repository = {
   list,
   exist,
   entry,
-  listWithRequires,
+  traversal,
 };
