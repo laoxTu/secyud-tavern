@@ -16,5 +16,10 @@
     "priority_layer": "层级",
     "priority_order": "顺序",
     "role": "角色"
+  },
+  "tool": {
+    "provider": {
+      "lorebook": "世界书"
+    }
   }
 }

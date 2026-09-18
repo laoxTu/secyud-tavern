@@ -1,14 +1,14 @@
 import { insert, search } from '@orama/orama';
 
-import { Memory } from '@/memories';
-import { memories } from '@/memories/client';
+import { memories as main, Memory } from '@/memories';
+import { memories, useRagState } from '@/memories/client';
 import { Realm } from '@/stories';
 import { stories } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
 import { ToolItem, ToolProvider } from '@/tools/client';
 
 export const provider: ToolProvider = {
-  id: 'memory',
+  id: main.name,
   async create(_, realm) {
     return [get(realm), set(realm)];
   },
@@ -21,6 +21,7 @@ function get(realm: Realm): ToolItem<{
   limit?: number;
   min_relevance?: number;
 }> {
+  const { limit, similarity } = useRagState.getState();
   return {
     name: 'get_memory',
     description:
@@ -53,14 +54,14 @@ function get(realm: Realm): ToolItem<{
           description: 'the memory item count to recall',
           minimum: 1,
           maximum: 5,
-          default: 3,
+          default: limit,
         },
         min_relevance: {
           type: 'number',
           description: 'the min relevance to filter.',
           minimum: 0,
           maximum: 1,
-          default: 0.3,
+          default: similarity,
         },
       },
       additionalProperties: false,
