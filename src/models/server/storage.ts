@@ -12,7 +12,7 @@ interface ModelStoreCache {
   models: Set<string>;
 }
 
-function modelFolder(root: Archive): ArchiveFolder {
+function folder(root: Archive): ArchiveFolder {
   return (root['model'] ??= {
     type: 'folder',
     name: 'model',
@@ -20,27 +20,27 @@ function modelFolder(root: Archive): ArchiveFolder {
   }) as ArchiveFolder;
 }
 
-export const storage = {
-  async export({ properties, root }: PresetArchiveContext, id?: string | null) {
-    const cache = utils.get<ModelStoreCache>(properties!, 'comfyui', () => ({
-      models: new Set(),
-    }));
-    if (!id || cache.models.has(id)) return;
-    const folder = modelFolder(root);
-    const model = await repository.get(id);
-    archive.set.json(folder.nodes, `${id}.model.json`, model);
-  },
-  async import({ properties, root }: PresetArchiveContext, id?: string | null) {
-    const cache = utils.get<ModelStoreCache>(properties!, 'comfyui', () => ({
-      models: new Set(),
-    }));
-    if (!id || cache.models.has(id)) return;
-    const folder = modelFolder(root);
+function check(ctx: PresetArchiveContext, id: string) {
+  const { models } = utils.getProperty<ModelStoreCache>(ctx, 'models', () => ({
+    models: new Set(),
+  }));
+  if (models.has(id)) return false;
+  models.add(id);
+  return true;
+}
 
-    const model = await archive.get.json<Model>(
-      folder.nodes,
-      `${id}.model.json`,
-    );
+export const storage = {
+  async export(ctx: PresetArchiveContext, id?: string | null) {
+    if (!id || check(ctx, id)) return;
+    const node = folder(ctx.root);
+    const model = await repository.get(id);
+    archive.set.json(node.nodes, `${id}.model.json`, model);
+  },
+  async import(ctx: PresetArchiveContext, id?: string | null) {
+    if (!id || check(ctx, id)) return;
+    const node = folder(ctx.root);
+
+    const model = await archive.get.json<Model>(node.nodes, `${id}.model.json`);
     if (!model) return;
 
     const exist = await repository.exist((t) => eq(t.id, model.id));

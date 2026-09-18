@@ -12,7 +12,7 @@ interface ComfyUIStoreCache {
   workflows: Set<string>;
 }
 
-function comfyuiFolder(root: Archive): ArchiveFolder {
+function folder(root: Archive): ArchiveFolder {
   return (root['comfyui'] ??= {
     type: 'folder',
     name: 'comfyui',
@@ -20,49 +20,43 @@ function comfyuiFolder(root: Archive): ArchiveFolder {
   }) as ArchiveFolder;
 }
 
+function check(ctx: PresetArchiveContext, id: string) {
+  const { workflows } = utils.getProperty<ComfyUIStoreCache>(
+    ctx,
+    'comfyui',
+    () => ({
+      workflows: new Set(),
+    }),
+  );
+  if (workflows.has(id)) return false;
+  workflows.add(id);
+  return true;
+}
+
 export const storage = {
-  async export({ properties, root }: PresetArchiveContext, id?: string | null) {
-    const comfyuis = utils.get<ComfyUIStoreCache>(
-      properties!,
-      'comfyui',
-      () => ({
-        workflows: new Set(),
-      }),
-    );
-    if (!id || comfyuis.workflows.has(id)) return;
-
-    const folder = comfyuiFolder(root);
-
+  folder,
+  async export(ctx: PresetArchiveContext, id?: string | null) {
+    if (!id || !check(ctx, id)) return;
+    const node = folder(ctx.root);
     const workflow = await workflowRepository.get(id);
     const params = await workflowRepository.param.list(id);
-    archive.set.text(folder.nodes, `${id}.workflow.json`, workflow.content);
+    archive.set.text(node.nodes, `${id}.workflow.json`, workflow.content);
     workflow.content = undefined;
-    archive.set.json(folder.nodes, `${id}.comfyui.json`, {
+    archive.set.json(node.nodes, `${id}.comfyui.json`, {
       params,
       workflow,
     });
   },
-  async import({ properties, root }: PresetArchiveContext, id?: string | null) {
-    const comfyuis = utils.get<ComfyUIStoreCache>(
-      properties!,
-      'comfyui',
-      () => ({
-        workflows: new Set(),
-      }),
-    );
-    if (!id || comfyuis.workflows.has(id)) return;
-    const folder = comfyuiFolder(root);
-
+  async import(ctx: PresetArchiveContext, id?: string | null) {
+    if (!id || !check(ctx, id)) return;
+    const node = folder(ctx.root);
     const comfyui = await archive.get.json<ComfyUIPortModel>(
-      folder.nodes,
+      node.nodes,
       `${id}.comfyui.json`,
     );
     if (comfyui) {
       const { workflow, params } = comfyui;
-      workflow.content = await archive.get.fuzzy(
-        folder.nodes,
-        `${id}.workflow.`,
-      );
+      workflow.content = await archive.get.fuzzy(node.nodes, `${id}.workflow.`);
       const exist = await workflowRepository.exist((t) =>
         eq(t.id, workflow.id),
       );
