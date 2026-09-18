@@ -5,19 +5,27 @@ import { Lorebook } from '@/lorebooks';
 import { lorebooks } from '@/lorebooks/client';
 import { getRegistry, Registerable } from '@/plugins';
 import { PresetEntry, PresetItem } from '@/presets';
-import { RealmHistory, RealmMessage, RealmOutput } from '@/stories';
+import { RealmHistory, RealmOutput, RealmPrompt } from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { arrUtils } from '@/utils';
 
 import { LorebookCache } from './realm';
 
-export interface MatchContext extends Properties {
-  history: RealmHistory;
-  message: RealmMessage;
-  properties: Record<string, any>;
-  output: boolean;
-  cache: LorebookCache;
+interface MatchOutputContext {
+  output: true;
+  message: RealmOutput;
 }
+interface MatchPromptContext {
+  output: false;
+  message: RealmPrompt;
+}
+
+export type MatchContext = Properties &
+  (MatchPromptContext | MatchOutputContext) & {
+    history: RealmHistory;
+    properties: Record<string, any>;
+    cache: LorebookCache;
+  };
 
 export interface Matcher extends Registerable {
   configComponent?: React.ComponentType<{ entry: PresetEntry<Lorebook> }>;

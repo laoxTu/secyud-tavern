@@ -19,7 +19,7 @@ function createParam(): ComfyUIParam<PowerLoraSelectConfig> {
     sequence: SEQUENCE,
     type: 'power_lora_select',
     name: 'LoRA',
-    config: { node: NODE, value: [] },
+    config: { node: NODE, loras: [] },
   };
 }
 
@@ -79,13 +79,13 @@ describe('comfyui powerLoraSelect', () => {
       );
 
       expect(param.config.node).toBe(NODE);
-      expect(param.config.value).toHaveLength(2);
-      expect(param.config.value[0]).toEqual({
+      expect(param.config.loras).toHaveLength(2);
+      expect(param.config.loras[0]).toEqual({
         lora: LORA_A,
         strength: 0.7,
         on: true,
       });
-      expect(param.config.value[1]).toEqual({
+      expect(param.config.loras[1]).toEqual({
         lora: LORA_B,
         strength: 1.25,
         on: false,
@@ -103,7 +103,7 @@ describe('comfyui powerLoraSelect', () => {
         param,
       );
 
-      const [first, second, third] = param.config.value;
+      const [first, second, third] = param.config.loras;
       expect(first.lora.name).not.toBe(second.lora.name);
       expect(second.lora.name).not.toBe(third.lora.name);
       expect(first.strength).not.toBe(second.strength);
@@ -117,7 +117,7 @@ describe('comfyui powerLoraSelect', () => {
         param,
       );
 
-      expect(param.config.value).toEqual([]);
+      expect(param.config.loras).toEqual([]);
     });
   });
 
