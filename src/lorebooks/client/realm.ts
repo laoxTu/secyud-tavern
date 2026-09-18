@@ -12,7 +12,12 @@ import {
   Processer,
 } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
-import { RealmHistory, RealmMessage } from '@/stories';
+import {
+  RealmHistory,
+  RealmMessage,
+  RealmOutput,
+  RealmPrompt,
+} from '@/stories';
 import { realms } from '@/stories/client/realms';
 import { tools } from '@/tools';
 import { arrUtils, jsonUtils } from '@/utils';
@@ -23,6 +28,7 @@ import { vectorMatcher } from './matchers/vector';
 
 const lorebookSchema = {
   name: 'string',
+  title: 'string',
 } as const;
 
 export interface LorebookCache {
@@ -158,15 +164,28 @@ async function create(
   ) {
     if (!messages?.length) return;
     for (const message of messages) {
-      const ids =
-        message.properties?.[lorebooks.plural] ??
-        (await matchers.analyze(cache.entries, {
+      let ids = message.properties?.[lorebooks.plural];
+      if (!ids) {
+        const context = {
           history,
-          message,
           properties: {},
-          output,
           cache,
-        }));
+        };
+        ids = await matchers.analyze(
+          cache.entries,
+          output
+            ? {
+                ...context,
+                message: message as RealmOutput,
+                output: true,
+              }
+            : {
+                ...context,
+                message: message as RealmPrompt,
+                output: false,
+              },
+        );
+      }
       for (const id of ids) {
         if (visited.has(id)) continue;
         visited.add(id);
@@ -195,6 +214,7 @@ async function create(
 
 export const processer: Processer = {
   id: main.name,
+  // 匹配依赖工具, 有些是工具预填充, 然后匹配器收集
   requires: [tools.name],
   init: async ({ realm }) => {
     const cache: LorebookCache = {
@@ -227,6 +247,7 @@ export const processer: Processer = {
           });
           await insert(database, {
             name: entry.id,
+            title: entry.name,
             embedding,
           });
         }
