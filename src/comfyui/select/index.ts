@@ -1,19 +1,18 @@
 import { NameValue } from '@/database';
 
-interface SelectConfigBase<T = any> {
+interface SelectConfigBase {
   node: string;
   key: string;
-  value: T;
 }
 
 const defaultSelectConfigBase: SelectConfigBase = {
   node: '',
   key: '',
-  value: undefined,
 };
 
 export interface SelectConfig extends SelectConfigBase {
   items: string[];
+  value?: string | null;
 }
 
 const defaultSelectConfig: SelectConfig = {
@@ -21,11 +20,10 @@ const defaultSelectConfig: SelectConfig = {
   items: [],
 };
 
-export interface ModelSelectConfig extends SelectConfigBase<
-  NameValue | null | undefined
-> {
+export interface ModelSelectConfig extends SelectConfigBase {
   type?: string | null;
   fuzzy?: string | null;
+  model?: NameValue | null;
 }
 
 const defaultModelSelectConfig: ModelSelectConfig = {
@@ -40,13 +38,13 @@ export interface LoraConfig {
 }
 
 export interface PowerLoraSelectConfig {
-  value: LoraConfig[];
+  loras: LoraConfig[];
   node: string;
 }
 
 const defaultPowerLoraSelectConfig: PowerLoraSelectConfig = {
   ...defaultSelectConfigBase,
-  value: [],
+  loras: [],
 };
 
 export const selects = {

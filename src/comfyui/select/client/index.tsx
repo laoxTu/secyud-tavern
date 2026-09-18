@@ -226,7 +226,7 @@ function ModelSelectInputComponent({
   param: {
     name,
     sequence,
-    config: { type, value },
+    config: { type, model },
   },
 }: ComfyUIParamProps<ModelSelectConfig>) {
   return (
@@ -235,7 +235,7 @@ function ModelSelectInputComponent({
         <FieldLabel htmlFor={`param-model-${sequence}`}>{name}</FieldLabel>
         <ComfyUIModelSelector
           types={type ? [type] : []}
-          defaultValue={value ?? undefined}
+          defaultValue={model}
           id={`param-model-${sequence}`}
           name={`model_${sequence}`}
         />
@@ -253,14 +253,14 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
       key: data.get('key') as string,
       type: data.get('type') as string,
       fuzzy: data.get('fuzzy') as string,
-      value: combobox.get(data, `value_${param.sequence}`),
+      model: combobox.get(data, `model_${param.sequence}`),
     };
   },
   inputComponent: ModelSelectInputComponent,
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = data.get(`value_${sequence}`);
+      inputs[config.key] = data.get(`model_${sequence}`);
     }
   },
   async configureSchema(_, paint, schema) {
@@ -272,7 +272,7 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
   async generateCalling({ config }, paint, input, args) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = args[paint.code] ?? config.value;
+      inputs[config.key] = args[paint.code] ?? config.model?.name;
     }
   },
 };
@@ -305,11 +305,11 @@ function PowerLoraSelectInputComponent({
   param: {
     name,
     sequence,
-    config: { value },
+    config: { loras },
   },
 }: ComfyUIParamProps<PowerLoraSelectConfig>) {
   const t = useTranslations();
-  const [count, setCount] = useState(value.length);
+  const [count, setCount] = useState(loras.length);
   return (
     <>
       <Field>
@@ -329,7 +329,7 @@ function PowerLoraSelectInputComponent({
       </Field>
 
       {Array.from({ length: count }, (_, i) => {
-        const cfg = value.length > i ? value[i] : null;
+        const cfg = loras.length > i ? loras[i] : null;
         const lora = cfg?.lora;
         return (
           <Field key={i} className={spanHalf}>
@@ -374,7 +374,7 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
     const sequence = param.sequence;
     param.config = {
       node: data.get('node') as string,
-      value: Array.from(
+      loras: Array.from(
         { length: parseInt(data.get(`count_${sequence}`) as string) },
         (_, i) => ({
           lora: combobox.get(data, `lora_${sequence}_${i}`),

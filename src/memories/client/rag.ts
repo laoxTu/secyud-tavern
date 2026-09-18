@@ -139,13 +139,15 @@ export const rags = {
       strUtils.toBuffer(input),
     );
     const db = await getVectorDb();
-    let item: VectorItem | undefined = await db.get('vectors', hashBuffer);
+    const item: VectorItem = (await db.get('vectors', hashBuffer)) ?? {};
 
-    if (!item || model !== item.model) {
+    if (model !== item.model) {
       const vector = await factory();
-      item = { vector, time: Date.now(), model };
-      await db.put('vectors', item, hashBuffer);
+      item.vector = vector;
+      item.model = model;
     }
+    item.time = Date.now();
+    await db.put('vectors', item, hashBuffer);
     const limit = useRagState.getState().cacheLimit;
 
     const count = await db.count('vectors');

@@ -331,7 +331,7 @@ export function WorkflowContent() {
       side={
         <div className={'h-full flex flex-col'}>
           <div className={'flex flex-wrap p-1'}>
-            <div className={'flex-1'}>
+            <div className={'flex-1 min-w-80'}>
               <ComfyUIWorkflowNameValueField
                 orientation={'horizontal'}
                 value={item ? comfyuis.workflow.toNameValue(item) : null}
