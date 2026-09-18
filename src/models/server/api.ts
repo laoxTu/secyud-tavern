@@ -18,6 +18,8 @@ export default {
     }),
     POST: route(async (request) => {
       const model: Model = await request.json();
+      model.key = undefined;
+      model.iv = undefined;
       const id = await models.repository.create(model);
       return response.json({ id });
     }),

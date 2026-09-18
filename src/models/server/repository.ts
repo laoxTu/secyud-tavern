@@ -31,8 +31,6 @@ async function get(id: string) {
 async function create(model: Model) {
   model.id = validate(model.id) ? model.id : v4();
   checker.notNullOrWhitespace('name', model.name);
-  model.key = undefined;
-  model.iv = undefined;
   await db.insert(modelSchema).values(model);
 
   return model.id;
@@ -84,10 +82,15 @@ async function list(request: DataRequest<ModelRequestParam>) {
   );
 }
 
+async function exist(condition: (table: typeof modelSchema) => SQL) {
+  return await databases.exists(modelSchema, condition);
+}
+
 export const repository = {
   get,
   create,
   update,
   delete: _delete,
   list,
+  exist,
 };
