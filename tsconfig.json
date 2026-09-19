@@ -1,39 +1,39 @@
 {
   "compilerOptions": {
-    "incremental": true,
-
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "jsx": "react-jsx",
-
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/lib/*": ["./src/utils/lib/*"],
-      "@/hooks/*": ["./src/utils/client/hooks/*"],
-      "@tests/*": ["./tests/*"],
-      "@plugins/*": ["./plugins/*"]
-    },
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
-    "resolveJsonModule": true,
-
     "allowJs": true,
 
-    "noEmit": true,
-
-    "isolatedModules": true,
     "esModuleInterop": true,
 
-    "strict": true,
+    "incremental": true,
 
-    "skipLibCheck": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
 
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/hooks/*": ["./src/utils/client/hooks/*"],
+      "@/lib/*": ["./src/utils/lib/*"],
+      "@plugins/*": ["./plugins/*"],
+      "@tests/*": ["./tests/*"]
+    },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "resolveJsonModule": true,
+
+    "skipLibCheck": true,
+
+    "strict": true,
+
+    "target": "ES2020",
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "exclude": ["node_modules"],
   "include": [
