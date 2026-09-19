@@ -7,6 +7,7 @@ import React, { RefObject, useRef, useState } from 'react';
 import { validate } from 'uuid';
 
 import { files } from '@/files/client';
+import { forms } from '@/global';
 import { cn } from '@/lib/utils';
 
 import { AspectRatio, submitFormOnKey } from '.';
@@ -37,12 +38,12 @@ export function useImageUploaderState(name: string) {
       return id;
     }
     if (srcName) {
-      const src = data.get(srcName) as string;
+      const src = forms.str(data, srcName);
       if (files.outer(src)) {
         return src;
       }
     }
-    return data.get(name) as string;
+    return forms.str(data, name);
   };
   const onFileChange = (file: File | null) => {
     setImageFile(

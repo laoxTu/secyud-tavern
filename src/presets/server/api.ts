@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 
 import { InDto } from '@/database';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { Preset, PresetEntry, PresetRequestOptions } from '@/presets';
@@ -30,7 +31,7 @@ export default {
       POST: route(async (request, records) => {
         const { sessionId } = records.searchParams;
         const data = await request.formData();
-        const file = data.get('file') as File;
+        const file = forms.file(data, 'file');
         const uint8 = await file.arrayBuffer();
 
         const items: Preset[] = [];

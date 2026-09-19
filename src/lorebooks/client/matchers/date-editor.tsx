@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 
 import { InputGroup, InputGroupInput, InputGroupText } from '@/components';
+import { forms } from '@/global';
 
 export interface EventDate {
   year: number;
@@ -58,8 +59,8 @@ export function DateEditor({
 
 export function getDate(data: FormData, name: string): EventDate {
   return {
-    year: parseInt(data.get(`${name}-year`) as string),
-    month: parseInt(data.get(`${name}-month`) as string),
-    day: parseInt(data.get(`${name}-day`) as string),
+    year: forms.int(data, `${name}-year`),
+    month: forms.int(data, `${name}-month`),
+    day: forms.int(data, `${name}-day`),
   };
 }

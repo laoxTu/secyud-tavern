@@ -53,7 +53,7 @@ function Component() {
   return (
     <TooltipDialog
       tooltip={<ListIcon />}
-      onOpen={handler(async (open: boolean) => {
+      onOpen={handler(async (open) => {
         if (open) {
           refreshKey();
         } else {

@@ -24,6 +24,7 @@ import {
   TooltipDialog,
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { StoryEntry, StoryEntryClipboard } from '@/stories';
@@ -74,14 +75,14 @@ export function StoryEntryUpdate<TData>({
           </IconTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
-            onSubmit={handler(async (data: FormData) => {
+            onSubmit={handler(async (data) => {
               await stories.proxy.entry.clone<TData>(
                 masterId,
                 entryType,
                 entryId,
                 {
                   masterId,
-                  name: data.get('name') as string,
+                  name: forms.str(data, 'name'),
                 },
               );
               success(t('message.clone.success'));
@@ -135,7 +136,7 @@ export function StoryEntryList<TData>({
       <div className="flex flex-wrap">
         <form
           action={async (data: FormData) => {
-            setFilter(data.get('filter') as string);
+            setFilter(forms.str(data, 'filter'));
             await refresh();
           }}
           className={'flex-1'}
@@ -164,9 +165,9 @@ export function StoryEntryList<TData>({
         </form>
         <TooltipDialog
           tooltip={<SquarePlusIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             await stories.proxy.entry.add<TData>(item.id, name, {
-              name: data.get('name') as string,
+              name: forms.str(data, 'name'),
               data: defaultData,
             });
             await refresh();

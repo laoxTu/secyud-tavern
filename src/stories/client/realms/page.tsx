@@ -32,6 +32,7 @@ import {
   Spinner,
   submitTargetFormOnKey,
 } from '@/components';
+import { forms } from '@/global';
 import { Loading } from '@/global/client/loading';
 import { useHandler } from '@/interceptors/client';
 import { models } from '@/models/client';
@@ -180,8 +181,8 @@ export function PageControl() {
   return (
     <>
       <form
-        action={(formData) => {
-          const curPage = Number(formData.get('realm-index'));
+        action={(data) => {
+          const curPage = forms.int(data, 'realm-index');
           return changeIndex(curPage);
         }}
       >

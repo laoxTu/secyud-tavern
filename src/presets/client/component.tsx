@@ -29,6 +29,7 @@ import {
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
 import { DataRequest, NameValue, utils } from '@/database';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry, PresetEntryClipboard } from '@/presets';
@@ -136,7 +137,7 @@ export function PresetEntryUpdate<TData>({
           </IconTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
-            onSubmit={handler(async (data: FormData) => {
+            onSubmit={handler(async (data) => {
               const { masterId, entryType, entryId } = entry;
               await presets.proxy.entry.clone<TData>(
                 masterId,
@@ -144,7 +145,7 @@ export function PresetEntryUpdate<TData>({
                 entryId,
                 {
                   masterId,
-                  name: data.get('name') as string,
+                  name: forms.str(data, 'name'),
                 },
               );
               success(t('message.clone.success'));
@@ -200,7 +201,7 @@ export function PresetEntryList<TData>({
       <div className="flex flex-wrap">
         <form
           action={async (data: FormData) => {
-            setFilter(data.get('filter') as string);
+            setFilter(forms.str(data, 'filter'));
             await refresh();
           }}
           className={'flex-1'}
@@ -229,9 +230,9 @@ export function PresetEntryList<TData>({
         </form>
         <TooltipDialog
           tooltip={<SquarePlusIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             await presets.proxy.entry.add<TData>(item.id, name, {
-              name: data.get('name') as string,
+              name: forms.str(data, 'name'),
               disabled: false,
               data: defaultData,
             });

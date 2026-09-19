@@ -64,6 +64,7 @@ import {
   useTabs,
 } from '@/components';
 import { NameValue } from '@/database';
+import { forms } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
 import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -242,10 +243,10 @@ function TabContent() {
         </IconTooltip>
         <TooltipDialog
           tooltip={<CopyIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             const { id } = await presets.proxy.clone(item.id, {
-              name: data.get('name') as string,
-              id: data.get('code') as string,
+              name: forms.str(data, 'name'),
+              id: forms.str(data, 'code'),
             });
             await setItem(id);
             await fetch();
@@ -388,11 +389,11 @@ export function MenuContent() {
             <div className={'flex flex-col'}>
               <TooltipDialog
                 tooltip={<SquarePlusIcon />}
-                onSubmit={handler(async (data: FormData) => {
+                onSubmit={handler(async (data) => {
                   const { id } = await presets.proxy.create({
                     version: '1.0.0',
-                    id: data.get('code') as string,
-                    name: data.get('name') as string,
+                    id: forms.str(data, 'code'),
+                    name: forms.str(data, 'name'),
                     requires: [],
                     tags: [],
                   });
@@ -476,19 +477,19 @@ function PropertyTab() {
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         const { id } = await presets.proxy.update(item.id, {
-          id: data.get('code') as string,
-          name: data.get('name') as string,
+          id: forms.str(data, 'code'),
+          name: forms.str(data, 'name'),
           cover: await getImageFileId(data, 'cover_src'),
-          version: data.get('version') as string,
-          description: data.get('description') as string,
-          opening: data.get('opening') as string,
+          version: forms.str(data, 'version'),
+          description: forms.str(data, 'description'),
+          opening: forms.str(data, 'opening'),
           variables: checker.validJsonOrEmpty(
-            (data.get('variables') as string)?.trim(),
+            forms.str(data, 'variables')?.trim(),
           ),
           requires: combobox.getAll(data, 'require'),
-          tags: data.getAll('tag') as string[],
+          tags: forms.strs(data, 'tag'),
         });
         success(t('message.update.success'));
         await setItem(id);

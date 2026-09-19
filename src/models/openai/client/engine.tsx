@@ -14,6 +14,7 @@ import {
   Textarea,
 } from '@/components';
 import { utils } from '@/database';
+import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import {
@@ -423,17 +424,17 @@ export const engine: ModelEngine = {
   configComponent: Content,
   configureObject(data, model) {
     const options: OpenAIOptions = {
-      model: data.get('model') as string,
-      temperature: Number(data.get('temperature')),
-      top_p: Number(data.get('top_p')),
-      presence_penalty: Number(data.get('presence_penalty')),
-      frequency_penalty: Number(data.get('frequency_penalty')),
-      max_output_tokens: Number(data.get('max_output_tokens')),
+      model: forms.str(data, 'model'),
+      temperature: forms.float(data, 'temperature'),
+      top_p: forms.float(data, 'top_p'),
+      presence_penalty: forms.float(data, 'presence_penalty'),
+      frequency_penalty: forms.float(data, 'frequency_penalty'),
+      max_output_tokens: forms.float(data, 'max_output_tokens'),
     };
     const config: OpenAIConfig = {
-      extras: checker.validJson(data.get('extras') as string, 'openai.extras'),
-      url: data.get('url') as string,
-      format: data.get('format') as any,
+      extras: checker.validJson(forms.str(data, 'extras'), 'openai.extras'),
+      url: forms.str(data, 'url'),
+      format: forms.str(data, 'format') as any,
     };
     utils.setProperty(model, models.names.config, config);
     utils.setProperty(model, models.names.options, options);

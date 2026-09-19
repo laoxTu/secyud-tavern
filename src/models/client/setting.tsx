@@ -18,6 +18,7 @@ import {
   UpdateForm,
   useFormRef,
 } from '@/components';
+import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -49,28 +50,28 @@ function ModelPropertyContent() {
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         if (!engine)
           throw new BusinessError(
             'engine is required',
             'error.model.engine_required',
           );
-        const key = data.get('api_key') as string | undefined;
+        const key = forms.str(data, 'api_key');
         if (item) {
           await models.proxy.update(
             item.id,
             engine?.configureObject(data, {
               engine: engine.id,
-              name: data.get('name') as string,
-              builder: data.get('builder') as string,
-              stream: !!data.get('stream'),
+              name: forms.str(data, 'name'),
+              builder: forms.str(data, 'builder'),
+              stream: forms.bool(data, 'stream'),
               key: item.key === key || !key ? undefined : key,
-              iterations: parseInt(data.get('iterations') as string),
+              iterations: forms.int(data, 'iterations'),
               properties: {
                 ...properties,
                 retry: {
-                  max: parseInt(data.get('retry_max') as string),
-                  interval: parseInt(data.get('interval') as string),
+                  max: forms.int(data, 'retry_max'),
+                  interval: forms.int(data, 'interval'),
                 },
               },
             }),
@@ -190,10 +191,10 @@ export function ModelSettingContent() {
         </div>
         <TooltipDialog
           tooltip={<SquarePlusIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             const { id } = await models.proxy.create({
               builder: 'default',
-              name: data.get('name') as string,
+              name: forms.str(data, 'name'),
               stream: true,
               iterations: 20,
             });
@@ -222,10 +223,10 @@ export function ModelSettingContent() {
         <TooltipDialog
           tooltip={<CopyIcon />}
           disabled={!item}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             if (!item) return;
             const { id } = await models.proxy.clone(item.id, {
-              name: data.get('name') as string,
+              name: forms.str(data, 'name'),
             });
             await setItem(id);
             success(t('message.clone.success'));

@@ -16,6 +16,7 @@ import {
   TagBox,
   Textarea,
 } from '@/components';
+import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { ModelNameValueField, models } from '@/models/client';
@@ -195,13 +196,13 @@ const tool: ToolProvider<AgentConfig> = {
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
-      schema: checker.validJson(data.get('schema') as string, 'default.schema'),
-      disableTags: data.getAll('disable_tags').map((u) => String(u)),
+      schema: checker.validJson(forms.str(data, 'schema'), 'default.schema'),
+      disableTags: forms.strs(data, 'disable_tags'),
       presets: combobox.getAll(data, 'preset'),
-      description: data.get('description') as string,
-      code: data.get('code') as string,
-      disablePreset: !!data.get('disable_preset'),
-      maxLength: parseInt(data.get('max_length') as string),
+      description: forms.str(data, 'description'),
+      code: forms.str(data, 'code'),
+      disablePreset: forms.bool(data, 'disable_preset'),
+      maxLength: forms.int(data, 'max_length'),
       model: combobox.get(data, 'model'),
     };
   },

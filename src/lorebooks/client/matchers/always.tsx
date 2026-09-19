@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 
 import { Checkbox, Field, FieldContent, FieldLabel } from '@/components';
+import { forms } from '@/global';
 import { Lorebook } from '@/lorebooks';
 import { Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
@@ -48,7 +49,7 @@ export const alwaysMatcher: Matcher = {
   configComponent: AlwaysMatcher,
   async configureObject(data, lorebook: Lorebook<AlwaysMatchConfig>) {
     lorebook.expression = {
-      last: !!data.get('last'),
+      last: forms.bool(data, 'last'),
     };
   },
   async match() {

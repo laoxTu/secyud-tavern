@@ -8,13 +8,13 @@ import {
   Field,
   FieldContent,
   FieldLabel,
-  forms,
   Input,
   spanHalf,
   submitTargetFormOnKey,
   Textarea,
 } from '@/components';
-import { NameValue, utils } from '@/database';
+import { utils } from '@/database';
+import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
@@ -22,8 +22,7 @@ import { JsonSchema, jsonUtils } from '@/utils';
 
 import {
   AutoPaintConfig,
-  ComfyUIParam,
-  ComfyUIWorkflow,
+  ComfyUIPaint,
   ComfyUIWorkflowInput,
   comfyuis as main,
 } from '..';
@@ -39,24 +38,17 @@ export function Editor({
     data.config,
   );
   const { handler } = useHandler();
-  const [workflow, setWorkflow] = useState<
-    | (ComfyUIWorkflow & {
-        params: ComfyUIParam[];
-      })
-    | null
-    | undefined
-  >(undefined);
+  const [workflow, setWorkflow] = useState<ComfyUIPaint | null | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     void (async () => {
-      if (config.workflow && workflow === undefined) {
-        const { value } = config.workflow;
-        const workflow = await comfyuis.proxy.workflow.get(value);
-        const params = await comfyuis.proxy.workflow.param.list(value);
-        setWorkflow({
-          ...workflow,
-          params: params.items,
-        });
+      if (workflow === undefined) {
+        const paint = await comfyuis.proxy.workflow.paint(
+          config.workflow?.value,
+        );
+        setWorkflow(paint);
       }
     })();
   }, []);
@@ -88,13 +80,9 @@ export function Editor({
       <ComfyUIWorkflowNameValueField
         className={spanHalf}
         name={'workflow'}
-        onValueChange={handler(async (item: NameValue) => {
-          const workflow = await comfyuis.proxy.workflow.get(item.value);
-          const params = await comfyuis.proxy.workflow.param.list(item.value);
-          setWorkflow({
-            ...workflow,
-            params: params.items,
-          });
+        onValueChange={handler(async (item) => {
+          const paint = await comfyuis.proxy.workflow.paint(item?.value);
+          setWorkflow(paint);
         })}
       />
       {workflow &&

@@ -11,7 +11,7 @@ export interface ComfyUIWorkflow extends Entity, Properties {
 }
 
 export interface ComfyUIWorkflowRequestParam {
-  fuzzy?: string;
+  fuzzy?: string | null;
 }
 
 /**
@@ -58,7 +58,7 @@ const defaultWorkflow: ComfyUIWorkflow = {
   name: '',
 };
 
-export interface ComfyUIPortModel {
+export interface ComfyUIPaint {
   workflow: ComfyUIWorkflow;
   params: ComfyUIParam[];
 }
