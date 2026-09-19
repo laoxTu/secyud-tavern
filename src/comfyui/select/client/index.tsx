@@ -310,7 +310,7 @@ function PowerLoraSelectInputComponent({
   },
 }: ComfyUIParamProps<PowerLoraSelectConfig>) {
   const t = useTranslations();
-  const [count, setCount] = useState(loras.length);
+  const [count, setCount] = useState(loras?.length ?? 0);
   return (
     <>
       <Field>
