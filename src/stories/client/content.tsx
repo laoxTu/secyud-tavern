@@ -44,6 +44,7 @@ import {
   useFormRef,
   useTabs,
 } from '@/components';
+import { forms } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -77,9 +78,9 @@ function PropertyTab() {
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         const { id } = await stories.proxy.update(item.id, {
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
           presets: combobox.getAll(data, 'preset'),
           model: combobox.get(data, 'model'),
         });
@@ -241,9 +242,9 @@ function Content() {
             <div className={'flex flex-col'}>
               <TooltipDialog
                 tooltip={<SquarePlusIcon />}
-                onSubmit={handler(async (data: FormData) => {
+                onSubmit={handler(async (data) => {
                   const { id } = await stories.proxy.create({
-                    name: data.get('name') as string,
+                    name: forms.str(data, 'name'),
                     presets: [],
                   });
                   await setItem(id);

@@ -14,6 +14,7 @@ import {
   submitTargetFormOnKey,
   Textarea,
 } from '@/components';
+import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { Realm } from '@/stories';
@@ -120,12 +121,12 @@ const tool: ToolProvider<ScriptConfig> = {
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
-      enableDoc: !!data.get('enable_doc'),
-      enableVariable: !!data.get('enable_variable'),
-      script: data.get('script') as string,
-      code: data.get('code') as string,
-      schema: checker.validJson(data.get('schema') as string, 'default.schema'),
-      description: data.get('description') as string,
+      enableDoc: forms.bool(data, 'enable_doc'),
+      enableVariable: forms.bool(data, 'enable_variable'),
+      script: forms.str(data, 'script'),
+      code: forms.str(data, 'code'),
+      schema: checker.validJson(forms.str(data, 'schema'), 'default.schema'),
+      description: forms.str(data, 'description'),
     };
   },
   async create(tool, realm) {

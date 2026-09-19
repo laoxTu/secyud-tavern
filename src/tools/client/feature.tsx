@@ -14,12 +14,12 @@ import {
   useRefresh,
 } from '@/components';
 import { useHandler } from '@/interceptors/client';
-import { PresetItem } from '@/presets';
-import { Macro } from '@/presets/macros';
 import { Feature, stories } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
 import { tools as main } from '@/tools';
 import { tools } from '@/tools/client';
+
+import { ToolCacheItem } from './realm';
 
 function Component() {
   const t = useTranslations();
@@ -28,7 +28,7 @@ function Component() {
 
   const { realm } = realms;
   const changeCheckItem = handler(
-    async (entry: PresetItem<Macro>, checked: boolean) => {
+    async (entry: ToolCacheItem, checked: boolean) => {
       entry.disabled = !checked;
       refreshKey();
     },
@@ -37,7 +37,7 @@ function Component() {
   return (
     <TooltipDialog
       tooltip={<ToolboxIcon />}
-      onOpen={handler(async (open: boolean) => {
+      onOpen={handler(async (open) => {
         if (open) {
           refreshKey();
         } else {

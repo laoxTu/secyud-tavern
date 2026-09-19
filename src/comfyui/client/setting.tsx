@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { comfyuis as main } from '@/comfyui';
 import { useComfyUIModelSettingState } from '@/comfyui/client/state';
 import { Field, FieldLabel, Input, UpdateForm } from '@/components';
+import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
 import { useHandler } from '@/interceptors/client';
 
@@ -14,11 +15,11 @@ function Content() {
 
   return (
     <UpdateForm
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         useComfyUIModelSettingState.setState({
-          url: data.get('base_url') as string,
-          client: data.get('client_id') as string,
-          directory: data.get('directory') as string,
+          url: forms.str(data, 'base_url'),
+          client: forms.str(data, 'client_id'),
+          directory: forms.str(data, 'directory'),
         });
         success(t('message.update.success'));
       })}

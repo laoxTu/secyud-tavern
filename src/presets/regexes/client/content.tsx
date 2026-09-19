@@ -12,6 +12,7 @@ import {
   Textarea,
   UpdateForm,
 } from '@/components';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry } from '@/presets';
@@ -45,14 +46,14 @@ function Editor({
 
   return (
     <UpdateForm
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         await presets.proxy.entry.set<Regex>(masterId, entryType, entryId, {
           data: {
-            target: data.get('target') as string,
-            pattern: data.get('pattern') as string,
-            replacement: data.get('replacement') as string,
+            target: forms.str(data, 'target'),
+            pattern: forms.str(data, 'pattern'),
+            replacement: forms.str(data, 'replacement'),
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         });
         await refresh();
         success(t('message.update.success'));

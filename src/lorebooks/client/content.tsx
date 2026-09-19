@@ -15,6 +15,7 @@ import {
   UpdateForm,
   useFormRef,
 } from '@/components';
+import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -28,7 +29,7 @@ import {
 } from '@/presets/client';
 import { createPresetEntryState } from '@/presets/client/factory';
 
-import { Lorebook, lorebooks as main } from '..';
+import { Lorebook, LorebookRole, lorebooks as main } from '..';
 
 import { lorebooks } from '.';
 
@@ -56,10 +57,10 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         if (!editor) return;
-        const content = data.get('content') as string;
-        const type = data.get('type') as string;
+        const content = forms.str(data, 'content');
+        const type = forms.str(data, 'type');
         if (type === 'json') {
           checker.validJsonOrEmpty(content, 'preset.lorebook');
         }
@@ -69,12 +70,12 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
             content,
             type,
             expression: {},
-            role: data.get('role') as any,
-            code: data.get('code') as string,
-            priority: parseInt(data.get('priority') as string),
-            layer: parseInt(data.get('layer') as string),
+            role: data.get('role') as LorebookRole,
+            code: forms.str(data, 'code'),
+            priority: forms.int(data, 'priority'),
+            layer: forms.int(data, 'layer'),
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         };
         await editor.configureObject?.(data, entry.data!);
 

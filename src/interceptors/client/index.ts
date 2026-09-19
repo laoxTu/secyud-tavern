@@ -14,7 +14,7 @@ export class ApiError extends BusinessError {
   }
 }
 
-type AsyncFunc<T = void> = (...args: any[]) => Promise<T>;
+type AsyncFunc<A extends any[] = [], T = void> = (...args: A) => Promise<T>;
 
 export function isNetworkError(error: unknown): boolean {
   if (error instanceof TypeError) {
@@ -92,17 +92,17 @@ export function useHandler() {
     });
   }, []);
 
-  function handler<T>(
-    action: AsyncFunc<T>,
-    finish?: AsyncFunc<T>,
-  ): AsyncFunc<T> {
-    return async (...args: any[]) => {
+  function handler<A extends any[], T>(
+    action: AsyncFunc<A, T>,
+    finish?: AsyncFunc<A>,
+  ): AsyncFunc<A, T> {
+    return async (...args: A) => {
       try {
         return await action(...args);
       } catch (err) {
         error(err);
       } finally {
-        await finish?.();
+        await finish?.(...args);
       }
       return undefined!;
     };

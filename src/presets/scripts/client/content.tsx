@@ -13,6 +13,7 @@ import {
   UpdateForm,
   useFormRef,
 } from '@/components';
+import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -61,15 +62,15 @@ function Editor({
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         await presets.proxy.entry.set<Script>(masterId, entryType, entryId, {
           data: {
-            type: data.get('type') as string,
-            code: data.get('code') as string,
-            content: data.get('content') as string,
-            priority: parseInt(data.get('priority') as string),
+            type: forms.str(data, 'type'),
+            code: forms.str(data, 'code'),
+            content: forms.str(data, 'content'),
+            priority: forms.int(data, 'priority'),
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         });
         await refresh();
         success(t('message.update.success'));

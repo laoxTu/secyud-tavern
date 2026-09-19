@@ -44,6 +44,7 @@ import {
   TooltipDialog,
   useImageUploaderState,
 } from '@/components';
+import { forms } from '@/global';
 import { globals } from '@/global/client';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
@@ -112,16 +113,16 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
           className={'flex flex-col overflow-hidden'}
           style={{ maxWidth: '86%', height: '86%' }}
           tooltip={<SquarePenIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             await comfyuis.proxy.model.update(item.id, {
               code: item.code,
-              name: data.get('name') as string,
-              type: data.get('type') as string,
-              path: data.get('path') as string,
-              url: data.get('url') as string,
-              html: data.get('html') as string,
-              download: data.get('download') as string,
-              model: data.get('model') as string,
+              name: forms.str(data, 'name'),
+              type: forms.str(data, 'type'),
+              path: forms.str(data, 'path'),
+              url: forms.str(data, 'url'),
+              html: forms.str(data, 'html'),
+              download: forms.str(data, 'download'),
+              model: forms.str(data, 'model'),
               cover: await getImageFileId(data, 'cover_src'),
             });
 
@@ -256,11 +257,11 @@ export function ModelContent() {
       <div className={'flex flex-wrap'}>
         <form
           className={'flex-1 flex flex-wrap'}
-          action={handler(async (data: FormData) => {
+          action={handler(async (data) => {
             await fetch({
               search: () => ({
-                types: data.getAll('type') as string[],
-                fuzzy: data.get('search') as string,
+                types: forms.strs(data, 'type'),
+                fuzzy: forms.str(data, 'search'),
               }),
             });
           })}
@@ -297,11 +298,11 @@ export function ModelContent() {
         </form>
         <TooltipDialog
           tooltip={<SquarePlusIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             await comfyuis.proxy.model.create({
               ...comfyuis.model.default,
-              code: data.get('code') as string,
-              name: data.get('name') as string,
+              code: forms.str(data, 'code'),
+              name: forms.str(data, 'name'),
             });
             await fetch();
             success(t('message.create.success'));
@@ -325,7 +326,7 @@ export function ModelContent() {
         </TooltipDialog>
         <TooltipDialog
           tooltip={<FileDownIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             if (!importer) {
               throw new BusinessError(
                 'importer is required.',

@@ -11,6 +11,7 @@ import {
   Selector,
 } from '@/components';
 import { utils } from '@/database';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { ModelEngine, models, useModelState } from '@/models/client';
 import { DeepseekConfig, DeepseekOptions, deepseeks } from '@/models/deepseek';
@@ -141,16 +142,16 @@ export const engine: ModelEngine = {
   configComponent: Content,
   configureObject(data, model) {
     const options: DeepseekOptions = {
-      model: data.get('model') as string,
+      model: forms.str(data, 'model'),
       thinking: {
-        type: data.get('thinking') ? 'enabled' : 'disabled',
+        type: forms.bool(data, 'thinking') ? 'enabled' : 'disabled',
       },
-      reasoning_effort: data.get('reasoning_effort') as string,
-      temperature: Number(data.get('temperature')),
-      max_tokens: Math.trunc(Number(data.get('max_tokens'))),
-      top_p: Number(data.get('top_p')),
-      logprobs: !!data.get('logprobs'),
-      top_logprobs: Number(data.get('top_logprobs')),
+      reasoning_effort: forms.str(data, 'reasoning_effort'),
+      temperature: forms.float(data, 'temperature'),
+      max_tokens: forms.int(data, 'max_tokens'),
+      top_p: forms.float(data, 'top_p'),
+      logprobs: forms.bool(data, 'logprobs'),
+      top_logprobs: forms.float(data, 'top_logprobs'),
     };
     const config: DeepseekConfig = {};
     utils.setProperty(model, models.names.config, config);

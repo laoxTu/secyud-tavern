@@ -14,6 +14,7 @@ import {
   Textarea,
   UpdateForm,
 } from '@/components';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { StoryEntry } from '@/stories';
@@ -43,16 +44,16 @@ function Editor({
 
   return (
     <UpdateForm
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         await stories.proxy.entry.set<Memory>(masterId, entryType, entryId, {
           data: {
-            text: data.get('text') as string,
-            sequence: parseInt(data.get('sequence') as string),
-            importance: parseInt(data.get('importance') as string),
-            type: data.get('type') as string,
-            tags: data.getAll('tag') as string[],
+            text: forms.str(data, 'text'),
+            sequence: forms.int(data, 'sequence'),
+            importance: forms.int(data, 'importance'),
+            type: forms.str(data, 'type'),
+            tags: forms.strs(data, 'tag'),
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         });
         await refresh();
         success(t('message.update.success'));

@@ -35,6 +35,7 @@ import {
   useFormRef,
   useRefresh,
 } from '@/components';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { ModelInputSummary, models } from '@/models/client';
@@ -264,25 +265,25 @@ function Editor() {
         setHistory(history);
         refreshKey();
       })}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         const {
           history: { get, set },
         } = realms;
         if (index.cur <= 0) return;
         const history = await get(index.cur, realm);
-        const variablesText = data.get('variables') as string;
+        const variablesText = forms.str(data, 'variables');
         history.variables = jsonUtils.parse(variablesText);
         if (!history.variables)
           new BusinessError('json invalid', 'realm.variable_invalid_json');
         for (let i = 0; i < history.prompts.length; i++) {
           const input = history.prompts[i];
-          input.content = data.get(`history_input-${i}`) as string;
+          input.content = forms.str(data, `history_input-${i}`);
         }
         for (let i = 0; i < history.outputs.length; i++) {
           const outputs = history.outputs[i];
           for (let j = 0; j < outputs.length; j++) {
             const output = outputs[j];
-            output.content = data.get(`history_output-${i}-${j}`) as string;
+            output.content = forms.str(data, `history_output-${i}-${j}`);
           }
         }
         await set(index.cur, realm);

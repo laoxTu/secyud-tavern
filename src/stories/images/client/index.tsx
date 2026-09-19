@@ -22,6 +22,7 @@ import {
   TooltipDialog,
   useImageUploaderState,
 } from '@/components';
+import { forms } from '@/global';
 import { globals } from '@/global/client';
 import { useHandler } from '@/interceptors/client';
 import { StoryEntry } from '@/stories';
@@ -83,13 +84,13 @@ function ContentItem({
           />
           <TooltipDialog
             tooltip={<SquarePenIcon />}
-            onSubmit={handler(async (data: FormData) => {
+            onSubmit={handler(async (data) => {
               await stories.proxy.entry.set<StoryImage>(
                 masterId,
                 entryType,
                 entryId,
                 {
-                  name: data.get('name') as string,
+                  name: forms.str(data, 'name'),
                   data: {
                     image: await getImageFileId(data, 'image_src'),
                     updateAt: Date(),

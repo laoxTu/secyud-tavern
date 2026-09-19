@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { post } from '@/client';
 import { Field, FieldContent, FieldLabel, Input } from '@/components';
+import { forms } from '@/global';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
@@ -75,9 +76,9 @@ export const fetchers: ToolProvider<FetchConfig> = {
   configComponent: Editor,
   async configureObject(data, tool) {
     tool.config = {
-      maxResults: parseInt(data.get('max_result_count') as string),
-      timeout: parseInt(data.get('timeout') as string),
-      maxLength: parseInt(data.get('max_length') as string),
+      maxResults: forms.int(data, 'max_result_count'),
+      timeout: forms.int(data, 'timeout'),
+      maxLength: forms.int(data, 'max_length'),
     };
   },
   async create(entry) {

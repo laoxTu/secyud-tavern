@@ -8,11 +8,11 @@ import {
   Field,
   FieldContent,
   FieldLabel,
-  forms,
   Input,
   Selector,
   UpdateForm,
 } from '@/components';
+import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
 import { useHandler } from '@/interceptors/client';
 
@@ -32,7 +32,7 @@ function Setting() {
 
   return (
     <UpdateForm
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         useRagState.setState({
           disabled: forms.bool(data, 'disabled'),
           embedder: editor

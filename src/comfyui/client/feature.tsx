@@ -4,8 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import {
-  ComfyUIParam,
-  ComfyUIWorkflow,
+  ComfyUIPaint,
   ComfyUIWorkflowInput,
   comfyuis as main,
 } from '@/comfyui';
@@ -20,7 +19,6 @@ import {
   TooltipDialog,
   useFormRef,
 } from '@/components';
-import { NameValue } from '@/database';
 import { BusinessError } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { Feature } from '@/stories/client';
@@ -29,12 +27,7 @@ import { jsonUtils } from '@/utils';
 function Generator() {
   const t = useTranslations();
   const { handler, success } = useHandler();
-  const [workflow, setWorkflow] = useState<
-    | (ComfyUIWorkflow & {
-        params: ComfyUIParam[];
-      })
-    | null
-  >(null);
+  const [paint, setPaint] = useState<ComfyUIPaint | null>(null);
   const formRef = useFormRef();
 
   return (
@@ -43,14 +36,14 @@ function Generator() {
       tooltip={<Paintbrush2Icon />}
       className={'flex flex-col overflow-hidden'}
       style={{ maxWidth: '86%', height: '86%' }}
-      onSubmit={handler(async (data: FormData) => {
-        if (!workflow)
+      onSubmit={handler(async (data) => {
+        if (!paint)
           throw new BusinessError(
             'workflow is not selected',
             'comfyui.workflow_need',
           );
         const input: ComfyUIWorkflowInput | null = jsonUtils.parse(
-          workflow.content,
+          paint.workflow.content,
         );
         if (!input)
           throw new BusinessError(
@@ -58,7 +51,7 @@ function Generator() {
             'comfyui.workflow_invalid',
           );
 
-        for (const param of workflow.params) {
+        for (const param of paint.params) {
           const editor = comfyuis.configurators.registry.record(param.type);
           if (!editor) continue;
           await editor.configureInput?.(data, param, input);
@@ -74,19 +67,13 @@ function Generator() {
             <ComfyUIWorkflowNameValueField
               className={spanHalf}
               name={'workflow'}
-              onValueChange={handler(async (item: NameValue) => {
-                const workflow = await comfyuis.proxy.workflow.get(item.value);
-                const params = await comfyuis.proxy.workflow.param.list(
-                  item.value,
-                );
-                setWorkflow({
-                  ...workflow,
-                  params: params.items,
-                });
+              onValueChange={handler(async (item) => {
+                const paint = await comfyuis.proxy.workflow.paint(item?.value);
+                setPaint(paint);
               })}
             />
-            {workflow &&
-              workflow.params.map((u) =>
+            {paint &&
+              paint.params.map((u) =>
                 element(
                   comfyuis.configurators.registry.record(u.type)
                     ?.inputComponent,

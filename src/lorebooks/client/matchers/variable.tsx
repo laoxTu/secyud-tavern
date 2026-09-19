@@ -1,8 +1,8 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
 import { Field, FieldLabel, Input } from '@/components';
+import { forms } from '@/global';
 import { Lorebook } from '@/lorebooks';
 import { lorebooks, Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
@@ -62,8 +62,8 @@ export const variableMatcher: Matcher = {
   configComponent: MatcherComponent,
   async configureObject(data, lorebook: Lorebook<VariableMatchConfig>) {
     lorebook.expression = {
-      path: data.get('match_path') as string,
-      value: data.get('match_value') as string,
+      path: forms.str(data, 'match_path'),
+      value: forms.str(data, 'match_value'),
     };
   },
   match: async (context, lorebook) => {

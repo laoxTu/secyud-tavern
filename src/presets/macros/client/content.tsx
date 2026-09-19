@@ -14,6 +14,7 @@ import {
   UpdateForm,
   useFormRef,
 } from '@/components';
+import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -50,19 +51,19 @@ function Editor({
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
-        const json = !!data.get('json');
-        const value = data.get('value') as string;
+      onSubmit={handler(async (data) => {
+        const json = forms.bool(data, 'json');
+        const value = forms.str(data, 'value');
         await presets.proxy.entry.set<Macro>(masterId, entryType, entryId, {
           data: {
-            key: data.get('key') as string,
-            code: data.get('code') as string,
+            key: forms.str(data, 'key'),
+            code: forms.str(data, 'code'),
             value: json ? checker.validJson(value) : value,
             json,
-            multiple: !!data.get('multiple'),
-            hidden: !!data.get('hidden'),
+            multiple: forms.bool(data, 'multiple'),
+            hidden: forms.bool(data, 'hidden'),
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         });
         await refresh();
         success(t('message.update.success'));

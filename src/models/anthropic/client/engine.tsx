@@ -12,6 +12,7 @@ import {
   Textarea,
 } from '@/components';
 import { utils } from '@/database';
+import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { ModelEngine, ModelInputSummary, models } from '@/models/client';
@@ -105,17 +106,14 @@ export const engine: ModelEngine = {
   configComponent: Content,
   configureObject(data, model) {
     const options: AnthropicOptions = {
-      model: data.get('model') as string,
-      temperature: Number(data.get('temperature')),
-      top_p: Number(data.get('top_p')),
-      max_tokens: Number(data.get('max_tokens')),
+      model: forms.str(data, 'model'),
+      temperature: forms.float(data, 'temperature'),
+      top_p: forms.float(data, 'top_p'),
+      max_tokens: forms.float(data, 'max_tokens'),
     };
     const config: AnthropicConfig = {
-      extras: checker.validJson(
-        data.get('extras') as string,
-        'anthropic.extras',
-      ),
-      url: data.get('url') as string,
+      extras: checker.validJson(forms.str(data, 'extras'), 'anthropic.extras'),
+      url: forms.str(data, 'url'),
     };
     utils.setProperty(model, models.names.config, config);
     utils.setProperty(model, models.names.options, options);

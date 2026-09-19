@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { DataRequest, DataResponse, NameValue } from '@/database';
+import { forms } from '@/global';
 import { cn } from '@/lib/utils';
 import { jsonUtils } from '@/utils';
 
@@ -297,9 +298,9 @@ export function RemoteSearchCombobox({
 
 export const combobox = {
   get(data: FormData, name: string): NameValue {
-    return jsonUtils.parse(data.get(name) as string);
+    return jsonUtils.parse(forms.str(data, name));
   },
   getAll(data: FormData, name: string): NameValue[] {
-    return data.getAll(name).map((u) => jsonUtils.parse(u as string));
+    return forms.strs(data, name).map((u) => jsonUtils.parse(u));
   },
 };

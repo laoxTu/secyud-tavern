@@ -14,6 +14,7 @@ import {
   UpdateForm,
   useFormRef,
 } from '@/components';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { PresetEntry } from '@/presets';
 import {
@@ -48,15 +49,15 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
   return (
     <UpdateForm
       form={form}
-      onSubmit={handler(async (data: FormData) => {
+      onSubmit={handler(async (data) => {
         if (!editor) return;
         const entry: Partial<PresetEntry<Tool>> = {
           data: {
-            macro: !!data.get('macro'),
+            macro: forms.bool(data, 'macro'),
             type: editor.id,
             config: {},
           },
-          name: data.get('name') as string,
+          name: forms.str(data, 'name'),
         };
         await editor.configureObject?.(data, entry.data!);
         await presets.proxy.entry.set<Tool>(

@@ -3,6 +3,7 @@ import { del, get, open, post, put } from '@/client';
 import {
   ComfyUIModel,
   ComfyUIModelRequestParam,
+  ComfyUIPaint,
   ComfyUIParam,
   ComfyUIParamRequestParam,
   comfyuis,
@@ -113,6 +114,12 @@ export const proxy = {
       return await get('comfyuis/workflows/{id}', {
         params: { id },
       });
+    },
+    async paint(id?: string | null): Promise<ComfyUIPaint | null> {
+      if (!id) return null;
+      const workflow = await proxy.workflow.get(id);
+      const params = await proxy.workflow.param.list(id);
+      return { workflow, params: params.items };
     },
     async list(
       request?: DataRequest<ComfyUIWorkflowRequestParam>,

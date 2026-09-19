@@ -4,7 +4,7 @@ import { utils } from '@/database';
 import { PresetArchiveContext } from '@/presets/server/storage';
 import { Archive, archive, ArchiveFolder } from '@/utils/archive';
 
-import { ComfyUIPortModel } from '..';
+import { ComfyUIPaint } from '..';
 
 import { workflowRepository } from './repository-workflow';
 
@@ -50,7 +50,7 @@ export const storage = {
   async import(ctx: PresetArchiveContext, id?: string | null) {
     if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
-    const comfyui = await archive.get.json<ComfyUIPortModel>(
+    const comfyui = await archive.get.json<ComfyUIPaint>(
       node.nodes,
       `${id}.comfyui.json`,
     );
