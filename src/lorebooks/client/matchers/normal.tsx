@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { TagBox } from '@/components';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { forms } from '@/global';
 import { Lorebook } from '@/lorebooks';
 import { lorebooks, MatchContext, Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
@@ -90,18 +91,15 @@ export function NormalMatcher({
 }
 
 export function normalConfig(data: FormData): NormalMatchConfig {
-  const keywordsLength = parseInt(data.get('keywordsLength') as string);
+  const keywordsLength = forms.int(data, 'keywordsLength');
   const keywords: string[][] = [];
   for (let i = 0; i < keywordsLength; i++) {
-    keywords.push(data.getAll(`keywords-${i}`) as string[]);
+    keywords.push(forms.strs(data, `keywords-${i}`));
   }
   return {
     keywords,
     keywordsLength,
-    fitCount: Math.min(
-      parseInt(data.get('fitCount') as string),
-      keywords.length,
-    ),
+    fitCount: Math.min(forms.int(data, 'fitCount'), keywords.length),
   };
 }
 

@@ -24,6 +24,7 @@ import {
   Selector,
   spanHalf,
 } from '@/components';
+import { forms } from '@/global';
 import { jsonUtils } from '@/utils';
 
 function SelectConfigComponent({
@@ -138,17 +139,17 @@ const select: ParamConfigurator<SelectConfig> = {
   configComponent: SelectConfigComponent,
   async configureObject(data, param) {
     param.config = {
-      node: data.get('node') as string,
-      key: data.get('key') as string,
-      value: data.get(`value_${param.sequence}`) as string,
-      items: data.getAll('item') as string[],
+      node: forms.str(data, 'node'),
+      key: forms.str(data, 'key'),
+      value: forms.str(data, `value_${param.sequence}`),
+      items: forms.strs(data, 'item'),
     };
   },
   inputComponent: SelectInputComponent,
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = data.get(`value_${sequence}`);
+      inputs[config.key] = forms.str(data, `value_${sequence}`);
     }
   },
   async configureSchema({ config }, paint, schema) {
@@ -249,10 +250,10 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
   configComponent: ModelSelectConfigComponent,
   async configureObject(data, param) {
     param.config = {
-      node: data.get('node') as string,
-      key: data.get('key') as string,
-      type: data.get('type') as string,
-      fuzzy: data.get('fuzzy') as string,
+      node: forms.str(data, 'node'),
+      key: forms.str(data, 'key'),
+      type: forms.str(data, 'type'),
+      fuzzy: forms.str(data, 'fuzzy'),
       model: combobox.get(data, `model_${param.sequence}`),
     };
   },
@@ -260,7 +261,7 @@ const modelSelect: ParamConfigurator<ModelSelectConfig> = {
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = data.get(`model_${sequence}`);
+      inputs[config.key] = forms.str(data, `model_${sequence}`);
     }
   },
   async configureSchema(_, paint, schema) {
@@ -309,7 +310,7 @@ function PowerLoraSelectInputComponent({
   },
 }: ComfyUIParamProps<PowerLoraSelectConfig>) {
   const t = useTranslations();
-  const [count, setCount] = useState(loras.length);
+  const [count, setCount] = useState(loras?.length ?? 0);
   return (
     <>
       <Field>
@@ -373,15 +374,15 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
   async configureObject(data, param) {
     const sequence = param.sequence;
     param.config = {
-      node: data.get('node') as string,
+      node: forms.str(data, 'node'),
       loras: Array.from(
-        { length: parseInt(data.get(`count_${sequence}`) as string) },
+        { length: forms.int(data, `count_${sequence}`) },
         (_, i) => ({
           lora: combobox.get(data, `lora_${sequence}_${i}`),
           strength: parseFloat(
-            data.get(`lora_strength_${sequence}_${i}`) as string,
+            forms.str(data, `lora_strength_${sequence}_${i}`),
           ),
-          on: !!data.get(`lora_on_${sequence}_${i}`),
+          on: forms.bool(data, `lora_on_${sequence}_${i}`),
         }),
       ),
     };
@@ -390,16 +391,16 @@ const powerLoraSelect: ParamConfigurator<PowerLoraSelectConfig> = {
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (!inputs) return;
-    const count = parseInt(data.get(`count_${sequence}`) as string);
+    const count = forms.int(data, `count_${sequence}`);
     for (let i = 0; i < 10; i++) {
       if (i < count) {
         inputs[`lora_${i + 1}`] = {
           // value 是 id， name才是path
           lora: combobox.get(data, `lora_${sequence}_${i}`).name,
           strength: parseFloat(
-            data.get(`lora_strength_${sequence}_${i}`) as string,
+            forms.str(data, `lora_strength_${sequence}_${i}`),
           ),
-          on: !!data.get(`lora_on_${sequence}_${i}`),
+          on: forms.bool(data, `lora_on_${sequence}_${i}`),
         };
       } else {
         delete inputs[`lora_${i + 1}`];

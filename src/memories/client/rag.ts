@@ -134,12 +134,10 @@ export const rags = {
     model: string,
     factory: () => Promise<Float32Array>,
   ) {
-    const hashBuffer = await crypto.subtle.digest(
-      'SHA-256',
-      strUtils.toBuffer(input),
-    );
+    const buffer = strUtils.fnv1a64Bytes(input);
+    const key = new Uint8Array(buffer).buffer;
     const db = await getVectorDb();
-    const item: VectorItem = (await db.get('vectors', hashBuffer)) ?? {};
+    const item: VectorItem = (await db.get('vectors', key)) ?? {};
 
     if (model !== item.model) {
       const vector = await factory();
@@ -147,7 +145,7 @@ export const rags = {
       item.model = model;
     }
     item.time = Date.now();
-    await db.put('vectors', item, hashBuffer);
+    await db.put('vectors', item, key);
     const limit = useRagState.getState().cacheLimit;
 
     const count = await db.count('vectors');

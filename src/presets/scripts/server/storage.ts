@@ -20,23 +20,23 @@ export const storage = storages.create<Script>(
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async (nodes, item, s) => {
+  async ({ cur }, item, s) => {
     const name = `${item.code}-${s}`;
 
-    archive.set.json(nodes, `${name}.meta.json`, {
+    archive.set.json(cur, `${name}.meta.json`, {
       ...item,
       content: undefined,
     });
     const ext = mapToExt(item.type);
-    archive.set.text(nodes, `${name}.script.${ext}`, item.content);
+    archive.set.text(cur, `${name}.script.${ext}`, item.content);
   },
-  async (nodes, name) => {
+  async ({ cur }, name) => {
     const item = await archive.get.json<PresetItem<Script>>(
-      nodes,
+      cur,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(nodes, `${name}.script.`);
+      item.content = await archive.get.fuzzy(cur, `${name}.script.`);
     }
     return item;
   },

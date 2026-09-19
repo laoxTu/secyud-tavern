@@ -1,4 +1,5 @@
 import {
+  ComfyUIPaint,
   ComfyUIParam,
   ComfyUIParamRequestParam,
   ComfyUIWorkflow,
@@ -6,6 +7,7 @@ import {
 } from '@/comfyui';
 import { comfyuis } from '@/comfyui/server';
 import { DataRequest, InDto } from '@/database';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { jsonUtils } from '@/utils';
@@ -15,11 +17,7 @@ import { fileUtils, response } from '@/utils/server';
 import { callbacks } from '../callback';
 import { LoraConfig, selects } from '../select';
 
-interface PortModel {
-  workflow: ComfyUIWorkflow;
-  params: ComfyUIParam[];
-}
-async function exportProcess(model: PortModel): Promise<Buffer> {
+async function exportProcess(model: ComfyUIPaint): Promise<Buffer> {
   const nodes: Archive = {};
   archive.set.text(nodes, 'workflow.json', model.workflow.content);
   model.workflow.content = undefined;
@@ -27,9 +25,9 @@ async function exportProcess(model: PortModel): Promise<Buffer> {
   archive.set.json(nodes, 'meta.json', model);
   return await archive.archiveToZip(nodes);
 }
-async function importProcess(buffer: Buffer): Promise<PortModel> {
+async function importProcess(buffer: Buffer): Promise<ComfyUIPaint> {
   const nodes = await archive.zipToArchive(buffer);
-  const res = await archive.get.json<PortModel>(nodes, 'meta.json');
+  const res = await archive.get.json<ComfyUIPaint>(nodes, 'meta.json');
   if (res) {
     res.workflow.content = await archive.get.fuzzy(nodes, 'workflow.');
     return res;
@@ -51,7 +49,7 @@ export const workflows = {
   import: {
     POST: route(async (request) => {
       const data = await request.formData();
-      const file = data.get('file') as File;
+      const file = forms.file(data, 'file');
       const buffer = await file.arrayBuffer();
       const model = await importProcess(Buffer.from(buffer));
 

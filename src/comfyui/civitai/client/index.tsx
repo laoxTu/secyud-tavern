@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { ComfyUIModel } from '@/comfyui';
 import { ModelImporter } from '@/comfyui/client';
 import { Field, FieldLabel, Input } from '@/components';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 
 import { civitais as main } from '..';
@@ -81,8 +82,8 @@ const importer: ModelImporter = {
    * 不过应该够用了。
    */
   async configureObject(data: FormData, items) {
-    const modelVersionId = data.get('model_version_id');
-    const modelId = data.get('model_id');
+    const modelVersionId = forms.str(data, 'model_version_id');
+    const modelId = forms.str(data, 'model_id');
     if (modelVersionId) {
       try {
         const url = `${civitais.url}/api/v1/model-versions/${modelVersionId}`;

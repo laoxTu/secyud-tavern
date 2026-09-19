@@ -10,23 +10,23 @@ export const storage = storages.create<Lorebook>(
     sorter: `${match}${code}${name}`,
     filter: `${match}${code}${name}`,
   }),
-  async (nodes, item, s) => {
+  async ({ cur }, item, s) => {
     const name = `${item.code}-${s}`;
     const ext = lorebooks.typeToExt(item.type);
 
-    archive.set.json(nodes, `${name}.meta.json`, {
+    archive.set.json(cur, `${name}.meta.json`, {
       ...item,
       content: undefined,
     });
-    archive.set.text(nodes, `${name}.content.${ext}`, item.content);
+    archive.set.text(cur, `${name}.content.${ext}`, item.content);
   },
-  async (nodes, name) => {
+  async ({ cur }, name) => {
     const item = await archive.get.json<PresetItem<Lorebook>>(
-      nodes,
+      cur,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(nodes, `${name}.content.`);
+      item.content = await archive.get.fuzzy(cur, `${name}.content.`);
     }
     return item;
   },

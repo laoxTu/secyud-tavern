@@ -1,5 +1,6 @@
 import { DataRequest } from '@/database';
 import { files } from '@/files/server';
+import { forms } from '@/global';
 import { route } from '@/interceptors/server';
 import { response } from '@/utils/server';
 
@@ -7,7 +8,7 @@ export default {
   files: {
     POST: route(async (request) => {
       const formData = await request.formData();
-      const file = formData.get('file') as File;
+      const file = forms.file(formData, 'file');
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const mimeType = file.type;

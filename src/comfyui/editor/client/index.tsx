@@ -22,6 +22,7 @@ import {
   submitTargetFormOnKey,
   Textarea,
 } from '@/components';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { realms } from '@/stories/client/realms';
@@ -90,16 +91,16 @@ export const text: ParamConfigurator<TextConfig> = {
   configComponent: TextConfigComponent,
   async configureObject(data, param) {
     param.config = {
-      node: data.get('node') as string,
-      key: data.get('key') as string,
-      prompt: data.get(`prompt_${param.sequence}`) as string,
+      node: forms.str(data, 'node'),
+      key: forms.str(data, 'key'),
+      prompt: forms.str(data, `prompt_${param.sequence}`),
     };
   },
   inputComponent: TextInputComponent,
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = data.get(`prompt_${sequence}`);
+      inputs[config.key] = forms.str(data, `prompt_${sequence}`);
     }
   },
   async configureSchema(_, paint, schema) {
@@ -277,7 +278,7 @@ export const agentText: ParamConfigurator<AgentTextConfig> = {
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = data.get(`text_${sequence}`);
+      inputs[config.key] = forms.str(data, `text_${sequence}`);
     }
   },
   async configureSchema(_, paint, schema) {
@@ -367,16 +368,16 @@ export const number: ParamConfigurator<NumberConfig> = {
   configComponent: NumberConfigComponent,
   async configureObject(data, param) {
     param.config = {
-      node: data.get('node') as string,
-      key: data.get('key') as string,
-      value: parseInt(data.get(`value_${param.sequence}`) as string),
+      node: forms.str(data, 'node'),
+      key: forms.str(data, 'key'),
+      value: forms.int(data, `value_${param.sequence}`),
     };
   },
   inputComponent: NumberInputComponent,
   async configureInput(data, { config, sequence }, input) {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
-      inputs[config.key] = parseInt(data.get(`value_${sequence}`) as string);
+      inputs[config.key] = forms.int(data, `value_${sequence}`);
     }
   },
   async configureSchema(_, paint, schema) {

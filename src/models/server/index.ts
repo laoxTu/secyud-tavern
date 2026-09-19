@@ -5,12 +5,14 @@ import { openais } from '@/models/openai/server';
 
 import { engines } from './engine';
 import { repository } from './repository';
+import { storage } from './storage';
 
 export type * from './engine';
 export const models = {
   ...main,
   repository,
   engines,
+  storage,
 };
 
 export default async function () {

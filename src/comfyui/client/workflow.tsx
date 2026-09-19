@@ -45,6 +45,7 @@ import {
   useFormRef,
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
+import { forms } from '@/global';
 import { useHandler } from '@/interceptors/client';
 
 function Property() {
@@ -60,11 +61,11 @@ function Property() {
     <>
       <UpdateForm
         form={form}
-        onSubmit={handler(async (data: FormData) => {
+        onSubmit={handler(async (data) => {
           await comfyuis.proxy.workflow.update(item.id, {
-            name: data.get('name') as string,
-            content: data.get('content') as string,
-            description: data.get('description') as string,
+            name: forms.str(data, 'name'),
+            content: forms.str(data, 'content'),
+            description: forms.str(data, 'description'),
           });
           await setItem(item.id);
         })}
@@ -153,9 +154,9 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
           </IconTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
-            onSubmit={handler(async (data: FormData) => {
+            onSubmit={handler(async (data) => {
               await comfyuis.proxy.workflow.param.clone(masterId, sequence, {
-                name: data.get('name') as string,
+                name: forms.str(data, 'name'),
               });
               success(t('message.clone.success'));
               await refresh();
@@ -182,13 +183,13 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
     >
       <UpdateForm
         form={form}
-        onSubmit={handler(async (data: FormData) => {
+        onSubmit={handler(async (data) => {
           const param: ComfyUIParam = {
             sequence,
             masterId,
             config: {},
-            type: data.get('type') as string,
-            name: data.get('name') as string,
+            type: forms.str(data, 'type'),
+            name: forms.str(data, 'name'),
           };
           await editor?.configureObject?.(data, param);
           await comfyuis.proxy.workflow.param.set(item.id, sequence, param);
@@ -243,7 +244,7 @@ function Params() {
       <div className="flex flex-wrap">
         <form
           action={async (data: FormData) => {
-            setFilter(data.get('filter') as string);
+            setFilter(forms.str(data, 'filter'));
             await refresh();
           }}
           className={'flex-1'}
@@ -272,11 +273,11 @@ function Params() {
         </form>
         <TooltipDialog
           tooltip={<SquarePlusIcon />}
-          onSubmit={handler(async (data: FormData) => {
+          onSubmit={handler(async (data) => {
             await comfyuis.proxy.workflow.param.add(item.id, {
               masterId: '',
               sequence: 0,
-              name: data.get('name') as string,
+              name: forms.str(data, 'name'),
               type: 'text',
               config: {},
             });
@@ -340,10 +341,10 @@ export function WorkflowContent() {
             </div>
             <TooltipDialog
               tooltip={<SquarePlusIcon />}
-              onSubmit={handler(async (data: FormData) => {
+              onSubmit={handler(async (data) => {
                 const { id } = await comfyuis.proxy.workflow.create({
                   ...comfyuis.workflow.default,
-                  name: data.get('name') as string,
+                  name: forms.str(data, 'name'),
                 });
                 await setItem(id);
                 success(t('message.create.success'));
@@ -360,10 +361,10 @@ export function WorkflowContent() {
             <TooltipDialog
               tooltip={<CopyIcon />}
               disabled={!item}
-              onSubmit={handler(async (data: FormData) => {
+              onSubmit={handler(async (data) => {
                 if (!item) return;
                 const { id } = await comfyuis.proxy.workflow.clone(item.id, {
-                  name: data.get('name') as string,
+                  name: forms.str(data, 'name'),
                 });
                 await setItem(id);
                 success(t('message.clone.success'));
@@ -393,8 +394,8 @@ export function WorkflowContent() {
             </IconTooltip>
             <TooltipDialog
               tooltip={<FileDownIcon />}
-              onSubmit={handler(async (data: FormData) => {
-                await comfyuis.proxy.workflow.import(data.get('file') as File);
+              onSubmit={handler(async (data) => {
+                await comfyuis.proxy.workflow.import(forms.file(data, 'file'));
                 success(t('message.import.success'));
                 await refresh();
               })}

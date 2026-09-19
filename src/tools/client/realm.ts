@@ -9,7 +9,7 @@ import { tools } from '@/tools/client';
 
 import { ToolItem } from './providers';
 
-interface ToolCacheItem extends ToolItem, DisableDto {}
+export interface ToolCacheItem extends ToolItem, DisableDto {}
 
 export interface ToolCache {
   tools: Record<string, ToolCacheItem>;

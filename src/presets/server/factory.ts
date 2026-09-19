@@ -1,9 +1,9 @@
 import { Criteria } from '@/database/server/storage';
 import { Preset, PresetEntry, PresetItem } from '@/presets';
-import { ArchiveFolder, ArchiveNode } from '@/utils/archive';
+import { ArchiveFolder } from '@/utils/archive';
 
 import { repository } from './repository';
-import { PresetStorage } from './storage';
+import { PresetArchiveContext, PresetStorage } from './storage';
 
 export const storages = {
   create<TData>(
@@ -15,7 +15,7 @@ export const storages = {
      * 请保证左右文件名前缀一致
      */
     loadArchive: (
-      nodes: Record<string, ArchiveNode>,
+      context: PresetArchiveContext,
       entry: PresetItem<TData>,
       sequence: number,
     ) => Promise<void>,
@@ -24,7 +24,7 @@ export const storages = {
      * 只做解析用，真正的code在meta中
      */
     saveArchive: (
-      nodes: Record<string, ArchiveNode>,
+      context: PresetArchiveContext,
       name: string,
     ) => Promise<PresetItem<TData> | undefined>,
   ): PresetStorage {
@@ -68,36 +68,53 @@ export const storages = {
           );
         }
       },
-      async loadArchive(model, archive) {
-        if (!model.entries) return;
-        const entries: PresetItem<TData>[] = model.entries[plural];
+      async loadArchive({ item, cur, root, append }) {
+        if (!item.entries) return;
+        const entries: PresetItem<TData>[] = item.entries[plural];
         if (entries?.length) {
           const folder: ArchiveFolder = {
             type: 'folder',
             name: plural,
             nodes: {},
           };
-          archive.nodes[plural] = folder;
+          cur[plural] = folder;
 
           for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            await loadArchive(folder.nodes, entry, i);
+            await loadArchive(
+              {
+                cur: folder.nodes,
+                root,
+                item,
+                append,
+              },
+              entry,
+              i,
+            );
           }
         }
       },
-      async saveArchive(model, archive) {
-        const folder = archive.nodes[plural];
+      async saveArchive({ item, cur, root, append }) {
+        const folder = cur[plural];
         if (!folder || folder.type === 'file') return;
         const codes = [
           ...new Set(Object.keys(folder.nodes).map((u) => u.split('.')[0])),
         ];
         const entries: PresetItem<TData>[] = [];
         for (const code of codes) {
-          const item = await saveArchive(folder.nodes, code);
-          if (item) entries.push(item);
+          const entry = await saveArchive(
+            {
+              cur: folder.nodes,
+              root,
+              item,
+              append,
+            },
+            code,
+          );
+          if (entry) entries.push(entry);
         }
-        model.entries ??= {};
-        model.entries[plural] = entries;
+        item.entries ??= {};
+        item.entries[plural] = entries;
       },
       criteria(item) {
         return item.data ? criteria(item) : {};
