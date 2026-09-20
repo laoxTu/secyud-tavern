@@ -31,13 +31,13 @@ function check(ctx: PresetArchiveContext, id: string) {
 
 export const storage = {
   async export(ctx: PresetArchiveContext, id?: string | null) {
-    if (!id || check(ctx, id)) return;
+    if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
     const model = await repository.get(id);
     archive.set.json(node.nodes, `${id}.model.json`, model);
   },
   async import(ctx: PresetArchiveContext, id?: string | null) {
-    if (!id || check(ctx, id)) return;
+    if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
 
     const model = await archive.get.json<Model>(node.nodes, `${id}.model.json`);
