@@ -13,6 +13,8 @@ export interface AlwaysMatchConfig {
    * 是否为最后一个
    */
   last: boolean;
+  // 绑定同名宏，宏的状态会和世界书同步
+  macro?: boolean;
 }
 
 function AlwaysMatcher({
@@ -40,6 +42,18 @@ function AlwaysMatcher({
           />
         </FieldContent>
       </Field>
+      <Field>
+        <FieldLabel htmlFor={`lorebook-macro-${entryId}`}>
+          {t('lorebook.bind_macro')}
+        </FieldLabel>
+        <FieldContent>
+          <Checkbox
+            name={'macro'}
+            id={`lorebook-macro-${entryId}`}
+            defaultChecked={model.macro}
+          />
+        </FieldContent>
+      </Field>
     </>
   );
 }
@@ -50,6 +64,7 @@ export const alwaysMatcher: Matcher = {
   async configureObject(data, lorebook: Lorebook<AlwaysMatchConfig>) {
     lorebook.expression = {
       last: forms.bool(data, 'last'),
+      macro: forms.bool(data, 'macro'),
     };
   },
   async match() {
