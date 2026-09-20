@@ -160,9 +160,9 @@ function TabContent() {
               masterId,
               name,
             });
+            success(t('message.paste.success'));
             setTab(entryType);
             await setItem(masterId);
-            success(t('message.paste.success'));
           })}
           info={dialogs.info(t, 'paste', 'story.entry')}
         />
@@ -170,9 +170,9 @@ function TabContent() {
           itemName={`story.id`}
           onDelete={handler(async () => {
             await stories.proxy.delete(item.id);
+            success(t('message.delete.success'));
             await fetch();
             await setItem(useStoryState.getState().items?.at(0)?.id);
-            success(t('message.delete.success'));
           })}
         />
         <Button className={'opacity-0'} />
