@@ -1,5 +1,6 @@
 {
   "lorebook": {
+    "bind_macro": "绑定宏",
     "fit_count": "匹配数量",
     "id": "世界书",
     "include_any_word": "包含词组",

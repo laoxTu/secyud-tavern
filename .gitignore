@@ -4,8 +4,6 @@
 /src/generated
 /public
 /data
-/.env*
-/plugins
 
 # dependencies
 /node_modules

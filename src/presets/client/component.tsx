@@ -88,6 +88,7 @@ export function PresetEntryUpdate<TData>({
   const t = useTranslations();
   const { handler, success } = useHandler();
   const { name, refresh } = state();
+  const { item, setItem } = usePresetState();
 
   const { masterId, entryType, entryId, disabled } = entry;
   return (
@@ -166,6 +167,8 @@ export function PresetEntryUpdate<TData>({
               await presets.proxy.entry.del(masterId, entryType, entryId);
               success(t('message.delete.success'));
               await refresh();
+              // 更新标签Tab
+              await setItem(item?.id);
             })}
             itemName={`${name}.id`}
           />
@@ -189,7 +192,7 @@ export function PresetEntryList<TData>({
   className,
 }: PresetEntryListProps<TData>) {
   const t = useTranslations();
-  const { item } = usePresetState();
+  const { item, setItem } = usePresetState();
   const { refresh, name, defaultData } = state();
   const { handler } = useHandler();
   const [filter, setFilter] = useState('');
@@ -237,6 +240,8 @@ export function PresetEntryList<TData>({
               data: defaultData,
             });
             await refresh();
+            // 更新标签Tab
+            await setItem(item?.id);
           })}
           info={dialogs.info(t, 'create', `${name}.id`)}
         >

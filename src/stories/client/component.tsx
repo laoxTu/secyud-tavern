@@ -49,6 +49,7 @@ export function StoryEntryUpdate<TData>({
   const { handler, success } = useHandler();
   const { name, refresh } = state();
   const { masterId, entryType, entryId } = entry;
+  const { item, setItem } = useStoryState();
 
   return (
     <EntryCollapsiable
@@ -101,6 +102,8 @@ export function StoryEntryUpdate<TData>({
             onDelete={handler(async () => {
               await stories.proxy.entry.del(masterId, entryType, entryId);
               await refresh();
+              // 刷新标签
+              await setItem(item?.id);
             })}
             itemName={`${name}.id`}
           />
@@ -124,7 +127,7 @@ export function StoryEntryList<TData>({
   className,
 }: StoryEntryListProps<TData>) {
   const t = useTranslations();
-  const { item } = useStoryState();
+  const { item, setItem } = useStoryState();
   const { handler } = useHandler();
   const { refresh, name, defaultData } = state();
   const [filter, setFilter] = useState('');
@@ -171,6 +174,8 @@ export function StoryEntryList<TData>({
               data: defaultData,
             });
             await refresh();
+            // 刷新标签
+            await setItem(item.id);
           })}
           info={dialogs.info(t, 'create', `${name}.id`)}
         >

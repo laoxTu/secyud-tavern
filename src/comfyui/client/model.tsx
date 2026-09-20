@@ -256,7 +256,7 @@ export function ModelContent() {
     <div className={'h-full flex-1 flex flex-col'}>
       <div className={'flex flex-wrap'}>
         <form
-          className={'flex-1 flex flex-wrap'}
+          className={'flex-1 flex flex-wrap min-w-72'}
           action={handler(async (data) => {
             await fetch({
               search: () => ({
