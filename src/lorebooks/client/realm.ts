@@ -209,7 +209,7 @@ async function create(
         continue;
       }
       visited.add(lorebook.id);
-      if (lorebook.expression.macro && !checkItems[lorebook.code])
+      if (!lorebook.expression.macro || !checkItems[lorebook.code])
         list.push(lorebook);
     }
   }
