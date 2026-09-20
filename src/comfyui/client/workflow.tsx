@@ -67,6 +67,7 @@ function Property() {
             content: forms.str(data, 'content'),
             description: forms.str(data, 'description'),
           });
+          success(t('message.update.success'));
           await setItem(item.id);
         })}
       >

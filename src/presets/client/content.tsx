@@ -248,9 +248,9 @@ function TabContent() {
               name: forms.str(data, 'name'),
               id: forms.str(data, 'code'),
             });
-            await setItem(id);
-            await fetch();
             success(t('message.clone.success'));
+            await fetch();
+            await setItem(id);
           })}
           info={dialogs.info(t, 'clone', 'preset.id')}
         >
@@ -298,9 +298,9 @@ function TabContent() {
               masterId,
               name,
             });
+            success(t('message.paste.success'));
             setTab(entryType);
             await setItem(masterId);
-            success(t('message.paste.success'));
           })}
           info={dialogs.info(t, 'paste', 'preset.entry')}
         />
@@ -308,9 +308,9 @@ function TabContent() {
           itemName={`preset.id`}
           onDelete={handler(async () => {
             await presets.proxy.delete(item.id);
+            success(t('message.delete.success'));
             await fetch();
             await setItem(usePresetState.getState().items?.at(0)?.id);
-            success(t('message.delete.success'));
           })}
         />
         <Button className={'opacity-0'} />
