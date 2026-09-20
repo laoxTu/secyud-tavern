@@ -12,6 +12,7 @@ import {
   Processer,
 } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
+import { macros } from '@/presets/macros/client';
 import {
   RealmHistory,
   RealmMessage,
@@ -42,7 +43,7 @@ export interface LorebookCache {
  * 创建世界书注入器
  */
 async function create(
-  { histories, converts }: ModelPromptContext,
+  { histories, converts, realm }: ModelPromptContext,
   { builder, name, prompt, assist, system, caller }: ModelInjectContext,
   cache: LorebookCache,
 ): Promise<InjectMessage> {
@@ -201,13 +202,15 @@ async function create(
    * 一次性注入lorebook
    * @param items
    */
-  async function fixed(items: PresetItem<Lorebook>[]) {
+  async function fixed(items: PresetItem<Lorebook<AlwaysMatchConfig>>[]) {
+    const { checkItems } = macros.property(realm);
     for (const lorebook of items) {
       if (visited.has(lorebook.id)) {
         continue;
       }
       visited.add(lorebook.id);
-      list.push(lorebook);
+      if (lorebook.expression.macro && !checkItems[lorebook.code])
+        list.push(lorebook);
     }
   }
 }
