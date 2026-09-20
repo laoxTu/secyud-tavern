@@ -17,6 +17,7 @@ interface ModelNameValueFieldProps {
   onValueChange?: (value: NameValue | null) => void;
   name?: string;
   orientation?: Orientation;
+  disableLabel?: boolean;
 }
 
 export function ModelNameValueField({
@@ -24,15 +25,18 @@ export function ModelNameValueField({
   orientation,
   value: defaultValue,
   onValueChange,
+  disableLabel,
 }: ModelNameValueFieldProps) {
   const t = useTranslations();
   const { model } = useModelSettingState();
   const { handler } = useHandler();
   return (
     <Field orientation={orientation}>
-      <FieldLabel style={{ flex: 0 }} htmlFor={`${name}-model`}>
-        {t('model.id')}
-      </FieldLabel>
+      {!disableLabel && (
+        <FieldLabel style={{ flex: 0 }} htmlFor={`${name}-model`}>
+          {t('model.id')}
+        </FieldLabel>
+      )}
       <FieldContent className="flex-1">
         <RemoteSearchCombobox
           name={name}

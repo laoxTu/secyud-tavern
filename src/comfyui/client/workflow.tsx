@@ -331,9 +331,10 @@ export function WorkflowContent() {
     <MainResizeable
       side={
         <div className={'h-full flex flex-col'}>
-          <div className={'flex flex-wrap p-1'}>
-            <div className={'flex-1 min-w-80'}>
+          <div className={'flex flex-wrap'}>
+            <div className={'flex-1 min-w-72'}>
               <ComfyUIWorkflowNameValueField
+                disableLabel
                 orientation={'horizontal'}
                 value={item ? comfyuis.workflow.toNameValue(item) : null}
                 onValueChange={(v) => setItem(v?.value)}

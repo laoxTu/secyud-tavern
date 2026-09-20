@@ -182,8 +182,9 @@ export function ModelSettingContent() {
   return (
     <>
       <div className={'flex flex-wrap p-1'}>
-        <div className={'flex-1'}>
+        <div className={'flex-1 min-w-64'}>
           <ModelNameValueField
+            disableLabel
             orientation={'horizontal'}
             value={item ? models.toNameValue(item) : null}
             onValueChange={(v) => setItem(v?.value)}
