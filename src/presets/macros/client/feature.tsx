@@ -1,20 +1,18 @@
 import { CircleAlertIcon, ListIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 
 import {
   Checkbox,
   dialogs,
   Field,
-  FieldContent,
-  FieldDescription,
   FieldLabel,
   FieldLegend,
   FieldSet,
+  GridField,
   IconTooltip,
   RadioGroup,
   RadioGroupItem,
-  Separator,
-  TextTooltip,
   TooltipDialog,
   useRefresh,
 } from '@/components';
@@ -25,7 +23,6 @@ import { macros } from '@/presets/macros/client';
 import { MacroCacheItem } from '@/presets/macros/client/realm';
 import { Feature, stories } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
-import { arrUtils } from '@/utils';
 
 function Component() {
   const t = useTranslations();
@@ -63,91 +60,107 @@ function Component() {
         }
       })}
       className={'flex flex-col overflow-hidden h-5/6'}
-      style={{ height: '86%' }}
+      style={{ height: '86%', minWidth: '86%' }}
       info={dialogs.info(t, 'macro.selector')}
     >
-      <div className={'overflow-auto p-1 flex-1'}>
+      <div className={'overflow-auto flex-1'}>
         {Object.values(cache.macros)
           .filter((u) => !u.hidden)
           .map((item, i) => {
             const singles = Object.values(item.singles);
             return (
-              <FieldSet key={item.key ?? i} className="border p-1">
-                <FieldLegend className="text-sm font-semibold">
+              <FieldSet
+                key={item.key ?? i}
+                className="border px-1"
+                style={{ gap: 0 }}
+              >
+                <FieldLegend className="font-semibold m-0">
                   {item.key}
                 </FieldLegend>
                 {!!singles.length && (
                   <RadioGroup
                     value={item.select}
                     onValueChange={(id) => changeSelection(item, id)}
-                    className="flex flex-col"
                   >
-                    {arrUtils.intersperse(
-                      Object.values(item.singles),
-                      (_, i) => (
-                        <Separator key={`s-${i}`} />
-                      ),
-                      (t, i) => (
-                        <Field key={i}>
-                          <FieldContent key={key} className="flex-row">
+                    <GridField>
+                      {Object.values(item.singles).map((t, i) => {
+                        return (
+                          <Field
+                            key={i}
+                            orientation={'horizontal'}
+                            className="hover:bg-primary-foreground"
+                          >
                             <RadioGroupItem
+                              className={'m-auto'}
                               id={`macro-r-${item.key}-${i}`}
                               value={t.code}
+                              key={key}
                             />
-                            <FieldLabel
-                              htmlFor={`macro-r-${item.key}-${i}`}
-                              className="m-auto flex-1"
-                            >
+                            <FieldLabel htmlFor={`macro-r-${item.key}-${i}`}>
                               {t.name}
-                            </FieldLabel>
-                          </FieldContent>
-                          <FieldDescription className={'pl-4'}>
-                            <TextTooltip text={t.value} />
-                          </FieldDescription>
-                        </Field>
-                      ),
-                    )}
-                  </RadioGroup>
-                )}
-                {!!item.multiples.length &&
-                  arrUtils.intersperse(
-                    item.multiples.filter((t) => !t.hidden),
-                    (_, i) => <Separator key={`s-${i}`} />,
-                    (t, i) => {
-                      const list = cache.multiples[t.code];
-                      return (
-                        <Field key={i}>
-                          <FieldContent
-                            key={key}
-                            className="flex-row hover:bg-primary-foreground"
-                          >
-                            <Checkbox
-                              className={'m-auto'}
-                              id={`macro-c-${item.key}-${i}`}
-                              checked={!t.disabled}
-                              onCheckedChange={(b) => changeCheckItem(t, b)}
-                            />
-                            <FieldLabel
-                              htmlFor={`macro-c-${item.key}-${i}`}
-                              className={'m-auto flex-1'}
-                            >
-                              {t.name}
-                            </FieldLabel>
-                            {list && list.length > 1 && (
                               <IconTooltip
-                                label={arrUtils.join(list, '\n', (e) => e.name)}
+                                label={
+                                  <pre className="wrap-break-word">
+                                    {t.value}
+                                  </pre>
+                                }
                               >
                                 <CircleAlertIcon />
                               </IconTooltip>
-                            )}
-                          </FieldContent>
-                          <FieldDescription className={'pl-4'}>
-                            <TextTooltip text={t.value} />
-                          </FieldDescription>
+                            </FieldLabel>
+                          </Field>
+                        );
+                      })}
+                    </GridField>
+                  </RadioGroup>
+                )}
+                <GridField>
+                  {item.multiples
+                    .filter((t) => !t.hidden)
+                    .map((t, i) => {
+                      const list = cache.multiples[t.code];
+                      return (
+                        <Field
+                          key={i}
+                          orientation={'horizontal'}
+                          className="hover:bg-primary-foreground"
+                        >
+                          <Checkbox
+                            key={key}
+                            className={'m-auto'}
+                            id={`macro-c-${item.key}-${i}`}
+                            checked={!t.disabled}
+                            onCheckedChange={(b) => changeCheckItem(t, b)}
+                          />
+                          <FieldLabel htmlFor={`macro-c-${item.key}-${i}`}>
+                            {t.name}
+                            <IconTooltip
+                              label={
+                                <div
+                                  className={
+                                    'overflow-auto max-h-96 scrollbar-none'
+                                  }
+                                >
+                                  {list.map((t, i) => (
+                                    <React.Fragment key={i}>
+                                      <p>{t.name}</p>
+                                      <br />
+                                      <pre className="wrap-break-word whitespace-pre-wrap">
+                                        {t.value}
+                                      </pre>
+                                      <br />
+                                    </React.Fragment>
+                                  ))}
+                                </div>
+                              }
+                            >
+                              <CircleAlertIcon />
+                            </IconTooltip>
+                          </FieldLabel>
                         </Field>
                       );
-                    },
-                  )}
+                    })}
+                </GridField>
               </FieldSet>
             );
           })}

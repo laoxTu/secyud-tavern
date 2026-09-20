@@ -64,10 +64,8 @@ export function IconTooltip({
         {children}
       </TooltipTrigger>
       <TooltipContent>
-        <p>
-          {text && t(text)}
-          {label}
-        </p>
+        <p>{text && t(text)}</p>
+        {label}
       </TooltipContent>
     </Tooltip>
   );
