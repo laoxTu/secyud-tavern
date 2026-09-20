@@ -128,12 +128,14 @@ interface ComfyUIWorkflowNameValueFieldProps {
   onValueChange?: (value: NameValue | null) => void;
   name?: string;
   className?: string;
+  disableLabel?: boolean;
   orientation?: Orientation;
 }
 
 export function ComfyUIWorkflowNameValueField({
   name,
   className,
+  disableLabel,
   orientation,
   value: defaultValue,
   onValueChange,
@@ -142,9 +144,11 @@ export function ComfyUIWorkflowNameValueField({
   const { handler } = useHandler();
   return (
     <Field orientation={orientation} className={className}>
-      <FieldLabel style={{ flex: 0 }} htmlFor={`${name}-workflow`}>
-        {t('comfyui.workflow.id')}
-      </FieldLabel>
+      {!disableLabel && (
+        <FieldLabel style={{ flex: 0 }} htmlFor={`${name}-workflow`}>
+          {t('comfyui.workflow.id')}
+        </FieldLabel>
+      )}
       <FieldContent className="flex-1">
         <RemoteSearchCombobox
           name={name}

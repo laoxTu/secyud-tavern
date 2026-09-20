@@ -70,7 +70,9 @@ export const workflows = {
         const { id: sourceId } = await records.params;
         const source = await comfyuis.repository.workflow.get(sourceId);
         const target = { ...source, ...workflow, id: '' };
+        const params = await comfyuis.repository.workflow.param.list(sourceId);
         const id = await comfyuis.repository.workflow.create(target);
+        await comfyuis.repository.workflow.param.make(id, params.items);
         return response.json({ id });
       }),
     },
