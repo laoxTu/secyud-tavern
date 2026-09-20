@@ -1,0 +1,16 @@
+{
+  "importer": {
+    "id":"导入",
+    "title": "导入数据",
+    "description": "从其他酒馆/前端导入数据",
+    "sillyTavernPreset": "SillyTavern 预设",
+    "sillyTavernCharacter": "SillyTavern 角色卡",
+    "importing": "导入中…",
+    "importSuccess": "导入成功",
+    "importFailed": "导入失败",
+    "file": "选择文件"
+  },
+  "silly_tavern": {
+    "import": "从SillyTavern导入"
+  }
+}
