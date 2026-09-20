@@ -43,7 +43,7 @@ export const storage = {
     archive.set.text(node.nodes, `${id}.workflow.json`, workflow.content);
     workflow.content = undefined;
     archive.set.json(node.nodes, `${id}.comfyui.json`, {
-      params,
+      params: params.items,
       workflow,
     });
   },

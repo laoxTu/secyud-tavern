@@ -35,7 +35,7 @@ async function huggingFace({
  * @param root
  */
 export async function downloadModels(root: string) {
-  // region 下载embedding 向量生成模型
+  // #region 下载embedding 向量生成模型
   const embeddingModelFiles = [
     'config.json',
     // "onnx/model.onnx", // wasm 不需要这个
@@ -55,5 +55,5 @@ export async function downloadModels(root: string) {
     repository: 'Xenova/bge-small-zh-v1.5',
     files: embeddingModelFiles,
   });
-  // endregion
+  // #endregion
 }
