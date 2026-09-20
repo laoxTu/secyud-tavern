@@ -49,8 +49,10 @@ export function merge<T = any>(lft: T, rht: T): T {
         !Array.isArray(t)
       ) {
         result[key] = merge(t, s);
-      } else {
+      } else if (typeof s === 'object') {
         // 否则，直接覆盖或添加
+        result[key] = structuredClone(s);
+      } else {
         result[key] = s;
       }
     }
