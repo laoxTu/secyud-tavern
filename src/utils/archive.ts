@@ -59,7 +59,7 @@ async function archiveToZip(archives: Archive) {
       }
     } else {
       for (const sub of Object.values(node.nodes)) {
-        appendNode(sub, `${parent}/${node.name}`);
+        await appendNode(sub, `${parent}/${node.name}`);
       }
     }
   }
