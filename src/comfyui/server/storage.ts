@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 
 import { utils } from '@/database';
 import { PresetArchiveContext } from '@/presets/server/storage';
-import { Archive, archive, ArchiveFolder } from '@/utils/archive';
+import { Archive, ArchiveFolder, archives } from '@/utils/archive';
 
 import { ComfyUIPaint } from '..';
 
@@ -40,9 +40,9 @@ export const storage = {
     const node = folder(ctx.root);
     const workflow = await workflowRepository.get(id);
     const params = await workflowRepository.param.list(id);
-    archive.set.text(node.nodes, `${id}.workflow.json`, workflow.content);
+    archives.set.text(node.nodes, `${id}.workflow.json`, workflow.content);
     workflow.content = undefined;
-    archive.set.json(node.nodes, `${id}.comfyui.json`, {
+    archives.set.json(node.nodes, `${id}.comfyui.json`, {
       params: params.items,
       workflow,
     });
@@ -50,13 +50,16 @@ export const storage = {
   async import(ctx: PresetArchiveContext, id?: string | null) {
     if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
-    const comfyui = await archive.get.json<ComfyUIPaint>(
+    const comfyui = await archives.get.json<ComfyUIPaint>(
       node.nodes,
       `${id}.comfyui.json`,
     );
     if (comfyui) {
       const { workflow, params } = comfyui;
-      workflow.content = await archive.get.fuzzy(node.nodes, `${id}.workflow.`);
+      workflow.content = await archives.get.fuzzy(
+        node.nodes,
+        `${id}.workflow.`,
+      );
       const exist = await workflowRepository.exist((t) =>
         eq(t.id, workflow.id),
       );

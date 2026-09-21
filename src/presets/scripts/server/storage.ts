@@ -1,6 +1,6 @@
 import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
-import { archive } from '@/utils/archive';
+import { archives } from '@/utils/archive';
 
 import { Script, scripts } from '..';
 
@@ -23,20 +23,20 @@ export const storage = storages.create<Script>(
   async ({ cur }, item, s) => {
     const name = `${item.code}-${s}`;
 
-    archive.set.json(cur, `${name}.meta.json`, {
+    archives.set.json(cur, `${name}.meta.json`, {
       ...item,
       content: undefined,
     });
     const ext = mapToExt(item.type);
-    archive.set.text(cur, `${name}.script.${ext}`, item.content);
+    archives.set.text(cur, `${name}.script.${ext}`, item.content);
   },
   async ({ cur }, name) => {
-    const item = await archive.get.json<PresetItem<Script>>(
+    const item = await archives.get.json<PresetItem<Script>>(
       cur,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(cur, `${name}.script.`);
+      item.content = await archives.get.fuzzy(cur, `${name}.script.`);
     }
     return item;
   },

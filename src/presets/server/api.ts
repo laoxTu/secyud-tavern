@@ -5,7 +5,7 @@ import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { Preset, PresetEntry, PresetRequestOptions } from '@/presets';
-import { Archive, archive } from '@/utils/archive';
+import { Archive, archives } from '@/utils/archive';
 import { cache, fileUtils, response } from '@/utils/server';
 
 import { PresetTraversalContext } from './repository';
@@ -35,7 +35,7 @@ export default {
         const uint8 = await file.arrayBuffer();
 
         const items: Preset[] = [];
-        const root = await archive.zipToArchive(Buffer.from(uint8));
+        const root = await archives.zipToArchive(Buffer.from(uint8));
         const append = () => {};
         for (const node of Object.values(root)) {
           const item = await storage.save(root, node, append);
@@ -90,7 +90,7 @@ export default {
             entities: true,
           });
           console.debug(root);
-          const buffer = await archive.archiveToZip(root);
+          const buffer = await archives.archiveToZip(root);
           const stream = fileUtils.createBufferStream(buffer);
           return response.download(`preset_${source.at(-1)?.name}.zip`, stream);
         }),

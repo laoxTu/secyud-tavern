@@ -80,7 +80,7 @@ async function zipToArchive(zipBuffer: Buffer) {
     // 最后一段是文件名，拆出 name 和 extension
     const name = parts.at(-1)!;
 
-    let buffer: Promise<Buffer> | undefined = undefined;
+    let buffer: Promise<Buffer> | undefined;
     create(archives, parts.slice(1, -1), {
       name,
       type: 'file',
@@ -143,14 +143,12 @@ const get = {
     if (value && value.type === 'file') {
       return await value.content();
     }
-    return undefined;
   },
   async text(nodes: Archive, name: string): Promise<string | undefined> {
     const buffer = await get.buffer(nodes, name);
     if (buffer) {
       return strUtils.buffer(buffer);
     }
-    return undefined;
   },
   /**
    * 提供一个模糊前缀的取法，可以忽略它的后缀去读
@@ -164,14 +162,13 @@ const get = {
         return strUtils.buffer(buffer);
       }
     }
-    return undefined;
   },
   async json<T = any>(nodes: Archive, name: string): Promise<T | undefined> {
     return jsonUtils.parse(await get.text(nodes, name));
   },
 };
 
-export const archive = {
+export const archives = {
   archiveToZip,
   zipToArchive,
   get,

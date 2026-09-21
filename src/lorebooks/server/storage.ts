@@ -1,6 +1,6 @@
 import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
-import { archive } from '@/utils/archive';
+import { archives } from '@/utils/archive';
 
 import { Lorebook, lorebooks } from '..';
 
@@ -14,19 +14,19 @@ export const storage = storages.create<Lorebook>(
     const name = `${item.code}-${s}`;
     const ext = lorebooks.typeToExt(item.type);
 
-    archive.set.json(cur, `${name}.meta.json`, {
+    archives.set.json(cur, `${name}.meta.json`, {
       ...item,
       content: undefined,
     });
-    archive.set.text(cur, `${name}.content.${ext}`, item.content);
+    archives.set.text(cur, `${name}.content.${ext}`, item.content);
   },
   async ({ cur }, name) => {
-    const item = await archive.get.json<PresetItem<Lorebook>>(
+    const item = await archives.get.json<PresetItem<Lorebook>>(
       cur,
       `${name}.meta.json`,
     );
     if (item) {
-      item.content = await archive.get.fuzzy(cur, `${name}.content.`);
+      item.content = await archives.get.fuzzy(cur, `${name}.content.`);
     }
     return item;
   },
