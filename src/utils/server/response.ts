@@ -4,7 +4,7 @@ function download(filename: string, stream: ReadableStream | Buffer) {
   return new NextResponse(stream as any, {
     status: 200,
     headers: {
-      'Content-Type': 'text/event-stream',
+      'Content-Type': 'application/octet-stream',
       'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
     },
   });
