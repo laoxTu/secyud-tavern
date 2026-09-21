@@ -12,7 +12,6 @@ import {
   PromptConfig,
   TextConfig,
 } from '@/comfyui/editor';
-import { generatePrompt } from '@/comfyui/generator';
 import {
   Button,
   Field,
@@ -33,6 +32,8 @@ import { realms } from '@/stories/client/realms';
 import { agents, Editor } from '@/tools/agents/client';
 import { ToolItem } from '@/tools/client';
 import { jsonUtils } from '@/utils';
+
+import { generatePrompt } from './generator';
 
 function TextConfigComponent({
   param,
@@ -90,8 +91,11 @@ function TextInputComponent({
   );
 }
 
-export const text: ParamConfigurator<TextConfig> = {
+export const text: ParamConfigurator<TextConfig> & {
+  generate: typeof generatePrompt;
+} = {
   id: main.text.name,
+  generate: generatePrompt,
   configComponent: TextConfigComponent,
   async configureObject(data, param) {
     param.config = {
