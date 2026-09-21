@@ -303,7 +303,7 @@ export const processers = {
       /**
        * 如果网络错误或者中间间隔太长，可以重试
        */
-      let retry = maxRetry;
+      let retry = Math.max(maxRetry, 1);
       while (retry > 0) {
         /**
          * 这是内部关联信号，因为和外部信号有

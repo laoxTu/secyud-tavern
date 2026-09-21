@@ -84,7 +84,7 @@ src/<模块>/
 - **接口写在模块的 `server/api.ts` 里**，`src/app/api/` 下的路由是生成的，手改无效。
 - **导出风格**：类型、工厂、hook 直接导出；工具函数与常量集合以对象形式导出（如 `presets`、`strUtils`、`jsonUtils`、`fileUtils`）。
 - **格式化**：Prettier 负责，配置为单引号、80 列，并启用 import 排序与 JSON key 排序插件。执行 `pnpm format`，注意它的作用范围只有 `src/`。VS Code 的保存自动格式化已经配好（`.vscode/settings.json`）。
-- **多语言**：目前只有 `zh`、`en` 两种 locale，默认 `zh`。新增文案时 `zh.json` 与 `en.json` 要成对更新，只补一边会导致另一种语言下文案缺失。
+- **多语言**：目前只有 `zh`、`en` 两种 locale，默认 `zh`。以中文为主，英文会在发布版本时用AI进行对称翻译。
 
 ## 测试
 

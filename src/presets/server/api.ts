@@ -50,6 +50,7 @@ export default {
         const imports = new Set(await request.json());
         const list = await cache.get<Preset[]>(importKey(sessionId));
         await cache.delete(importKey(sessionId));
+        const res: { id: string | undefined } = { id: undefined };
         for (const preset of list) {
           if (!imports.has(preset.id)) continue;
           const exist = await presets.repository.exist((e) =>
@@ -58,10 +59,10 @@ export default {
           if (exist) {
             await presets.repository.delete(preset.id);
           }
-          const entity = await presets.repository.create(preset);
+          res.id = await presets.repository.create(preset);
         }
 
-        return response.json({ id: list[0].id });
+        return response.json(res);
       }),
     },
     '[id]': {
