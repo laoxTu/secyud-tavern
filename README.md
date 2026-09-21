@@ -25,7 +25,7 @@ pnpm start -p 12804   # 启动 → http://localhost:12804
 ## 插件
 
 > 本项目插件默认为编译期插件，下载插件后需要调用start脚本重启项目。
-> 若要禁用插件，可在manifest.json配置`"disabled": false`，然后重新调用start脚本即可。
+> 若要禁用插件，可在manifest.json配置`"disabled": true`，然后重新调用start脚本即可。
 
 - [secyud-tavern-importer](https://github.com/laoxTu/secyud-tavern-importer)
   导入插件，可以导入SillyTavern格式的角色卡和预设。目前只可以导入文字描述之类的内容，不能复刻脚本，需要自行调整。
