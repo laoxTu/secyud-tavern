@@ -35,6 +35,8 @@ export async function handleResponse(response: Response) {
 const buildUrl = (url: string, params?: Record<string, any>) => {
   if (!params) return url;
 
+  params = structuredClone(params);
+
   let result = url;
 
   for (const key of Object.keys(params)) {

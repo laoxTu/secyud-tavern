@@ -104,7 +104,7 @@ function ModelPropertyContent() {
         <Input
           name={'retry_max'}
           id={`model-retry`}
-          min={0}
+          min={1}
           max={10}
           step={1}
           type={'number'}

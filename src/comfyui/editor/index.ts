@@ -16,6 +16,27 @@ const defaultTextConfig: TextConfig = {
   prompt: '',
 };
 
+export interface PromptConfig {
+  // 节点
+  node: string;
+  // 节点下的属性
+  key: string;
+  // 默认的提示词
+  prompt: string;
+  // 提示词模板
+  template: string;
+  // 提示词模板池
+  pools: string;
+}
+
+const defaultPromptConfig: PromptConfig = {
+  node: '',
+  key: 'text',
+  prompt: '',
+  template: '1girl, {hair}',
+  pools: '{"hair": [["blue hair", 2], ["green hair"]]}',
+};
+
 /**
  * 使用Agent生成文字的配置
  * 这里用了工具下的agent工具
@@ -54,5 +75,9 @@ export const editors = {
   number: {
     name: 'number',
     default: defaultNumberConfig,
+  },
+  prompt: {
+    name: 'prompt',
+    default: defaultPromptConfig,
   },
 };

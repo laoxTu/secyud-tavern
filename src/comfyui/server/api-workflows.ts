@@ -11,7 +11,7 @@ import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { jsonUtils } from '@/utils';
-import { Archive, archive } from '@/utils/archive';
+import { Archive, archives } from '@/utils/archive';
 import { fileUtils, response } from '@/utils/server';
 
 import { callbacks } from '../callback';
@@ -19,17 +19,17 @@ import { LoraConfig, selects } from '../select';
 
 async function exportProcess(model: ComfyUIPaint): Promise<Buffer> {
   const nodes: Archive = {};
-  archive.set.text(nodes, 'workflow.json', model.workflow.content);
+  archives.set.text(nodes, 'workflow.json', model.workflow.content);
   model.workflow.content = undefined;
   model.workflow.id = undefined!;
-  archive.set.json(nodes, 'meta.json', model);
-  return await archive.archiveToZip(nodes);
+  archives.set.json(nodes, 'meta.json', model);
+  return await archives.archiveToZip(nodes);
 }
 async function importProcess(buffer: Buffer): Promise<ComfyUIPaint> {
-  const nodes = await archive.zipToArchive(buffer);
-  const res = await archive.get.json<ComfyUIPaint>(nodes, 'meta.json');
+  const nodes = await archives.zipToArchive(buffer);
+  const res = await archives.get.json<ComfyUIPaint>(nodes, 'meta.json');
   if (res) {
-    res.workflow.content = await archive.get.fuzzy(nodes, 'workflow.');
+    res.workflow.content = await archives.get.fuzzy(nodes, 'workflow.');
     return res;
   }
   throw new BusinessError('import failed. invalid file');

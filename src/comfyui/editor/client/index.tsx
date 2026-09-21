@@ -9,6 +9,7 @@ import {
   AgentTextConfig,
   editors as main,
   NumberConfig,
+  PromptConfig,
   TextConfig,
 } from '@/comfyui/editor';
 import {
@@ -16,6 +17,7 @@ import {
   Field,
   FieldLabel,
   Input,
+  MonacoEditor,
   rowQuat,
   Skeleton,
   spanHalf,
@@ -23,12 +25,15 @@ import {
   Textarea,
 } from '@/components';
 import { forms } from '@/global';
+import { checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { realms } from '@/stories/client/realms';
 import { agents, Editor } from '@/tools/agents/client';
 import { ToolItem } from '@/tools/client';
 import { jsonUtils } from '@/utils';
+
+import { generatePrompt } from './generator';
 
 function TextConfigComponent({
   param,
@@ -86,8 +91,11 @@ function TextInputComponent({
   );
 }
 
-export const text: ParamConfigurator<TextConfig> = {
+export const text: ParamConfigurator<TextConfig> & {
+  generate: typeof generatePrompt;
+} = {
   id: main.text.name,
+  generate: generatePrompt,
   configComponent: TextConfigComponent,
   async configureObject(data, param) {
     param.config = {
@@ -113,6 +121,131 @@ export const text: ParamConfigurator<TextConfig> = {
     const inputs = input[config.node]?.inputs;
     if (inputs) {
       inputs[config.key] = args[paint.code] ?? config.prompt;
+    }
+  },
+};
+
+function PromptConfigComponent({
+  param,
+  formRef,
+}: ComfyUIParamProps<PromptConfig>) {
+  const t = useTranslations();
+  const config = jsonUtils.merge(main.prompt.default, param.config);
+  const { sequence } = param;
+  return (
+    <>
+      <Field>
+        <FieldLabel htmlFor={`param-node-${sequence}`}>
+          {t('comfyui.param.node')}
+        </FieldLabel>
+        <Input
+          name={'node'}
+          defaultValue={config?.node}
+          id={`param-node-${sequence}`}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`param-key-${sequence}`}>
+          {t('comfyui.param.key')}
+        </FieldLabel>
+        <Input
+          name={'key'}
+          defaultValue={config?.key}
+          id={`param-key-${sequence}`}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`param-template-${sequence}`}>
+          {t('comfyui.template.key')}
+        </FieldLabel>
+        <Textarea
+          name={'template'}
+          defaultValue={config?.template}
+          id={`param-template-${sequence}`}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`param-pools-${sequence}`}>
+          {t('comfyui.pools.key')}
+        </FieldLabel>
+        <MonacoEditor
+          name={'pools'}
+          value={config?.pools}
+          language="json"
+          formRef={formRef}
+        />
+      </Field>
+    </>
+  );
+}
+
+function PromptInputComponent({
+  param: {
+    name,
+    sequence,
+    config: { prompt, template, pools },
+  },
+}: ComfyUIParamProps<PromptConfig>) {
+  const json = jsonUtils.parse(pools);
+  const { handler } = useHandler();
+  const [text, setText] = useState(prompt);
+  return (
+    <>
+      <Field className={cn(spanHalf, rowQuat)}>
+        <FieldLabel htmlFor={`param-text-${sequence}`}>
+          {name}
+          <Button
+            onClick={handler(async () => {
+              const text = generatePrompt(template, json);
+              setText(text);
+            })}
+          >
+            <DicesIcon />
+          </Button>
+        </FieldLabel>
+        <Textarea
+          id={`param-text-${sequence}`}
+          name={`prompt_${sequence}`}
+          onKeyDown={submitTargetFormOnKey}
+          value={text}
+          onChange={(u) => setText(u.target.value)}
+        />
+      </Field>
+    </>
+  );
+}
+
+export const prompt: ParamConfigurator<PromptConfig> = {
+  id: main.text.name,
+  configComponent: PromptConfigComponent,
+  async configureObject(data, param) {
+    param.config = {
+      node: forms.str(data, 'node'),
+      key: forms.str(data, 'key'),
+      prompt: forms.str(data, `prompt_${param.sequence}`),
+      template: forms.str(data, 'template'),
+      pools: checker.validJson(forms.str(data, 'pools')),
+    };
+  },
+  inputComponent: PromptInputComponent,
+  async configureInput(data, { config, sequence }, input) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] = forms.str(data, `prompt_${sequence}`);
+    }
+  },
+  async configureSchema(_, paint, schema) {
+    schema.properties![paint.code] = {
+      type: 'string',
+      description: paint.description,
+    };
+  },
+  async generateCalling({ config }, paint, input, args) {
+    const inputs = input[config.node]?.inputs;
+    if (inputs) {
+      inputs[config.key] =
+        args[paint.code] ??
+        generatePrompt(config.template, jsonUtils.parse(config.pools));
     }
   },
 };
@@ -400,5 +533,6 @@ export const editors = {
     text,
     agentText,
     number,
+    prompt,
   },
 };

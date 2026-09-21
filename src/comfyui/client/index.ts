@@ -44,6 +44,7 @@ export default async function () {
     selects.configurator.modelSelect,
     selects.configurator.powerLoraSelect,
     editors.configurator.text,
+    editors.configurator.prompt,
     editors.configurator.agentText,
     editors.configurator.number,
   );

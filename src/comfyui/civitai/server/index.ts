@@ -12,9 +12,13 @@ export const importer: ModelImporter = {
   async download(model, filename): Promise<void> {
     await fileUtils.mkdir(path.dirname(filename));
     const token = process.env.CIVITAI_TOKEN;
-    const command = `curl -L -o "${filename}" "${model.download}${token ? `?token=${token}` : ''}"`;
-    console.info(`[command] ${command}`);
-    execSync(command);
+    if (model.download?.startsWith(civitais.url)) {
+      const command = `curl -L -o "${filename}" "${model.download}${token ? `?token=${token}` : ''}"`;
+      console.info(`[command] ${command}`);
+      execSync(command);
+    } else {
+      console.info(`[command] invalid civitai url: ${model.download}`);
+    }
   },
 };
 

@@ -6,7 +6,7 @@ import { storages } from '@/database/server/factory';
 import { files } from '@/files/server';
 import { getRegistry } from '@/plugins';
 import { Preset } from '@/presets';
-import { archive, Archive, ArchiveFolder, ArchiveNode } from '@/utils/archive';
+import { Archive, ArchiveFolder, ArchiveNode, archives } from '@/utils/archive';
 
 export interface PresetArchiveContext extends Properties {
   root: Archive;
@@ -105,7 +105,7 @@ export const storage = {
         const ext = extensionMap[cover.type];
         if (ext) {
           const name = `cover.${ext}`;
-          const file = archive.set.buffer(node.nodes, name, cover.buffer);
+          const file = archives.set.buffer(node.nodes, name, cover.buffer);
           (item as any).coverType = cover.type;
           // 图片不压缩
           file.level = 0;
@@ -114,10 +114,10 @@ export const storage = {
         console.error(err);
       }
     }
-    archive.set.text(node.nodes, 'variables.json', item.variables);
-    archive.set.text(node.nodes, 'opening.txt', item.opening);
+    archives.set.text(node.nodes, 'variables.json', item.variables);
+    archives.set.text(node.nodes, 'opening.txt', item.opening);
     // 元数据
-    archive.set.json(node.nodes, 'meta.json', {
+    archives.set.json(node.nodes, 'meta.json', {
       ...item,
       entries: undefined,
       variables: undefined,
@@ -140,12 +140,12 @@ export const storage = {
     append: (code: string) => void,
   ): Promise<Preset | null> {
     if (node.type !== 'folder') return null;
-    const item = await archive.get.json<Preset>(node.nodes, 'meta.json');
+    const item = await archives.get.json<Preset>(node.nodes, 'meta.json');
     if (!item) return null;
-    item.variables = await archive.get.text(node.nodes, 'variables.json');
-    item.opening = await archive.get.fuzzy(node.nodes, 'opening.');
+    item.variables = await archives.get.text(node.nodes, 'variables.json');
+    item.opening = await archives.get.fuzzy(node.nodes, 'opening.');
     const type = (item as any).coverType;
-    const buffer = await archive.get.buffer(
+    const buffer = await archives.get.buffer(
       node.nodes,
       `cover.${extensionMap[type]}`,
     );
