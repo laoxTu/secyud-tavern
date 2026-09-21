@@ -1,7 +1,7 @@
 import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { Tool, tools } from '@/tools';
-import { archive } from '@/utils/archive';
+import { archives } from '@/utils/archive';
 
 import { providers } from './providers';
 
@@ -22,10 +22,10 @@ export const storage = storages.create<Tool>(
   async (ctx, entry, s) => {
     const name = `${entry.name}-${s}`;
     await provider(entry.type).loadArchive({ ...ctx, entry, name });
-    archive.set.json(ctx.cur, `${name}.meta.json`, entry);
+    archives.set.json(ctx.cur, `${name}.meta.json`, entry);
   },
   async (ctx, name) => {
-    const entry = await archive.get.json<PresetItem<Tool>>(
+    const entry = await archives.get.json<PresetItem<Tool>>(
       ctx.cur,
       `${name}.meta.json`,
     );

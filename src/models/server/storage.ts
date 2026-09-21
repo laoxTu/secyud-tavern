@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 
 import { utils } from '@/database';
 import { PresetArchiveContext } from '@/presets/server/storage';
-import { Archive, archive, ArchiveFolder } from '@/utils/archive';
+import { Archive, ArchiveFolder, archives } from '@/utils/archive';
 
 import { Model } from '..';
 
@@ -34,13 +34,16 @@ export const storage = {
     if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
     const model = await repository.get(id);
-    archive.set.json(node.nodes, `${id}.model.json`, model);
+    archives.set.json(node.nodes, `${id}.model.json`, model);
   },
   async import(ctx: PresetArchiveContext, id?: string | null) {
     if (!id || !check(ctx, id)) return;
     const node = folder(ctx.root);
 
-    const model = await archive.get.json<Model>(node.nodes, `${id}.model.json`);
+    const model = await archives.get.json<Model>(
+      node.nodes,
+      `${id}.model.json`,
+    );
     if (!model) return;
 
     const exist = await repository.exist((t) => eq(t.id, model.id));
