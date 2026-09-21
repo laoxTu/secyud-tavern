@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 
 import { InDto } from '@/database';
-import { BusinessError } from '@/interceptors';
+import { BusinessError, checker } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import {
   RealmHistory,
@@ -27,8 +27,8 @@ export default {
       return response.json({ id });
     }),
     realm: {
-      GET: route(async (_, record) => {
-        const { story } = await record.params;
+      POST: route(async (request) => {
+        const story = await request.json();
         const realm = await stories.repository.getRealm(story);
         return response.json(realm);
       }),
@@ -38,6 +38,7 @@ export default {
           const story = await stories.repository.get(id, {
             entities: true,
           });
+          checker.notNullEntity(id, story, 'story.id');
           const realm = await stories.repository.getRealm(story);
           return response.json(realm);
         }),

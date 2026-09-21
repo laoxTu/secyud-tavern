@@ -82,6 +82,7 @@ async function apply(
   }
   const obj = {
     ...variables,
+    // 外部传入的参数，子Agent参数
     ...(properties?.args ?? {}),
     variables: realms.variables(history, false),
   };

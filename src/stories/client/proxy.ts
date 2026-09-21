@@ -82,9 +82,7 @@ export const proxy = {
   },
   realm: {
     async get(story: Story): Promise<Realm> {
-      return await get('stories/realm', {
-        params: { story },
-      });
+      return await post('stories/realm', story);
     },
     async id(id: string): Promise<Realm> {
       return await get('stories/realm/{id}', {
