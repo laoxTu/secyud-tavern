@@ -28,11 +28,29 @@ function Content() {
     models.names.options,
     () => deepseeks.default.options,
   );
+  const config: DeepseekConfig = utils.getProperty(
+    item,
+    models.names.config,
+    () => deepseeks.default.config,
+  );
   const [thinking, setThinking] = React.useState<boolean>(
     options.thinking?.type === 'enabled',
   );
   return (
     <>
+      <Field>
+        <FieldLabel htmlFor={`model-token-limit`}>
+          {t(`model.token_limit`)}
+        </FieldLabel>
+        <Input
+          id={`model-token-limit`}
+          name={'token_limit'}
+          type={'number'}
+          min={0}
+          step={1}
+          defaultValue={config.token}
+        />
+      </Field>
       <Field>
         <FieldLabel htmlFor={`model-model`}>{t(`model.model`)}</FieldLabel>
         <Selector
@@ -153,7 +171,9 @@ export const engine: ModelEngine = {
       logprobs: forms.bool(data, 'logprobs'),
       top_logprobs: forms.float(data, 'top_logprobs'),
     };
-    const config: DeepseekConfig = {};
+    const config: DeepseekConfig = {
+      token: forms.int(data, 'token_limit'),
+    };
     utils.setProperty(model, models.names.config, config);
     utils.setProperty(model, models.names.options, options);
     return model;
