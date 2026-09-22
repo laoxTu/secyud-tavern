@@ -30,6 +30,9 @@ export const engine: ModelEngine = {
         ...options,
         ...input,
         stream: model.stream,
+        stream_options: {
+          include_usage: true,
+        },
         ...jsonUtils.parse(config.extras, {}),
       };
       return await client.responses.create(parameter, { signal });
@@ -38,6 +41,10 @@ export const engine: ModelEngine = {
         ...options,
         ...input,
         stream: model.stream,
+        stream_options: {
+          include_usage: true,
+        },
+        ...jsonUtils.parse(config.extras, {}),
       };
       return await client.chat.completions.create(parameter, { signal });
     }

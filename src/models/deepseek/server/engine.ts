@@ -22,6 +22,9 @@ export const engine: ModelEngine = {
       ...options,
       ...input,
       stream: model.stream,
+      stream_options: {
+        include_usage: true,
+      },
     };
     if (!options.logprobs) {
       parameter.top_logprobs = undefined;

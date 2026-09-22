@@ -2,6 +2,7 @@
 import { useTranslations } from 'next-intl';
 import OpenAI from 'openai';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   Field,
@@ -17,6 +18,7 @@ import { utils } from '@/database';
 import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
+import { TokenUsage } from '@/models';
 import {
   ModelEngine,
   ModelInputSummary,
@@ -25,6 +27,7 @@ import {
   models,
   useModelState,
 } from '@/models/client';
+import { realms } from '@/stories/client/realms';
 import { ToolCall } from '@/tools';
 import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';
@@ -51,6 +54,19 @@ function Content() {
 
   return (
     <>
+      <Field>
+        <FieldLabel htmlFor={`model-token-limit`}>
+          {t(`model.token_limit`)}
+        </FieldLabel>
+        <Input
+          id={`model-token-limit`}
+          name={'token_limit'}
+          type={'number'}
+          min={0}
+          step={1}
+          defaultValue={config.token}
+        />
+      </Field>
       <Field>
         <FieldLabel htmlFor={`openai-format`}>{t(`openai.format`)}</FieldLabel>
         <Selector
@@ -283,6 +299,7 @@ async function resultResponses(ctx: ModelResultContext) {
 
   if (stream) {
     const event: OpenAI.Responses.ResponseStreamEvent = message;
+
     switch (event.type) {
       case 'response.reasoning_summary_text.delta':
         output.thought += event.delta;
@@ -314,10 +331,29 @@ async function resultResponses(ctx: ModelResultContext) {
         break;
       case 'response.completed':
         ctx.stopped = !output.callings?.length;
+
+        const usage = event.response.usage;
+        if (usage) {
+          const tu: TokenUsage = {
+            prompt: usage.input_tokens,
+            output: usage.output_tokens,
+          };
+          utils.setProperty(output, 'usage', tu);
+        }
         break;
     }
   } else {
     const chunk: OpenAI.Responses.Response = message;
+
+    const usage = chunk.usage;
+    if (usage) {
+      const tu: TokenUsage = {
+        prompt: usage.input_tokens,
+        output: usage.output_tokens,
+      };
+      utils.setProperty(output, 'usage', tu);
+    }
+
     if (chunk.output.every((u) => u.type !== 'function_call')) {
       ctx.stopped = true;
     }
@@ -354,8 +390,23 @@ async function resultResponses(ctx: ModelResultContext) {
 async function resultChatCompletion(ctx: ModelResultContext) {
   ctx.properties ??= {};
   const { stream, message, output, properties } = ctx;
+
+  const usage: OpenAI.CompletionUsage = message.usage;
+  if (usage) {
+    const tu: TokenUsage = {
+      prompt: usage.prompt_tokens,
+      output: usage.completion_tokens,
+    };
+    utils.setProperty(output, 'usage', tu);
+  }
+
   if (stream) {
     const chunk: OpenAI.ChatCompletionChunk = message;
+
+    if (!chunk.choices.length) {
+      return;
+    }
+
     const choice = chunk.choices[0];
     const delta = choice.delta;
     if (choice.finish_reason === 'stop') {
@@ -398,6 +449,7 @@ async function resultChatCompletion(ctx: ModelResultContext) {
     const chunk: OpenAI.ChatCompletion = message;
     const choice = chunk.choices[0];
     const delta = choice.message;
+
     if (choice.finish_reason === 'stop') {
       ctx.stopped = true;
     }
@@ -435,6 +487,7 @@ export const engine: ModelEngine = {
       extras: checker.validJson(forms.str(data, 'extras'), 'openai.extras'),
       url: forms.str(data, 'url'),
       format: forms.str(data, 'format') as any,
+      token: forms.int(data, 'token_limit'),
     };
     utils.setProperty(model, models.names.config, config);
     utils.setProperty(model, models.names.options, options);
@@ -451,6 +504,18 @@ export const engine: ModelEngine = {
       models.names.config,
       () => openais.default.config,
     );
+
+    const usage = utils.getProperty<TokenUsage>(
+      realms.outputs(ctx.histories.at(-2))?.at(-1),
+      'usage',
+    );
+
+    if (config.token && usage && config.token <= usage.prompt + usage.output) {
+      toast.warning('token is over limit. use summary to compress', {
+        richColors: true,
+      });
+    }
+
     const input =
       config.format === 'responses'
         ? await promptResponses(ctx, summaries)
@@ -467,6 +532,7 @@ export const engine: ModelEngine = {
       models.names.config,
       () => openais.default.config,
     );
+
     if (config.format === 'responses') {
       await resultResponses(ctx);
     } else {

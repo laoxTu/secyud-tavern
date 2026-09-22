@@ -48,6 +48,11 @@ export interface ModelRequestParam {
   fuzzy?: string | null;
 }
 
+export interface TokenUsage {
+  prompt: number;
+  output: number;
+}
+
 export const models = {
   toNameValue(model: Model): NameValue {
     return {

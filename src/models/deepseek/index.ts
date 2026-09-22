@@ -1,4 +1,6 @@
-export interface DeepseekConfig {}
+export interface DeepseekConfig {
+  token: number;
+}
 
 export interface DeepseekOptions {
   model: string;
@@ -14,7 +16,9 @@ export interface DeepseekOptions {
   top_logprobs: number; // [0,20]
 }
 
-const config: DeepseekConfig = {};
+const config: DeepseekConfig = {
+  token: 100000,
+};
 
 const options: DeepseekOptions = {
   model: 'deepseek-v4-flash',
