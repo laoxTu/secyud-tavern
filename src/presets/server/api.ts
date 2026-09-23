@@ -71,7 +71,7 @@ export default {
           const preset: Partial<Preset> = await request.json();
           const { id: sourceId } = await records.params;
           const source = await presets.repository.get(sourceId);
-          const target = { ...source, ...preset, id: '' };
+          const target = { ...source, ...preset };
           const id = await presets.repository.create(target);
           return response.json({ id });
         }),
