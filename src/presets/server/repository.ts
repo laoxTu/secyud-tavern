@@ -47,6 +47,7 @@ async function get(id: string, options?: PresetRequestOptions) {
 }
 
 async function create(preset: Preset) {
+  checker.notNullOrWhitespace('id', preset.id);
   checker.notNullOrWhitespace('name', preset.name);
 
   const exist = await databases.exists(presetSchema, (t) =>
