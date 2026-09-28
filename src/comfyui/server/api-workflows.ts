@@ -55,7 +55,7 @@ export const workflows = {
 
       const id = await comfyuis.repository.workflow.create({
         ...model.workflow,
-        id: '',
+        id: null!,
       });
 
       await comfyuis.repository.workflow.param.make(id, model.params);
@@ -69,7 +69,7 @@ export const workflows = {
         const workflow: Partial<ComfyUIWorkflow> = await request.json();
         const { id: sourceId } = await records.params;
         const source = await comfyuis.repository.workflow.get(sourceId);
-        const target = { ...source, ...workflow, id: '' };
+        const target = { ...source, ...workflow, id: null! };
         const params = await comfyuis.repository.workflow.param.list(sourceId);
         const id = await comfyuis.repository.workflow.create(target);
         await comfyuis.repository.workflow.param.make(id, params.items);

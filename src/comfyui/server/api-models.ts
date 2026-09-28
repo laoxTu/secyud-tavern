@@ -2,14 +2,13 @@ import { eq } from 'drizzle-orm';
 
 import { Entity, InDto } from '@/database';
 import { databases } from '@/database/server';
-import { settings } from '@/global/server';
-import { BusinessError, checker } from '@/interceptors';
 import { route } from '@/interceptors/server';
-import { fileUtils, response, task } from '@/utils/server';
+import { tasks } from '@/tasks/server';
+import { response } from '@/utils/server';
 
-import { ComfyUIModelSetting } from '..';
 import { ComfyUIModel } from '../model';
 
+import { importers, ModelDownloadArgs } from './importers';
 import { comfyuiModelSchema } from './schema';
 
 import { comfyuis } from '.';
@@ -52,44 +51,11 @@ export const models = {
       POST: route(async (_, records) => {
         const { id } = await records.params;
         const model = await comfyuis.repository.model.get(id);
-
-        const setting = await settings.repository.get<ComfyUIModelSetting>(
-          comfyuis.model.setting,
+        await tasks.manager.create<ModelDownloadArgs>(
+          importers.tasks.id,
+          `download ${model.code}`,
+          { id },
         );
-        checker.notNullOrWhitespace(
-          'model.download',
-          model.download,
-          'comfyui',
-        );
-        const directory = checker.notNullOrWhitespace(
-          'setting.directory',
-          setting?.data?.directory,
-          'comfyui',
-        );
-        const path = checker.notNullOrWhitespace(
-          'model.path',
-          model.path,
-          'comfyui',
-        );
-
-        const filename = `${directory}/${
-          {
-            vae: 'vae',
-            diffusion_model: 'diffusion_models',
-            lora: 'loras',
-            text_encoder: 'text_encoders',
-            checkpoint: 'checkpoints',
-          }[model.type] ?? 'loras'
-        }/${path}`;
-
-        if (await fileUtils.exists(filename)) {
-          throw new BusinessError('file is exists.', 'comfyui.file_exists');
-        }
-
-        await task.create(`comfyui_model_download ${path}`, async () => {
-          await comfyuis.importers.download(model, filename);
-        });
-
         return response.null();
       }),
     },

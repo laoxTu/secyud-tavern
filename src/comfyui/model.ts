@@ -30,7 +30,7 @@ export interface ComfyUIModelRequestParam {
 
 const defaultModel: ComfyUIModel = {
   code: '',
-  id: '',
+  id: null!,
   name: '',
   path: '',
   type: 'lora',
