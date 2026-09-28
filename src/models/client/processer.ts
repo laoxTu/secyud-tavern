@@ -247,7 +247,7 @@ export const processers = {
       /**
        * 构造输入上下文，这里的输入上下文应当包含本次的工具调用
        */
-      useRealmState.getState().setRealmInfo('content', {
+      useRealmState.getState().setRealmInfo('main', {
         title: 'story.input_processing',
       });
       const { input } = await prompt({ args, current, realm });
@@ -372,7 +372,7 @@ export const processers = {
             isNetworkError(err) ||
             (isAbortError(err) && controller.signal.reason === 'retry')
           ) {
-            useRealmState.getState().setRealmInfo('content', {
+            useRealmState.getState().setRealmInfo('main', {
               title: `realm.retry`,
               content: `(${maxRetry + 1 - retry}/${maxRetry})`,
             });

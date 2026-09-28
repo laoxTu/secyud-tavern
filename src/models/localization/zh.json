@@ -34,6 +34,7 @@
     "stream": "流式传输",
     "temperature": "temperature (温度 0~2)",
     "thinking": "思考模式",
+    "token_limit": "字符限制",
     "top_logprobs": "top logprobs (最大返回置信词数)",
     "top_p": "top p (核采样 0~1)",
     "url": "URL"
