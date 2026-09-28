@@ -26,10 +26,6 @@ export const importer: ModelImporter = {
 
       const command = `curl -L -o "${filename}" "${url}"`;
       console.info(`[command] ${command}`);
-      /**
-       * 安全问题，但是windows下可能有问题。
-       * 是否换成execSync?
-       */
       execFileSync('curl', ['-L', '-o', filename, url.toString()]);
     } catch (err) {
       console.error(err);

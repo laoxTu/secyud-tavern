@@ -277,7 +277,7 @@ function AgentTextConfigComponent({
       <Editor
         formRef={formRef}
         entry={{
-          masterId: '',
+          masterId: null!,
           entryId: -1,
           entryType: main.agentText.name,
           disabled: false,

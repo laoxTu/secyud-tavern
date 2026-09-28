@@ -50,7 +50,7 @@ export default {
           const model: Partial<Model> = await request.json();
           const { id: sourceId } = await records.params;
           const source = await models.repository.get(sourceId);
-          const target = { ...source, ...model, id: '' };
+          const target = { ...source, ...model, id: null! };
           const id = await models.repository.create(target);
           return response.json({ id });
         }),

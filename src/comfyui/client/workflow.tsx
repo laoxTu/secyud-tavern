@@ -276,7 +276,7 @@ function Params() {
           tooltip={<SquarePlusIcon />}
           onSubmit={handler(async (data) => {
             await comfyuis.proxy.workflow.param.add(item.id, {
-              masterId: '',
+              masterId: null!,
               sequence: 0,
               name: forms.str(data, 'name'),
               type: 'text',

@@ -1,4 +1,5 @@
 import { civitais } from '@/comfyui/civitai/server';
+import { tasks } from '@/tasks/server';
 import { tools } from '@/tools/server';
 
 import { comfyuis as main } from '..';
@@ -23,4 +24,5 @@ export const comfyuis = {
 export default async function () {
   comfyuis.importers.registry.register(civitais.importer);
   tools.providers.registry.register(provider);
+  tasks.registry.register(importers.tasks);
 }

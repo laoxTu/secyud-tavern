@@ -105,3 +105,33 @@ export const checker = {
       .withValue('target', target ?? 'default.target');
   },
 } as const;
+
+export const errors = {
+  serialize(err: unknown): string {
+    if (err instanceof BusinessError) {
+      const inner = err.innerError
+        ? {
+            name: err.innerError.name,
+            message: err.innerError.message,
+            stack: err.innerError.stack,
+          }
+        : undefined;
+      return JSON.stringify({
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        data: err.data,
+        code: err.code,
+        inner,
+      });
+    }
+    if (err instanceof Error) {
+      return JSON.stringify({
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+      });
+    }
+    return String(err);
+  },
+};
