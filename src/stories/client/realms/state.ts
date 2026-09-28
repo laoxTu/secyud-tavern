@@ -27,7 +27,7 @@ export interface RealmState {
   setSignal: (signal?: AbortController, reason?: string) => void;
   setAbort: (func: () => void) => void;
   // 生成信息
-  realmInfos: Record<string, RealmInfo>;
+  realmInfos: Record<string, RealmInfo | undefined>;
   setRealmInfo: (name: string, realmInfo?: RealmInfo) => void;
   /**
    * 是否生成中，不可用realmInfo是否为空判定，
@@ -81,7 +81,7 @@ export const useRealmState = create<RealmState>()(
       setRealmInfo(name, realmInfo) {
         const { generating, realmInfos } = get();
         if (generating) {
-          set({ ...realmInfos, [name]: realmInfo });
+          set({ realmInfos: { ...realmInfos, [name]: realmInfo } });
         }
       },
       generating: false,

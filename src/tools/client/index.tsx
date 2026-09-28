@@ -126,7 +126,7 @@ export const tools = {
 
     const manager = new Manager(cache);
 
-    setRealmInfo('content', {
+    setRealmInfo('main', {
       title: 'tool.calling_tool',
     });
 

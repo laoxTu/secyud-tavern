@@ -56,23 +56,25 @@ function RealmTips() {
     <>
       {generating && (
         <div className="fixed right-2 top-2">
-          {Object.entries(realmInfos).map(([key, realmInfo]) => (
-            <Item key={key}>
-              <ItemMedia>
-                <Spinner />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle className="line-clamp-1">
-                  {t(realmInfo.title)}
-                </ItemTitle>
-              </ItemContent>
-              <ItemContent className="flex-none justify-end">
-                <span className="text-sm tabular-nums">
-                  {realmInfo.content}
-                </span>
-              </ItemContent>
-            </Item>
-          ))}
+          {Object.entries(realmInfos)
+            .filter((u) => u[1])
+            .map(([key, realmInfo]) => (
+              <Item key={key}>
+                <ItemMedia>
+                  <Spinner />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle className="line-clamp-1">
+                    {t(realmInfo!.title)}
+                  </ItemTitle>
+                </ItemContent>
+                <ItemContent className="flex-none justify-end">
+                  <span className="text-sm tabular-nums">
+                    {realmInfo!.content}
+                  </span>
+                </ItemContent>
+              </Item>
+            ))}
         </div>
       )}
     </>
