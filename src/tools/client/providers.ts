@@ -3,7 +3,7 @@ import React from 'react';
 import { getRegistry, Registerable } from '@/plugins';
 import { PresetEntry, PresetItem } from '@/presets';
 import { Realm } from '@/stories';
-import { Tool } from '@/tools';
+import { Tool, ToolCall } from '@/tools';
 import { JsonSchema } from '@/utils/json-schema';
 
 export interface ToolItem<TArgs = any> {
@@ -13,7 +13,7 @@ export interface ToolItem<TArgs = any> {
   /**
    * 调用工具，获取返回信息
    */
-  invoke: (args: TArgs) => Promise<string>;
+  invoke: (args: TArgs, call?: ToolCall) => Promise<string>;
 }
 
 export interface ToolProps<T = any> {

@@ -315,7 +315,7 @@ function AgentTextInputComponent({
               signal: async (c?: AbortController | null) => {
                 if (c) useAgentTextState.getState().setSignal(c);
               },
-              output: async ({ text, title }) => {
+              output: async (_name, { text, title }) => {
                 setText(text ?? '');
                 setThinking(title === 'agent.thinking');
               },

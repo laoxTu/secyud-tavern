@@ -1,8 +1,12 @@
 import { getRegistry, getSingleton, Registerable } from '@/plugins';
 
-import { Task, TaskRunner } from '..';
+import { TaskRunner } from '..';
 
 import { repository } from './repository';
+
+export interface TaskArgs {
+  provider: string;
+}
 
 export interface TaskProvider<T = any> extends Registerable {
   execute(args: T): Promise<void>;
@@ -11,19 +15,19 @@ export interface TaskProvider<T = any> extends Registerable {
 
 export const registry = getRegistry<TaskProvider>('task_provider');
 
-export class TaskManager extends TaskRunner {
+export class TaskManager extends TaskRunner<TaskArgs> {
   constructor() {
     super(8);
   }
 
-  protected async execute<TArgs = any>(task: Task<TArgs>) {
-    const provider = registry.record(task.provider);
-    await provider?.execute(task.args);
+  protected async execute(args: TaskArgs) {
+    const provider = registry.record(args.provider);
+    await provider?.execute(args);
     return 'success';
   }
-  protected async cancel<TArgs = any>(task: Task<TArgs>) {
-    const provider = registry.record(task.provider);
-    await provider?.cancel?.(task.args);
+  protected async cancel(args: TaskArgs) {
+    const provider = registry.record(args.provider);
+    await provider?.cancel?.(args);
   }
 
   async delete(id: string, cancel: boolean) {
@@ -31,8 +35,8 @@ export class TaskManager extends TaskRunner {
     await repository.delete(id);
   }
 
-  async create<TArgs = any>(provider: string, name: string, args: TArgs) {
-    const task = await super.create(provider, name, args);
+  async create<T extends TaskArgs = TaskArgs>(name: string, args: T) {
+    const task = await super.create(name, args);
     await repository.create(task);
     return task;
   }

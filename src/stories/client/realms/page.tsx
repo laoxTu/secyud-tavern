@@ -51,24 +51,28 @@ interface LoadingState {
 
 function RealmTips() {
   const t = useTranslations();
-  const { realmInfo, generating } = useRealmState();
+  const { realmInfos, generating } = useRealmState();
   return (
     <>
       {generating && (
         <div className="fixed right-2 top-2">
-          <Item>
-            <ItemMedia>
-              <Spinner />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle className="line-clamp-1">
-                {t(realmInfo.title)}
-              </ItemTitle>
-            </ItemContent>
-            <ItemContent className="flex-none justify-end">
-              <span className="text-sm tabular-nums">{realmInfo.content}</span>
-            </ItemContent>
-          </Item>
+          {Object.entries(realmInfos).map(([key, realmInfo]) => (
+            <Item key={key}>
+              <ItemMedia>
+                <Spinner />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="line-clamp-1">
+                  {t(realmInfo.title)}
+                </ItemTitle>
+              </ItemContent>
+              <ItemContent className="flex-none justify-end">
+                <span className="text-sm tabular-nums">
+                  {realmInfo.content}
+                </span>
+              </ItemContent>
+            </Item>
+          ))}
         </div>
       )}
     </>

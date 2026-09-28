@@ -4,12 +4,12 @@ import { settings } from '@/global/server';
 import { BusinessError, checker } from '@/interceptors';
 import { getRegistry, Registerable } from '@/plugins';
 import { signals } from '@/signal/server';
-import { TaskProvider } from '@/tasks/server/manager';
+import { TaskArgs, TaskProvider } from '@/tasks/server/manager';
 import { fileUtils } from '@/utils/server';
 
 import { comfyuis } from '.';
 
-export interface ModelDownloadArgs {
+export interface ModelDownloadArgs extends TaskArgs {
   id: string;
 }
 
