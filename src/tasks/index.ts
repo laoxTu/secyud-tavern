@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 
 import { Entity, Properties } from '@/database';
 import { BusinessError, errors } from '@/interceptors';
-import { Mutex } from '@/utils/lock';
+import { Mutex } from '@/utils/mutex';
 
 export type TaskStatus =
   'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
