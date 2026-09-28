@@ -37,6 +37,9 @@ export function summary(callings: ToolCall[], items: ModelInputSummary[]) {
   }
 }
 
+/**
+ * 工具调用的任务管理，管理当前执行的调用。
+ */
 class Manager extends TaskRunner<ToolCall> {
   setRealmInfo: (
     name: string,
