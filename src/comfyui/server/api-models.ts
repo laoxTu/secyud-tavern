@@ -52,9 +52,11 @@ export const models = {
         const { id } = await records.params;
         const model = await comfyuis.repository.model.get(id);
         await tasks.manager.create<ModelDownloadArgs>(
-          importers.tasks.id,
           `download ${model.code}`,
-          { id },
+          {
+            provider: importers.tasks.id,
+            id,
+          },
         );
         return response.null();
       }),

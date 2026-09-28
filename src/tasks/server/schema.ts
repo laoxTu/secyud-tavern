@@ -16,7 +16,6 @@ export const taskSchema = sqliteTable(
     name: text('name').notNull(),
     args: json<Record<string, any>>('args').notNull(),
     progress: real('progress'),
-    provider: text('progress').notNull(),
     attempt: integer('attempt').notNull(),
     queue: integer('queue'),
     start: integer('start'),

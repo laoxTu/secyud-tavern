@@ -7,7 +7,7 @@ import { realms } from '.';
 
 export interface RealmInfo {
   title: string;
-  content: string;
+  content?: string | null;
 }
 
 interface Page {
@@ -27,8 +27,8 @@ export interface RealmState {
   setSignal: (signal?: AbortController, reason?: string) => void;
   setAbort: (func: () => void) => void;
   // 生成信息
-  realmInfo: RealmInfo;
-  setRealmInfo: (realmInfo: RealmInfo) => void;
+  realmInfos: Record<string, RealmInfo>;
+  setRealmInfo: (name: string, realmInfo?: RealmInfo) => void;
   /**
    * 是否生成中，不可用realmInfo是否为空判定，
    * 因为子agent也会用，这个标志同时影响是否
@@ -77,8 +77,13 @@ export const useRealmState = create<RealmState>()(
         console.debug(`[signal]: set abort`);
         signals.setAbort(signal, action);
       },
-      realmInfo: { title: 'realm.generating', content: '' },
-      setRealmInfo: (realmInfo) => get().generating && set({ realmInfo }),
+      realmInfos: {},
+      setRealmInfo(name, realmInfo) {
+        const { generating, realmInfos } = get();
+        if (generating) {
+          set({ ...realmInfos, [name]: realmInfo });
+        }
+      },
       generating: false,
       pinned: true,
       setPinned: (pinned) => set({ pinned }),

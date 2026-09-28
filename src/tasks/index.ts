@@ -29,7 +29,6 @@ export interface Task<T = any> extends Entity, Properties, TaskBase {
   name: string;
   args: T;
   progress?: number;
-  provider: string;
 }
 
 /**
@@ -44,21 +43,18 @@ export interface TaskHistory extends TaskBase {
 /**
  * 简易并行任务调度
  */
-export abstract class TaskRunner {
+export abstract class TaskRunner<TArgs = any> {
   protected pending: Task[] = [];
   protected running: Map<string, Task> = new Map<string, Task>();
-  protected count = 0;
   protected mutex = new Mutex();
 
   constructor(protected max: number = 8) {}
 
-  protected abstract execute<TArgs = any>(
-    task: Task<TArgs>,
-  ): Promise<string | undefined>;
+  protected abstract execute(task: TArgs): Promise<string | undefined>;
 
-  protected abstract cancel<TArgs = any>(task: Task<TArgs>): Promise<void>;
+  protected abstract cancel(task: TArgs): Promise<void>;
 
-  protected async queue<TArgs = any>(task: Task<TArgs>) {
+  protected async queue(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       this.pending.push(task);
       task.queue = Date.now();
@@ -69,48 +65,46 @@ export abstract class TaskRunner {
   protected async start() {
     await this.mutex.lock(async () => {
       // 超出任务上限
-      if (this.max <= this.count)
+      if (this.max <= this.running.size)
         throw new BusinessError('running task over limit!');
       const task = this.pending.shift();
       if (!task) return;
       this.running.set(task.id, task);
-      this.count++;
       await this.run(task);
     });
   }
 
-  protected async restart<TArgs = any>(task: Task<TArgs>) {
+  protected async restart(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       if (!this.running.has(task.id))
         throw new BusinessError('only running task canbe restart!');
-      await this.cancel(task);
+      await this.cancel(task.args);
       await this.run(task);
     });
   }
 
-  protected async run<TArgs = any>(task: Task<TArgs>) {
+  protected async run(task: Task<TArgs>) {
     task.status = 'running';
     task.start = Date.now();
-    this.execute(task)
+    this.execute(task.args)
       .then((result) => this.success(task, result))
       .catch((err) => this.failed(task, err))
       .finally(() => this.finish(task));
   }
 
-  protected async failed<TArgs = any>(task: Task<TArgs>, err: any) {
+  protected async failed(task: Task<TArgs>, err: any) {
     task.status = 'failed';
     task.result = errors.serialize(err);
   }
 
-  protected async success<TArgs = any>(task: Task<TArgs>, result?: string) {
-    task.status = 'failed';
+  protected async success(task: Task<TArgs>, result?: string) {
+    task.status = 'completed';
     task.result = result;
   }
 
-  protected async finish<TArgs = any>(task: Task<TArgs>) {
+  protected async finish(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       this.running.delete(task.id);
-      this.count--;
     });
     await this.start();
   }
@@ -127,21 +121,22 @@ export abstract class TaskRunner {
       if (task) {
         task.status = 'cancelled';
         this.running.delete(id);
-        if (cancel) await this.cancel(task);
+        if (cancel) await this.cancel(task.args);
       }
     });
+    await this.start();
   }
 
-  async create<TArgs = any>(provider: string, name: string, args: TArgs) {
+  async create<T extends TArgs = TArgs>(name: string, args: T) {
     const task: Task = {
       name,
       args,
-      provider,
       id: v4(),
       attempt: 0,
       status: 'pending',
     };
     await this.queue(task);
+    await this.start();
     return task;
   }
 }

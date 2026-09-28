@@ -171,9 +171,10 @@ async function generate(create: boolean = false) {
   if (generating) return;
   set({
     generating: true,
-    realmInfo: {
-      title: 'realm.generating',
-      content: '',
+    realmInfos: {
+      content: {
+        title: 'realm.generating',
+      },
     },
   });
   if (create) {
@@ -260,18 +261,18 @@ async function generate(create: boolean = false) {
         output.callings?.reduce((u, c) => u + c.arguments.length, 0) ?? 0;
       if (curThoughtLen !== thoughtLen) {
         thoughtLen = curThoughtLen;
-        setRealmInfo({
+        setRealmInfo('content', {
           content: `${thoughtLen}`,
           title: 'realm.thinking',
         });
       } else if (curToolArgLen !== toolArgLen) {
         toolArgLen = curToolArgLen;
-        setRealmInfo({
+        setRealmInfo('content', {
           content: `${toolArgLen}`,
           title: 'realm.generating_tool',
         });
       } else {
-        setRealmInfo({
+        setRealmInfo('content', {
           content: `${output.content.length}`,
           title: 'realm.generating',
         });

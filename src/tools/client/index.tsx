@@ -5,6 +5,7 @@ import { presets } from '@/presets/client';
 import { stories } from '@/stories/client';
 import { useRealmState } from '@/stories/client/realms';
 import { Realm } from '@/stories/realms';
+import { Task, TaskRunner } from '@/tasks';
 import { tools as main, ToolCall } from '@/tools';
 import { agents } from '@/tools/agents/client';
 import { tab } from '@/tools/client/content';
@@ -36,6 +37,70 @@ export function summary(callings: ToolCall[], items: ModelInputSummary[]) {
   }
 }
 
+class Manager extends TaskRunner<ToolCall> {
+  setRealmInfo: (
+    name: string,
+    realmInfo?: import('@/stories/client/realms').RealmInfo,
+  ) => void;
+  aborted = false;
+  constructor(protected cache: ToolCache) {
+    super();
+    const { setAbort, setRealmInfo } = useRealmState.getState();
+    setAbort(() => (this.aborted = true));
+    this.setRealmInfo = setRealmInfo;
+  }
+
+  protected async execute(toolCall: ToolCall) {
+    if (this.aborted) return;
+    try {
+      // 按函数名找配置，再经 toolId 找具体实现。
+      const tool = this.cache.tools[toolCall.name];
+      if (tool) {
+        console.debug(`[tool]: `, tool.name);
+        const args = JSON.parse(toolCall.arguments);
+        this.setRealmInfo(toolCall.id, {
+          title: 'tool.calling_tool',
+          content: toolCall.name,
+        });
+        toolCall.result = await tool.invoke(args, toolCall);
+      } else {
+        toolCall.result = '';
+      }
+    } catch (err: any) {
+      // 错误写回给模型调整，同时 console.error 供人工排查。
+      toolCall.result = `error: ${err?.message ?? 'unknown error'}`;
+      console.error(err);
+    } finally {
+      this.setRealmInfo(toolCall.id);
+    }
+
+    return 'success';
+  }
+  protected async cancel() {}
+
+  protected async finish(task: Task<ToolCall>) {
+    await super.finish(task);
+    this.check();
+  }
+
+  private resolve?: (value: void | PromiseLike<void>) => void;
+  private promise?: Promise<void>;
+
+  check() {
+    if (this.running.size || this.pending.length) {
+      return;
+    }
+    this.resolve?.();
+  }
+
+  wait(): Promise<void> {
+    return (this.promise ??= new Promise((resolve) => {
+      this.resolve = resolve;
+      this.check();
+    }));
+  }
+}
+
 export const tools = {
   ...main,
   summary,
@@ -54,31 +119,18 @@ export const tools = {
     if (!toolCalls?.length) return;
     const cache: ToolCache = tools.cache(realm);
 
-    let aborted = false;
-    const { setAbort, setRealmInfo } = useRealmState.getState();
-    setAbort(() => (aborted = true));
+    const { setRealmInfo } = useRealmState.getState();
+
+    const manager = new Manager(cache);
+
+    setRealmInfo('content', {
+      title: 'tool.calling_tool',
+    });
+
     for (const toolCall of toolCalls.filter((u) => !u.result)) {
-      if (aborted) break;
-      try {
-        // 按函数名找配置，再经 toolId 找具体实现。
-        const tool = cache.tools[toolCall.name];
-        if (tool) {
-          console.debug(`[tool]: `, tool.name);
-          const args = JSON.parse(toolCall.arguments);
-          setRealmInfo({
-            title: 'tool.calling_tool',
-            content: toolCall.name,
-          });
-          toolCall.result = await tool.invoke(args);
-        } else {
-          toolCall.result = '';
-        }
-      } catch (err: any) {
-        // 错误写回给模型调整，同时 console.error 供人工排查。
-        toolCall.result = `error: ${err?.message ?? 'unknown error'}`;
-        console.error(err);
-      }
+      await manager.create(toolCall.id, toolCall);
     }
+    await manager.wait();
   },
   tab: {
     preset: tab,
