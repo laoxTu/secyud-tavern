@@ -145,7 +145,7 @@ function script(config: ScriptConfig, realm: Realm): ToolItem {
     name: config.code,
     description: config.description ?? '',
     parameters: JSON.parse(config.schema || '{}'),
-    async invoke(args: any) {
+    async invoke({ args }) {
       const context: any = {};
       if (config.enableDoc) {
         const { contentDocument = null, contentWindow = null } =

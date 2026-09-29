@@ -175,7 +175,7 @@ function modelFetcher(): ToolItem {
         },
       },
     },
-    async invoke(args: any) {
+    async invoke({ args }) {
       const data = await comfyuis.proxy.model.list({
         size: args.size,
         skip: args.skip,
@@ -225,7 +225,7 @@ async function painter(config: AutoPaintConfig): Promise<ToolItem> {
     name: config.code,
     description: config.description ?? '',
     parameters: schema,
-    async invoke(args: any) {
+    async invoke({ args }) {
       if (!workflow) throw new BusinessError('workflow is not configured');
       const input: ComfyUIWorkflowInput | null = jsonUtils.parse(
         workflow.content,
