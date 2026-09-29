@@ -22,7 +22,8 @@ export function isNetworkError(error: unknown): boolean {
     return (
       message.includes('network') ||
       message.includes('fetch') ||
-      message.includes('load failed')
+      message.includes('load failed') ||
+      message.includes('user canceled')
     );
   }
   return false;
@@ -39,41 +40,31 @@ export function isHttpError(error: unknown): boolean {
 }
 
 function handleError(t: _Translator, err: any) {
-  if (err instanceof BusinessError) {
-    console.error(err);
-    if (err.code) {
-      const record: Record<string, any> = {};
-      if (err.data) {
-        for (const key in err.data) {
-          const value = err.data[key];
-          if (typeof value === 'string') {
-            record[key] = t.has(value) ? t(value) : value;
-          } else record[key] = value;
-        }
+  console.error(err);
+  if (err instanceof BusinessError && err.code) {
+    const record: Record<string, any> = {};
+    if (err.data) {
+      for (const key in err.data) {
+        const value = err.data[key];
+        if (typeof value === 'string') {
+          record[key] = t.has(value) ? t(value) : value;
+        } else record[key] = value;
       }
-      toast.error(t(err.code, record), {
-        richColors: true,
-      });
-      return;
     }
-    // 默认错误消息
-    toast.error(err.message, {
+    toast.error(t(err.code, record), {
       richColors: true,
     });
-  } else if (isNetworkError(err) || isHttpError(err)) {
-    // 网络错误 → 静默处理
-    toast.error(err.message, {
-      richColors: true,
-    });
-    console.error(err);
   } else {
-    /**
-     * 继续抛出意味着页面崩溃，进入notfound
-     */
+    // 默认错误消息
     toast.error(err?.message, {
       richColors: true,
     });
-    throw err;
+    if (!isNetworkError(err) && !isHttpError(err)) {
+      /**
+       * 继续抛出意味着页面崩溃，进入notfound
+       */
+      throw err;
+    }
   }
 }
 
