@@ -1,6 +1,6 @@
 import { getRegistry, getSingleton, Registerable } from '@/plugins';
 
-import { TaskRunner } from '..';
+import { Task, TaskRunner } from '..';
 
 import { repository } from './repository';
 
@@ -28,6 +28,31 @@ export class TaskManager extends TaskRunner<TaskArgs> {
   protected async cancel(args: TaskArgs) {
     const provider = registry.record(args.provider);
     await provider?.cancel?.(args);
+  }
+
+  protected async finish(task: Task<TaskArgs>) {
+    await super.finish(task);
+    // 结束时更新数据库
+    await repository.update(task.id, {
+      finish: task.finish,
+      status: task.status,
+      result: task.result,
+    });
+  }
+  async restart(task: Task<TaskArgs>) {
+    // 重试时需要记录历史
+    await repository.history.add(task.id, task);
+    await super.restart(task);
+  }
+
+  protected async run(task: Task<TaskArgs>) {
+    await super.run(task);
+    // 启动时更新数据库
+    await repository.update(task.id, {
+      start: task.start,
+      status: task.status,
+      attempt: task.attempt,
+    });
   }
 
   async delete(id: string, cancel: boolean) {
