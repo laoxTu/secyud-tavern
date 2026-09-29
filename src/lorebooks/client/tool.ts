@@ -51,7 +51,7 @@ function get(realm: Realm): ToolItem<{
       },
       additionalProperties: false,
     },
-    async invoke({ content, limit = 3, min_relevance = 0.3 }) {
+    async invoke({ args: { content, limit = 3, min_relevance = 0.3 } }) {
       const outputs = realms.outputs(await realms.history.get(null, realm));
       const output = outputs?.at(-1);
 

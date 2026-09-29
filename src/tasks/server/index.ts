@@ -1,8 +1,10 @@
 import { manager, registry } from './manager';
+import { repository } from './repository';
 
 export const tasks = {
   registry,
   manager,
+  repository,
 };
 
 /**

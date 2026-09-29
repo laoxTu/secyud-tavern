@@ -79,6 +79,17 @@ const history = {
   /**
    * 获取历史
    */
+  list: async (id: string): Promise<TaskHistory[]> => {
+    const list = await db
+      .select()
+      .from(taskHistorySchema)
+      .where(and(eq(taskHistorySchema.masterId, id)))
+      .orderBy(taskHistorySchema.attempt);
+    return list as TaskHistory[];
+  },
+  /**
+   * 获取历史
+   */
   get: async (id: string, attempt: number): Promise<TaskHistory> => {
     const [history] = await db
       .select()

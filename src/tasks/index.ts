@@ -26,7 +26,6 @@ interface TaskBase {
 export interface Task<T = any> extends Entity, Properties, TaskBase {
   name: string;
   args: T;
-  progress?: number;
 }
 
 /**
@@ -39,29 +38,33 @@ export interface TaskHistory extends TaskBase {
 }
 
 /**
+ * 运行中状态
+ */
+export interface TaskInfo<T = any> extends Task<T> {
+  controller: AbortController;
+  progress?: number;
+}
+
+/**
  * 简易并行任务调度
  */
 export abstract class TaskRunner<TArgs = any> {
   protected pending: Task[] = [];
-  protected running: Map<string, Task> = new Map<string, Task>();
+  protected running: Map<string, TaskInfo> = new Map<string, TaskInfo>();
   protected mutex = new Mutex();
 
   constructor(protected max: number = 8) {}
 
   /**
    * 异步执行任务
+   * 通过AbortController取消任务
    * @param task 执行的任务
    */
-  protected abstract execute(task: TArgs): Promise<string | undefined>;
-  /**
-   * 将进行中的任务进行取消
-   * 这个任务可以是已经完成的
-   * 此时应撤销任务
-   * @param task 取消的任务
-   */
-  protected abstract cancel(task: TArgs): Promise<void>;
+  protected abstract execute(
+    task: TaskInfo<TArgs>,
+  ): Promise<string | undefined>;
 
-  async queue(task: Task<TArgs>) {
+  protected async queue(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       this.pending.push(task);
       task.queue = Date.now();
@@ -70,50 +73,61 @@ export abstract class TaskRunner<TArgs = any> {
   }
 
   async start() {
-    let task: Task | undefined;
+    let task: TaskInfo | undefined;
     await this.mutex.lock(async () => {
       // 超出任务上限
       if (this.max <= this.running.size)
         throw new BusinessError('running task over limit!');
-      task = this.pending.shift();
-      if (!task) return;
+      const top = this.pending.shift();
+      if (!top) return;
+      task = {
+        ...top,
+        controller: new AbortController(),
+      };
       this.running.set(task.id, task);
       await this.run(task);
     });
 
     return task;
   }
-  async restart(task: Task<TArgs>) {
+
+  async restart(id: string) {
     await this.mutex.lock(async () => {
-      if (!this.running.has(task.id))
+      if (!this.running.has(id))
         throw new BusinessError('only running task canbe restart!');
-      //重试任务前应当先取消任务
-      await this.cancel(task.args);
-      task.attempt++;
+      const origin = this.running.get(id)!;
+      // 重试任务前应当先取消任务
+      origin.controller.abort('restart');
+      // 新任务不要和前面的混用引用，建立新实例
+      const task = {
+        ...origin,
+        controller: new AbortController(),
+        attempt: origin.attempt + 1,
+      };
       await this.run(task);
     });
   }
 
-  protected async run(task: Task<TArgs>) {
+  protected async run(task: TaskInfo<TArgs>) {
     task.status = 'running';
     task.start = Date.now();
-    this.execute(task.args)
+    this.execute(task)
       .then((result) => this.success(task, result))
       .catch((err) => this.failed(task, err))
       .finally(() => this.finish(task));
   }
 
-  protected async failed(task: Task<TArgs>, err: any) {
+  protected async failed(task: TaskInfo<TArgs>, err: any) {
     task.status = 'failed';
     task.result = errors.serialize(err);
   }
 
-  protected async success(task: Task<TArgs>, result?: string) {
+  protected async success(task: TaskInfo<TArgs>, result?: string) {
     task.status = 'completed';
     task.result = result;
   }
 
-  protected async finish(task: Task<TArgs>) {
+  protected async finish(task: TaskInfo<TArgs>) {
     await this.mutex.lock(async () => {
       this.running.delete(task.id);
       task.finish = Date.now();
@@ -121,7 +135,7 @@ export abstract class TaskRunner<TArgs = any> {
     await this.start();
   }
 
-  async delete(id: string, cancel: boolean = true) {
+  async delete(id: string) {
     await this.mutex.lock(async () => {
       const index = this.pending.findIndex((u) => u.id === id);
       if (index >= 0) {
@@ -132,8 +146,11 @@ export abstract class TaskRunner<TArgs = any> {
       const task = this.running.get(id);
       if (task) {
         task.status = 'cancelled';
+        // 删除任务应当对进行中的任务进行取消
+        // 取消是否回档取决于内部实现
+        // 但是已完成的任务一定不会回档
+        task.controller.abort('canceled');
         this.running.delete(id);
-        if (cancel) await this.cancel(task.args);
       }
     });
     await this.start();
@@ -157,3 +174,7 @@ export interface TaskRequestOptions {}
 export interface TaskRequestParam {
   fuzzy?: string | null;
 }
+
+export const tasks = {
+  name: 'task',
+};

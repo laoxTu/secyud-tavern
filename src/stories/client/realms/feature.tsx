@@ -195,12 +195,14 @@ function Viewer() {
           }
 
           const { summaries } = await models.processers.prompt({
+            controller: new AbortController(),
             current: false,
             realm: {
               ...realm,
               histories: virtuals,
             },
           });
+
           setSummaries(summaries);
         },
         async () => setLoading(false),

@@ -21,7 +21,6 @@ import { checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { ModelNameValueField, models } from '@/models/client';
 import { PresetNameValuesField, presets } from '@/presets/client';
-import { SignalBinder } from '@/signal';
 import { Realm, Story } from '@/stories';
 import { stories } from '@/stories/client';
 import { RealmInfo, useRealmState } from '@/stories/client/realms';
@@ -141,10 +140,8 @@ export type Output = (
 async function create(
   {
     config,
-    signal,
     output,
   }: Tool<AgentConfig> & {
-    signal?: SignalBinder;
     output?: Output;
   },
   { id, presets: parents, model, properties, entries, histories }: Realm,
@@ -178,14 +175,6 @@ async function create(
     },
   };
   await models.processers.initialize({ realm });
-  signal ??= async (signal?: AbortController | null) => {
-    if (signal) {
-      useRealmState.getState().setAbort(() => {
-        console.debug('[sub-agent]: abort');
-        signal.abort('user cancelled');
-      });
-    }
-  };
 
   if (!output) {
     const { setRealmInfo } = useRealmState.getState();
@@ -193,7 +182,7 @@ async function create(
       setRealmInfo(name, info);
     };
   }
-  return [agent(config, realm, signal, output)];
+  return [agent(config, realm, output)];
 }
 
 const tool: ToolProvider<AgentConfig> = {
@@ -221,17 +210,12 @@ export const agents = {
   create,
 };
 
-function agent(
-  config: AgentConfig,
-  realm: Realm,
-  signal: SignalBinder,
-  info: Output,
-): ToolItem {
+function agent(config: AgentConfig, realm: Realm, info: Output): ToolItem {
   return {
     name: config.code,
     description: config.description ?? '',
     parameters: jsonUtils.parse(config.schema),
-    async invoke(args: any, call) {
+    async invoke({ args, toolcall, controller }) {
       let result: string = 'error: empty content';
       // 深拷贝待解析副本，防止不必要的变化，例如工具冲突。
       // 主agent可能已经设置了工具调用
@@ -255,7 +239,7 @@ function agent(
       let thoughtLen = 0;
       let toolArgLen = 0;
       for await (const { output } of models.processers.generate({
-        signal,
+        controller,
         args,
         realm: {
           ...realm,
@@ -263,27 +247,27 @@ function agent(
         },
       })) {
         result = output.content;
-        if (!call) continue;
+        if (!toolcall) continue;
 
         const curThoughtLen = output.thought.length;
         const curToolArgLen =
           output.callings?.reduce((u, c) => u + c.arguments.length, 0) ?? 0;
         if (curThoughtLen !== thoughtLen) {
           thoughtLen = curThoughtLen;
-          await info(call.id, {
+          await info(toolcall.id, {
             content: `${thoughtLen}`,
             title: 'agent.thinking',
             text: output.content,
           });
         } else if (curToolArgLen !== toolArgLen) {
           toolArgLen = curToolArgLen;
-          await info(call.id, {
+          await info(toolcall.id, {
             content: `${toolArgLen}`,
             title: 'agent.generating_tool',
             text: output.content,
           });
         } else {
-          await info(call.id, {
+          await info(toolcall.id, {
             content: `${output.content.length}`,
             title: 'agent.generating',
             text: output.content,

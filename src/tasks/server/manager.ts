@@ -1,6 +1,6 @@
 import { getRegistry, getSingleton, Registerable } from '@/plugins';
 
-import { Task, TaskRunner } from '..';
+import { TaskInfo, TaskRunner } from '..';
 
 import { repository } from './repository';
 
@@ -9,8 +9,7 @@ export interface TaskArgs {
 }
 
 export interface TaskProvider<T = any> extends Registerable {
-  execute(args: T): Promise<void>;
-  cancel?: (args: T) => Promise<void>;
+  execute(args: T, controller: AbortController): Promise<void>;
 }
 
 export const registry = getRegistry<TaskProvider>('task_provider');
@@ -20,17 +19,13 @@ export class TaskManager extends TaskRunner<TaskArgs> {
     super(8);
   }
 
-  protected async execute(args: TaskArgs) {
-    const provider = registry.record(args.provider);
-    await provider?.execute(args);
+  protected async execute(task: TaskInfo<TaskArgs>) {
+    const provider = registry.record(task.args.provider);
+    await provider?.execute(task.args, task.controller);
     return 'success';
   }
-  protected async cancel(args: TaskArgs) {
-    const provider = registry.record(args.provider);
-    await provider?.cancel?.(args);
-  }
 
-  protected async finish(task: Task<TaskArgs>) {
+  protected async finish(task: TaskInfo<TaskArgs>) {
     await super.finish(task);
     // 结束时更新数据库
     await repository.update(task.id, {
@@ -39,13 +34,14 @@ export class TaskManager extends TaskRunner<TaskArgs> {
       result: task.result,
     });
   }
-  async restart(task: Task<TaskArgs>) {
+  async restart(id: string) {
+    const task = this.running.get(id);
     // 重试时需要记录历史
-    await repository.history.add(task.id, task);
-    await super.restart(task);
+    if (task) await repository.history.add(task.id, task);
+    await super.restart(id);
   }
 
-  protected async run(task: Task<TaskArgs>) {
+  protected async run(task: TaskInfo<TaskArgs>) {
     await super.run(task);
     // 启动时更新数据库
     await repository.update(task.id, {
@@ -55,8 +51,8 @@ export class TaskManager extends TaskRunner<TaskArgs> {
     });
   }
 
-  async delete(id: string, cancel: boolean) {
-    await super.delete(id, cancel);
+  async delete(id: string) {
+    await super.delete(id);
     await repository.delete(id);
   }
 
@@ -64,6 +60,10 @@ export class TaskManager extends TaskRunner<TaskArgs> {
     const task = await super.create(name, args);
     await repository.create(task);
     return task;
+  }
+
+  get(id: string) {
+    return this.running.get(id);
   }
 }
 

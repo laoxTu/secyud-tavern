@@ -75,7 +75,14 @@ export const engines = {
   },
   registry,
   async prompt(
-    { realm, histories, converts, injects, current }: ModelPromptContext,
+    {
+      realm,
+      histories,
+      converts,
+      injects,
+      current,
+      controller,
+    }: ModelPromptContext,
     ctx: ModelInjectContext,
   ) {
     const { prompt, assist, caller } = ctx;
@@ -111,7 +118,7 @@ export const engines = {
           history,
         });
         // 检验工具是否触发
-        await tools.calling(realm, output.callings);
+        await tools.calling(realm, controller, output.callings);
         if (output.callings?.length) {
           caller(content, output, output.callings);
         } else if (content) {

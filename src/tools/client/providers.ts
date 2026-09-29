@@ -6,6 +6,12 @@ import { Realm } from '@/stories';
 import { Tool, ToolCall } from '@/tools';
 import { JsonSchema } from '@/utils/json-schema';
 
+export interface CallContext<TArgs = any> {
+  toolcall?: ToolCall;
+  args: TArgs;
+  controller: AbortController;
+}
+
 export interface ToolItem<TArgs = any> {
   name: string;
   description: string;
@@ -13,7 +19,7 @@ export interface ToolItem<TArgs = any> {
   /**
    * 调用工具，获取返回信息
    */
-  invoke: (args: TArgs, call?: ToolCall) => Promise<string>;
+  invoke: (ctx: CallContext<TArgs>) => Promise<string>;
 }
 
 export interface ToolProps<T = any> {
