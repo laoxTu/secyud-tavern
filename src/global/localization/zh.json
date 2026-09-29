@@ -82,7 +82,8 @@
     "entity": {
       "duplicate_value": "已经有相同{name}({value})的{entity}."
     },
-    "json_invalid": "{target} JSON格式错误"
+    "json_invalid": "{target} JSON格式错误",
+    "not_catch": "未捕获错误"
   },
   "language": {
     "en": "English",

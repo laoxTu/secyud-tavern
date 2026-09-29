@@ -1,8 +1,7 @@
 import { and, eq, inArray, like, SQL } from 'drizzle-orm';
-import { v4 } from 'uuid';
 
 import { ComfyUIModel, ComfyUIModelRequestParam } from '@/comfyui';
-import { DataRequest } from '@/database';
+import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
 import { checker } from '@/interceptors';
 
@@ -21,7 +20,7 @@ async function get(id: string) {
 async function create(model: ComfyUIModel) {
   checker.notNullOrWhitespace('name', model.name);
   checker.notNullOrWhitespace('code', model.code);
-  if (!model.id) model.id = v4();
+  if (!model.id) model.id = utils.uuid();
   await db.insert(comfyuiModelSchema).values(model);
 
   return model.id;

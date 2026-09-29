@@ -1,5 +1,5 @@
-﻿export { jsonUtils } from './json';
-export { arrUtils } from './array';
-export { strUtils } from './str';
+﻿export { arrUtils } from './array';
+export { jsonUtils } from './json';
 export * from './json-patch';
 export * from './json-schema';
+export { strUtils } from './str';

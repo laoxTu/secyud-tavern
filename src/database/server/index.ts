@@ -35,7 +35,7 @@ export const databases = {
     table: TTable,
     request: DataRequest<any>,
     filter?: (table: TTable) => SQL | undefined,
-    sorter?: (table: TTable) => SQL | SQLiteColumn | undefined,
+    sorter?: (table: TTable) => SQL[] | SQL | SQLiteColumn | undefined,
     map?: (table: TTable) => SelectedFields,
   ): Promise<DataResponse<TEntity>> => {
     const { skip = 0, size = 20 } = request;
@@ -52,7 +52,9 @@ export const databases = {
       itemsQuery = itemsQuery.where(filterValue);
     }
     if (sorterValue) {
-      itemsQuery = itemsQuery.orderBy(sorterValue);
+      itemsQuery = Array.isArray(sorterValue)
+        ? itemsQuery.orderBy(...sorterValue)
+        : itemsQuery.orderBy(sorterValue);
     }
     itemsQuery = itemsQuery.offset(skip).limit(size);
     const [[{ count: length }], items] = await Promise.all([
