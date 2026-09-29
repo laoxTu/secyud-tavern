@@ -67,11 +67,7 @@ function get(realm: Realm): ToolItem<{
       additionalProperties: false,
     },
     async invoke({
-      content,
-      types = [],
-      tags = [],
-      limit = 3,
-      min_relevance = 0.3,
+      args: { content, types = [], tags = [], limit = 3, min_relevance = 0.3 },
     }) {
       const outputs = realms.outputs(await realms.history.get(null, realm));
       const output = outputs?.at(-1);
@@ -177,11 +173,7 @@ function set(realm: Realm): ToolItem<{
       additionalProperties: false,
     },
     async invoke({
-      content,
-      title,
-      type = 'event',
-      tags = [],
-      importance = 5,
+      args: { content, title, type = 'event', tags = [], importance = 5 },
     }) {
       const cache = memories.cache(realm);
 

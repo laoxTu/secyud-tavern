@@ -247,14 +247,15 @@ async function generate(create: boolean = false) {
       await setIndex(histories.length);
     };
 
+    const controller = new AbortController();
+    setSignal(controller);
+
     let thoughtLen = 0;
     let toolArgLen = 0;
+    let indexed = false;
     for await (const { output } of models.processers.generate({
       realm,
-      signal: async (signal) => {
-        await setIndexCur();
-        if (signal) setSignal(signal);
-      },
+      controller,
     })) {
       const curThoughtLen = output.thought.length;
       const curToolArgLen =
@@ -277,6 +278,12 @@ async function generate(create: boolean = false) {
           title: 'realm.generating',
         });
       }
+
+      if (!indexed) {
+        indexed = true;
+        await setIndexCur();
+      }
+
       // 流式渲染条件
       // 故事页面为最新，输出页面为最新
       const { index } = get();
@@ -298,6 +305,7 @@ async function generate(create: boolean = false) {
     set({ generating: false });
     await setIndex(histories.length);
     await setHistory(histories.length, realm);
+    setSignal();
   }
 }
 

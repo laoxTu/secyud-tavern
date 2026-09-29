@@ -1,7 +1,7 @@
 import { BusinessError } from '@/interceptors';
 import { isAbortError, isNetworkError } from '@/interceptors/client';
 import { getRegistry, Registerable } from '@/plugins';
-import { SignalBinder, signals, sseUtils } from '@/signal';
+import { signals, sseUtils } from '@/signal';
 import { realms, useRealmState } from '@/stories/client/realms';
 import {
   Realm,
@@ -88,6 +88,10 @@ export interface ModelPromptContext extends RealmContext {
   current: boolean;
   converts: ConvertContent[];
   injects: InjectHandler[];
+  /**
+   * 控制信号
+   */
+  controller: AbortController;
 }
 
 /**
@@ -149,10 +153,12 @@ async function prompt({
   realm,
   args,
   current,
+  controller,
 }: {
   realm: Realm;
   args?: any;
   current: boolean;
+  controller: AbortController;
 }) {
   const { engine } = modelInfo(realm.model);
   const histories: RealmHistory[] = [];
@@ -175,6 +181,7 @@ async function prompt({
     histories,
     converts: [],
     injects: [],
+    controller,
   };
 
   console.debug('[realm](input): ', context);
@@ -215,16 +222,18 @@ export const processers = {
    */
   async *generate({
     args,
-    signal,
+    controller,
     realm,
   }: {
     args?: any;
-    signal: SignalBinder;
+    // 外部控制信号，有的话外部控制信号会绑定内部信号
+    controller: AbortController;
     realm: Realm;
   }) {
     const { engine, model, iterations } = modelInfo(realm.model);
     // 重试最大次数
     const { max: maxRetry = 3, interval = 5 } = model.properties?.retry ?? {};
+    const { signal } = controller;
     /**
      * 先准备输出组，注意一轮对话不止有一个输出
      * ai的一次请求可能会输出工具调用，调用
@@ -239,6 +248,17 @@ export const processers = {
     history.outputs.push(outputs);
 
     let iteration = iterations;
+
+    /**
+     * 设置信号，当外部中断，如用户取消输出时，
+     * 应当中断请求，并将iteration设置为0，
+     * 以退出ai的整体回复
+     */
+    signals.setAbort(signal, () => {
+      console.debug('[realm]: reset signal');
+      iteration = 0;
+    });
+
     // 剩余轮次限制
     while (iteration > 0) {
       iteration--;
@@ -250,7 +270,7 @@ export const processers = {
       useRealmState.getState().setRealmInfo('main', {
         title: 'story.input_processing',
       });
-      const { input } = await prompt({ args, current, realm });
+      const { input } = await prompt({ args, current, realm, controller });
 
       /**
        * 准备单次输出
@@ -289,17 +309,6 @@ export const processers = {
       };
 
       /**
-       * 设置信号，当外部中断，如用户取消输出时，
-       * 应当中断请求，并将iteration设置为0，
-       * 以退出ai的整体回复
-       */
-      const reply = new AbortController();
-      await signal(reply);
-      signals.setAbort(reply.signal, () => {
-        console.debug('[realm]: reset signal');
-        iteration = 0;
-      });
-      /**
        * 如果网络错误或者中间间隔太长，可以重试
        */
       let retry = Math.max(maxRetry, 1);
@@ -309,16 +318,18 @@ export const processers = {
          * 轮次差异，使用关联的方式而不是复用
          * 外部信号
          */
-        const controller = new AbortController();
-        signals.setAbort(reply.signal, (event) => {
-          controller.abort((event.target as AbortSignal)?.reason);
-        });
+        const { controller, destroy } = signals.createSub(signal);
         /**
          * 这是重试信号的标记，如果已经结束了
          * 就不用再检查是否需要重试了
          */
         let finished = false;
         try {
+          const response = await models.proxy.engine.generate(
+            model.id,
+            input,
+            controller.signal,
+          );
           if (realm.model.stream) {
             /**
              * 通过时间对比进行判断
@@ -338,11 +349,6 @@ export const processers = {
                 }
               }, interval * 500);
             };
-            const response = await models.proxy.engine.generate(
-              model.id,
-              input,
-              controller.signal,
-            );
 
             /**
              * 流式请求可能会中途卡住
@@ -358,12 +364,6 @@ export const processers = {
               }
             }
           } else {
-            const response = await models.proxy.engine.generate(
-              model.id,
-              input,
-              reply.signal,
-            );
-
             yield generate(false, response);
           }
           retry = 0;
@@ -381,7 +381,10 @@ export const processers = {
             throw err;
           }
         } finally {
+          // 这里防止定时器内存泄漏，手动赋值
           finished = true;
+          // 子操作完成需要销毁信号
+          destroy();
         }
       }
     }

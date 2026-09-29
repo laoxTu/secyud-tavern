@@ -79,10 +79,6 @@ const tasks: TaskProvider<ModelDownloadArgs> = {
       throw error;
     }
   },
-  async cancel(args) {
-    const { filename } = await getDownloadParams(args.id);
-    await fileUtils.fs.unlink(filename);
-  },
 };
 
 export const importers = {

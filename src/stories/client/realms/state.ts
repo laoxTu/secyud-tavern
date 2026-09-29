@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { signals } from '@/signal';
-
 import { realms } from '.';
 
 export interface RealmInfo {
@@ -25,7 +23,6 @@ export interface RealmState {
   // 信号
   signal?: AbortController;
   setSignal: (signal?: AbortController, reason?: string) => void;
-  setAbort: (func: () => void) => void;
   // 生成信息
   realmInfos: Record<string, RealmInfo | undefined>;
   setRealmInfo: (name: string, realmInfo?: RealmInfo) => void;
@@ -67,15 +64,6 @@ export const useRealmState = create<RealmState>()(
           origin.abort(reason);
         }
         set({ signal });
-      },
-      setAbort(action) {
-        const signal = get().signal?.signal;
-        if (!signal) {
-          console.debug(`[signal]: not set`);
-          return;
-        }
-        console.debug(`[signal]: set abort`);
-        signals.setAbort(signal, action);
       },
       realmInfos: {},
       setRealmInfo(name, realmInfo) {

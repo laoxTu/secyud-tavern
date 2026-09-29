@@ -29,7 +29,7 @@ function getVariable(realm: Realm): ToolItem<{ path: string }> {
         },
       },
     },
-    async invoke({ path }) {
+    async invoke({ args: { path } }) {
       const history = realm.histories.at(-1);
       // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
       const variables = history ? realms.variables(history, true) : {};
@@ -85,7 +85,7 @@ function setVariable(realm: Realm): ToolItem {
         },
       },
     },
-    async invoke(operation) {
+    async invoke({ args: operation }) {
       return operate({ ...operation, op: 'replace' }, realm);
     },
   };
@@ -105,7 +105,7 @@ function delVariable(realm: Realm): ToolItem {
         },
       },
     },
-    async invoke(operation) {
+    async invoke({ args: operation }) {
       return operate({ ...operation, op: 'remove' }, realm);
     },
   };

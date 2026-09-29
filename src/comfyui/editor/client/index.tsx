@@ -304,6 +304,7 @@ function AgentTextInputComponent({
 
   // 生成提示词
   const generate = async () => {
+    const { setSignal } = useAgentTextState();
     try {
       setOutput(true);
       let tool = cache[param.masterId];
@@ -312,9 +313,6 @@ function AgentTextInputComponent({
           await agents.create(
             {
               ...param,
-              signal: async (c?: AbortController | null) => {
-                if (c) useAgentTextState.getState().setSignal(c);
-              },
               output: async (_name, { text, title }) => {
                 setText(text ?? '');
                 setThinking(title === 'agent.thinking');
@@ -325,9 +323,10 @@ function AgentTextInputComponent({
         )[0];
         cache[param.masterId] = tool;
       }
-
+      const controller = new AbortController();
+      setSignal(controller);
       // 这里可以用宏占位，传入的是args，在宏处理阶段会附加
-      await tool.invoke({ prompt });
+      await tool.invoke({ args: { prompt }, controller });
       success(t('comfyui.param.agent_generated'));
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
@@ -338,6 +337,7 @@ function AgentTextInputComponent({
     } finally {
       setOutput(false);
       setThinking(false);
+      setSignal();
     }
   };
 
