@@ -145,7 +145,8 @@
       "success": "更新成功",
       "title": "更新{target}",
       "tooltip": "更新"
-    }
+    },
+    "user_canceled": "用户取消"
   },
   "setting": {
     "id": "设置"

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { BusinessError } from '@/interceptors';
+
 import { realms } from '.';
 
 export interface RealmInfo {
@@ -61,7 +63,7 @@ export const useRealmState = create<RealmState>()(
       setSignal(signal, reason) {
         const origin = get().signal;
         if (origin && reason) {
-          origin.abort(reason);
+          origin.abort(new BusinessError(reason, `message.${reason}`));
         }
         set({ signal });
       },

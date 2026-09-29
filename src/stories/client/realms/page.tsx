@@ -137,7 +137,7 @@ function UserInput() {
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  setSignal(undefined, 'user canceled');
+                  setSignal(undefined, 'user_canceled');
                 }}
               >
                 <SquareStopIcon />
