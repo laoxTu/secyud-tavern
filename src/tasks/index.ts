@@ -1,6 +1,4 @@
-import { v4 } from 'uuid';
-
-import { Entity, Properties } from '@/database';
+import { Entity, Properties, utils } from '@/database';
 import { BusinessError, errors } from '@/interceptors';
 import { Mutex } from '@/utils/mutex';
 
@@ -131,7 +129,7 @@ export abstract class TaskRunner<TArgs = any> {
     const task: Task = {
       name,
       args,
-      id: v4(),
+      id: utils.uuid(),
       attempt: 0,
       status: 'pending',
     };

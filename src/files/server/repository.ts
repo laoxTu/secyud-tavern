@@ -3,9 +3,8 @@ import { readFile, unlink } from 'node:fs/promises';
 import crypto from 'crypto';
 import { and, eq, SQL } from 'drizzle-orm';
 import { writeFile } from 'fs/promises';
-import { v4 } from 'uuid';
 
-import { DataRequest, InDto } from '@/database';
+import { DataRequest, InDto, utils } from '@/database';
 import { databases } from '@/database/server';
 import { FileModel, FileRequestParam } from '@/files';
 import { config } from '@/global';
@@ -31,7 +30,7 @@ async function create(dto: InDto<FileModelWithBuffer>) {
     .get({ id: fileSchema.id });
   if (entity) return entity.id;
   // 保存文件，使用无后缀名的guid格式文件，方便访问
-  const id = v4();
+  const id = utils.uuid();
   const dirPath = arrUtils.joinPath(filesDir, dto.type);
   await fileUtils.mkdir(dirPath);
   const filePath = arrUtils.joinPath(dirPath, id);

@@ -1,4 +1,4 @@
-import { and, eq, like, or, SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, like, or, SQL } from 'drizzle-orm';
 
 import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
@@ -108,7 +108,7 @@ async function list(request: DataRequest<PresetRequestParam>) {
 
       return condition.length ? and(...condition) : undefined;
     },
-    (t) => t.name,
+    (t) => [asc(t.name), desc(t.id)],
     (t) => ({
       id: t.id,
       name: t.name,

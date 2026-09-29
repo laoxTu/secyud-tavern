@@ -1,5 +1,7 @@
 // 分页请求
 
+import { v7 } from 'uuid';
+
 export interface DataRequest<TSearch = never> {
   skip?: number; // 跳过，默认0
   size?: number; // 每页条数，默认20
@@ -187,4 +189,7 @@ export const utils = {
   forEachItemsList,
   get,
   set,
+  uuid() {
+    return v7();
+  },
 };

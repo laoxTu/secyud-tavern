@@ -1,5 +1,4 @@
-import { v4 } from 'uuid';
-
+import { utils } from '@/database';
 import { route } from '@/interceptors/server';
 import { strUtils } from '@/utils';
 import { response } from '@/utils/server/response';
@@ -13,7 +12,7 @@ export default {
      * 获取服务器广播的sse事件
      */
     GET: route(async (request) => {
-      const id = v4();
+      const id = utils.uuid();
       const unregisterEvent = () => {
         signals.registry.unregister(id);
       };

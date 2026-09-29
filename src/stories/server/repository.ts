@@ -1,5 +1,4 @@
 import { and, count, eq, like, sql, SQL } from 'drizzle-orm';
-import { v4 } from 'uuid';
 
 import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
@@ -55,7 +54,7 @@ async function get(id: string, options?: StoryRequestOptions) {
 
 async function create(story: Story) {
   checker.notNullOrWhitespace('name', story.name);
-  if (!story.id) story.id = v4();
+  if (!story.id) story.id = utils.uuid();
   await db.insert(storySchema).values(story);
 
   if (story.entries) {

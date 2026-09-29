@@ -1,7 +1,6 @@
 import { and, eq, like, SQL } from 'drizzle-orm';
-import { v4 } from 'uuid';
 
-import { DataRequest } from '@/database';
+import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
 import { checker } from '@/interceptors';
 import {
@@ -28,7 +27,7 @@ async function create(task: Task) {
   checker.notNullOrWhitespace('name', task.name);
   task.status ??= 'pending';
   task.attempt ??= 0;
-  if (!task.id) task.id = v4();
+  if (!task.id) task.id = utils.uuid();
   await db.insert(taskSchema).values(task);
   return task.id;
 }
