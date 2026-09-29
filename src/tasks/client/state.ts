@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 
 import { FetchState, states } from '@/database/client/factory';
+import { signals } from '@/signal/client';
 
 import { Task, TaskRequestParam } from '..';
 
@@ -19,7 +20,14 @@ export const useTaskState = create<TaskState>((set, get) => ({
     set,
     get,
     async (request) => {
-      return await tasks.proxy.list(request);
+      const result = await tasks.proxy.list(request);
+      await signals.proxy.subscription({
+        type: 'task_progress',
+        targets: result.items.map((u) => u.id),
+        action: 'set',
+        status: 'part',
+      });
+      return result;
     },
   ),
   refresh: (options) => get().fetch(options),

@@ -1,4 +1,4 @@
-import { BrushIcon } from 'lucide-react';
+import { BrushIcon, WorkflowIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { comfyuis as main } from '@/comfyui';
@@ -26,7 +26,7 @@ function Label() {
   return (
     <>
       <SidebarMenuButton
-        tooltip={t(`${name}.id`)}
+        tooltip={`${t('comfyui.id')} ${t(`${page}.id`)}`}
         onClick={() => {
           setMenu(name);
           if (menu === name) {
@@ -38,7 +38,7 @@ function Label() {
           }
         }}
       >
-        <BrushIcon />
+        {page === comfyuis.model.name ? <BrushIcon /> : <WorkflowIcon />}
         <span>{t(`${name}.id`)}</span>
       </SidebarMenuButton>
       <SidebarMenuSub>

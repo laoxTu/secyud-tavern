@@ -5,6 +5,10 @@ import { Mutex } from '@/utils/mutex';
 export type TaskStatus =
   'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
 
+export interface TaskProgress {
+  progress: number;
+}
+
 interface TaskBase {
   // 尝试次数
   attempt: number;
@@ -42,7 +46,6 @@ export interface TaskHistory extends TaskBase {
  */
 export interface TaskInfo<T = any> extends Task<T> {
   controller: AbortController;
-  progress?: number;
 }
 
 /**

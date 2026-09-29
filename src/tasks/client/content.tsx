@@ -25,9 +25,10 @@ import {
 } from '@/components';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { useHandler } from '@/interceptors/client';
+import { useSse } from '@/signal/client';
 import { stories as main } from '@/stories';
 
-import { Task } from '..';
+import { Task, TaskProgress } from '..';
 
 import { useTaskState } from './state';
 
@@ -38,6 +39,7 @@ function Content() {
   const { handler, success } = useHandler();
   const { fetch } = useTaskState();
   const [fuzzy, setFuzzy] = useState('');
+  const [progresses, setPregresses] = useState<Record<string, number>>({});
 
   const applySearch = handler(async () => {
     await fetch({
@@ -53,7 +55,10 @@ function Content() {
       search: () => ({}),
     });
   });
-  // TODO 任务进度推送
+
+  useSse<TaskProgress>('task_progress', (target, data) => {
+    setPregresses((u) => ({ ...u, [target]: data.progress }));
+  });
 
   return (
     <>
@@ -81,42 +86,41 @@ function Content() {
         itemKey={(u) => u.id}
         usePager={useTaskState}
       >
-        {(item) => (
-          <>
-            <ItemContent>
-              <ItemTitle className="truncate">{item.name} </ItemTitle>
-              <ItemDescription>
-                <Progress
-                  value={
-                    // TODO item.progress ??
-                    0
-                  }
-                  className="w-[60%]"
-                />
-              </ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <TooltipAlertDialog
-                info={dialogs.info(t, 'delete', 'task.id')}
-                onSubmit={handler(async () => {
-                  await tasks.proxy.delete(item.id);
-                  success(t('message.delete.success'));
-                })}
-              >
-                <Trash2Icon />
-              </TooltipAlertDialog>
-              <TooltipAlertDialog
-                info={dialogs.info(t, 'restart', 'task.id')}
-                onSubmit={handler(async () => {
-                  await tasks.proxy.restart(item.id);
-                  success(t('message.restart.success'));
-                })}
-              >
-                <RotateCcwIcon />
-              </TooltipAlertDialog>
-            </ItemActions>
-          </>
-        )}
+        {(item) => {
+          const progress = progresses[item.id];
+          return (
+            <>
+              <ItemContent>
+                <ItemTitle className="truncate">{item.name} </ItemTitle>
+                {progress !== undefined && (
+                  <ItemDescription>
+                    <Progress value={progress} className="w-[60%]" />
+                  </ItemDescription>
+                )}
+              </ItemContent>
+              <ItemActions>
+                <TooltipAlertDialog
+                  info={dialogs.info(t, 'delete', 'task.id')}
+                  onSubmit={handler(async () => {
+                    await tasks.proxy.delete(item.id);
+                    success(t('message.delete.success'));
+                  })}
+                >
+                  <Trash2Icon />
+                </TooltipAlertDialog>
+                <TooltipAlertDialog
+                  info={dialogs.info(t, 'restart', 'task.id')}
+                  onSubmit={handler(async () => {
+                    await tasks.proxy.restart(item.id);
+                    success(t('message.restart.success'));
+                  })}
+                >
+                  <RotateCcwIcon />
+                </TooltipAlertDialog>
+              </ItemActions>
+            </>
+          );
+        }}
       </PagedItemList>
     </>
   );
