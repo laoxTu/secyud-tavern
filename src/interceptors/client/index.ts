@@ -22,8 +22,7 @@ export function isNetworkError(error: unknown): boolean {
     return (
       message.includes('network') ||
       message.includes('fetch') ||
-      message.includes('load failed') ||
-      message.includes('user canceled')
+      message.includes('load failed')
     );
   }
   return false;
@@ -54,17 +53,21 @@ function handleError(t: _Translator, err: any) {
     toast.error(t(err.code, record), {
       richColors: true,
     });
-  } else {
+  } else if (typeof err === 'string') {
+    // 字符串的错误消息，不知道从哪里来的
+    toast.error(err, {
+      richColors: true,
+    });
+  } else if (isNetworkError(err) || isHttpError(err)) {
     // 默认错误消息
     toast.error(err?.message, {
       richColors: true,
     });
-    if (!isNetworkError(err) && !isHttpError(err)) {
-      /**
-       * 继续抛出意味着页面崩溃，进入notfound
-       */
-      throw err;
-    }
+  } else {
+    /**
+     * 继续抛出意味着页面崩溃，进入notfound
+     */
+    throw err;
   }
 }
 

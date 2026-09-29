@@ -25,7 +25,7 @@ import {
   Textarea,
 } from '@/components';
 import { forms } from '@/global';
-import { checker } from '@/interceptors';
+import { BusinessError, checker } from '@/interceptors';
 import { useHandler } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { realms } from '@/stories/client/realms';
@@ -260,8 +260,8 @@ interface AgentTextState {
 const useAgentTextState = create<AgentTextState>((set, get) => ({
   setSignal: (signal, reason) => {
     const origin = get().signal;
-    if (origin) {
-      origin.abort(reason ?? 'reset');
+    if (origin && reason) {
+      origin.abort(new BusinessError(reason, `message.${reason}`));
     }
     set({ signal });
   },
@@ -365,7 +365,7 @@ function AgentTextInputComponent({
                 e.preventDefault();
                 useAgentTextState
                   .getState()
-                  .setSignal(undefined, 'user canceled.');
+                  .setSignal(undefined, 'user_canceled');
               }}
             >
               <SquareStopIcon />
