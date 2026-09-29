@@ -95,9 +95,11 @@ const history = {
   /**
    * 创建历史
    */
-  add: async (id: string, history: TaskHistory) => {
-    history.masterId = id;
-    await db.insert(taskHistorySchema).values(history);
+  add: async (id: string, history: Omit<TaskHistory, 'masterId'>) => {
+    await db.insert(taskHistorySchema).values({
+      ...history,
+      masterId: id,
+    });
   },
   /**
    * 删除历史

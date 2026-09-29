@@ -48,11 +48,20 @@ export abstract class TaskRunner<TArgs = any> {
 
   constructor(protected max: number = 8) {}
 
+  /**
+   * 异步执行任务
+   * @param task 执行的任务
+   */
   protected abstract execute(task: TArgs): Promise<string | undefined>;
-
+  /**
+   * 将进行中的任务进行取消
+   * 这个任务可以是已经完成的
+   * 此时应撤销任务
+   * @param task 取消的任务
+   */
   protected abstract cancel(task: TArgs): Promise<void>;
 
-  protected async queue(task: Task<TArgs>) {
+  async queue(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       this.pending.push(task);
       task.queue = Date.now();
@@ -60,23 +69,27 @@ export abstract class TaskRunner<TArgs = any> {
     });
   }
 
-  protected async start() {
+  async start() {
+    let task: Task | undefined;
     await this.mutex.lock(async () => {
       // 超出任务上限
       if (this.max <= this.running.size)
         throw new BusinessError('running task over limit!');
-      const task = this.pending.shift();
+      task = this.pending.shift();
       if (!task) return;
       this.running.set(task.id, task);
       await this.run(task);
     });
-  }
 
-  protected async restart(task: Task<TArgs>) {
+    return task;
+  }
+  async restart(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       if (!this.running.has(task.id))
         throw new BusinessError('only running task canbe restart!');
+      //重试任务前应当先取消任务
       await this.cancel(task.args);
+      task.attempt++;
       await this.run(task);
     });
   }
@@ -103,6 +116,7 @@ export abstract class TaskRunner<TArgs = any> {
   protected async finish(task: Task<TArgs>) {
     await this.mutex.lock(async () => {
       this.running.delete(task.id);
+      task.finish = Date.now();
     });
     await this.start();
   }
