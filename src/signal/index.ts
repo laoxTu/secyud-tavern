@@ -2,9 +2,20 @@ import { ToastType } from '@/components';
 import { strUtils } from '@/utils';
 import { jsonUtils } from '@/utils/json';
 
+export interface SseSubscription {
+  status: 'all' | 'part';
+  targets: string[];
+}
+
+export interface SseSubscriptionAction extends SseSubscription {
+  action: 'set' | 'del' | 'add';
+  type: string;
+}
+
 export interface SseMessage<T = any> {
   type: string;
   data: T;
+  target?: string;
 }
 
 export interface ToastMessage {

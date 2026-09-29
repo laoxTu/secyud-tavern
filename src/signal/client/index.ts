@@ -3,10 +3,16 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 
-import { ToastMessage } from '..';
+import { utils } from '@/database';
+import { jsonUtils } from '@/utils';
+
+import { signals as main, ToastMessage } from '..';
+
+import { proxy } from './proxy';
 
 export interface SseConnection {
   eventSource: EventSource;
+  id: string;
 }
 
 /**
@@ -14,18 +20,28 @@ export interface SseConnection {
  */
 export const useSseConnection = create<SseConnection>(() => {
   let es = null;
+  const id = utils.uuid();
   return {
     get eventSource() {
-      return (es ??= new EventSource('/api/sse'));
+      return (es ??= new EventSource(`/api/sse/${id}`));
+    },
+    get id() {
+      return id;
     },
   };
 });
 
-function createCallback<TM>(type: string, callback: (data: TM) => void) {
+function createCallback<TM>(
+  type: string,
+  callback: (target: string, data: TM) => void,
+) {
   const es = useSseConnection.getState().eventSource;
   const action = (event: MessageEvent) => {
     if (event.type === type) {
-      callback(JSON.parse(event.data));
+      const data = jsonUtils.parse(event.data);
+      if (data) {
+        callback(data.target ?? '', { ...data, target: undefined });
+      }
     }
   };
   es.addEventListener(type, action);
@@ -38,14 +54,22 @@ function createCallback<TM>(type: string, callback: (data: TM) => void) {
  * @param type 事件类型
  * @param callback 回调函数
  */
-export function useSse<TM>(type: string, callback: (data: TM) => void) {
+export function useSse<TM>(
+  type: string,
+  callback: (target: string, data: TM) => void,
+) {
   useEffect(() => {
     return createCallback<TM>(type, callback);
   }, []);
 }
 
+export const signals = {
+  ...main,
+  proxy,
+};
+
 export default async function () {
-  createCallback<ToastMessage>('toast', (data) => {
+  createCallback<ToastMessage>('toast', (_, data) => {
     const send = toast[data.type] ?? toast.error;
     send(data.message, { richColors: true });
   });
