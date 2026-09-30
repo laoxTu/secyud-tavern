@@ -195,6 +195,11 @@ export const engine: ModelEngine = {
       models.names.config,
       () => deepseeks.default.config,
     );
+    const options = utils.getProperty<DeepseekOptions>(
+      ctx.realm,
+      models.names.options,
+      () => deepseeks.default.options,
+    );
 
     const usage = utils.getProperty<TokenUsage>(
       realms.outputs(ctx.histories.at(-2))?.at(-1),
@@ -225,9 +230,17 @@ export const engine: ModelEngine = {
         summaries.push({ content, role: 'user' });
         messages.push({ role: 'user', content });
       },
-      assist: (content) => {
+      assist: (content, output) => {
+        const extra =
+          options.thinking.type === 'enabled'
+            ? {
+                reasoning_content: output
+                  ? (output?.thought ?? '')
+                  : 'user generated calling',
+              }
+            : {};
         summaries.push({ content, role: 'assistant' });
-        messages.push({ role: 'assistant', content });
+        messages.push({ role: 'assistant', content, ...extra });
       },
       system: (content) => {
         summaries.push({ content, role: 'system' });
@@ -240,6 +253,14 @@ export const engine: ModelEngine = {
         }
         if (!callings.length) return;
         tools.summary(callings, summaries);
+        const extra =
+          options.thinking.type === 'enabled'
+            ? {
+                reasoning_content: output
+                  ? (output?.thought ?? '')
+                  : 'user generated calling',
+              }
+            : {};
         messages.push({
           role: 'assistant',
           content,
@@ -251,9 +272,7 @@ export const engine: ModelEngine = {
               name: u.name,
             },
           })),
-          ...{
-            reasoning_content: output?.thought ?? 'user generated calling',
-          },
+          ...extra,
         });
         for (const calling of callings) {
           messages.push({
