@@ -1,6 +1,8 @@
 'use client';
 import { useTranslations } from 'next-intl';
+import OpenAI from 'openai';
 import React from 'react';
+import { toast } from 'sonner';
 
 import {
   Checkbox,
@@ -13,9 +15,17 @@ import {
 import { utils } from '@/database';
 import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
-import { ModelEngine, models, useModelState } from '@/models/client';
+import { TokenUsage } from '@/models';
+import {
+  ModelEngine,
+  ModelInputSummary,
+  models,
+  useModelState,
+} from '@/models/client';
 import { DeepseekConfig, DeepseekOptions, deepseeks } from '@/models/deepseek';
 import { openais } from '@/models/openai/client';
+import { realms } from '@/stories/client/realms';
+import { tools } from '@/tools/client';
 
 function Content() {
   const t = useTranslations();
@@ -178,6 +188,89 @@ export const engine: ModelEngine = {
     utils.setProperty(model, models.names.options, options);
     return model;
   },
-  prompt: openais.engine.prompt,
+  async prompt(ctx) {
+    const summaries: ModelInputSummary[] = [];
+    const config = utils.getProperty<DeepseekConfig>(
+      ctx.realm,
+      models.names.config,
+      () => deepseeks.default.config,
+    );
+
+    const usage = utils.getProperty<TokenUsage>(
+      realms.outputs(ctx.histories.at(-2))?.at(-1),
+      'usage',
+    );
+
+    if (config.token && usage && config.token <= usage.prompt + usage.output) {
+      toast.warning('token is over limit. use summary to compress', {
+        richColors: true,
+      });
+    }
+    const messages: OpenAI.ChatCompletionMessageParam[] = [];
+    const { realm } = ctx;
+    const pools: OpenAI.ChatCompletionTool[] = tools
+      .actives(realm)
+      .map((u) => ({
+        type: 'function',
+        function: {
+          name: u.name,
+          parameters: u.parameters as any,
+          description: u.description,
+        },
+      }));
+    await models.engines.prompt(ctx, {
+      builder: realm.model.builder,
+      name: (i) => `call_x${i}`,
+      prompt: (content) => {
+        summaries.push({ content, role: 'user' });
+        messages.push({ role: 'user', content });
+      },
+      assist: (content) => {
+        summaries.push({ content, role: 'assistant' });
+        messages.push({ role: 'assistant', content });
+      },
+      system: (content) => {
+        summaries.push({ content, role: 'system' });
+        messages.push({ role: 'system', content });
+      },
+      caller: (content, output, callings) => {
+        if (content) {
+          summaries.push({ content, role: 'assistant' });
+          messages.push({ role: 'assistant', content });
+        }
+        if (!callings.length) return;
+        tools.summary(callings, summaries);
+        messages.push({
+          role: 'assistant',
+          content,
+          tool_calls: callings.map((u) => ({
+            id: u.id,
+            type: 'function',
+            function: {
+              arguments: u.arguments,
+              name: u.name,
+            },
+          })),
+          ...{
+            reasoning_content: output?.thought ?? 'user generated calling',
+          },
+        });
+        for (const calling of callings) {
+          messages.push({
+            role: 'tool',
+            tool_call_id: calling.id,
+            content: calling.result ?? 'error',
+          });
+        }
+      },
+    });
+    return {
+      input: {
+        messages,
+        tools: pools.length ? pools : undefined,
+      },
+      summaries,
+    };
+  },
   result: openais.engine.result,
 };
