@@ -51,7 +51,7 @@ function extract(
       ];
     if (!type) continue;
     const model: ComfyUIModel = {
-      id: '',
+      id: null!,
       code: fileName,
       name: modelMeta.name,
       type,

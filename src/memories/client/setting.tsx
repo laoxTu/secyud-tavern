@@ -14,7 +14,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 import { rags, useRagState } from './rag';
 
@@ -27,7 +27,6 @@ function Setting() {
     similarity,
     cacheLimit,
   } = useRagState();
-  const { success, handler } = useHandler();
   const [editor, setEditor] = useState(rags.registry.record(type));
 
   return (

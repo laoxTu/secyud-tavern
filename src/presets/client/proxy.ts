@@ -1,5 +1,4 @@
 'use client';
-import { v4 } from 'uuid';
 
 import { del, get, open, post, put } from '@/client';
 import {
@@ -10,6 +9,7 @@ import {
   EntryRequestParam,
   InDto,
   NameValue,
+  utils,
 } from '@/database';
 import {
   Preset,
@@ -106,7 +106,7 @@ export const proxy = {
   },
   import: {
     async prepare(file: File) {
-      const sessionId = v4();
+      const sessionId = utils.uuid();
       const formData = new FormData();
       formData.append('file', file);
       const nameValues: NameValue[] = await post('presets/import', formData, {

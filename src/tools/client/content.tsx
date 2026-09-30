@@ -15,7 +15,7 @@ import {
   useFormRef,
 } from '@/components';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { PresetEntry } from '@/presets';
 import {
   PresetEntryList,
@@ -42,7 +42,7 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
   } = entry;
   const t = useTranslations();
   const { refresh } = state();
-  const { handler, success } = useHandler();
+
   const [editor, setEditor] = useState(tools.providers.registry.record(type));
   const form = useFormRef();
 

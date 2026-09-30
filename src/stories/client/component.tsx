@@ -25,7 +25,7 @@ import {
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { StoryEntry, StoryEntryClipboard } from '@/stories';
 
@@ -46,7 +46,7 @@ export function StoryEntryUpdate<TData>({
   entry,
 }: StoryEntryUpdateProps<TData>) {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { name, refresh } = state();
   const { masterId, entryType, entryId } = entry;
   const { item, setItem } = useStoryState();
@@ -128,7 +128,7 @@ export function StoryEntryList<TData>({
 }: StoryEntryListProps<TData>) {
   const t = useTranslations();
   const { item, setItem } = useStoryState();
-  const { handler } = useHandler();
+
   const { refresh, name, defaultData } = state();
   const [filter, setFilter] = useState('');
 

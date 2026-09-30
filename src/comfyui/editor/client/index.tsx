@@ -25,8 +25,8 @@ import {
   Textarea,
 } from '@/components';
 import { forms } from '@/global';
-import { checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { BusinessError, checker } from '@/interceptors';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { realms } from '@/stories/client/realms';
 import { agents, Editor } from '@/tools/agents/client';
@@ -187,7 +187,7 @@ function PromptInputComponent({
   },
 }: ComfyUIParamProps<PromptConfig>) {
   const json = jsonUtils.parse(pools);
-  const { handler } = useHandler();
+
   const [text, setText] = useState(prompt);
   return (
     <>
@@ -260,8 +260,8 @@ interface AgentTextState {
 const useAgentTextState = create<AgentTextState>((set, get) => ({
   setSignal: (signal, reason) => {
     const origin = get().signal;
-    if (origin) {
-      origin.abort(reason ?? 'reset');
+    if (origin && reason) {
+      origin.abort(new BusinessError(reason, `message.${reason}`));
     }
     set({ signal });
   },
@@ -277,7 +277,7 @@ function AgentTextConfigComponent({
       <Editor
         formRef={formRef}
         entry={{
-          masterId: '',
+          masterId: null!,
           entryId: -1,
           entryType: main.agentText.name,
           disabled: false,
@@ -294,17 +294,17 @@ function AgentTextInputComponent({
 }: ComfyUIParamProps<AgentTextConfig>) {
   const t = useTranslations();
   const { sequence, config } = param;
-  const { error, success } = useHandler();
   // 提示词，虽然用了text组件，但是真正起作用的改为了text
   const [prompt, setPrompt] = useState(config.prompt);
   // 真正的文字
   const [text, setText] = useState('');
   const [output, setOutput] = useState(false);
   const [thinking, setThinking] = useState(false);
+  const { setSignal } = useAgentTextState();
 
   // 生成提示词
-  const generate = async () => {
-    try {
+  const generate = handler(
+    async () => {
       setOutput(true);
       let tool = cache[param.masterId];
       if (!tool) {
@@ -312,10 +312,7 @@ function AgentTextInputComponent({
           await agents.create(
             {
               ...param,
-              signal: async (c?: AbortController | null) => {
-                if (c) useAgentTextState.getState().setSignal(c);
-              },
-              output: async ({ text, title }) => {
+              output: async (_name, { text, title }) => {
                 setText(text ?? '');
                 setThinking(title === 'agent.thinking');
               },
@@ -325,21 +322,18 @@ function AgentTextInputComponent({
         )[0];
         cache[param.masterId] = tool;
       }
-
+      const controller = new AbortController();
+      setSignal(controller);
       // 这里可以用宏占位，传入的是args，在宏处理阶段会附加
-      await tool.invoke({ prompt });
+      await tool.invoke({ args: { prompt }, controller });
       success(t('comfyui.param.agent_generated'));
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        console.log('user abort reply');
-        return; // 或者不处理
-      }
-      error(err);
-    } finally {
+    },
+    async () => {
       setOutput(false);
       setThinking(false);
-    }
-  };
+      setSignal();
+    },
+  );
 
   return (
     <>
@@ -365,7 +359,7 @@ function AgentTextInputComponent({
                 e.preventDefault();
                 useAgentTextState
                   .getState()
-                  .setSignal(undefined, 'user canceled.');
+                  .setSignal(undefined, 'user_canceled');
               }}
             >
               <SquareStopIcon />

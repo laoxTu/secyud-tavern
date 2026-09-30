@@ -13,7 +13,7 @@ import {
   UpdateForm,
 } from '@/components';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry } from '@/presets';
 import {
@@ -42,7 +42,6 @@ function Editor({
 }) {
   const t = useTranslations();
   const { refresh } = state();
-  const { handler, success } = useHandler();
 
   return (
     <UpdateForm

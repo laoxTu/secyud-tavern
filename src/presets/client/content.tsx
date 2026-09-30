@@ -67,7 +67,7 @@ import { NameValue } from '@/database';
 import { forms } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
 import { BusinessError, checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { useModelSettingState } from '@/models/client';
 import { getRegistry, Registerable } from '@/plugins';
@@ -91,7 +91,6 @@ export const tabs = getRegistry<PresetTab>('preset-tabs');
 
 function ImportDialog() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
   const [imports, setImports] = useState<NameValue[]>([]);
   const [actives, setActives] = useState<Record<string, boolean>>({});
   const sessionIdRef = useRef<string>('');
@@ -174,7 +173,6 @@ function ImportDialog() {
 
 function TabContent() {
   const t = useTranslations();
-  const { success, handler } = useHandler();
   const { item, setItem, fetch, tab, setTab } = usePresetState();
   const router = useRouter();
   const { showTabs, hideTabs } = useTabs(tabs, item);
@@ -322,7 +320,6 @@ function TabContent() {
 
 export function MenuContent() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
   const { fetch, item, items, setItem } = usePresetState();
   const [fuzzy, setFuzzy] = useState('');
   const [tags, setTags] = useState<string[] | null>(null);
@@ -468,7 +465,6 @@ export function MenuContent() {
 function PropertyTab() {
   const t = useTranslations();
   const { onFileChange, getImageFileId } = useImageUploaderState('cover');
-  const { handler, success } = useHandler();
   const { item, setItem, refresh } = usePresetState();
   const form = useFormRef();
 

@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { and, eq, like, SQL } from 'drizzle-orm';
-import { v4, validate } from 'uuid';
+import { and, asc, desc, eq, like, SQL } from 'drizzle-orm';
+import { validate } from 'uuid';
 
-import { DataRequest } from '@/database';
+import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
 import { checker } from '@/interceptors';
 import { Model, ModelRequestParam } from '@/models';
@@ -29,7 +29,7 @@ async function get(id: string) {
 }
 
 async function create(model: Model) {
-  model.id = validate(model.id) ? model.id : v4();
+  model.id = validate(model.id) ? model.id : utils.uuid();
   checker.notNullOrWhitespace('name', model.name);
   await db.insert(modelSchema).values(model);
 
@@ -74,7 +74,7 @@ async function list(request: DataRequest<ModelRequestParam>) {
 
       return condition.length ? and(...condition) : undefined;
     },
-    (t) => t.name,
+    (t) => [asc(t.name), desc(t.id)],
     (t) => ({
       id: t.id,
       name: t.name,

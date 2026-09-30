@@ -1,6 +1,6 @@
 import { CharacterCard, OpenAIPreset } from 'parsecard';
-import { v4 } from 'uuid';
 
+import { utils } from '@/database';
 import { Lorebook, LorebookRole } from '@/lorebooks';
 import { AlwaysMatchConfig } from '@/lorebooks/client/matchers/always';
 import { NormalMatchConfig } from '@/lorebooks/client/matchers/normal';
@@ -156,7 +156,7 @@ async function preset(card: OpenAIPreset, cover?: string) {
     // 依赖酒馆格式的预设，这个提供酒馆基础架构
     // 也可以是预设解析？
     requires: [],
-    id: 's' + v4().replaceAll('-', ''),
+    id: 's' + utils.uuid().replaceAll('-', ''),
     properties: {},
     entries: {
       lorebooks,
@@ -365,7 +365,7 @@ async function chara(card: CharacterCard, cover?: string) {
         value: 'silly-tavern',
       },
     ],
-    id: 's' + v4().replaceAll('-', ''),
+    id: 's' + utils.uuid().replaceAll('-', ''),
     properties: {
       author: card.creator,
     },

@@ -71,8 +71,13 @@ export default {
           const preset: Partial<Preset> = await request.json();
           const { id: sourceId } = await records.params;
           const source = await presets.repository.get(sourceId);
-          const target = { ...source, ...preset, id: '' };
+          const target = { ...source, ...preset };
           const id = await presets.repository.create(target);
+          const result = await presets.repository.entry.list(sourceId);
+          const groups = Object.groupBy(result.items, (u) => u.entryType);
+          for (const [type, entries] of Object.entries(groups)) {
+            if (entries) await presets.repository.entry.make(id, type, entries);
+          }
           return response.json({ id });
         }),
       },

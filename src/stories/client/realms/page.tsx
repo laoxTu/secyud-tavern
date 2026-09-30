@@ -34,7 +34,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { Loading } from '@/global/client/loading';
-import { useHandler } from '@/interceptors/client';
+import { error, handler } from '@/interceptors/client';
 import { models } from '@/models/client';
 import { stories } from '@/stories/client';
 
@@ -51,24 +51,30 @@ interface LoadingState {
 
 function RealmTips() {
   const t = useTranslations();
-  const { realmInfo, generating } = useRealmState();
+  const { realmInfos, generating } = useRealmState();
   return (
     <>
       {generating && (
         <div className="fixed right-2 top-2">
-          <Item>
-            <ItemMedia>
-              <Spinner />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle className="line-clamp-1">
-                {t(realmInfo.title)}
-              </ItemTitle>
-            </ItemContent>
-            <ItemContent className="flex-none justify-end">
-              <span className="text-sm tabular-nums">{realmInfo.content}</span>
-            </ItemContent>
-          </Item>
+          {Object.entries(realmInfos)
+            .filter((u) => u[1])
+            .map(([key, realmInfo]) => (
+              <Item key={key}>
+                <ItemMedia>
+                  <Spinner />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle className="line-clamp-1">
+                    {t(realmInfo!.title)}
+                  </ItemTitle>
+                </ItemContent>
+                <ItemContent className="flex-none justify-end">
+                  <span className="text-sm tabular-nums">
+                    {realmInfo!.content}
+                  </span>
+                </ItemContent>
+              </Item>
+            ))}
         </div>
       )}
     </>
@@ -78,7 +84,7 @@ function RealmTips() {
 function UserInput() {
   const { generating, setSignal, content, setContent, summary, setSummary } =
     useRealmState();
-  const { handler } = useHandler();
+
   const t = useTranslations();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -131,7 +137,7 @@ function UserInput() {
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  setSignal(undefined, 'user canceled');
+                  setSignal(undefined, 'user_canceled');
                 }}
               >
                 <SquareStopIcon />
@@ -149,7 +155,6 @@ function UserInput() {
 }
 
 export function PageControl() {
-  const { handler } = useHandler();
   const { index, setIndex, output, setOutput, prepare, setPrepare } =
     useRealmState();
 
@@ -248,7 +253,6 @@ export default function RealmPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { error } = useHandler();
   const [loadingState, setLoadingState] = useState<LoadingState>({
     loading: false,
     success: false,

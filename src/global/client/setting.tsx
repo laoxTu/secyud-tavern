@@ -104,7 +104,7 @@ function Content() {
 
   return (
     <div className={'h-full overflow-auto relative'}>
-      <Tabs className={'sticky top-0 z-10'} value={tab} onValueChange={scroll}>
+      <Tabs className={'sticky top-0'} value={tab} onValueChange={scroll}>
         <TabsList
           className={'overflow-x-auto scrollbar-none justify-normal self-end'}
         >

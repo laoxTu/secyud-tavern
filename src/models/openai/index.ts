@@ -2,6 +2,7 @@ export interface OpenAIConfig {
   extras: string;
   url: string;
   format: 'chat' | 'responses';
+  token: number;
 }
 
 export interface OpenAIOptions {
@@ -15,6 +16,7 @@ export interface OpenAIOptions {
 
 const config: OpenAIConfig = {
   extras: '{}',
+  token: 100000,
   format: 'chat',
   url: 'https://api.openai.com/v1',
 };

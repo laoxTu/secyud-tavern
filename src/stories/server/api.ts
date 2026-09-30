@@ -1,6 +1,4 @@
-import { v4 } from 'uuid';
-
-import { InDto } from '@/database';
+import { InDto, utils } from '@/database';
 import { BusinessError, checker } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import {
@@ -67,7 +65,10 @@ export default {
         POST: route(async (_, record) => {
           const { id: originId } = await record.params;
           const story: Story = await stories.repository.get(originId);
-          const id = await stories.repository.create({ ...story, id: v4() });
+          const id = await stories.repository.create({
+            ...story,
+            id: utils.uuid(),
+          });
           return response.json({ id });
         }),
       },

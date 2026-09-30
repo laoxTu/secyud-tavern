@@ -54,7 +54,7 @@ export interface ComfyUIParamRequestParam {
 }
 
 const defaultWorkflow: ComfyUIWorkflow = {
-  id: '',
+  id: null!,
   name: '',
 };
 

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 /**
  * Secyud Tavern Importer 插件
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,15 +18,14 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { forms } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 import { proxy } from './proxy';
-import { forms } from '@/global';
 
 function Content() {
   const t = useTranslations();
-  const { success, handler } = useHandler();
   const [open, setOpen] = useState(false);
 
   return (
@@ -44,7 +43,7 @@ function Content() {
             render={
               <form
                 action={handler(async (data) => {
-                  await proxy.import(forms.file(data,'file'));
+                  await proxy.import(forms.file(data, 'file'));
                   setOpen(false);
                   success(t('message.import.success'));
                 })}

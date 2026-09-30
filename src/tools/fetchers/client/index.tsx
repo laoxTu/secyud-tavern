@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { post } from '@/client';
 import { Field, FieldContent, FieldLabel, Input } from '@/components';
 import { forms } from '@/global';
+import { signals } from '@/signal';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
@@ -105,14 +106,19 @@ function fetcher(config: FetchConfig): ToolItem<{ urls: string[] }> {
         },
       },
     },
-    async invoke({ urls }) {
+    async invoke({ args: { urls }, controller }) {
       const targetUrls = urls.slice(0, config.maxResults);
 
       const results = [];
 
       for (const url of targetUrls) {
         results.push(
-          await fetchUrl(url, config.timeout * 1000, config.maxLength),
+          await fetchUrl(
+            url,
+            controller.signal,
+            config.timeout * 1000,
+            config.maxLength,
+          ),
         );
       }
 
@@ -126,9 +132,14 @@ function fetcher(config: FetchConfig): ToolItem<{ urls: string[] }> {
 }
 
 // ============ 简化版抓取 ============
-async function fetchUrl(url: string, timeout: number, maxLength: number) {
+async function fetchUrl(
+  url: string,
+  signal: AbortSignal,
+  timeout: number,
+  maxLength: number,
+) {
+  const { controller, destroy } = signals.createSub(signal);
   try {
-    const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     // eslint-disable-next-line prefer-const
@@ -175,5 +186,7 @@ async function fetchUrl(url: string, timeout: number, maxLength: number) {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
+  } finally {
+    destroy();
   }
 }

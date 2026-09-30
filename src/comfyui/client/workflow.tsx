@@ -46,11 +46,11 @@ import {
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 function Property() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item, setItem } = useComfyUIWorkflowState();
   const form = useFormRef();
   const { refresh } = useComfyUIParamState();
@@ -122,7 +122,7 @@ function Property() {
 function ParamProperty({ entry }: { entry: ComfyUIParam }) {
   const { type, masterId, name, sequence } = entry;
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item } = useComfyUIWorkflowState();
   const { refresh } = useComfyUIParamState();
   console.debug(type, comfyuis.configurators.registry.records);
@@ -234,7 +234,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
 function Params() {
   const t = useTranslations();
   const { item } = useComfyUIWorkflowState();
-  const { handler } = useHandler();
+
   const [filter, setFilter] = useState('');
   const { refresh } = useComfyUIParamState();
 
@@ -276,7 +276,7 @@ function Params() {
           tooltip={<SquarePlusIcon />}
           onSubmit={handler(async (data) => {
             await comfyuis.proxy.workflow.param.add(item.id, {
-              masterId: '',
+              masterId: null!,
               sequence: 0,
               name: forms.str(data, 'name'),
               type: 'text',
@@ -316,7 +316,7 @@ function Params() {
 
 export function WorkflowContent() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item, setItem, refresh } = useComfyUIWorkflowState();
 
   useEffect(() => {

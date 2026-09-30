@@ -2,14 +2,26 @@ import { ToastType } from '@/components';
 import { strUtils } from '@/utils';
 import { jsonUtils } from '@/utils/json';
 
+export interface SseSubscription {
+  status: 'all' | 'part';
+  targets: string[];
+}
+
+export interface SseSubscriptionAction extends SseSubscription {
+  action: 'set' | 'del' | 'add';
+  type: string;
+}
+
 export interface SseMessage<T = any> {
   type: string;
   data: T;
+  target?: string;
 }
 
 export interface ToastMessage {
   type: ToastType;
   message: string;
+  data?: Record<string, string>;
 }
 
 async function pack(items: AsyncIterable<any>) {
@@ -80,8 +92,6 @@ export const sseUtils = {
   read,
 };
 
-export type SignalBinder = (c?: AbortController | null) => Promise<void>;
-
 /**
  * 为信号添加abort操作，自动析构
  * @param signal 信号
@@ -95,6 +105,33 @@ function setAbort(signal: AbortSignal, action: (event: Event) => void) {
   signal.addEventListener('abort', abort);
 }
 
+/**
+ * 为信号添加子控制器，并提供销毁方法
+ */
+function createSub(signal: AbortSignal) {
+  const controller = new AbortController();
+  const abort = () => {
+    controller.abort(signal.reason);
+    destroy();
+  };
+
+  const destroy = () => {
+    signal.removeEventListener('abort', abort);
+  };
+
+  if (signal.aborted) {
+    abort();
+  } else {
+    signal.addEventListener('abort', abort);
+  }
+
+  return {
+    controller,
+    destroy,
+  };
+}
+
 export const signals = {
   setAbort,
+  createSub,
 };

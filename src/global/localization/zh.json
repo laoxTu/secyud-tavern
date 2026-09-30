@@ -82,7 +82,8 @@
     "entity": {
       "duplicate_value": "已经有相同{name}({value})的{entity}."
     },
-    "json_invalid": "{target} JSON格式错误"
+    "json_invalid": "{target} JSON格式错误",
+    "not_catch": "未捕获错误"
   },
   "language": {
     "en": "English",
@@ -139,12 +140,19 @@
       "title": "粘贴{target}",
       "tooltip": "粘贴"
     },
+    "restart": {
+      "desc": "重试{target}",
+      "success": "重试成功",
+      "title": "重试",
+      "tooltip": "重试"
+    },
     "update": {
       "desc": "更新{target}",
       "success": "更新成功",
       "title": "更新{target}",
       "tooltip": "更新"
-    }
+    },
+    "user_canceled": "用户取消"
   },
   "setting": {
     "id": "设置"

@@ -37,7 +37,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { ModelInputSummary, models } from '@/models/client';
 import { RealmHistory } from '@/stories';
 import { Feature, stories } from '@/stories/client';
@@ -45,7 +45,6 @@ import { realms, useRealmState } from '@/stories/client/realms';
 import { jsonUtils } from '@/utils';
 
 function Deleter() {
-  const { handler } = useHandler();
   const router = useRouter();
   const t = useTranslations();
   const { index, setIndex } = useRealmState();
@@ -127,7 +126,6 @@ function Deleter() {
 }
 
 function Regenerator() {
-  const { handler } = useHandler();
   const { index } = useRealmState();
   return (
     <IconTooltip
@@ -143,7 +141,6 @@ function Regenerator() {
 }
 
 function Viewer() {
-  const { handler } = useHandler();
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [summaries, setSummaries] = useState<ModelInputSummary[] | undefined>();
@@ -195,12 +192,14 @@ function Viewer() {
           }
 
           const { summaries } = await models.processers.prompt({
+            controller: new AbortController(),
             current: false,
             realm: {
               ...realm,
               histories: virtuals,
             },
           });
+
           setSummaries(summaries);
         },
         async () => setLoading(false),
@@ -240,7 +239,6 @@ function Viewer() {
 }
 
 function Editor() {
-  const { handler } = useHandler();
   const t = useTranslations();
   const { index, setIndex } = useRealmState();
   const [history, setHistory] = useState<RealmHistory | undefined>(undefined);

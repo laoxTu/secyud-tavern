@@ -171,9 +171,10 @@ async function generate(create: boolean = false) {
   if (generating) return;
   set({
     generating: true,
-    realmInfo: {
-      title: 'realm.generating',
-      content: '',
+    realmInfos: {
+      main: {
+        title: 'realm.generating',
+      },
     },
   });
   if (create) {
@@ -246,36 +247,43 @@ async function generate(create: boolean = false) {
       await setIndex(histories.length);
     };
 
+    const controller = new AbortController();
+    setSignal(controller);
+
     let thoughtLen = 0;
     let toolArgLen = 0;
+    let indexed = false;
     for await (const { output } of models.processers.generate({
       realm,
-      signal: async (signal) => {
-        await setIndexCur();
-        if (signal) setSignal(signal);
-      },
+      controller,
     })) {
       const curThoughtLen = output.thought.length;
       const curToolArgLen =
         output.callings?.reduce((u, c) => u + c.arguments.length, 0) ?? 0;
       if (curThoughtLen !== thoughtLen) {
         thoughtLen = curThoughtLen;
-        setRealmInfo({
+        setRealmInfo('main', {
           content: `${thoughtLen}`,
           title: 'realm.thinking',
         });
       } else if (curToolArgLen !== toolArgLen) {
         toolArgLen = curToolArgLen;
-        setRealmInfo({
+        setRealmInfo('main', {
           content: `${toolArgLen}`,
           title: 'realm.generating_tool',
         });
       } else {
-        setRealmInfo({
+        setRealmInfo('main', {
           content: `${output.content.length}`,
           title: 'realm.generating',
         });
       }
+
+      if (!indexed) {
+        indexed = true;
+        await setIndexCur();
+      }
+
       // 流式渲染条件
       // 故事页面为最新，输出页面为最新
       const { index } = get();
@@ -297,6 +305,7 @@ async function generate(create: boolean = false) {
     set({ generating: false });
     await setIndex(histories.length);
     await setHistory(histories.length, realm);
+    setSignal();
   }
 }
 

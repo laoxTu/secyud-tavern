@@ -1,19 +1,18 @@
-import { ToolboxIcon } from 'lucide-react';
+import { CircleAlertIcon, ToolboxIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
   Checkbox,
   dialogs,
   Field,
-  FieldContent,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  TextTooltip,
+  GridField,
+  IconTooltip,
   TooltipDialog,
   useRefresh,
 } from '@/components';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { Feature, stories } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
 import { tools as main } from '@/tools';
@@ -23,7 +22,7 @@ import { ToolCacheItem } from './realm';
 
 function Component() {
   const t = useTranslations();
-  const { handler } = useHandler();
+
   const { key, refreshKey } = useRefresh();
 
   const { realm } = realms;
@@ -47,31 +46,41 @@ function Component() {
         }
       })}
       className={'flex flex-col overflow-hidden h-5/6'}
-      style={{ height: '86%' }}
+      style={{ height: '86%', minWidth: '86%' }}
       info={dialogs.info(t, 'tool.selector')}
     >
       <FieldGroup className={'overflow-auto p-2 flex-1'}>
-        {Object.values(tools.cache(realm).tools).map((u, i) => (
-          <Field key={u.name ?? i}>
-            <FieldContent className={'flex-row'}>
+        <GridField className={'gap-2'}>
+          {Object.values(tools.cache(realm).tools).map((u, i) => (
+            <Field
+              key={u.name ?? i}
+              orientation={'horizontal'}
+              className="hover:bg-primary-foreground"
+            >
               <Checkbox
+                className={'m-auto'}
                 key={key}
                 id={`tool-${u.name}`}
                 checked={!u.disabled}
                 onCheckedChange={(b) => changeCheckItem(u, b)}
               />
-              <FieldLabel
-                htmlFor={`tool-${u.name}`}
-                className="m-auto ml-2 flex-1"
-              >
+              <FieldLabel htmlFor={`tool-${u.name}`}>
                 {u.name}
+                <IconTooltip
+                  label={
+                    <div className={'overflow-auto max-h-96 scrollbar-none'}>
+                      <pre className="wrap-break-word whitespace-pre-wrap">
+                        {u.description}
+                      </pre>
+                    </div>
+                  }
+                >
+                  <CircleAlertIcon />
+                </IconTooltip>
               </FieldLabel>
-            </FieldContent>
-            <FieldDescription>
-              <TextTooltip text={u.description} />
-            </FieldDescription>
-          </Field>
-        ))}
+            </Field>
+          ))}
+        </GridField>
       </FieldGroup>
     </TooltipDialog>
   );

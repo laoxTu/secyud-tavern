@@ -1,0 +1,11 @@
+{
+  "task": {
+    "cancel": "还原任务",
+    "cancelled": "已取消",
+    "completed": "已完成",
+    "failed": "任务失败",
+    "id": "任务",
+    "pending": "等待中",
+    "running": "进行中"
+  }
+}

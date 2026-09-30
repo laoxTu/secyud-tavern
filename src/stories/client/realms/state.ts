@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { signals } from '@/signal';
+import { BusinessError } from '@/interceptors';
 
 import { realms } from '.';
 
 export interface RealmInfo {
   title: string;
-  content: string;
+  content?: string | null;
 }
 
 interface Page {
@@ -25,10 +25,9 @@ export interface RealmState {
   // 信号
   signal?: AbortController;
   setSignal: (signal?: AbortController, reason?: string) => void;
-  setAbort: (func: () => void) => void;
   // 生成信息
-  realmInfo: RealmInfo;
-  setRealmInfo: (realmInfo: RealmInfo) => void;
+  realmInfos: Record<string, RealmInfo | undefined>;
+  setRealmInfo: (name: string, realmInfo?: RealmInfo) => void;
   /**
    * 是否生成中，不可用realmInfo是否为空判定，
    * 因为子agent也会用，这个标志同时影响是否
@@ -64,21 +63,17 @@ export const useRealmState = create<RealmState>()(
       setSignal(signal, reason) {
         const origin = get().signal;
         if (origin && reason) {
-          origin.abort(reason);
+          origin.abort(new BusinessError(reason, `message.${reason}`));
         }
         set({ signal });
       },
-      setAbort(action) {
-        const signal = get().signal?.signal;
-        if (!signal) {
-          console.debug(`[signal]: not set`);
-          return;
+      realmInfos: {},
+      setRealmInfo(name, realmInfo) {
+        const { generating, realmInfos } = get();
+        if (generating) {
+          set({ realmInfos: { ...realmInfos, [name]: realmInfo } });
         }
-        console.debug(`[signal]: set abort`);
-        signals.setAbort(signal, action);
       },
-      realmInfo: { title: 'realm.generating', content: '' },
-      setRealmInfo: (realmInfo) => get().generating && set({ realmInfo }),
       generating: false,
       pinned: true,
       setPinned: (pinned) => set({ pinned }),

@@ -1,4 +1,4 @@
-import { and, eq, like, or, SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, like, or, SQL } from 'drizzle-orm';
 
 import { DataRequest, utils } from '@/database';
 import { databases } from '@/database/server';
@@ -47,6 +47,7 @@ async function get(id: string, options?: PresetRequestOptions) {
 }
 
 async function create(preset: Preset) {
+  checker.notNullOrWhitespace('id', preset.id);
   checker.notNullOrWhitespace('name', preset.name);
 
   const exist = await databases.exists(presetSchema, (t) =>
@@ -107,7 +108,7 @@ async function list(request: DataRequest<PresetRequestParam>) {
 
       return condition.length ? and(...condition) : undefined;
     },
-    (t) => t.name,
+    (t) => [asc(t.name), desc(t.id)],
     (t) => ({
       id: t.id,
       name: t.name,

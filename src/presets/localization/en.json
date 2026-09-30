@@ -1,6 +1,7 @@
 {
   "macro": {
     "id": "Macro",
+    "is_json": "JSON data",
     "key": "Key",
     "multiple": "Allow multiple selection",
     "selector": "Macro selector",

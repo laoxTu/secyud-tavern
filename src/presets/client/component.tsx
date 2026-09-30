@@ -30,7 +30,7 @@ import {
 import { EntryCollapsiable } from '@/components/collapsible';
 import { DataRequest, NameValue, utils } from '@/database';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry, PresetEntryClipboard } from '@/presets';
 import { usePresetState } from '@/presets/client';
@@ -49,7 +49,7 @@ export function PresetNameValuesField({
   name,
 }: PresetNameValuesFieldProps) {
   const t = useTranslations();
-  const { handler } = useHandler();
+
   return (
     <Field className={spanHalf}>
       <FieldLabel htmlFor={`${name}-presets`}>
@@ -86,7 +86,7 @@ export function PresetEntryUpdate<TData>({
   entry,
 }: PresetEntryUpdateProps<TData>) {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { name, refresh } = state();
   const { item, setItem } = usePresetState();
 
@@ -194,7 +194,7 @@ export function PresetEntryList<TData>({
   const t = useTranslations();
   const { item, setItem } = usePresetState();
   const { refresh, name, defaultData } = state();
-  const { handler } = useHandler();
+
   const [filter, setFilter] = useState('');
 
   if (!item) return null;

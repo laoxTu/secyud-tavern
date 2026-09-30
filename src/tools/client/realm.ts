@@ -3,7 +3,6 @@ import { BusinessError } from '@/interceptors';
 import { Processer } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
 import { macros } from '@/presets/macros/client';
-import { realms } from '@/stories/client/realms';
 import { tools as main, Tool } from '@/tools';
 import { tools } from '@/tools/client';
 
@@ -66,12 +65,5 @@ export const processer: Processer = {
     );
     console.debug(`[lorebook](cache): `, cache);
     return cache;
-  },
-  async output({ history, realm }) {
-    const outputs = realms.outputs(history);
-    if (!outputs?.length) return;
-    for (const output of outputs) {
-      await tools.calling(realm, output.callings);
-    }
   },
 };
