@@ -1,1 +1,11 @@
-{}
+{
+  "task": {
+    "cancel": "Revert task",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "failed": "Task failed",
+    "id": "Task",
+    "pending": "Pending",
+    "running": "Running"
+  }
+}
