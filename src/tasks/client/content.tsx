@@ -22,13 +22,13 @@ import {
   PagedItemList,
   Progress,
   TooltipAlertDialog,
+  TooltipDialog,
 } from '@/components';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { useSse } from '@/signal/client';
-import { stories as main } from '@/stories';
 
-import { Task, TaskProgress } from '..';
+import { tasks as main, Task, TaskProgress } from '..';
 
 import { useTaskState } from './state';
 
@@ -36,7 +36,7 @@ import { tasks } from '.';
 
 function Content() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { fetch } = useTaskState();
   const [fuzzy, setFuzzy] = useState('');
   const [progresses, setPregresses] = useState<Record<string, number>>({});
@@ -61,9 +61,9 @@ function Content() {
   });
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <form action={applySearch} className={'flex'}>
-        <InputGroup className={'overflow-hidden'}>
+        <InputGroup>
           <InputGroupInput
             name="search"
             id={`story-search`}
@@ -92,11 +92,13 @@ function Content() {
             <>
               <ItemContent>
                 <ItemTitle className="truncate">{item.name} </ItemTitle>
-                {progress !== undefined && (
-                  <ItemDescription>
+                <ItemDescription>
+                  {progress === undefined || item.status !== 'running' ? (
+                    t(`task.${item.status}`)
+                  ) : (
                     <Progress value={progress} className="w-[60%]" />
-                  </ItemDescription>
-                )}
+                  )}
+                </ItemDescription>
               </ItemContent>
               <ItemActions>
                 <TooltipAlertDialog
@@ -104,31 +106,32 @@ function Content() {
                   onSubmit={handler(async () => {
                     await tasks.proxy.delete(item.id);
                     success(t('message.delete.success'));
+                    await fetch();
                   })}
                 >
                   <Trash2Icon />
                 </TooltipAlertDialog>
-                <TooltipAlertDialog
+                <TooltipDialog
+                  tooltip={<RotateCcwIcon />}
                   info={dialogs.info(t, 'restart', 'task.id')}
                   onSubmit={handler(async () => {
                     await tasks.proxy.restart(item.id);
                     success(t('message.restart.success'));
+                    await fetch();
                   })}
-                >
-                  <RotateCcwIcon />
-                </TooltipAlertDialog>
+                />
               </ItemActions>
             </>
           );
         }}
       </PagedItemList>
-    </>
+    </div>
   );
 }
 
 export const menu: GlobalMenuItem = {
   id: main.name,
-  sequence: -1,
+  sequence: 1000,
   content: Content,
   label: () => <GlobalMenuLabel name={tasks.name} icon={<ListChecksIcon />} />,
 };

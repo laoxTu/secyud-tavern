@@ -24,7 +24,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { globals } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { StoryEntry } from '@/stories';
 import {
   Feature,
@@ -48,7 +48,6 @@ function ContentItem({
 }: {
   entry: StoryEntry<StoryImage>;
 }) {
-  const { handler, success } = useHandler();
   const { refresh } = state();
   const t = useTranslations();
   const { onFileChange, getImageFileId } = useImageUploaderState('image');

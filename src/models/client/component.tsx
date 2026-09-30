@@ -9,7 +9,7 @@ import {
   RemoteSearchCombobox,
 } from '@/components';
 import { NameValue, utils } from '@/database';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { models, useModelSettingState } from '@/models/client';
 
 interface ModelNameValueFieldProps {
@@ -29,7 +29,7 @@ export function ModelNameValueField({
 }: ModelNameValueFieldProps) {
   const t = useTranslations();
   const { model } = useModelSettingState();
-  const { handler } = useHandler();
+
   return (
     <Field orientation={orientation}>
       {!disableLabel && (

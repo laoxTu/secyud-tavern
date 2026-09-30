@@ -196,9 +196,9 @@ export function PagedItemList<TItem>({
 
   return (
     <>
-      <div className={cn('overflow-auto flex-1', className)}>
-        {items?.length ? (
-          items.map((item, i) =>
+      {items?.length ? (
+        <div className={cn('overflow-auto flex-1', className)}>
+          {items.map((item, i) =>
             custom ? (
               <React.Fragment key={itemKey?.(item, i) ?? i}>
                 {children(item)}
@@ -217,11 +217,13 @@ export function PagedItemList<TItem>({
                 {children(item)}
               </Item>
             ),
-          )
-        ) : (
+          )}
+        </div>
+      ) : (
+        <div className={cn('overflow-auto flex-1 flex', className)}>
           <EmptyEntries module={entryName ?? 'default.entry'} />
-        )}
-      </div>
+        </div>
+      )}
       <PaginationWrapper usePager={usePager} />
     </>
   );

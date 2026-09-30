@@ -70,7 +70,7 @@ async function list(request: DataRequest<TaskRequestParam>) {
     (t) => ({
       id: t.id,
       name: t.name,
-      progress: t.progress,
+      status: t.status,
     }),
   );
 }

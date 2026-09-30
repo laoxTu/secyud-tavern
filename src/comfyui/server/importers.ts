@@ -23,16 +23,19 @@ export interface ModelImporter extends Registerable {
 
 const registry = getRegistry<ModelImporter>('comfyui-model-importer');
 
-async function getDownloadParams(id: string) {
+export async function getDownloadParams(id: string) {
   const model = await comfyuis.repository.model.get(id);
 
-  const setting = await settings.repository.get<ComfyUIModelSetting>(
-    comfyuis.model.setting,
-  );
+  const setting =
+    (
+      await settings.repository.get<{ state: ComfyUIModelSetting }>(
+        comfyuis.model.setting,
+      )
+    )?.data?.state ?? comfyuis.setting.default;
   checker.notNullOrWhitespace('model.download', model.download, 'comfyui');
   const directory = checker.notNullOrWhitespace(
-    'setting.directory',
-    setting?.data?.directory,
+    'directory',
+    setting.directory,
     'comfyui',
   );
   const path = checker.notNullOrWhitespace('model.path', model.path, 'comfyui');
@@ -68,13 +71,19 @@ const tasks: TaskProvider<ModelDownloadArgs> = {
       }
       signals.toast({
         type: 'success',
-        message: `[comfyui] model download success: ${model.path}`,
+        message: `message.comfyui.download.success`,
+        data: {
+          path: model.path,
+        },
       });
     } catch (error) {
       console.error(`[comfyui](download): `, error);
       signals.toast({
         type: 'error',
-        message: `[comfyui] model download failed: ${(error as any)?.message}`,
+        message: `error.comfyui.download_failed`,
+        data: {
+          message: (error as any)?.message ?? 'unknown error',
+        },
       });
       throw error;
     }

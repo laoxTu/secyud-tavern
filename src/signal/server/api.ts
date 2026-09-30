@@ -7,6 +7,17 @@ import { SseSubscription, SseSubscriptionAction } from '..';
 
 import { signals, SseEvent } from '.';
 
+function getOrCreateEvent(id: string) {
+  const res = signals.registry.record(id);
+  if (res) return res;
+  const event: SseEvent = {
+    id,
+    subscriptions: new Map<string, SseSubscription>(),
+  };
+  signals.registry.register(event);
+  return event;
+}
+
 export default {
   sse: {
     '[id]': {
@@ -19,21 +30,18 @@ export default {
         const unregisterEvent = () => {
           signals.registry.unregister(id);
         };
+        const event = getOrCreateEvent(id);
         const stream = new ReadableStream({
           start(controller) {
-            const event: SseEvent = {
-              id,
-              async send(message) {
-                controller.enqueue(
-                  strUtils.toBuffer(
-                    `event: ${message.type}\ndata: ${JSON.stringify({
-                      ...message.data,
-                      target: message.target,
-                    })}\n\n`,
-                  ),
-                );
-              },
-              subscriptions: new Map<string, SseSubscription>(),
+            event.send = async (message) => {
+              controller.enqueue(
+                strUtils.toBuffer(
+                  `event: ${message.type}\ndata: ${JSON.stringify({
+                    ...message.data,
+                    target: message.target,
+                  })}\n\n`,
+                ),
+              );
             };
             event.subscriptions.set('toast', {
               targets: [],
@@ -64,13 +72,7 @@ export default {
           const { id } = await record.params;
           const body: SseSubscriptionAction = await request.json();
 
-          const event = signals.registry.record(id);
-          if (!event) {
-            throw new BusinessError(
-              'sse is not registered!',
-              'error.sse.unregistered',
-            ).withValue('id', id);
-          }
+          const event = getOrCreateEvent(id);
           const { status, type } = body;
           switch (body.action) {
             case 'del':

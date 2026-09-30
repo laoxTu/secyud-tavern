@@ -1,7 +1,7 @@
 ﻿'use client';
-import { _Translator, useTranslations } from 'next-intl';
-import { useCallback } from 'react';
 import { toast } from 'sonner';
+
+import { translator } from '@/components';
 
 import { BusinessError } from '..';
 
@@ -38,19 +38,15 @@ export function isHttpError(error: unknown): boolean {
   return typeof status === 'number' && status >= 400;
 }
 
-function handleError(t: _Translator, err: any) {
+export function success(message: string) {
+  toast.success(message, {
+    richColors: true,
+  });
+}
+export function error(err: any) {
   console.error(err);
   if (err instanceof BusinessError && err.code) {
-    const record: Record<string, any> = {};
-    if (err.data) {
-      for (const key in err.data) {
-        const value = err.data[key];
-        if (typeof value === 'string') {
-          record[key] = t.has(value) ? t(value) : value;
-        } else record[key] = value;
-      }
-    }
-    toast.error(t(err.code, record), {
+    toast.error(translator.translate(err.code, err.data), {
       richColors: true,
     });
   } else if (typeof err === 'string') {
@@ -58,7 +54,7 @@ function handleError(t: _Translator, err: any) {
     toast.error(err, {
       richColors: true,
     });
-  } else if (isNetworkError(err) || isHttpError(err)) {
+  } else if (isNetworkError(err) || isHttpError(err) || isAbortError(err)) {
     // 默认错误消息
     toast.error(err?.message, {
       richColors: true,
@@ -71,36 +67,18 @@ function handleError(t: _Translator, err: any) {
   }
 }
 
-export function useHandler() {
-  const t = useTranslations();
-
-  const error = useCallback(
-    (err: any) => {
-      handleError(t, err);
-    },
-    [t],
-  );
-  const success = useCallback((message: string) => {
-    toast.success(message, {
-      richColors: true,
-    });
-  }, []);
-
-  function handler<A extends any[], T>(
-    action: AsyncFunc<A, T>,
-    finish?: AsyncFunc<A>,
-  ): AsyncFunc<A, T> {
-    return async (...args: A) => {
-      try {
-        return await action(...args);
-      } catch (err) {
-        error(err);
-      } finally {
-        await finish?.(...args);
-      }
-      return undefined!;
-    };
-  }
-
-  return { error, success, handler };
+export function handler<A extends any[], T>(
+  action: AsyncFunc<A, T>,
+  finish?: AsyncFunc<A>,
+): AsyncFunc<A, T> {
+  return async (...args: A) => {
+    try {
+      return await action(...args);
+    } catch (err) {
+      error(err);
+    } finally {
+      await finish?.(...args);
+    }
+    return undefined!;
+  };
 }

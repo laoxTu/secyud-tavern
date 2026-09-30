@@ -18,7 +18,7 @@ import {
   RemoteSearchCombobox,
 } from '@/components';
 import { DataRequest, NameValue, utils } from '@/database';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 
 interface ComfyUIModelHoverableItemProps {
   id: string;
@@ -34,7 +34,7 @@ export function ComfyUIModelHoverableItem({
   children,
 }: ComfyUIModelHoverableItemProps) {
   const [item, setItem] = useState<ComfyUIModel | null>(null);
-  const { handler } = useHandler();
+
   useEffect(() => {
     handler(async () => {
       const model = await comfyuis.proxy.model.cache(id);
@@ -95,7 +95,6 @@ export function ComfyUIModelSelector({
   className?: string;
   defaultValue?: NameValue | null;
 }) {
-  const { handler } = useHandler();
   return (
     <>
       <RemoteSearchCombobox
@@ -141,7 +140,7 @@ export function ComfyUIWorkflowNameValueField({
   onValueChange,
 }: ComfyUIWorkflowNameValueFieldProps) {
   const t = useTranslations();
-  const { handler } = useHandler();
+
   return (
     <Field orientation={orientation} className={className}>
       {!disableLabel && (

@@ -17,9 +17,6 @@
     "generate": "生成",
     "generate_img": "生成图片",
     "id": "ComfyUI",
-    "invalid_download_url": "下载地址为空",
-    "invalid_model_dir": "模型下载目录为空",
-    "invalid_path": "路径名为空",
     "lora": "Lora",
     "lora_count": "Lora数量",
     "model": {
@@ -79,8 +76,16 @@
     "workflow_invalid": "工作流格式不正确",
     "workflow_need": "需要工作流"
   },
+  "error": {
+    "comfyui": {
+      "download_failed": "模型下载失败：{message}"
+    }
+  },
   "message": {
     "comfyui": {
+      "download": {
+        "success": "下载完成：{path}"
+      },
       "paint": {
         "desc": "ComfyUI 绘图",
         "success": "成功绘图",

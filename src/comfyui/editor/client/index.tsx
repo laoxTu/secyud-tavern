@@ -26,7 +26,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { realms } from '@/stories/client/realms';
 import { agents, Editor } from '@/tools/agents/client';
@@ -187,7 +187,7 @@ function PromptInputComponent({
   },
 }: ComfyUIParamProps<PromptConfig>) {
   const json = jsonUtils.parse(pools);
-  const { handler } = useHandler();
+
   const [text, setText] = useState(prompt);
   return (
     <>
@@ -294,18 +294,17 @@ function AgentTextInputComponent({
 }: ComfyUIParamProps<AgentTextConfig>) {
   const t = useTranslations();
   const { sequence, config } = param;
-  const { error, success } = useHandler();
   // 提示词，虽然用了text组件，但是真正起作用的改为了text
   const [prompt, setPrompt] = useState(config.prompt);
   // 真正的文字
   const [text, setText] = useState('');
   const [output, setOutput] = useState(false);
   const [thinking, setThinking] = useState(false);
+  const { setSignal } = useAgentTextState();
 
   // 生成提示词
-  const generate = async () => {
-    const { setSignal } = useAgentTextState();
-    try {
+  const generate = handler(
+    async () => {
       setOutput(true);
       let tool = cache[param.masterId];
       if (!tool) {
@@ -328,18 +327,13 @@ function AgentTextInputComponent({
       // 这里可以用宏占位，传入的是args，在宏处理阶段会附加
       await tool.invoke({ args: { prompt }, controller });
       success(t('comfyui.param.agent_generated'));
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        console.log('user abort reply');
-        return; // 或者不处理
-      }
-      error(err);
-    } finally {
+    },
+    async () => {
       setOutput(false);
       setThinking(false);
       setSignal();
-    }
-  };
+    },
+  );
 
   return (
     <>

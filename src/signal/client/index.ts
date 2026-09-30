@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 
+import { translator } from '@/components';
 import { utils } from '@/database';
 import { jsonUtils } from '@/utils';
 
@@ -71,6 +72,6 @@ export const signals = {
 export default async function () {
   createCallback<ToastMessage>('toast', (_, data) => {
     const send = toast[data.type] ?? toast.error;
-    send(data.message, { richColors: true });
+    send(translator.translate(data.message, data.data), { richColors: true });
   });
 }

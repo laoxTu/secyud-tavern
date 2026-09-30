@@ -18,7 +18,7 @@ import { states } from '@/database/client/factory';
 import { FileModel, FileRequestParam, files as main } from '@/files';
 import { files } from '@/files/client';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 interface FileState extends FetchState<FileModel, FileRequestParam> {}
 
@@ -39,7 +39,7 @@ const useFileState = create<FileState>((set, get) => ({
 
 function ContentItem({ file }: { file: FileModel }) {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { fetch } = useFileState();
 
   return (

@@ -20,13 +20,13 @@ import {
   useFormRef,
 } from '@/components';
 import { BusinessError } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { Feature } from '@/stories/client';
 import { jsonUtils } from '@/utils';
 
 function Generator() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const [paint, setPaint] = useState<ComfyUIPaint | null>(null);
   const formRef = useFormRef();
 

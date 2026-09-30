@@ -7,7 +7,7 @@ import {
 } from '@/signal';
 
 export interface SseEvent extends Registerable {
-  send: (message: SseMessage) => Promise<void>;
+  send?: (message: SseMessage) => Promise<void>;
   /** 这个连接订阅了哪些 taskId（或业务分组 ID） */
   subscriptions: Map<string, SseSubscription>;
 }
@@ -19,12 +19,12 @@ async function send<TM>(message: SseMessage<TM>) {
       const subscription = record.subscriptions.get(message.type);
       if (!subscription) continue;
       if (subscription.status !== 'part') {
-        await record.send(message);
+        await record.send?.(message);
       } else if (
         message.target &&
         subscription.targets.includes(message.target)
       ) {
-        await record.send(message);
+        await record.send?.(message);
       }
     } catch (error) {
       registry.unregister(record.id);

@@ -12,7 +12,5 @@ export const tasks = {
 };
 
 export default async function () {
-  globals.menus.register(
-    // TODO tasks.menu
-  );
+  globals.menus.register(tasks.menu);
 }

@@ -8,7 +8,7 @@ import { response } from '@/utils/server';
 
 import { ComfyUIModel } from '../model';
 
-import { importers, ModelDownloadArgs } from './importers';
+import { getDownloadParams, importers, ModelDownloadArgs } from './importers';
 import { comfyuiModelSchema } from './schema';
 
 import { comfyuis } from '.';
@@ -50,7 +50,7 @@ export const models = {
     download: {
       POST: route(async (_, records) => {
         const { id } = await records.params;
-        const model = await comfyuis.repository.model.get(id);
+        const { model } = await getDownloadParams(id);
         await tasks.manager.create<ModelDownloadArgs>(
           `download ${model.code}`,
           {

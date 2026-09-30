@@ -47,10 +47,9 @@ import {
 import { forms } from '@/global';
 import { globals } from '@/global/client';
 import { BusinessError } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
-  const { handler, success } = useHandler();
   const t = useTranslations();
   const { getImageFileId, onFileChange } = useImageUploaderState('cover');
   const { fetch } = useComfyUIModelState();
@@ -244,7 +243,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
 
 export function ModelContent() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { fetch, search } = useComfyUIModelState();
   // 受控组件，解决搜索刷新后光标位置问题
   const [fuzzy, setFuzzy] = useState(search?.fuzzy ?? '');

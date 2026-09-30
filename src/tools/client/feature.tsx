@@ -12,7 +12,7 @@ import {
   TooltipDialog,
   useRefresh,
 } from '@/components';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { Feature, stories } from '@/stories/client';
 import { realms } from '@/stories/client/realms';
 import { tools as main } from '@/tools';
@@ -22,7 +22,7 @@ import { ToolCacheItem } from './realm';
 
 function Component() {
   const t = useTranslations();
-  const { handler } = useHandler();
+
   const { key, refreshKey } = useRefresh();
 
   const { realm } = realms;
