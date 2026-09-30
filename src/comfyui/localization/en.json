@@ -16,18 +16,13 @@
     "file_exists": "File already exists",
     "generate": "Generate",
     "generate_img": "Generate image",
-    "generate_parameter": "Generate parameters",
-    "generate_parameter_successfully": "Parameters generated successfully",
     "id": "ComfyUI",
-    "invalid_download_url": "Download URL is empty",
-    "invalid_model_dir": "Model download directory is empty",
-    "invalid_path": "Path name is empty",
     "lora": "LoRA",
     "lora_count": "LoRA count",
     "model": {
       "id": "Model",
       "importer": "Import method",
-      "importer_civitai": "Civitai",
+      "importer_civitai": "civitai",
       "importer_invalid": "Import method cannot be empty"
     },
     "model_dir": "Model path",
@@ -36,6 +31,24 @@
     "node_id": "Node ID",
     "node_name": "Parameter name",
     "number": "Number",
+    "param": {
+      "id": "Parameter",
+      "key": "Parameter key",
+      "model_type": "Model type",
+      "node": "Node",
+      "title_key": "Title key",
+      "title_node": "Title node",
+      "title_value": "Title value",
+      "type": "Type",
+      "type_agent_text": "AI-generated text",
+      "type_callback": "Callback",
+      "type_image_callback": "Image callback",
+      "type_model_select": "Model selection",
+      "type_number": "Number",
+      "type_power_lora_select": "LoRA selection",
+      "type_select": "Selection",
+      "type_text": "Text"
+    },
     "parameter": "Parameter",
     "parameter_type": "Parameter type",
     "parameter_type_image_callback": "Image callback",
@@ -45,29 +58,50 @@
     "parameter_type_power_lora_selector": "Power LoRA selector",
     "parameter_type_selector": "Option",
     "parameter_type_text_editor": "Text editor",
+    "pools": { "key": "Parameter pool" },
     "prompt_sent": "Image generation request sent: {target}",
     "request_error": "Request error: {message}",
     "source_id": "Source ID",
     "source_type": "Source type",
     "strength": "Strength",
+    "template": { "key": "Template" },
     "text": "Text",
     "text_prompt": "Prompt",
     "value": "Value",
     "value_count": "Value count",
     "workflow": {
+      "generate_params": "Generation parameters",
       "id": "Workflow"
     },
     "workflow_invalid": "Invalid workflow format",
     "workflow_need": "Workflow required"
   },
+  "error": {
+    "comfyui": {
+      "download_failed": "Model download failed: {message}"
+    }
+  },
   "message": {
     "comfyui": {
+      "download": {
+        "success": "Download complete: {path}"
+      },
       "paint": {
         "desc": "ComfyUI drawing",
         "success": "Image drawn successfully",
         "title": "Draw",
         "tooltip": "ComfyUI drawing"
+      },
+      "param": {
+        "generate": {
+          "success": "Generated successfully"
+        }
       }
+    }
+  },
+  "tool": {
+    "provider": {
+      "comfyui": "ComfyUI"
     }
   }
 }

@@ -3,9 +3,12 @@
     "id": "Memory"
   },
   "rag": {
+    "cache_limit": "Cache entry limit",
     "embedding_generator": "Embedding generator",
     "embedding_generator_model": "Embedding generation model",
-    "huggingface_mirror": "Hugging Face mirror",
-    "id": "Knowledge base"
+    "huggingface_mirror": "huggingface mirror",
+    "id": "Knowledge base",
+    "limit": "Entry limit",
+    "similarity": "Similarity"
   }
 }

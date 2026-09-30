@@ -31,7 +31,7 @@
     "export": "Export",
     "field": "Field",
     "hidden": "Hidden",
-    "html": "HTML",
+    "html": "Html",
     "id": "ID",
     "image": "Image",
     "language": "Language",
@@ -82,7 +82,8 @@
     "entity": {
       "duplicate_value": "A {entity} with the same {name}({value}) already exists."
     },
-    "json_invalid": "{target} has an invalid JSON format"
+    "json_invalid": "{target} has an invalid JSON format",
+    "not_catch": "Uncaught error"
   },
   "language": {
     "en": "English",
@@ -139,12 +140,19 @@
       "title": "Paste {target}",
       "tooltip": "Paste"
     },
+    "restart": {
+      "desc": "Retry {target}",
+      "success": "Retried successfully",
+      "title": "Retry",
+      "tooltip": "Retry"
+    },
     "update": {
       "desc": "Update {target}",
       "success": "Updated successfully",
       "title": "Update {target}",
       "tooltip": "Update"
-    }
+    },
+    "user_canceled": "Canceled by user"
   },
   "setting": {
     "id": "Settings"

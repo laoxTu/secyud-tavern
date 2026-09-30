@@ -1,5 +1,6 @@
 {
   "lorebook": {
+    "bind_macro": "Bind macro",
     "fit_count": "Match count",
     "id": "Lorebook",
     "include_any_word": "Include phrases",
@@ -16,5 +17,10 @@
     "priority_layer": "Layer",
     "priority_order": "Order",
     "role": "Role"
+  },
+  "tool": {
+    "provider": {
+      "lorebook": "Lorebook"
+    }
   }
 }

@@ -24,6 +24,7 @@
     }
   },
   "tool": {
+    "bind_macro": "Bind macro",
     "calling_tool": "Calling tool",
     "create_failed": "Failed to create tool ({entry})",
     "id": "Tool",
