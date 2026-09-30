@@ -47,7 +47,7 @@ import {
 import { forms } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { BusinessError } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { ModelNameValueField } from '@/models/client';
 import { getRegistry, Registerable } from '@/plugins';
 import { PresetNameValuesField } from '@/presets/client';
@@ -69,7 +69,7 @@ export const tabs = getRegistry<StoryTab>('story-tabs');
 
 function PropertyTab() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item, setItem } = useStoryState();
   const form = useFormRef();
 
@@ -100,7 +100,6 @@ function PropertyTab() {
 
 function TabContent() {
   const t = useTranslations();
-  const { success, handler } = useHandler();
   const { item, setItem, fetch, tab, setTab } = useStoryState();
   const { showTabs, hideTabs } = useTabs(tabs, item);
   if (!item) return null;
@@ -184,7 +183,7 @@ function TabContent() {
 
 function Content() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { fetch, item, items, setItem } = useStoryState();
   const [fuzzy, setFuzzy] = useState('');
   const router = useRouter();

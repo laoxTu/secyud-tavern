@@ -16,7 +16,7 @@ import {
   TooltipDialog,
   useRefresh,
 } from '@/components';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { PresetItem } from '@/presets';
 import { Macro, macros as main } from '@/presets/macros';
 import { macros } from '@/presets/macros/client';
@@ -26,7 +26,7 @@ import { realms } from '@/stories/client/realms';
 
 function Component() {
   const t = useTranslations();
-  const { handler } = useHandler();
+
   const { key, refreshKey } = useRefresh();
   const { realm } = realms;
 

@@ -21,6 +21,7 @@ export const settings = {
   tabs,
   proxy: settingProxy,
 };
+
 export default async function () {
   menus.register(globals.menu.setting);
 }

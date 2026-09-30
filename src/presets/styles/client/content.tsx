@@ -15,7 +15,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry } from '@/presets';
 import {
@@ -53,7 +53,7 @@ function Editor({
   entry: PresetEntry<Style>;
 }) {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { refresh } = state();
   const form = useFormRef();
   const [language, setLanguage] = useState<string>(mapToLanguage(type));

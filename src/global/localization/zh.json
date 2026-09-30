@@ -140,6 +140,12 @@
       "title": "粘贴{target}",
       "tooltip": "粘贴"
     },
+    "restart": {
+      "desc": "重试{target}",
+      "success": "重试成功",
+      "title": "重试",
+      "tooltip": "重试"
+    },
     "update": {
       "desc": "更新{target}",
       "success": "更新成功",

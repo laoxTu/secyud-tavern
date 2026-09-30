@@ -21,6 +21,7 @@ export interface SseMessage<T = any> {
 export interface ToastMessage {
   type: ToastType;
   message: string;
+  data?: Record<string, string>;
 }
 
 async function pack(items: AsyncIterable<any>) {

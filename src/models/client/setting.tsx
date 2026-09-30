@@ -21,7 +21,7 @@ import {
 import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
 import { BusinessError } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import {
   ModelNameValueField,
   models,
@@ -33,7 +33,7 @@ import { ModelProperty } from '..';
 
 function ModelPropertyContent() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item, setItem } = useModelState();
   const [engine, setEngine] = useState(
     models.engines.registry.record(item?.engine),
@@ -175,7 +175,7 @@ function ModelPropertyContent() {
 
 export function ModelSettingContent() {
   const t = useTranslations();
-  const { handler, success } = useHandler();
+
   const { item, setItem } = useModelState();
   const { model, setModel } = useModelSettingState();
 

@@ -1,11 +1,12 @@
 'use client';
 import { ThemeProvider } from '@teispace/next-themes';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 
-import { Toaster, TooltipProvider } from '@/components';
+import { Toaster, TooltipProvider, translator } from '@/components';
 import { registerClientPlugin } from '@/generated/client-registerer';
 import { Loading } from '@/global/client/loading';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 
 let bootstrap: Promise<void> | null = null;
 export function Client({
@@ -14,7 +15,8 @@ export function Client({
   children: React.ReactNode;
 }>) {
   const [initialized, setInitialized] = useState(false);
-  const { handler } = useHandler();
+
+  translator.t = useTranslations();
   useEffect(() => {
     handler(async () => {
       await (bootstrap ??= registerClientPlugin());

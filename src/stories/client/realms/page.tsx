@@ -34,7 +34,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { Loading } from '@/global/client/loading';
-import { useHandler } from '@/interceptors/client';
+import { error, handler } from '@/interceptors/client';
 import { models } from '@/models/client';
 import { stories } from '@/stories/client';
 
@@ -84,7 +84,7 @@ function RealmTips() {
 function UserInput() {
   const { generating, setSignal, content, setContent, summary, setSummary } =
     useRealmState();
-  const { handler } = useHandler();
+
   const t = useTranslations();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -155,7 +155,6 @@ function UserInput() {
 }
 
 export function PageControl() {
-  const { handler } = useHandler();
   const { index, setIndex, output, setOutput, prepare, setPrepare } =
     useRealmState();
 
@@ -254,7 +253,6 @@ export default function RealmPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { error } = useHandler();
   const [loadingState, setLoadingState] = useState<LoadingState>({
     loading: false,
     success: false,

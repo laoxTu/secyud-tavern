@@ -20,22 +20,15 @@ import { proxy } from './proxy';
 export interface ComfyUIModelSettingState extends ComfyUIModelSetting {}
 
 export const useComfyUIModelSettingState = create<ComfyUIModelSettingState>()(
-  persist<ComfyUIModelSettingState>(
-    () => ({
-      directory: '/home/user/comfyui/models',
-      client: 'secyud-tavern',
-      url: 'http://localhost:8188',
+  persist<ComfyUIModelSettingState>(() => comfyuis.setting.default, {
+    name: comfyuis.model.setting,
+    storage: createJSONStorage(() => dbStorage),
+    partialize: (state) => ({
+      directory: state.directory,
+      client: state.client,
+      url: state.url,
     }),
-    {
-      name: comfyuis.model.setting,
-      storage: createJSONStorage(() => dbStorage),
-      partialize: (state) => ({
-        directory: state.directory,
-        client: state.client,
-        url: state.url,
-      }),
-    },
-  ),
+  }),
 );
 
 export interface ComfyUIState {

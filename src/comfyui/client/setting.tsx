@@ -6,12 +6,11 @@ import { useComfyUIModelSettingState } from '@/comfyui/client/state';
 import { Field, FieldLabel, Input, UpdateForm } from '@/components';
 import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 
 function Content() {
   const t = useTranslations();
   const { url, client, directory } = useComfyUIModelSettingState();
-  const { handler, success } = useHandler();
 
   return (
     <UpdateForm

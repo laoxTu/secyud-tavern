@@ -1,4 +1,5 @@
 'use client';
+import { _Translator } from 'next-intl';
 import React, { RefObject } from 'react';
 
 export function element<T extends {}>(
@@ -54,6 +55,23 @@ export function submitFormOnKey(
 
 export type Orientation =
   'horizontal' | 'responsive' | 'vertical' | null | undefined;
+
+export const translator = {
+  t: undefined! as _Translator,
+  translate(message: string, data?: Record<string, any>) {
+    const t = translator.t;
+    if (!t) return message;
+    if (!data) return t(message);
+    const record: Record<string, any> = { ...data };
+    for (const key in record) {
+      const value = record[key];
+      if (typeof value === 'string') {
+        record[key] = t.has(value) ? t(value) : value;
+      } else record[key] = value;
+    }
+    return t(message, record);
+  },
+};
 
 export * from './ui/accordion';
 export * from './ui/alert-dialog';

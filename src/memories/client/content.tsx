@@ -15,7 +15,7 @@ import {
   UpdateForm,
 } from '@/components';
 import { forms } from '@/global';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { StoryEntry } from '@/stories';
 import { stories, StoryEntryList, StoryEntryUpdate } from '@/stories/client';
@@ -40,7 +40,6 @@ function Editor({
 }) {
   const t = useTranslations();
   const { refresh } = state();
-  const { handler, success } = useHandler();
 
   return (
     <UpdateForm

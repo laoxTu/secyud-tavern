@@ -16,7 +16,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry } from '@/presets';
 import {
@@ -44,7 +44,7 @@ function Editor({
 }) {
   const t = useTranslations();
   const { refresh } = state();
-  const { handler, success } = useHandler();
+
   const [json, setJson] = useState(jsonDefault);
   const form = useFormRef();
 

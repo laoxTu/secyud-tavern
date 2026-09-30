@@ -26,9 +26,9 @@ export class Registry<T extends Registerable> {
   register(...registerableList: T[]): void {
     for (const registerable of registerableList) {
       this.records[registerable.id] = registerable;
-      this.invalidateCache();
       console.debug(`[${this.name}] registered: ${registerable.id}`);
     }
+    this.invalidateCache();
   }
 
   unregister(id: string): boolean {

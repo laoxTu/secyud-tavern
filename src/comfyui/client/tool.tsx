@@ -16,7 +16,7 @@ import {
 import { utils } from '@/database';
 import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
-import { useHandler } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { JsonSchema, jsonUtils } from '@/utils';
 
@@ -37,7 +37,7 @@ export function Editor({
     main.paint.default,
     data.config,
   );
-  const { handler } = useHandler();
+
   const [workflow, setWorkflow] = useState<ComfyUIPaint | null | undefined>(
     undefined,
   );
