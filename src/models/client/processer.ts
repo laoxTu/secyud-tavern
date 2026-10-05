@@ -1,5 +1,5 @@
 import { BusinessError } from '@/interceptors';
-import { isAbortError, isNetworkError } from '@/interceptors/client';
+import { isNetworkError } from '@/interceptors/client';
 import { getRegistry, Registerable } from '@/plugins';
 import { signals, sseUtils } from '@/signal';
 import { realms, useRealmState } from '@/stories/client/realms';
@@ -343,7 +343,7 @@ export const processers = {
                 if (finished) return;
                 const elapsed = Date.now() - updateTime.getTime();
                 if (elapsed > interval * 1000) {
-                  controller.abort('retry');
+                  controller.abort(new BusinessError('retry', `error.retry`));
                 } else if (!finished) {
                   checkTime();
                 }
@@ -368,10 +368,7 @@ export const processers = {
           }
           retry = 0;
         } catch (err) {
-          if (
-            isNetworkError(err) ||
-            (isAbortError(err) && controller.signal.reason === 'retry')
-          ) {
+          if (isNetworkError(err) || (err as Error)?.message === 'retry') {
             useRealmState.getState().setRealmInfo('main', {
               title: `realm.retry`,
               content: `(${maxRetry + 1 - retry}/${maxRetry})`,

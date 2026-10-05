@@ -100,7 +100,7 @@ export abstract class TaskRunner<TArgs = any> {
         throw new BusinessError('only running task canbe restart!');
       const origin = this.running.get(id)!;
       // 重试任务前应当先取消任务
-      origin.controller.abort('restart');
+      origin.controller.abort(new BusinessError('restart', `error.restart`));
       // 新任务不要和前面的混用引用，建立新实例
       const task = {
         ...origin,
@@ -152,7 +152,7 @@ export abstract class TaskRunner<TArgs = any> {
         // 删除任务应当对进行中的任务进行取消
         // 取消是否回档取决于内部实现
         // 但是已完成的任务一定不会回档
-        task.controller.abort('canceled');
+        task.controller.abort(new BusinessError('canceled', `error.canceled`));
         this.running.delete(id);
       }
     });
