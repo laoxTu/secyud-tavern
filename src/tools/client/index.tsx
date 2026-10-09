@@ -12,6 +12,8 @@ import { fetchers } from '@/tools/fetchers/client';
 import { scripts } from '@/tools/scripts/client';
 import { variables } from '@/tools/variables/client';
 
+import { elicits } from '../elicits/client';
+
 import { providers } from './providers';
 import { processer, ToolCache } from './realm';
 import { calling } from './task';
@@ -60,11 +62,12 @@ export const tools = {
 export default async function () {
   presets.tabs.register(tools.tab.preset);
   models.processers.registry.register(tools.processer);
-  stories.features.registry.register(feature);
+  stories.features.registry.register(feature, elicits.feature);
   tools.providers.registry.register(
     variables,
     fetchers,
     scripts.tool,
     agents.tool,
+    elicits.tool,
   );
 }
