@@ -25,6 +25,7 @@ function Component() {
   return (
     <Dialog open={!!item}>
       <DialogContent
+        className="flex flex-col overflow-hidden"
         showCloseButton={false}
         style={{ height: '86%', minWidth: '86%' }}
         render={
@@ -48,30 +49,32 @@ function Component() {
               <DialogTitle>{t('elicit.title')}</DialogTitle>
               <DialogDescription>{item.question}</DialogDescription>
             </DialogHeader>
-            <RadioGroup
-              key={render}
-              name="elicit"
-              defaultValue={0}
-              className="w-fit"
-            >
-              {item.examples.map((t, i) => {
-                return (
-                  <div key={i} className="flex items-center gap-3">
-                    <RadioGroupItem value={i} id={`elicit-${i}`} />
-                    <Label htmlFor={`elicit-${i}`}>{t}</Label>
+            <div className="flex-1 overflow-auto">
+              <RadioGroup
+                key={render}
+                name="elicit"
+                defaultValue={0}
+                className="w-fit"
+              >
+                {item.examples.map((t, i) => {
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <RadioGroupItem value={i} id={`elicit-${i}`} />
+                      <Label htmlFor={`elicit-${i}`}>{t}</Label>
+                    </div>
+                  );
+                })}
+                {item.custom && (
+                  <div key="custom" className="flex items-center gap-3">
+                    <RadioGroupItem value="custom" id="elicit-custom" />
+                    <Input
+                      name="custom"
+                      placeholder={t('elicit.custom.placeholder')}
+                    />
                   </div>
-                );
-              })}
-              {item.custom && (
-                <div key="custom" className="flex items-center gap-3">
-                  <RadioGroupItem value="custom" id="elicit-custom" />
-                  <Input
-                    name="custom"
-                    placeholder={t('elicit.custom.placeholder')}
-                  />
-                </div>
-              )}
-            </RadioGroup>
+                )}
+              </RadioGroup>
+            </div>
             <DialogFooter>
               <Button type="submit">{t('default.ensure')}</Button>
             </DialogFooter>
