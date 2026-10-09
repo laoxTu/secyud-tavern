@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 
-import { Checkbox, Field, FieldContent, FieldLabel } from '@/components';
+import { Checkbox, Field, FieldContent, FieldLabel, Input } from '@/components';
 import { forms } from '@/global';
 import { Lorebook } from '@/lorebooks';
 import { Matcher } from '@/lorebooks/client';
@@ -14,7 +14,7 @@ export interface AlwaysMatchConfig {
    */
   last: boolean;
   // 绑定同名宏，宏的状态会和世界书同步
-  macro?: boolean;
+  macro?: string;
 }
 
 function AlwaysMatcher({
@@ -47,10 +47,10 @@ function AlwaysMatcher({
           {t('lorebook.bind_macro')}
         </FieldLabel>
         <FieldContent>
-          <Checkbox
+          <Input
             name={'macro'}
             id={`lorebook-macro-${entryId}`}
-            defaultChecked={model.macro}
+            defaultValue={model.macro}
           />
         </FieldContent>
       </Field>
@@ -64,7 +64,7 @@ export const alwaysMatcher: Matcher = {
   async configureObject(data, lorebook: Lorebook<AlwaysMatchConfig>) {
     lorebook.expression = {
       last: forms.bool(data, 'last'),
-      macro: forms.bool(data, 'macro'),
+      macro: forms.str(data, 'macro'),
     };
   },
   async match() {
