@@ -11,6 +11,7 @@ import { feature } from './feature';
 import { MacroCache, processer, renderer } from './realm';
 
 export interface MacroProperty {
+  // 这是disabled
   checkItems: Record<string, boolean>;
   selections: Record<string, string | undefined>;
 }
