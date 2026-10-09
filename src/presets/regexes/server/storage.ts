@@ -12,7 +12,7 @@ export const storage = storages.create<Regex>(
   }),
   async ({ cur }, item, s) => {
     const name = `${item.name}-${s}`;
-    archives.set.json(cur, `${name}.meta.json`, async () => item);
+    archives.set.json(cur, `${name}.meta.json`, item);
   },
   async ({ cur }, name) => {
     const item = await archives.get.json<PresetItem<Regex>>(
