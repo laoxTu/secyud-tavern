@@ -51,7 +51,9 @@ async function apply(
     cache.macros,
   )) {
     const entries = multiples.filter((v) => !v.disabled);
-    if (select) entries.unshift(singles[select]);
+    // 选择是持久化的，可能指向已删除的 code，这里跳过而不是抛错
+    const single = select ? singles[select] : undefined;
+    if (single) entries.unshift(single);
     /**
      * 规则，如果有json，则合并所有json，
      * 并将字符串拼接到json中的toString()中。
@@ -139,7 +141,7 @@ async function init({ realm }: { realm: Realm }) {
       };
       /**
        * 单选规则相对简单，就是key中会选择一个code
-       * 并且后面的会覆盖前面的
+       * 没有选择时取第一个，已有选择时保留
        */
       const cacheItem = utils.get<MacroCacheItem>(cache.macros, key, () => ({
         key,
@@ -164,7 +166,7 @@ async function init({ realm }: { realm: Realm }) {
         list.push(item);
       } else {
         cacheItem.singles[code] = item;
-        if (!item.disabled || !cacheItem.select) cacheItem.select = code;
+        if (!item.disabled && !cacheItem.select) cacheItem.select = code;
       }
     },
   );
