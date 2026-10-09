@@ -43,11 +43,11 @@ export const processer: Processer = {
             cache.tools[name] = {
               ...tool,
               get disabled() {
-                return (macro ? checkItems[name] : items[name]) ?? disabled;
+                return (macro ? checkItems[macro] : items[name]) ?? disabled;
               },
               set disabled(b: boolean) {
                 if (macro) {
-                  checkItems[name] = b;
+                  checkItems[macro] = b;
                 } else {
                   items[name] = b;
                 }

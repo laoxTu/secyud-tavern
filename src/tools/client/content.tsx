@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import {
-  Checkbox,
   element,
   Field,
   FieldContent,
@@ -53,7 +52,7 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
         if (!editor) return;
         const entry: Partial<PresetEntry<Tool>> = {
           data: {
-            macro: forms.bool(data, 'macro'),
+            macro: forms.str(data, 'macro'),
             type: editor.id,
             config: {},
           },
@@ -81,10 +80,10 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
           {t('tool.bind_macro')}
         </FieldLabel>
         <FieldContent>
-          <Checkbox
+          <Input
             name="macro"
             id={`tool-macro-${entryId}`}
-            defaultChecked={macro}
+            defaultValue={macro}
           />
         </FieldContent>
       </Field>
