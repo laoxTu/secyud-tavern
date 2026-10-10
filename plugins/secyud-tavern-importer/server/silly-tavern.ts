@@ -136,8 +136,9 @@ async function preset(card: OpenAIPreset, cover?: string) {
   }
 
   for (const [key, entries] of Object.entries(records)) {
-    for (let i = 0; i < entries[1].length; i++) {
-      const entry = entries[1][i];
+    // entries 就是 key 对应的值数组，第 i 次赋值取 entries[i]
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
       macro({
         name: `${key}_${i}`,
         code: `${key}_${i}`,
@@ -341,8 +342,9 @@ async function chara(card: CharacterCard, cover?: string) {
   }
 
   for (const [key, entries] of Object.entries(records)) {
-    for (let i = 0; i < entries[1].length; i++) {
-      const entry = entries[1][i];
+    // entries 就是 key 对应的值数组，第 i 次赋值取 entries[i]
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
       macro({
         name: `${key}_${i}`,
         code: `${key}_${i}`,

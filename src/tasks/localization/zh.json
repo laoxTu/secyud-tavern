@@ -1,4 +1,9 @@
 {
+  "error": {
+    "task": {
+      "provider_not_registered": "任务处理器 {type} 未注册。"
+    }
+  },
   "task": {
     "cancel": "还原任务",
     "cancelled": "已取消",

@@ -272,7 +272,7 @@ function Editor() {
         const variablesText = forms.str(data, 'variables');
         history.variables = jsonUtils.parse(variablesText);
         if (!history.variables)
-          new BusinessError('json invalid', 'realm.variable_invalid_json');
+          throw new BusinessError('json invalid', 'realm.variable_invalid_json');
         for (let i = 0; i < history.prompts.length; i++) {
           const input = history.prompts[i];
           input.content = forms.str(data, `history_input-${i}`);

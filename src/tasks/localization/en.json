@@ -1,4 +1,9 @@
 {
+  "error": {
+    "task": {
+      "provider_not_registered": "Task provider {type} is not registered."
+    }
+  },
   "task": {
     "cancel": "Revert task",
     "cancelled": "Cancelled",

@@ -145,6 +145,8 @@ export const repositories = {
       entryType: string,
       entries: TEntry[],
     ) => {
+      // 空数组没有可写入的行，drizzle 的 values([]) 会直接抛错
+      if (!entries.length) return;
       const entryId = (await getMaxEntryId(masterId, entryType)) + 1;
       await db.insert(table).values(
         entries.map(

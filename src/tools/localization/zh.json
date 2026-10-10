@@ -14,6 +14,11 @@
     },
     "title": "问题"
   },
+  "error": {
+    "tool": {
+      "provider_not_registered": "工具类型未注册：{type}"
+    }
+  },
   "fetcher": {
     "max_length": "长度返回限制",
     "max_results": "最大搜索数量",

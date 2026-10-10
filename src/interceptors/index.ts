@@ -1,4 +1,4 @@
-﻿import { jsonUtils } from '@/utils';
+import { jsonUtils } from '@/utils';
 
 export class BusinessError extends Error {
   data: Record<string, any> = {};
@@ -41,6 +41,19 @@ function throwInvalidJson(name?: string): string {
     'target',
     name ?? 'default.field',
   );
+}
+
+/**
+ * 判断文本能否解析成 JSON。
+ * 不能用解析结果的真值来判断：'0' / 'false' / 'null' 都是合法 JSON，但解析出来是假值。
+ */
+function parseable(value?: string | null): boolean {
+  try {
+    JSON.parse(value ?? '');
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export const checker = {
@@ -89,12 +102,12 @@ export const checker = {
   },
 
   validJson(value?: string | null, name?: string) {
-    if (jsonUtils.parse(value)) return value ?? '';
+    if (parseable(value)) return value ?? '';
     return throwInvalidJson(name);
   },
 
   validJsonOrEmpty(value?: string | null, name?: string) {
-    if (!value?.trim() || jsonUtils.parse(value)) return value ?? '';
+    if (!value?.trim() || parseable(value)) return value ?? '';
     return throwInvalidJson(name);
   },
 

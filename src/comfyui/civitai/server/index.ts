@@ -11,14 +11,17 @@ import { civitais as main } from '..';
 export const importer: ModelImporter = {
   id: main.name,
   async download(model, filename): Promise<void> {
-    await fileUtils.mkdir(path.dirname(filename));
+    // 参数校验先于建目录：缺 download 时不应该留下空目录
     const urlStr = checker.notNullOrWhitespace(
       'download',
       model.download,
       'civitai',
     );
-    const url = new URL(urlStr);
+    await fileUtils.mkdir(path.dirname(filename));
+    let url: URL | undefined;
     try {
+      // 非法 URL 也走同一层包装，不要漏出裸 TypeError
+      url = new URL(urlStr);
       const token = process.env.CIVITAI_TOKEN;
       const isOfficial =
         url.hostname === 'civitai.com' || url.hostname.endsWith('.civitai.com');
@@ -34,7 +37,7 @@ export const importer: ModelImporter = {
         'message.civitai.download.failed',
         err,
       ).withValues({
-        url: url.hostname,
+        url: url?.hostname,
       });
     }
   },
