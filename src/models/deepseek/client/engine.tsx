@@ -247,11 +247,11 @@ export const engine: ModelEngine = {
         messages.push({ role: 'system', content });
       },
       caller: (content, output, callings) => {
-        if (content) {
+        if (content || callings.length)
           summaries.push({ content, role: 'assistant' });
-          messages.push({ role: 'assistant', content });
+        if (!callings.length) {
+          return;
         }
-        if (!callings.length) return;
         tools.summary(callings, summaries);
         const extra =
           options.thinking.type === 'enabled'
@@ -261,6 +261,7 @@ export const engine: ModelEngine = {
                   : 'user generated calling',
               }
             : {};
+        // content 已经并进这条带 tool_calls 的消息，不要再单独发一条，否则正文会重复
         messages.push({
           role: 'assistant',
           content,

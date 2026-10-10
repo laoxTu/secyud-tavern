@@ -70,6 +70,6 @@ export const variableMatcher: Matcher = {
     const variables = lorebooks.matchers.variables(context);
     const expression: VariableMatchConfig = lorebook.expression;
     const { exists, current } = extract(variables, expression.path);
-    return exists && String(current) === expression.value;
+    return exists && String(current.item) === expression.value;
   },
 } as const;

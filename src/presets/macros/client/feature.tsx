@@ -16,7 +16,7 @@ import {
   TooltipDialog,
   useRefresh,
 } from '@/components';
-import { handler, success } from '@/interceptors/client';
+import { handler } from '@/interceptors/client';
 import { PresetItem } from '@/presets';
 import { Macro, macros as main } from '@/presets/macros';
 import { macros } from '@/presets/macros/client';
@@ -30,12 +30,9 @@ function Component() {
   const { key, refreshKey } = useRefresh();
   const { realm } = realms;
 
-  const { selections } = macros.property(realm);
   const cache = macros.cache(realm);
   const changeSelection = handler(
     async (item: MacroCacheItem, name: string) => {
-      const entry = item.singles[name];
-      selections[item.key] = entry.name;
       item.select = name;
       refreshKey();
     },

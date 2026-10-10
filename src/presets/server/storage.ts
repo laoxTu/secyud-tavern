@@ -151,7 +151,8 @@ export const storage = {
     );
     if (buffer) {
       const cover = await files.repository.create({
-        type: `image/${type}`,
+        // coverType 里存的是完整 MIME，直接用
+        type,
         args: null,
         buffer,
       });
