@@ -18,7 +18,7 @@ export function wrap(
   text: string,
   pad?: string,
 ) {
-  return template(pad ? pad + text.replace('\n', `\n${pad}`) : text);
+  return template(pad ? pad + text.replaceAll('\n', `\n${pad}`) : text);
 } /**
  * 标准 FNV-1a 64 位 hash
  * @returns 8 字节 Uint8Array

@@ -14,7 +14,7 @@ import { FetchConfig, fetchers as main } from '..';
 
 const defaultConfig: FetchConfig = {
   maxResults: 3,
-  timeout: 10000,
+  timeout: 10,
   maxLength: 8000,
 };
 
