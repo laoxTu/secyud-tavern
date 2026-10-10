@@ -21,7 +21,7 @@ const config: DeepseekConfig = {
 };
 
 const options: DeepseekOptions = {
-  model: 'deepseek-v4-flash',
+  model: 'deepseek-flash',
   thinking: {
     type: 'enabled',
   },

@@ -246,7 +246,8 @@ export const engine: ModelEngine = {
             break;
           case 'signature_delta':
             output.properties ??= {};
-            output.properties['signature'] += delta.signature;
+            output.properties['signature'] =
+              (output.properties['signature'] ?? '') + delta.signature;
             break;
           case 'thinking_delta':
             output.thought += delta.thinking;

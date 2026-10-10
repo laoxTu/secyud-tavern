@@ -1,8 +1,4 @@
 {
-  "deepseek": {
-    "deepseek-v4-flash": "deepseek-v4-flash",
-    "deepseek-v4-pro": "deepseek-v4-pro"
-  },
   "error": {
     "model": {
       "default_required": "需要设置默认的模型",
