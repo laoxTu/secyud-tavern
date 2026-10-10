@@ -429,11 +429,12 @@ async function resultChatCompletion(ctx: ModelResultContext) {
         );
         let calling: ToolCall = null!;
         if (index < 0) {
+          // arguments 先置空，首片参数交给下面的 += 追加，避免写两遍
           calling = {
             index: tool_call.index,
             id: tool_call.id!,
             name: tool_call.function!.name!,
-            arguments: tool_call.function?.arguments ?? '',
+            arguments: '',
           };
           output.callings.push(calling);
         } else {
