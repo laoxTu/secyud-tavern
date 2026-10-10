@@ -8,6 +8,17 @@
     "prompt": "Prompt",
     "thinking": "Generating thoughts (sub-agent)"
   },
+  "elicit": {
+    "custom": {
+      "placeholder": "Enter a custom answer"
+    },
+    "title": "Question"
+  },
+  "error": {
+    "tool": {
+      "provider_not_registered": "Tool type is not registered: {type}"
+    }
+  },
   "fetcher": {
     "max_length": "Maximum return length",
     "max_results": "Maximum search results",
@@ -30,6 +41,7 @@
     "id": "Tool",
     "provider": {
       "agent": "Sub-agent",
+      "elicit": "Elicitation tool",
       "fetcher": "Web fetcher",
       "memory": "Memory tool",
       "script": "Script",

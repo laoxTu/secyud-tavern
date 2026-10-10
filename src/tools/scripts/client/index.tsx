@@ -40,7 +40,8 @@ export function Editor({
   formRef,
 }: ToolProps<ScriptConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(defaultConfig, data.config);
+  // merge 是就地合并，先克隆默认值，避免渲染一次编辑器就污染模块级的 defaultConfig
+  const config = jsonUtils.merge(structuredClone(defaultConfig), data.config);
 
   return (
     <>
@@ -158,7 +159,10 @@ function script(config: ScriptConfig, realm: Realm): ToolItem {
         context.variables = history.variables;
       }
       const result = fn(args, context);
-      return typeof result === 'string' ? result : JSON.stringify(result);
+      // 脚本没有 return 时 JSON.stringify 会给出 undefined，签名是 Promise<string>，兜底成空串
+      return typeof result === 'string'
+        ? result
+        : (JSON.stringify(result) ?? '');
     },
   };
 }

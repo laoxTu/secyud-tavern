@@ -54,7 +54,8 @@ export function Editor({
   formRef,
 }: ToolProps<AgentConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(defaultConfig, data.config);
+  // merge 是就地合并，先克隆默认值，避免渲染一次编辑器就污染模块级的 defaultConfig
+  const config = jsonUtils.merge(structuredClone(defaultConfig), data.config);
 
   return (
     <>

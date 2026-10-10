@@ -235,7 +235,9 @@ async function generate(create: boolean = false) {
         history.sequence = sequence;
       }
     } catch (err) {
-      set({ summary: false, content: '' });
+      // create 阶段在下面的 try/finally 之前，出错时也要自己复位生成态，
+      // 否则 generating 会一直是 true，后续 generate 全部早退。
+      set({ generating: false, summary: false, content: '' });
       throw err;
     }
   }

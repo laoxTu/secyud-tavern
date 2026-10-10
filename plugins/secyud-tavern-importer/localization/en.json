@@ -2,7 +2,14 @@
   "default": {
     "importer": "Importer"
   },
+  "error": {
+    "file_invalid": "No file uploaded",
+    "silly_tavern": {
+      "file_invalid": "Not a valid SillyTavern character card"
+    }
+  },
   "importer": {
+    "id": "Importer",
     "title": "Import Data",
     "description": "Import data from other taverns/frontends",
     "sillyTavernPreset": "SillyTavern Preset",
@@ -17,5 +24,8 @@
     "invalid_json": "Invalid JSON file",
     "invalid_st_preset": "Not a valid SillyTavern preset",
     "invalid_st_char": "Not a valid SillyTavern character card"
+  },
+  "silly_tavern": {
+    "import": "Import from SillyTavern"
   }
 }

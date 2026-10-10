@@ -1,4 +1,13 @@
 {
+  "default": {
+    "importer": "导入"
+  },
+  "error": {
+    "file_invalid": "未上传文件",
+    "silly_tavern": {
+      "file_invalid": "不是有效的 SillyTavern 角色卡"
+    }
+  },
   "importer": {
     "id":"导入",
     "title": "导入数据",
@@ -9,6 +18,12 @@
     "importSuccess": "导入成功",
     "importFailed": "导入失败",
     "file": "选择文件"
+  },
+  "plugin": {
+    "no_file": "未选择文件",
+    "invalid_json": "JSON 文件无效",
+    "invalid_st_preset": "不是有效的 SillyTavern 预设",
+    "invalid_st_char": "不是有效的 SillyTavern 角色卡"
   },
   "silly_tavern": {
     "import": "从SillyTavern导入"

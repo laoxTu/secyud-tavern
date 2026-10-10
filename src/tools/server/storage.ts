@@ -1,3 +1,4 @@
+import { BusinessError } from '@/interceptors';
 import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { Tool, tools } from '@/tools';
@@ -8,7 +9,11 @@ import { providers } from './providers';
 function provider(type: string) {
   const provider = providers.registry.records[type];
   if (!provider) {
-    console.error(`[tool]: provider ${type} is not registered.`);
+    // 调用点会立刻用返回值，这里必须抛错，否则会变成裸 TypeError
+    throw new BusinessError(
+      `tool provider ${type} is not registered.`,
+      'error.tool.provider_not_registered',
+    ).withValue('type', type);
   }
   return provider;
 }

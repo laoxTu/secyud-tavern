@@ -36,8 +36,8 @@ export default {
       }),
       DELETE: route(async (_, records) => {
         const { id } = await records.params;
-        const models = await files.repository.delete(id);
-        return response.json(models);
+        await files.repository.delete(id);
+        return response.json(null);
       }),
     },
   },

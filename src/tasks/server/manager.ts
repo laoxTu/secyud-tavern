@@ -1,3 +1,4 @@
+import { BusinessError } from '@/interceptors';
 import { getRegistry, getSingleton, Registerable } from '@/plugins';
 
 import { TaskInfo, TaskRunner } from '..';
@@ -21,7 +22,14 @@ export class TaskManager extends TaskRunner<TaskArgs> {
 
   protected async execute(task: TaskInfo<TaskArgs>) {
     const provider = registry.record(task.args.provider);
-    await provider?.execute(task.args, task.controller);
+    // 没注册 provider 说明这个任务什么都不会跑，必须显式失败
+    if (!provider) {
+      throw new BusinessError(
+        `task provider ${task.args.provider} is not registered.`,
+        'error.task.provider_not_registered',
+      ).withValue('type', task.args.provider);
+    }
+    await provider.execute(task.args, task.controller);
     return 'success';
   }
 
