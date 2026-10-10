@@ -1,36 +1,16 @@
 'use client';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import { create } from 'zustand';
 
 import { translator } from '@/components';
-import { utils } from '@/database';
 import { jsonUtils } from '@/utils';
 
 import { signals as main, ToastMessage } from '..';
 
+import { useSseConnection } from './hook';
 import { proxy } from './proxy';
 
-export interface SseConnection {
-  eventSource: EventSource;
-  id: string;
-}
-
-/**
- * 获取sse信号，所有事件在一个客户端通过单例访问
- */
-export const useSseConnection = create<SseConnection>(() => {
-  let es = null;
-  const id = utils.uuid();
-  return {
-    get eventSource() {
-      return (es ??= new EventSource(`/api/sse/${id}`));
-    },
-    get id() {
-      return id;
-    },
-  };
-});
+export * from './hook';
 
 function createCallback<TM>(
   type: string,
