@@ -2,7 +2,7 @@ import { post } from '@/client';
 
 import { SseSubscriptionAction } from '..';
 
-import { useSseConnection } from '.';
+import { useSseConnection } from './hook';
 
 export const proxy = {
   async subscription(param: SseSubscriptionAction) {
