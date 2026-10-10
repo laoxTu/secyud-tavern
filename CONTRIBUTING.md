@@ -11,10 +11,11 @@
 | 方向              | 说明                                                                            |
 | ----------------- | ------------------------------------------------------------------------------- |
 | 缺陷修复 / 新功能 | 直接改 `src/` 下的模块                                                          |
+| 测试              | 提到独立仓库 [secyud-tavern-test](https://github.com/laoxTu/secyud-tavern-test)，写前先读 `tests/GUIDELINES.md` 与 `tests/TODO.md` |
 | 插件              | 在 `plugins/` 下开发，见 [插件开发指南](docs/zh/develop/plugin.md)              |
 | 文档              | 提到独立仓库 [secyud-tavern-docs](https://github.com/laoxTu/secyud-tavern-docs) |
 | 翻译              | 每个模块 `localization/` 下的 `zh.json` / `en.json`                             |
-| 预设模板          | 放到 `docs/templates/presets/`                                                  |
+| 预设模板          | 放到 `docs/templates/root/`（一个预设一个文件夹，内含 `meta.json`）；整包存档是 `docs/templates/example.zip` |
 | 反馈              | 用 Issue 描述你遇到的情况：期望行为、实际行为、复现步骤                         |
 
 ---
@@ -45,7 +46,9 @@ pnpm dev          # → http://localhost:12804
 - `data/` —— 本地数据库。
 - `public/`、`.next/` —— 构建产物与下载的模型。
 - `src/app/api/`、`src/generated/`、`scripts/generated/` —— 自动生成的代码，下次 `pnpm prepare` 会被覆盖。
-- `plugins/` —— 插件各自是独立仓库。
+
+`docs/` 与 `tests/` 是**独立仓库**（`.gitmodules` 里的子模块），
+clone 时加 `--recursive` 才会一起拉下来。它们各自在自己的仓库里提交。
 
 ---
 
@@ -66,6 +69,20 @@ src/<模块>/
 └── localization/     zh.json + en.json
 ```
 
+### 一个模块 = 一个业务域，两侧各半边
+
+每个模块对应**一个业务域**，它在浏览器（`client/`）与 Node（`server/`）两侧
+各有一套实现，服务同一个概念，因此**接口名与注册表名在两侧是相同的** ——
+比如 `model-engine`、`tool-provider`、`comfyui-model-importer` 都各有两个：
+
+| 侧 | 职责 | 典型成员 |
+| --- | --- | --- |
+| `client/` | **界面与交互** | 配置表单、组装请求、解析响应、创建实例 |
+| `server/` | **执行与数据** | 真正请求外部服务、落库、序列化、校验 |
+
+所以看到两侧出现同一个注册表名，它表示的是「同一个域的两个运行时半边」，
+而不是两个需要区分的东西。**反过来，如果同名却合不成一个域，那才是问题。**
+
 路径别名（`tsconfig.json` 与 `vitest.config.ts` 中均已配置）：
 
 | 别名       | 指向                     |
@@ -75,7 +92,12 @@ src/<模块>/
 | `@/hooks`  | `src/utils/client/hooks` |
 | `@plugins` | `plugins/`               |
 
-插件放在 `plugins/<name>/`，每个插件是一个独立的 Git 仓库（主仓库不跟踪该目录）。clone 进去之后执行一次 `pnpm prepare` 即会被自动加载。
+插件放在 `plugins/<name>/`，`pnpm-workspace.yaml` 会把 `plugins/*` 纳入依赖图。只需是一个含 `manifest.json` 的目录即可，**不要求是 Git 仓库或子模块**；`secyud-tavern-importer` 以子模块形式引用，只是作为示例。放进去之后执行一次 `pnpm prepare` 即会被自动加载。
+
+> 这里有一个容易踩的点：模块要出现在生成的注册表里，靠的是 `manifest.json`；
+> 但**接口能否生成路由，只看 `server/api.ts` 文件是否存在**，与 manifest 无关。
+> 所以「加了 `server/api.ts` 但没改 manifest」是正常的，
+> 而「加了 `client`/`server` 注册脚本却没改 manifest」会导致它不被执行。
 
 ---
 
@@ -93,9 +115,22 @@ pnpm test        # watch 模式
 pnpm test run    # 跑一次，提交前用这个
 ```
 
-- 框架为 Vitest + jsdom，用例放在 `tests/<模块>/<名称>.test.ts`，`tests/**/*.{test,spec}.{ts,tsx}` 会被自动收集。
+- 框架为 Vitest + jsdom，用例放在 `tests/<模块>/<名称>.test.ts`（目录与 `src/` 镜像），`tests/**/*.{test,spec}.{ts,tsx}` 会被自动收集。
 - `globals` 已开启，`vitest.setup.ts` 中已 mock `next-themes` 与 `next/navigation`，不需要在每个用例里重复处理。
-- 当前覆盖率较低（仅 ComfyUI、宏、部分工具），纯逻辑部分（宏求值、预设解析、各类 `utils`）非常欢迎补测试。
+- `tests/` 是独立仓库（子模块），因此它有自己的 `package.json`，也是 pnpm workspace 成员。
+
+**写用例之前请先读这两个文件：**
+
+- `tests/GUIDELINES.md` —— 写法与约定。其中最重要的一条是：
+  **凡是「预期行为」和「应对方式」需要人来定的地方，先问，不要自己拍板**；
+  不确定的行为不要写成 `it.fails` 或断言，先描述现象再问。
+- `tests/TODO.md` —— 待办与**已知缺陷清单**，逐条标了文件与行号，
+  并区分「已实测复现」「已写断言的现状」「纯读码推断」。
+  **写新用例前扫一遍，能省掉大部分返工。**
+
+> 如果启动阶段报 `Error: spawn EPERM`，那是运行环境的权限拦截了
+> Vite 加载配置时的子进程（Windows 沙箱 / 受限环境常见），
+> **不是用例的问题**，需要放宽运行权限。
 
 ---
 
@@ -114,6 +149,9 @@ pnpm test run    # 跑一次，提交前用这个
    pnpm test run
    pnpm build
    ```
+   `pnpm format` 的作用范围只有 `src/`（`tests/`、`scripts/`、`plugins/` 不在其中）。
+   受限环境下 `pnpm test run` 可能在加载配置阶段报 `spawn EPERM`（见上一节），
+   此时需要放宽运行权限，而不是改用例。
 4. PR 目标分支为 `main`，描述里说明**改了什么、为什么改、如何验证**；涉及界面的改动请附截图。
 5. 不要在功能 PR 里修改 `package.json` 的版本号，发版由维护者统一处理。
 
