@@ -216,7 +216,7 @@ function PromptInputComponent({
 }
 
 export const prompt: ParamConfigurator<PromptConfig> = {
-  id: main.text.name,
+  id: main.prompt.name,
   configComponent: PromptConfigComponent,
   async configureObject(data, param) {
     param.config = {
