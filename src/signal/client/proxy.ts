@@ -2,8 +2,13 @@ import { post } from '@/client';
 
 import { SseSubscriptionAction } from '..';
 
+import { useSseConnection } from '.';
+
 export const proxy = {
   async subscription(param: SseSubscriptionAction) {
-    await post('sse/{id}/subscription', param);
+    await post('sse/{id}/subscription', {
+      ...param,
+      id: useSseConnection.getState().id,
+    });
   },
 };
