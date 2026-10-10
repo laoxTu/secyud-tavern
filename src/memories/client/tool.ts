@@ -44,7 +44,8 @@ function get(realm: Realm): ToolItem<{
         },
         tags: {
           type: 'array',
-          description: 'the tags to filter. (max 3)',
+          description:
+            'the tags to filter. (max 3; English/ASCII only — tags are stored as English words)',
           items: {
             type: 'string',
           },
@@ -164,7 +165,8 @@ function set(realm: Realm): ToolItem<{
         },
         tags: {
           type: 'array',
-          description: 'tags to help search',
+          description:
+            'tags to help search. use English (ASCII) words only — non-ASCII tags can never be matched by the tag filter',
           items: {
             type: 'string',
           },
