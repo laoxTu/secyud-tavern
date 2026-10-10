@@ -63,6 +63,8 @@ export default {
       image,
       clone: {
         POST: route(async (_, record) => {
+          // 故事克隆和预设不一样，不需要复制entry。
+          // 它承载的意义和预设不一样，故事的克隆是为了新的存档，应该是空的。
           const { id: originId } = await record.params;
           const story: Story = await stories.repository.get(originId);
           const id = await stories.repository.create({
