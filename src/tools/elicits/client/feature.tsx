@@ -32,13 +32,14 @@ function Component() {
           <form
             action={handler(async (data: FormData) => {
               const { item, pop } = useElicitState.getState();
+              if (!item) return;
               const select = forms.str(data, 'elicit');
               const value =
                 select === 'custom'
                   ? forms.str(data, 'custom')
                   : item?.examples[Number(select)] || '';
-              void item?.reply(value);
-              pop();
+              await item.reply(value);
+              await pop(item);
             })}
           />
         }

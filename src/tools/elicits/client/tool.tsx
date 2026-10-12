@@ -1,4 +1,6 @@
 'use client';
+import { utils } from '@/database';
+import { BusinessError } from '@/interceptors';
 import { ToolItem, ToolProvider } from '@/tools/client';
 
 import { elicits as main } from '..';
@@ -39,14 +41,25 @@ function elicit(): ToolItem<ElicitItem> {
     },
     invoke({ args: item }) {
       return new Promise<string>((resolve, reject) => {
+        const state = useElicitState.getState();
+        const timer = setTimeout(async () => {
+          state.timeout(item);
+          reject(new BusinessError('User did not answer in time'));
+        }, 900000);
         try {
-          const state = useElicitState.getState();
           const reply = async (answer: string) => {
             resolve(answer);
+            clear();
           };
-          state.push({ ...item, reply });
+          item = { ...item, reply, id: utils.uuid() };
+          state.push(item);
         } catch (e) {
           reject(e);
+          clear();
+        }
+
+        function clear() {
+          clearTimeout(timer);
         }
       });
     },
