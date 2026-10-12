@@ -1,5 +1,4 @@
 'use client';
-import { Realm } from '@/stories';
 import { ToolItem, ToolProvider } from '@/tools/client';
 
 import { elicits as main } from '..';
@@ -9,15 +8,15 @@ import { ElicitItem, useElicitState } from './states';
 export const tool: ToolProvider = {
   ...main,
   id: main.name,
-  async create(entry, realm) {
-    return [elicit(realm)];
+  async create() {
+    return [elicit()];
   },
 };
 
-function elicit(realm: Realm): ToolItem<ElicitItem> {
+function elicit(): ToolItem<ElicitItem> {
   return {
     name: 'ask_user',
-    description: 'ask the user for input',
+    description: 'ask user for answer',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -25,17 +24,16 @@ function elicit(realm: Realm): ToolItem<ElicitItem> {
       properties: {
         question: {
           type: 'string',
-          description: 'question to ask user',
+          description: 'question to ask',
         },
         examples: {
           type: 'array',
           items: { type: 'string' },
-          description: 'examples to show user, user can select one of them',
+          description: 'user can select one of them',
         },
         custom: {
           type: 'boolean',
-          description:
-            'whether to allow user to input custom answer, true for default',
+          description: 'whether allow custom answer, true for default',
         },
       },
     },
