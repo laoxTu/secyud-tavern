@@ -9,6 +9,7 @@ import { agents } from '@/tools/agents/client';
 import { tab } from '@/tools/client/content';
 import { feature } from '@/tools/client/feature';
 import { fetchers } from '@/tools/fetchers/client';
+import { mcp } from '@/tools/mcp/client';
 import { scripts } from '@/tools/scripts/client';
 import { variables } from '@/tools/variables/client';
 
@@ -69,5 +70,6 @@ export default async function () {
     scripts.tool,
     agents.tool,
     elicits.tool,
+    mcp.tool,
   );
 }
