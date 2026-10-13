@@ -24,6 +24,13 @@
     "max_results": "Maximum search results",
     "timeout": "Timeout"
   },
+  "mcp": {
+    "headers": "Headers (JSON)",
+    "includes": "Enabled tools (empty for all)",
+    "max_length": "Maximum return length",
+    "timeout": "Timeout",
+    "url": "Server URL"
+  },
   "message": {
     "tool": {
       "selector": {
@@ -43,6 +50,7 @@
       "agent": "Sub-agent",
       "elicit": "Elicitation tool",
       "fetcher": "Web fetcher",
+      "mcp": "MCP tool",
       "memory": "Memory tool",
       "script": "Script",
       "variable": "Variable tool"
