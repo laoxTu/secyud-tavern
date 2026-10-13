@@ -87,6 +87,7 @@ export async function calling(
   toolCalls?: ToolCall[],
 ) {
   if (!toolCalls?.length) return;
+
   const cache: ToolCache = tools.cache(realm);
 
   const { setRealmInfo } = useRealmState.getState();
@@ -97,7 +98,9 @@ export async function calling(
     title: 'tool.calling_tool',
   });
 
-  for (const toolCall of toolCalls.filter((u) => !u.result)) {
+  for (const toolCall of toolCalls.filter(
+    (u) => !u.result && u.result !== '',
+  )) {
     await manager.create(toolCall.id, toolCall);
   }
 
