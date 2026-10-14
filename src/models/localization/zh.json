@@ -15,6 +15,7 @@
     "frequency_penalty": "frequency penalty (用词重复度 -2.0~2.0)",
     "id": "模型",
     "iterations": "回合次数",
+    "layers": "层数限制",
     "logprobs": "logprobs (返回置信度)",
     "max_iterations": "单回合最大轮次",
     "max_tokens": "max tokens (输出长度上限 0~max)",

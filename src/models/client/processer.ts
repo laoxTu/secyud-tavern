@@ -160,15 +160,18 @@ async function prompt({
   current: boolean;
   controller: AbortController;
 }) {
-  const { engine } = modelInfo(realm.model);
+  const { engine, model } = modelInfo(realm.model);
   const histories: RealmHistory[] = [];
-  for (let i = realm.histories.length; i > 0; i--) {
+  const layers = model.properties?.layers;
+  const length = realm.histories.length;
+  for (let i = length; i > 0; i--) {
     const history = await realms.history.get(i, realm);
     histories.push(history);
     if (history.summary) break;
     if (i === 1) {
       histories.push(realms.opening(realm));
     }
+    if (layers && i % layers === 0 && length - i > layers) break;
   }
   histories.reverse();
   console.debug('[realm](histories): ', histories);
