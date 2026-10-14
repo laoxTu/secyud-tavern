@@ -35,6 +35,12 @@ export interface ModelProperty {
      */
     max: number;
   };
+  /**
+   * 层数，用于分层，控制上下文
+   * 例如20层，则对话到42层时，
+   * 会取 20 - 42层，而非0 - 42层。
+   */
+  layers: number;
 }
 
 export interface ModelSetting {

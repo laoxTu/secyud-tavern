@@ -44,6 +44,7 @@ function ModelPropertyContent() {
 
   const properties: ModelProperty = item?.properties ?? {
     retry: { max: 3, interval: 5 },
+    layers: 40,
   };
   const { max = 3, interval = 5 } = properties.retry ?? {};
 
@@ -73,6 +74,7 @@ function ModelPropertyContent() {
                   max: forms.int(data, 'retry_max'),
                   interval: forms.int(data, 'interval'),
                 },
+                layers: forms.int(data, 'layers'),
               },
             }),
           );
@@ -123,6 +125,17 @@ function ModelPropertyContent() {
           max={100}
           step={1}
           defaultValue={item.iterations}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`model-layers`}>{t('model.layers')}</FieldLabel>
+        <Input
+          name="layers"
+          id={`model-layers`}
+          type="number"
+          min={0}
+          step={1}
+          defaultValue={item.properties?.layers}
         />
       </Field>
       <Field>

@@ -7,7 +7,6 @@ export interface AgentConfig {
   disableTags: string[];
   code: string;
   description?: string;
-  maxLength: number;
   schema?: string;
   disablePreset: boolean;
   model: NameValue | null;
