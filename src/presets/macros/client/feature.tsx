@@ -97,9 +97,15 @@ function Component() {
                               {t.name}
                               <IconTooltip
                                 label={
-                                  <pre className="wrap-break-word">
-                                    {t.value}
-                                  </pre>
+                                  <div
+                                    className={
+                                      'overflow-auto max-h-96 scrollbar-none'
+                                    }
+                                  >
+                                    <pre className="wrap-break-word whitespace-pre-wrap">
+                                      {t.value}
+                                    </pre>
+                                  </div>
                                 }
                               >
                                 <CircleAlertIcon />
