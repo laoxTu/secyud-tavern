@@ -1,4 +1,3 @@
-import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { archives } from '@/utils/archive';
 
@@ -20,24 +19,14 @@ export const storage = storages.create<Script>(
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async ({ cur }, item, s) => {
-    const name = `${item.code}-${s}`;
-
-    archives.set.json(cur, `${name}.meta.json`, {
-      ...item,
-      content: undefined,
-    });
-    const ext = mapToExt(item.type);
-    archives.set.text(cur, `${name}.script.${ext}`, item.content);
+  async ({ cur }, entry, s) => {
+    const name = `${entry.code}-${s}`;
+    const ext = mapToExt(entry.type);
+    archives.set.text(cur, `${name}.script.${ext}`, entry.content);
+    entry.content = undefined;
+    return name;
   },
-  async ({ cur }, name) => {
-    const item = await archives.get.json<PresetItem<Script>>(
-      cur,
-      `${name}.meta.json`,
-    );
-    if (item) {
-      item.content = await archives.get.fuzzy(cur, `${name}.script.`);
-    }
-    return item;
+  async ({ cur }, entry, name) => {
+    entry.content = await archives.get.fuzzy(cur, `${name}.script.`);
   },
 );

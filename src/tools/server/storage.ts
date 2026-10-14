@@ -1,8 +1,6 @@
 import { BusinessError } from '@/interceptors';
-import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { Tool, tools } from '@/tools';
-import { archives } from '@/utils/archive';
 
 import { providers } from './providers';
 
@@ -27,16 +25,9 @@ export const storage = storages.create<Tool>(
   async (ctx, entry, s) => {
     const name = `${entry.name}-${s}`;
     await provider(entry.type).loadArchive({ ...ctx, entry, name });
-    archives.set.json(ctx.cur, `${name}.meta.json`, entry);
+    return name;
   },
-  async (ctx, name) => {
-    const entry = await archives.get.json<PresetItem<Tool>>(
-      ctx.cur,
-      `${name}.meta.json`,
-    );
-    if (entry) {
-      await provider(entry.type).saveArchive({ ...ctx, entry, name });
-    }
-    return entry;
+  async (ctx, entry, name) => {
+    await provider(entry.type).saveArchive({ ...ctx, entry, name });
   },
 );
