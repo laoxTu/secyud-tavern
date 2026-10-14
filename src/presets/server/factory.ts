@@ -109,9 +109,9 @@ export const storages = {
               folders.push(node);
             }
             if (node.type === 'file' && node.name.endsWith('.meta.json')) {
-              const name = node.name.substring(0, -'.meta.json'.length);
+              const name = node.name.slice(0, -'.meta.json'.length);
               const entry = await archives.get.json<PresetItem<TData>>(
-                cur,
+                folder.nodes,
                 node.name,
               );
               if (entry) {
