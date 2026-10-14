@@ -209,11 +209,8 @@ function agent(config: AgentConfig, realm: Realm, info: Output): ToolItem {
         const index = histories.length - 1;
         const history = histories[index];
         if (history) {
-          histories[index] = {
-            ...history,
-            outputs: [],
-            output: -1,
-          };
+          // 这里没有工作区，只能用深拷贝了。后续如果加入工作区，可以改成以工作区为准。
+          histories[index] = structuredClone(history);
         }
       }
 
