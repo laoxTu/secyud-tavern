@@ -1,4 +1,3 @@
-import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { archives } from '@/utils/archive';
 
@@ -12,22 +11,12 @@ export const storage = storages.create<Style>(
   }),
   async ({ cur }, item, s) => {
     const name = `${item.code}-${s}`;
-
-    archives.set.json(cur, `${name}.meta.json`, {
-      ...item,
-      content: undefined,
-    });
     const ext = item.type === 'link' ? 'txt' : 'css';
     archives.set.text(cur, `${name}.style.${ext}`, item.content);
+    item.content = undefined;
+    return name;
   },
-  async ({ cur }, name) => {
-    const item = await archives.get.json<PresetItem<Style>>(
-      cur,
-      `${name}.meta.json`,
-    );
-    if (item) {
-      item.content = await archives.get.fuzzy(cur, `${name}.style.`);
-    }
-    return item;
+  async ({ cur }, entry, name) => {
+    entry.content = await archives.get.fuzzy(cur, `${name}.style.`);
   },
 );

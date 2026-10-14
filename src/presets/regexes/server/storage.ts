@@ -1,6 +1,4 @@
-import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
-import { archives } from '@/utils/archive';
 
 import { Regex, regexes } from '..';
 
@@ -10,15 +8,9 @@ export const storage = storages.create<Regex>(
     sorter: `${name}`,
     filter: `${target}${name}`,
   }),
-  async ({ cur }, item, s) => {
-    const name = `${item.name}-${s}`;
-    archives.set.json(cur, `${name}.meta.json`, item);
+  async ({}, entry, s) => {
+    const name = `${entry.name}-${s}`;
+    return name;
   },
-  async ({ cur }, name) => {
-    const item = await archives.get.json<PresetItem<Regex>>(
-      cur,
-      `${name}.meta.json`,
-    );
-    return item;
-  },
+  async () => {},
 );

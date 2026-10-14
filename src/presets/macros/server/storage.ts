@@ -1,4 +1,3 @@
-import { PresetItem } from '@/presets';
 import { storages } from '@/presets/server/factory';
 import { archives } from '@/utils/archive';
 
@@ -10,24 +9,15 @@ export const storage = storages.create<Macro>(
     sorter: `${key}${+multiple}${+hidden}`,
     filter: `${key}${name}`,
   }),
-  async ({ cur }, item, s) => {
-    const name = `${item.code}-${item.key}-${s}`;
-    const ext = item.json ? 'json' : 'txt';
+  async ({ cur }, entry, s) => {
+    const name = `${entry.code}-${entry.key}-${s}`;
+    const ext = entry.json ? 'json' : 'txt';
 
-    archives.set.json(cur, `${name}.meta.json`, {
-      ...item,
-      value: undefined,
-    });
-    archives.set.text(cur, `${name}.value.${ext}`, item.value);
+    archives.set.text(cur, `${name}.value.${ext}`, entry.value);
+    entry.value = undefined;
+    return name;
   },
-  async ({ cur }, name) => {
-    const item = await archives.get.json<PresetItem<Macro>>(
-      cur,
-      `${name}.meta.json`,
-    );
-    if (item) {
-      item.value = await archives.get.fuzzy(cur, `${name}.value.`);
-    }
-    return item;
+  async ({ cur }, entry, name) => {
+    entry.value = await archives.get.fuzzy(cur, `${name}.value.`);
   },
 );
