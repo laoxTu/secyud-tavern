@@ -17,7 +17,7 @@ import {
   Entry,
   EntryRequestParam,
 } from '@/database';
-import { Registry } from '@/plugins';
+import { Registry } from '@/global';
 
 import { dbProvider } from './provider';
 import { Storage, StorageManager } from './storage';
@@ -52,7 +52,7 @@ export const json = <T = any>(name: string) =>
   text(name, { mode: 'json' }).$type<T>();
 export const boolean = (name: string) =>
   integer(name, { mode: 'boolean' }).$type<boolean>();
-export const foreignKey = (name: string, ref: () => SQLiteColumn) =>
+export const withForeign = (name: string, ref: () => SQLiteColumn) =>
   text(name).references(ref, {
     onDelete: 'cascade',
     onUpdate: 'cascade',
@@ -63,7 +63,7 @@ export const schemas = {
     return sqliteTable(
       name,
       {
-        masterId: foreignKey('master_id', ref).notNull(),
+        masterId: withForeign('master_id', ref).notNull(),
         entryType: text('entry_type').notNull(),
         entryId: integer('entry_id').notNull(),
         name: text('name').notNull().default(''),
@@ -145,6 +145,8 @@ export const repositories = {
       entryType: string,
       entries: TEntry[],
     ) => {
+      // 空数组没有可写入的行，drizzle 的 values([]) 会直接抛错
+      if (!entries.length) return;
       const entryId = (await getMaxEntryId(masterId, entryType)) + 1;
       await db.insert(table).values(
         entries.map(

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import React, { RefObject, useRef, useState } from 'react';
 import { validate } from 'uuid';
 
-import { files } from '@/files/client';
+import { files } from '@/database/files/client';
 import { forms } from '@/global';
 import { cn } from '@/lib/utils';
 

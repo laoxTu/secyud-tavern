@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 import { registerServerPlugin } from '@/generated/server-registerer';
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 
 export interface NextContext {
   params: Promise<Record<string, any>>;

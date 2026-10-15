@@ -1,8 +1,8 @@
 import { utils } from '@/database';
 import { Preset, PresetItem } from '@/presets';
 import { Script, scripts } from '@/presets/scripts';
-import { realms } from '@/stories/client/realms';
 import { Renderer } from '@/stories/client/renderer';
+import { realms } from '@/stories/realms/client';
 import { jsonUtils } from '@/utils';
 
 const prefix = 'sct';

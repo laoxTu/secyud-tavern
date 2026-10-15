@@ -22,7 +22,7 @@ import { Macro, macros as main } from '@/presets/macros';
 import { macros } from '@/presets/macros/client';
 import { MacroCacheItem } from '@/presets/macros/client/realm';
 import { Feature, stories } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 
 function Component() {
   const t = useTranslations();
@@ -97,9 +97,15 @@ function Component() {
                               {t.name}
                               <IconTooltip
                                 label={
-                                  <pre className="wrap-break-word">
-                                    {t.value}
-                                  </pre>
+                                  <div
+                                    className={
+                                      'overflow-auto max-h-96 scrollbar-none'
+                                    }
+                                  >
+                                    <pre className="wrap-break-word whitespace-pre-wrap">
+                                      {t.value}
+                                    </pre>
+                                  </div>
                                 }
                               >
                                 <CircleAlertIcon />

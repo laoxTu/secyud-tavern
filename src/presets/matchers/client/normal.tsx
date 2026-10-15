@@ -1,0 +1,131 @@
+'use client';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+
+import { TagBox } from '@/components';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { forms } from '@/global';
+import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
+import { jsonUtils } from '@/utils';
+
+import { Matcher } from '.';
+
+export interface NormalMatchConfig {
+  // 关键词
+  keywords: string[][];
+  // 关键词组数量
+  keywordsLength: number;
+  // 需要符合的最小数量
+  fitCount: number;
+}
+
+export const defaultValue: NormalMatchConfig = {
+  fitCount: 1,
+  keywords: [[]],
+  keywordsLength: 1,
+};
+
+export function NormalMatcher({
+  entry: {
+    entryId,
+    data: { expression },
+  },
+}: {
+  entry: PresetEntry<Lorebook>;
+}) {
+  const t = useTranslations();
+  const config: NormalMatchConfig = jsonUtils.merge(defaultValue, expression);
+  const [keywordsLength, setKeywordsLength] = useState(config.keywordsLength);
+  const maxLength = 4;
+  const clamp = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max);
+
+  return (
+    <>
+      <Field>
+        <FieldLabel htmlFor={`lorebook-fit_count-${entryId}`}>
+          {t('lorebook.fit_count')}
+        </FieldLabel>
+        <Input
+          id={`lorebook-fit_count-${entryId}`}
+          type={'number'}
+          min={1}
+          max={Math.max(keywordsLength, 1)}
+          step={1}
+          defaultValue={config.fitCount}
+          name={'fitCount'}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`lorebook-keywords_length-${entryId}`}>
+          {t('lorebook.keywords_groups_length')}
+        </FieldLabel>
+        <Input
+          id={`lorebook-keywords_length-${entryId}`}
+          type={'number'}
+          min={1}
+          max={maxLength}
+          step={1}
+          value={keywordsLength}
+          onChange={(e) =>
+            setKeywordsLength(clamp(parseInt(e.target.value), 1, maxLength))
+          }
+          name={'keywordsLength'}
+        />
+      </Field>
+      {Array.from({ length: keywordsLength }).map((_, index) => (
+        <Field key={index}>
+          <FieldLabel htmlFor={`lorebook-keywords-${entryId}-${index}`}>
+            {`${t('lorebook.include_any_word')} ${index + 1}`}
+          </FieldLabel>
+          <TagBox
+            id={`lorebook-keywords-${entryId}-${index}`}
+            name={`keywords-${index}`}
+            value={config.keywords.length > index ? config.keywords[index] : []}
+          />
+        </Field>
+      ))}
+    </>
+  );
+}
+
+export function normalConfig(data: FormData): NormalMatchConfig {
+  const keywordsLength = forms.int(data, 'keywordsLength');
+  const keywords: string[][] = [];
+  for (let i = 0; i < keywordsLength; i++) {
+    keywords.push(forms.strs(data, `keywords-${i}`));
+  }
+  return {
+    keywords,
+    keywordsLength,
+    fitCount: Math.min(forms.int(data, 'fitCount'), keywords.length),
+  };
+}
+
+export function normalMatch(content: string, expression?: NormalMatchConfig) {
+  if (!expression?.keywordsLength) return false;
+  let fitCount = 0;
+  for (const keywords of expression.keywords) {
+    if (keywords.some((keyword) => content.includes(keyword))) {
+      fitCount++;
+    }
+    if (fitCount >= expression.fitCount) return true;
+  }
+  return false;
+}
+
+export const normalMatcher: Matcher = {
+  id: 'normal',
+  configComponent: NormalMatcher,
+  async configureObject(data, lorebook: Lorebook<NormalMatchConfig>) {
+    lorebook.expression = normalConfig(data);
+  },
+  prompt: async (ctx, lorebook) => {
+    return normalMatch(ctx.history.content, lorebook.expression);
+  },
+  output: async (_ctx, output, lorebook) => {
+    return normalMatch(output.content, lorebook.expression);
+  },
+} as const;

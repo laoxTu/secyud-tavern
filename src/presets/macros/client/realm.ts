@@ -7,7 +7,7 @@ import { Macro, macros as main } from '@/presets/macros';
 import { regexes as regexMain } from '@/presets/regexes';
 import { Realm, RealmHistory } from '@/stories';
 import { Renderer } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
 import { macros } from '.';
@@ -82,11 +82,13 @@ async function apply(
         }
       : text;
   }
+  const space = realms.space(history)?.properties;
   const obj = {
     ...variables,
     // 外部传入的参数，子Agent参数
     ...(properties?.args ?? {}),
-    variables: realms.variables(history, false),
+    space,
+    variables: history.variables,
   };
   /**
    * 世界书也会经过转化

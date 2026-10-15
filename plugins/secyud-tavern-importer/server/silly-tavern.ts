@@ -1,11 +1,11 @@
 import { CharacterCard, OpenAIPreset } from 'parsecard';
 
 import { utils } from '@/database';
-import { Lorebook, LorebookRole } from '@/lorebooks';
-import { AlwaysMatchConfig } from '@/lorebooks/client/matchers/always';
-import { NormalMatchConfig } from '@/lorebooks/client/matchers/normal';
 import { Preset, PresetItem } from '@/presets';
+import { Lorebook, LorebookRole } from '@/presets/lorebooks';
 import { Macro } from '@/presets/macros';
+import { AlwaysMatchConfig } from '@/presets/matchers/client/always';
+import { NormalMatchConfig } from '@/presets/matchers/client/normal';
 import { Regex } from '@/presets/regexes';
 import { Script } from '@/presets/scripts';
 import { Style } from '@/presets/styles';
@@ -136,8 +136,9 @@ async function preset(card: OpenAIPreset, cover?: string) {
   }
 
   for (const [key, entries] of Object.entries(records)) {
-    for (let i = 0; i < entries[1].length; i++) {
-      const entry = entries[1][i];
+    // entries 就是 key 对应的值数组，第 i 次赋值取 entries[i]
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
       macro({
         name: `${key}_${i}`,
         code: `${key}_${i}`,
@@ -341,8 +342,9 @@ async function chara(card: CharacterCard, cover?: string) {
   }
 
   for (const [key, entries] of Object.entries(records)) {
-    for (let i = 0; i < entries[1].length; i++) {
-      const entry = entries[1][i];
+    // entries 就是 key 对应的值数组，第 i 次赋值取 entries[i]
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
       macro({
         name: `${key}_${i}`,
         code: `${key}_${i}`,

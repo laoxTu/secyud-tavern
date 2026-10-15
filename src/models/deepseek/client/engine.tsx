@@ -24,7 +24,7 @@ import {
 } from '@/models/client';
 import { DeepseekConfig, DeepseekOptions, deepseeks } from '@/models/deepseek';
 import { openais } from '@/models/openai/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools/client';
 
 function Content() {
@@ -202,7 +202,7 @@ export const engine: ModelEngine = {
     );
 
     const usage = utils.getProperty<TokenUsage>(
-      realms.outputs(ctx.histories.at(-2))?.at(-1),
+      realms.space(ctx.histories.at(-2))?.outputs.at(-1),
       'usage',
     );
 

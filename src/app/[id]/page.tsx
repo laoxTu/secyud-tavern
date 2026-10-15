@@ -1,5 +1,5 @@
 'use client';
-import RealmPageContent from '@/stories/client/realms/page';
+import RealmPageContent from '@/stories/realms/client/page';
 
 export default function RealmPage({
   params,

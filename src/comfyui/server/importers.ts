@@ -1,8 +1,8 @@
 import { ComfyUIModel, ComfyUIModelSetting } from '@/comfyui';
 // 导入器的下载功能，从对应网站下载模型
+import { getRegistry, Registerable } from '@/global';
 import { settings } from '@/global/server';
 import { BusinessError, checker } from '@/interceptors';
-import { getRegistry, Registerable } from '@/plugins';
 import { signals } from '@/signal/server';
 import { TaskArgs, TaskProvider } from '@/tasks/server/manager';
 import { fileUtils } from '@/utils/server';

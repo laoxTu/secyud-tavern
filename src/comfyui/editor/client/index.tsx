@@ -28,7 +28,7 @@ import { forms } from '@/global';
 import { BusinessError, checker } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { agents, Editor } from '@/tools/agents/client';
 import { ToolItem } from '@/tools/client';
 import { jsonUtils } from '@/utils';

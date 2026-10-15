@@ -1,6 +1,6 @@
 import { Criteria } from '@/database/server/storage';
 import { Preset, PresetEntry, PresetItem } from '@/presets';
-import { ArchiveFolder } from '@/utils/archive';
+import { ArchiveFolder, archives } from '@/utils/archive';
 
 import { repository } from './repository';
 import { PresetArchiveContext, PresetStorage } from './storage';
@@ -18,15 +18,16 @@ export const storages = {
       context: PresetArchiveContext,
       entry: PresetItem<TData>,
       sequence: number,
-    ) => Promise<void>,
+    ) => Promise<string>,
     /**
      * 注意name是.之前的名称 可能是 name-1
      * 只做解析用，真正的code在meta中
      */
     saveArchive: (
       context: PresetArchiveContext,
+      entry: PresetItem<TData>,
       name: string,
-    ) => Promise<PresetItem<TData> | undefined>,
+    ) => Promise<void>,
   ): PresetStorage {
     return {
       id: type,
@@ -81,7 +82,7 @@ export const storages = {
 
           for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            await loadArchive(
+            const name = await loadArchive(
               {
                 cur: folder.nodes,
                 root,
@@ -91,27 +92,43 @@ export const storages = {
               entry,
               i,
             );
+            archives.set.json(cur, `${name}.meta.json`, entry);
           }
         }
       },
       async saveArchive({ item, cur, root, append }) {
-        const folder = cur[plural];
-        if (!folder || folder.type === 'file') return;
-        const codes = [
-          ...new Set(Object.keys(folder.nodes).map((u) => u.split('.')[0])),
-        ];
+        const parent = cur[plural];
+        if (!parent || parent.type === 'file') return;
+        const folders = [parent];
         const entries: PresetItem<TData>[] = [];
-        for (const code of codes) {
-          const entry = await saveArchive(
-            {
-              cur: folder.nodes,
-              root,
-              item,
-              append,
-            },
-            code,
-          );
-          if (entry) entries.push(entry);
+
+        for (let i = 0; i < folders.length; i++) {
+          const folder = folders[i];
+          for (const node of Object.values(folder.nodes)) {
+            if (node.type === 'folder') {
+              folders.push(node);
+            }
+            if (node.type === 'file' && node.name.endsWith('.meta.json')) {
+              const name = node.name.slice(0, -'.meta.json'.length);
+              const entry = await archives.get.json<PresetItem<TData>>(
+                folder.nodes,
+                node.name,
+              );
+              if (entry) {
+                await saveArchive(
+                  {
+                    cur: folder.nodes,
+                    root,
+                    item,
+                    append,
+                  },
+                  entry,
+                  name,
+                );
+                entries.push(entry);
+              }
+            }
+          }
         }
         item.entries ??= {};
         item.entries[plural] = entries;

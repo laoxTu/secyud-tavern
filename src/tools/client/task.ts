@@ -1,6 +1,6 @@
 import { signals } from '@/signal';
-import { Realm } from '@/stories';
-import { useRealmState } from '@/stories/client/realms';
+import { Realm, RealmHistory } from '@/stories';
+import { realms, useRealmState } from '@/stories/realms/client';
 import { TaskInfo, TaskRunner } from '@/tasks';
 
 import { ToolCall } from '..';
@@ -83,10 +83,12 @@ class Manager extends TaskRunner<ToolCall> {
 
 export async function calling(
   realm: Realm,
+  history: RealmHistory | null,
   controller: AbortController,
   toolCalls?: ToolCall[],
 ) {
   if (!toolCalls?.length) return;
+
   const cache: ToolCache = tools.cache(realm);
 
   const { setRealmInfo } = useRealmState.getState();
@@ -97,8 +99,14 @@ export async function calling(
     title: 'tool.calling_tool',
   });
 
-  for (const toolCall of toolCalls.filter((u) => !u.result)) {
-    await manager.create(toolCall.id, toolCall);
+  const callings = toolCalls.filter((u) => !u.result && u.result !== '');
+
+  if (callings.length && history) {
+    realms.change(realm, history);
+  }
+
+  for (const calling of callings) {
+    await manager.create(calling.id, calling);
   }
 
   await manager.wait();

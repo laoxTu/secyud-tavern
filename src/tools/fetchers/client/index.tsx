@@ -14,13 +14,14 @@ import { FetchConfig, fetchers as main } from '..';
 
 const defaultConfig: FetchConfig = {
   maxResults: 3,
-  timeout: 10000,
+  timeout: 10,
   maxLength: 8000,
 };
 
 export function Editor({ entry: { entryId, data } }: ToolProps<FetchConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(defaultConfig, data.config);
+  // merge 是就地合并，先克隆默认值，避免渲染一次编辑器就污染模块级的 defaultConfig
+  const config = jsonUtils.merge(structuredClone(defaultConfig), data.config);
 
   return (
     <>
@@ -125,7 +126,8 @@ function fetcher(config: FetchConfig): ToolItem<{ urls: string[] }> {
       return arrUtils.join(
         results,
         '\n',
-        (u) => `${u.url}\r\n${u.content ?? u.error}`,
+        // content 与 error 都为空时兜底成明确文案，避免拼出字面量 undefined
+        (u) => `${u.url}\r\n${u.content ?? u.error ?? 'no content'}`,
       );
     },
   };

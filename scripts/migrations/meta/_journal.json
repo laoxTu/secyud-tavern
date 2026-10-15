@@ -15,6 +15,13 @@
       "when": 1790587795682,
       "tag": "0001_aberrant_puff_adder",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792049285085,
+      "tag": "0002_panoramic_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

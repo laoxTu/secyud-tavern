@@ -1,0 +1,78 @@
+'use client';
+import { useTranslations } from 'next-intl';
+
+import { Field, FieldLabel, Input } from '@/components';
+import { forms } from '@/global';
+import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
+import { jsonUtils } from '@/utils';
+import { extract } from '@/utils/json-patch';
+
+import { Matcher } from '.';
+
+export interface VariableMatchConfig {
+  // 路径
+  path: string;
+  // 值
+  value: string;
+}
+
+export const defaultValue: VariableMatchConfig = {
+  path: '',
+  value: '',
+};
+
+function MatcherComponent({
+  entry: {
+    entryId,
+    data: { expression },
+  },
+}: {
+  entry: PresetEntry<Lorebook>;
+}) {
+  const t = useTranslations();
+  const config: VariableMatchConfig = jsonUtils.merge(defaultValue, expression);
+  return (
+    <>
+      <Field>
+        <FieldLabel htmlFor={`lorebook-path-${entryId}`}>
+          {t('default.path')}
+        </FieldLabel>
+        <Input
+          id={`lorebook-path-${entryId}`}
+          name={`match_path`}
+          defaultValue={config.path}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor={`lorebook-value-${entryId}`}>
+          {t('default.value')}
+        </FieldLabel>
+        <Input
+          id={`lorebook-value-${entryId}`}
+          name={`match_value`}
+          defaultValue={config.value}
+        />
+      </Field>
+    </>
+  );
+}
+
+export const variableMatcher: Matcher = {
+  id: 'variable',
+  configComponent: MatcherComponent,
+  async configureObject(data, lorebook: Lorebook<VariableMatchConfig>) {
+    lorebook.expression = {
+      path: forms.str(data, 'match_path'),
+      value: forms.str(data, 'match_value'),
+    };
+  },
+  prompt: async (context, lorebook) => {
+    const expression: VariableMatchConfig = lorebook.expression;
+    const { exists, current } = extract(
+      context.history.variables,
+      expression.path,
+    );
+    return exists && String(current.item) === expression.value;
+  },
+} as const;

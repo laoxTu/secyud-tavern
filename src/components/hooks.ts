@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Properties, utils } from '@/database';
-import { Registerable, Registry } from '@/plugins';
+import { Registerable, Registry } from '@/global';
 
 export function useRefresh() {
   const [key, setKey] = useState(0);

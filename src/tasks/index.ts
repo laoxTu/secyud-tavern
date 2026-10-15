@@ -78,11 +78,13 @@ export abstract class TaskRunner<TArgs = any> {
   async start() {
     let task: TaskInfo | undefined;
     await this.mutex.lock(async () => {
-      // 超出任务上限
-      if (this.max <= this.running.size)
-        throw new BusinessError('running task over limit!');
+      // 到达并发上限：任务继续留在 pending 里等空位，
+      // 由 finish()/delete() 再次触发 start() 时补位；不向调用方抛错
+      if (this.max <= this.running.size) return;
       const top = this.pending.shift();
       if (!top) return;
+      // 运行中的任务用新实例（副本）承载 controller 等运行期字段，
+      // 并回写 running；外部一律按 id（get/delete）取当前实例，不要持有入队时的对象
       task = {
         ...top,
         controller: new AbortController(),
@@ -101,12 +103,14 @@ export abstract class TaskRunner<TArgs = any> {
       const origin = this.running.get(id)!;
       // 重试任务前应当先取消任务
       origin.controller.abort(new BusinessError('restart', `error.restart`));
-      // 新任务不要和前面的混用引用，建立新实例
+      // 新任务不要和前面的混用引用，建立新实例；
+      // 但必须回写 running —— get/delete 都是按 id 从这张表里取当前实例
       const task = {
         ...origin,
         controller: new AbortController(),
         attempt: origin.attempt + 1,
       };
+      this.running.set(id, task);
       await this.run(task);
     });
   }
@@ -132,7 +136,9 @@ export abstract class TaskRunner<TArgs = any> {
 
   protected async finish(task: TaskInfo<TArgs>) {
     await this.mutex.lock(async () => {
-      this.running.delete(task.id);
+      // 只有自己仍是当前实例时才移除：restart 会换成新实例，
+      // 旧一轮迟到结束时不能把新一轮从 running 里踢掉
+      if (this.running.get(task.id) === task) this.running.delete(task.id);
       task.finish = Date.now();
     });
     await this.start();

@@ -4,6 +4,7 @@ import { tools as main } from '..';
 import { agents } from '../agents/server';
 import { elicits } from '../elicits/server';
 import { fetchers } from '../fetchers/server';
+import { mcp } from '../mcp/server';
 import { scripts } from '../scripts/server';
 import { variables } from '../variables/server';
 
@@ -29,5 +30,6 @@ export default async function () {
     scripts.provider,
     agents.provider,
     elicits.provider,
+    mcp.provider,
   );
 }

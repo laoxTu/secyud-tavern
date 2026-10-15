@@ -27,7 +27,7 @@ import {
   models,
   useModelState,
 } from '@/models/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolCall } from '@/tools';
 import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';
@@ -507,7 +507,7 @@ export const engine: ModelEngine = {
     );
 
     const usage = utils.getProperty<TokenUsage>(
-      realms.outputs(ctx.histories.at(-2))?.at(-1),
+      realms.space(ctx.histories.at(-2))?.outputs.at(-1),
       'usage',
     );
 

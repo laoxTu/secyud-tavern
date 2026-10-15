@@ -23,7 +23,7 @@ import { ModelNameValueField, models } from '@/models/client';
 import { PresetNameValuesField, presets } from '@/presets/client';
 import { Realm, Story } from '@/stories';
 import { stories } from '@/stories/client';
-import { RealmInfo, useRealmState } from '@/stories/client/realms';
+import { RealmInfo, realms, useRealmState } from '@/stories/realms/client';
 import { Tool } from '@/tools';
 import { AgentConfig } from '@/tools/agents';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
@@ -33,7 +33,6 @@ import { agents as main } from '..';
 
 const defaultConfig: AgentConfig = {
   disablePreset: false,
-  maxLength: 0,
   code: '',
   description: '',
   disableTags: [],
@@ -54,7 +53,8 @@ export function Editor({
   formRef,
 }: ToolProps<AgentConfig>) {
   const t = useTranslations();
-  const config = jsonUtils.merge(defaultConfig, data.config);
+  // merge 是就地合并，先克隆默认值，避免渲染一次编辑器就污染模块级的 defaultConfig
+  const config = jsonUtils.merge(structuredClone(defaultConfig), data.config);
 
   return (
     <>
@@ -98,20 +98,6 @@ export function Editor({
             id={`${entryId}-disable_preset`}
             name={'disable_preset'}
             defaultChecked={config.disablePreset}
-          />
-        </FieldContent>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor={`${entryId}-max_length`}>
-          {t('agent.max_length')}
-        </FieldLabel>
-        <FieldContent>
-          <Input
-            id={`${entryId}-max_length`}
-            name={'max_length'}
-            min={0}
-            step={1}
-            defaultValue={config.maxLength}
           />
         </FieldContent>
       </Field>
@@ -173,6 +159,7 @@ async function create(
     properties: {
       agent: 1,
     },
+    changes: {},
   };
   await models.processers.initialize({ realm });
 
@@ -196,7 +183,6 @@ const tool: ToolProvider<AgentConfig> = {
       description: forms.str(data, 'description'),
       code: forms.str(data, 'code'),
       disablePreset: forms.bool(data, 'disable_preset'),
-      maxLength: forms.int(data, 'max_length'),
       model: combobox.get(data, 'model'),
     };
   },
@@ -217,25 +203,27 @@ function agent(config: AgentConfig, realm: Realm, info: Output): ToolItem {
     parameters: jsonUtils.parse(config.schema),
     async invoke({ args, toolcall, controller }) {
       let result: string = 'error: empty content';
-      // 深拷贝待解析副本，防止不必要的变化，例如工具冲突。
+      // 只用前面已经完结的历史
       // 主agent可能已经设置了工具调用
-      const histories = structuredClone(
-        realm.histories.slice(-config.maxLength),
-      );
-      if (!histories.length) {
-        histories.push({
-          masterId: realm.id,
-          output: 0,
-          sequence: 0,
-          prompts: [],
-          outputs: [],
-          summary: false,
-          variables: {},
-        });
+      const histories = [...realm.histories];
+      if (histories.length) {
+        const index = histories.length - 1;
+        const history = histories[index];
+        if (history) {
+          // 工作区 Agent 共用当前工作区，只有输出列表不引用
+          // 同时最后一个输出的也剔除，这样子Agent也可以操作
+          // 工作区以及历史的属性
+          const space = realms.space(history)!;
+          space.properties ??= {};
+          const clone = {
+            ...history,
+            index: 0,
+            spaces: [{ ...space, outputs: space.outputs.slice(0, -1) }],
+          };
+          histories[index] = clone;
+        }
       }
-      const history = histories.at(-1)!;
-      history.outputs = [];
-      history.output = -1;
+
       let thoughtLen = 0;
       let toolArgLen = 0;
       for await (const { output } of models.processers.generate({

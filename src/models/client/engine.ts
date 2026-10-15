@@ -1,18 +1,90 @@
 'use client';
 import React from 'react';
 
+import { getRegistry, Registerable } from '@/global';
 import { Model } from '@/models';
 import {
-  ModelInjectContext,
   ModelPromptContext,
   ModelResultContext,
   models,
 } from '@/models/client';
-import { getRegistry, Registerable } from '@/plugins';
-import { RealmHistory } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { RealmHistory, RealmOutput, RealmSpace } from '@/stories';
+import { realms } from '@/stories/realms/client';
+import { ToolCall } from '@/tools';
 import { tools } from '@/tools/client';
-import { arrUtils } from '@/utils';
+import { invokeCompose } from '@/utils';
+
+export interface ModelInjectContext {
+  /**
+   * 由索引生成调用名，各个模型可能不一样
+   */
+  name: (index: number) => string;
+  /**
+   * 生成类型，冗余字段，顺便传递
+   */
+  builder: string;
+  /**
+   * 用户输入
+   */
+  prompt: (content: string) => void;
+  /**
+   * ai输出
+   * 也可能是模拟ai输出
+   * 所以output可选
+   */
+  assist: (content: string, output: RealmOutput | null) => void;
+  /**
+   * 工具调用
+   */
+  caller: (
+    content: string,
+    output: RealmOutput | null,
+    callings: ToolCall[],
+  ) => void;
+  /**
+   * 系统提示词
+   */
+  system: (content: string) => void;
+}
+
+/**
+ * 在每条消息注入时进行额外操作
+ * index: 当前历史的索引
+ */
+export interface InjectMessage {
+  /**
+   * 注入用户输入时的操作
+   * @param history
+   * @param next 下一个操作
+   * @returns
+   */
+  prompt?: (history: RealmHistory, next: () => Promise<void>) => Promise<void>;
+  /**
+   * 注入输出时的操作
+   * @param history
+   * @param output
+   * @param next 下一个操作
+   * @returns
+   */
+  output?: (
+    history: RealmHistory,
+    output: RealmOutput,
+    next: () => Promise<void>,
+  ) => Promise<void>;
+  /**
+   * 注入空间时的操作
+   * @param history
+   * @param next 下一个操作
+   * @returns
+   */
+  spaces?: (
+    history: RealmHistory,
+    space: RealmSpace,
+    next: () => Promise<void>,
+  ) => Promise<void>;
+}
+
+export type InjectHandler = (ctx: ModelInjectContext) => Promise<InjectMessage>;
 
 /**
  * 摘要，用于展示
@@ -74,15 +146,13 @@ export const engines = {
     args: (args: { type: string }) => JSON.stringify(args),
   },
   registry,
+  /**
+   * 从引擎生成提示词，由各个模型调用
+   * @param param0
+   * @param ctx
+   */
   async prompt(
-    {
-      realm,
-      histories,
-      converts,
-      injects,
-      current,
-      controller,
-    }: ModelPromptContext,
+    { realm, histories, converts, injects, controller }: ModelPromptContext,
     ctx: ModelInjectContext,
   ) {
     const { prompt, assist, caller } = ctx;
@@ -91,51 +161,51 @@ export const engines = {
     for (let i = 0; i < histories.length; i++) {
       const history = histories[i];
 
-      for (const handler of handlers) {
-        await handler.before?.(i);
+      await invokeCompose(
+        handlers
+          .filter((u) => u.prompt)
+          .map((u) => (next) => u.prompt!(history, next)),
+        async () => {
+          if (!history.content) return;
+          const content = await models.convert(converts, history.content, {
+            role: 'user',
+            type: 'input',
+            history,
+          });
+          if (content) prompt(content);
+        },
+      );
+
+      const space = realms.space(history)!;
+
+      for (const output of space.outputs) {
+        await invokeCompose(
+          handlers
+            .filter((u) => u.output)
+            .map((u) => (next) => u.output!(history, output, next)),
+          async () => {
+            const content = await models.convert(converts, output.content, {
+              role: 'assistant',
+              type: 'output',
+              history,
+            });
+            // 检验工具是否触发
+            await tools.calling(realm, history, controller, output.callings);
+            if (output.callings?.length) {
+              caller(content, output, output.callings);
+            } else if (content) {
+              assist(content, output);
+            }
+          },
+        );
       }
 
-      await generateInput(history);
-
-      for (const handler of handlers) {
-        await handler.middle?.(i);
-      }
-
-      if (i < histories.length - 1 || current) await generateOutputs(history);
-
-      for (const handler of handlers) {
-        await handler.behind?.(i);
-      }
-    }
-
-    async function generateOutputs(history: RealmHistory) {
-      const outputs = realms.outputs(history);
-      if (!outputs) return;
-      for (const output of outputs) {
-        const content = await models.convert(converts, output.content, {
-          role: 'assistant',
-          type: 'output',
-          history,
-        });
-        // 检验工具是否触发
-        await tools.calling(realm, controller, output.callings);
-        if (output.callings?.length) {
-          caller(content, output, output.callings);
-        } else if (content) {
-          assist(content, output);
-        }
-      }
-    }
-
-    async function generateInput(history: RealmHistory) {
-      if (!history.prompts.length) return;
-      const input = arrUtils.join(history.prompts, '\n', (u) => u.content);
-      const content = await models.convert(converts, input, {
-        role: 'user',
-        type: 'input',
-        history,
-      });
-      if (content) prompt(content);
+      await invokeCompose(
+        handlers
+          .filter((u) => u.spaces)
+          .map((u) => (next) => u.spaces!(history, space, next)),
+        async () => {},
+      );
     }
   },
 };

@@ -87,6 +87,8 @@ const param = {
    * 创建参数
    */
   async make(id: string, params: ComfyUIParam[]) {
+    // 空数组没有可写入的行，drizzle 的 values([]) 会直接抛错
+    if (!params.length) return;
     const [{ sequence: max }] = await db
       .select({
         sequence: sql<number>`max(${comfyuiParamSchema.sequence})`,
