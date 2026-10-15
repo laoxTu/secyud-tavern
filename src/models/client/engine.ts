@@ -190,7 +190,7 @@ export const engines = {
               history,
             });
             // 检验工具是否触发
-            await tools.calling(realm, controller, output.callings);
+            await tools.calling(realm, history, controller, output.callings);
             if (output.callings?.length) {
               caller(content, output, output.callings);
             } else if (content) {

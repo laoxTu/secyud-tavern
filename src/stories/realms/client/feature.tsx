@@ -229,17 +229,19 @@ function Viewer() {
           <p>{`${t('default.total_chars')}: ${summaries?.reduce((acc, cur) => acc + cur.content.length, 0) ?? 0}`}</p>
           <Accordion multiple>
             {summaries &&
-              summaries.map((u, i) => (
-                <AccordionItem value={`${i}`} key={i}>
-                  <AccordionTrigger>
-                    <span className={'w-48'}>{u.role}</span>
-                    <span>{`${t('default.chars')}: ${u.content.length}`}</span>
-                  </AccordionTrigger>
-                  <AccordionContent className={'h-full'}>
-                    <pre className={'text-wrap'}>{u.content}</pre>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              summaries
+                .filter((u) => u.content)
+                .map((u, i) => (
+                  <AccordionItem value={`${i}`} key={i}>
+                    <AccordionTrigger>
+                      <span className={'w-48'}>{u.role}</span>
+                      <span>{`${t('default.chars')}: ${u.content.length}`}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className={'h-full'}>
+                      <pre className={'text-wrap'}>{u.content}</pre>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
           </Accordion>
         </div>
       )}

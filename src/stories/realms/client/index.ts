@@ -92,10 +92,6 @@ function opening(realm: Realm) {
         {
           operations: [],
           outputs: [
-            {
-              content: '-',
-              thought: '',
-            },
             ...realm.presets
               .map((u) => u.opening?.trim())
               .filter((u) => u)
@@ -103,6 +99,10 @@ function opening(realm: Realm) {
                 content: v!,
                 thought: '',
               })),
+            {
+              content: '',
+              thought: '',
+            },
           ],
         },
       ],
@@ -179,6 +179,7 @@ async function generate() {
       },
     });
     const history = await getHistory(null, realm);
+    realms.change(realm, history);
     const setIndexCur = async () => {
       history.index = history.spaces.length - 1;
       await setIndex(histories.length);
@@ -300,7 +301,7 @@ export const realms = {
           type: 'input',
           history,
         }),
-        outputs: await handler(
+        output: await handler(
           arrUtils.join(outputs, '\n', (u) => u.content).trim(),
           {
             role: 'assistant',
@@ -310,6 +311,7 @@ export const realms = {
         ),
         thought: arrUtils.join(outputs, '\n', (u) => u.thought).trim(),
       };
+      console.debug('[realm]: message', res);
       postMessage('content', res);
     },
   },
