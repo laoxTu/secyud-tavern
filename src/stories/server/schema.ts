@@ -35,11 +35,11 @@ export const realmHistorySchema = sqliteTable(
   'realm_history',
   {
     masterId: withForeign('master_id', () => storySchema.id).notNull(),
-    sequence: integer('sequence').notNull(),
+    sequence: integer('sequence').default(0).notNull(),
     summary: boolean('summary').default(false).notNull(),
     content: text('content').default('').notNull(),
     variables: json<Record<string, any>>('variables').default({}).notNull(),
-    index: integer('index').notNull(),
+    index: integer('index').default(0).notNull(),
     spaces: json<RealmSpace[]>('spaces').default([]).notNull(),
   },
   (table) => [primaryKey({ columns: [table.masterId, table.sequence] })],
