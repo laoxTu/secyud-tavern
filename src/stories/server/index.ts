@@ -15,6 +15,6 @@ export const stories = {
 
 export default async function () {
   storage.registry.register(images.storage);
-  stories.storage.registry.register(storage);
+  stories.storage.registry.register(memories.storage.story);
   tools.providers.registry.register(memories.tool);
 }

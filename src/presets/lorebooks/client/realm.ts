@@ -1,25 +1,16 @@
 import { insert } from '@orama/orama';
 
 import { utils } from '@/database';
-import {
-  InjectMessage,
-  ModelInjectContext,
-  ModelPromptContext,
-  models,
-  Processer,
-} from '@/models/client';
+import { Processer } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
-import { macros } from '@/presets/macros/client';
 import {
   AlwaysMatchConfig,
   alwaysMatcher,
 } from '@/presets/matchers/client/always';
 import { vectorMatcher } from '@/presets/matchers/client/vector';
-import { RealmHistory, RealmOutput } from '@/stories';
 import { Rag, rags } from '@/stories/memories/client';
-import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools';
-import { arrUtils, jsonUtils } from '@/utils';
+import { jsonUtils } from '@/utils';
 
 import { Lorebook, lorebooks as main } from '..';
 
@@ -37,182 +28,6 @@ export interface LorebookCache {
   after: PresetItem<Lorebook>[];
   entries: Record<string, PresetItem<Lorebook>>;
   rag: Rag<typeof lorebookSchema> | null;
-}
-
-/**
- * 创建世界书注入器
- */
-async function create(
-  { histories, converts, realm }: ModelPromptContext,
-  { builder, name, prompt, assist, system, caller }: ModelInjectContext,
-  cache: LorebookCache,
-): Promise<InjectMessage> {
-  const visited = new Set<string | undefined>();
-  const list: PresetItem<Lorebook>[] = [];
-  let simulation = 0;
-  switch (builder) {
-    case 'layered': {
-      await fixed(cache.before);
-      await fixed(cache.after);
-      for (const history of histories) {
-        await moved(history, history.prompts, false);
-        if (history === histories.at(-1)) break;
-        await moved(history, realms.outputs(history), true);
-      }
-      list.sort(lorebooks.compare);
-      let index = 0;
-      return {
-        async middle(i: number) {
-          const items: PresetItem<Lorebook>[] = [];
-          for (; index < list.length; index++) {
-            const u = list[index];
-            if (
-              i === histories.length - 1 ||
-              u.layer + histories.length >= i + 100
-            )
-              break;
-            items.push(u);
-          }
-          await inject(items);
-        },
-      };
-    }
-    default:
-      let index = 0;
-      await fixed(cache.before);
-      return {
-        async before(i: number) {
-          const history = histories[i];
-          await moved(history, history.prompts, false);
-          if (i === histories.length - 1) await fixed(cache.after);
-          list.sort(lorebooks.compare);
-          const c = list.findIndex((u) => u.layer >= 100);
-          index = c < 0 ? list.length : c;
-          // 添加user前世界书
-          await inject(list.slice(0, index));
-        },
-        async middle() {
-          // 添加user后世界书
-          await inject(list.slice(index, list.length));
-          list.length = 0;
-        },
-        async behind(i: number) {
-          if (i === histories.length - 1) return;
-          const history = histories[i];
-          await moved(history, realms.outputs(history), true);
-        },
-      };
-  }
-
-  /**
-   * 注入世界书
-   * @param items
-   */
-  async function inject(items: PresetItem<Lorebook>[]) {
-    const groups = arrUtils.groupSerial(items, (u) => u.role);
-    console.debug('[lorebook]: ', items);
-    for (const group of groups) {
-      const contents: string[] = [];
-      for (const item of group.items) {
-        const content = await models.convert(converts, item.content ?? '', {
-          role: group.key,
-          type: 'output',
-          history: null,
-        });
-        contents.push(content);
-      }
-      const content = arrUtils.join(contents, '\n\n');
-      switch (group.key) {
-        case 'knowledge':
-          simulation += 1;
-          caller('', null, [
-            {
-              index: 0,
-              id: `${name(simulation)}l`,
-              name: models.engines.knowledge.info.name,
-              arguments: models.engines.knowledge.args({
-                type: 'lorebook',
-              }),
-              result: content,
-            },
-          ]);
-          break;
-        case 'system':
-          system(content);
-          break;
-        case 'assistant':
-          assist(content, null);
-          break;
-        case 'user':
-          prompt(content);
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  /**
-   * 滑动注入lorebook
-   * @param history
-   * @param messages
-   * @param output
-   */
-  async function moved(
-    history: RealmHistory,
-    messages: RealmMessage[] | null,
-    output: boolean,
-  ) {
-    if (!messages?.length) return;
-    for (const message of messages) {
-      let ids = message.properties?.[lorebooks.plural];
-      if (!ids) {
-        const context = {
-          history,
-          properties: {},
-          cache,
-        };
-        ids = await matchers.analyze(
-          cache.entries,
-          output
-            ? {
-                ...context,
-                message: message as RealmOutput,
-                output: true,
-              }
-            : {
-                ...context,
-                message: message as RealmPrompt,
-                output: false,
-              },
-        );
-      }
-      for (const id of ids) {
-        if (visited.has(id)) continue;
-        visited.add(id);
-        const lorebook = cache.entries[id];
-        if (lorebook) {
-          list.push(cache.entries[id]);
-        }
-      }
-    }
-  }
-
-  /**
-   * 一次性注入lorebook
-   * @param items
-   */
-  async function fixed(items: PresetItem<Lorebook<AlwaysMatchConfig>>[]) {
-    const { checkItems } = macros.property(realm);
-    for (const lorebook of items) {
-      if (visited.has(lorebook.id)) {
-        continue;
-      }
-      visited.add(lorebook.id);
-      if (!lorebook.expression.macro || !checkItems[lorebook.expression.macro])
-        list.push(lorebook);
-    }
-  }
 }
 
 export const processer: Processer = {

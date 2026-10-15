@@ -72,7 +72,7 @@ function get(realm: Realm): ToolItem<{
     async invoke({
       args: { content, types = [], tags = [], limit = 3, min_relevance = 0.3 },
     }) {
-      const space = realms.space(await realms.history.get(null, realm));
+      const space = realms.space(await realms.history(null, realm));
       const output = space?.outputs?.at(-1);
 
       if (!output) {

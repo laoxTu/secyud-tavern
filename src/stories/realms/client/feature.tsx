@@ -41,6 +41,7 @@ import { handler } from '@/interceptors/client';
 import { ModelInputSummary, models } from '@/models/client';
 import { RealmHistory } from '@/stories';
 import { Feature, stories } from '@/stories/client';
+import { proxy } from '@/stories/client/proxy';
 import { realms, useRealmState } from '@/stories/realms/client';
 import { jsonUtils } from '@/utils';
 
@@ -48,6 +49,8 @@ function Deleter() {
   const router = useRouter();
   const t = useTranslations();
   const { index, setIndex } = useRealmState();
+
+  const { realm, histories } = realms;
 
   const reopen = handler(async (remain: boolean = true) => {
     const { id } = await stories.proxy.clone(realm.id);
@@ -57,45 +60,45 @@ function Deleter() {
     router.replace(`/${id}`);
   });
 
-  const { realm, histories } = realms;
-  const trash = handler(async () => {
-    const {
-      history: { get },
-    } = realms;
-    const history = await get(index.cur, realm);
-    await stories.proxy.history.del(realm.id, history.sequence);
-    histories.splice(index.cur - 1, 1);
-    await setIndex();
-  });
-
   return (
     <>
       <TooltipAlertDialog
         info={dialogs.info(t, 'realm.delete.output')}
         disabled={index.cur === 0}
         onSubmit={handler(async () => {
-          const {
-            history: { get, set },
-          } = realms;
-          const history = await get(index.cur, realm);
-          if (history.outputs.length) {
-            history.outputs.splice(history.output, 1);
-            history.output = Math.min(
-              history.outputs.length - 1,
-              history.output,
-            );
+          const history = await realms.history(index.cur, realm);
+          if (history.spaces.length) {
+            history.spaces.splice(history.index, 1);
+            history.index = Math.min(history.spaces.length - 1, history.index);
           }
 
-          if (!history.outputs.length && index.cur < histories.length) {
-            const current = await get(index.cur + 1, realm);
+          if (!history.spaces.length && index.cur < histories.length) {
+            // 不是最后一页，且本页无输出了，合并到下一页
+            const current = await realms.history(index.cur + 1, realm);
             current.summary ||= history.summary;
-            current.prompts = [...history.prompts, ...current.prompts];
-            await set(index.cur + 1, realm);
-            await trash();
+            if (history.content)
+              current.content = current.content
+                ? `${history.content}\n${current.content}`
+                : history.content;
+
+            current.properties = jsonUtils.merge(
+              history.properties,
+              current.properties,
+            );
+            await proxy.history.set(realm.id, history.sequence, {
+              content: current.content,
+              properties: current.properties,
+            });
+            await stories.proxy.history.del(realm.id, history.sequence);
+            histories.splice(index.cur - 1, 1);
           } else {
-            await set(index.cur, realm);
-            await setIndex();
+            // 最后一页，只保存
+            await proxy.history.set(realm.id, history.sequence, {
+              spaces: [],
+              index: -1,
+            });
           }
+          await setIndex();
         })}
       >
         <DeleteIcon />
@@ -103,7 +106,13 @@ function Deleter() {
       <TooltipAlertDialog
         info={dialogs.info(t, 'realm.delete.index')}
         disabled={index.cur === 0}
-        onSubmit={trash}
+        onSubmit={handler(async () => {
+          const { history: get } = realms;
+          const history = await get(index.cur, realm);
+          await stories.proxy.history.del(realm.id, history.sequence);
+          histories.splice(index.cur - 1, 1);
+          await setIndex();
+        })}
       >
         <TrashIcon />
       </TooltipAlertDialog>
@@ -126,12 +135,18 @@ function Deleter() {
 }
 
 function Regenerator() {
-  const { index } = useRealmState();
+  const { index, generating } = useRealmState();
   return (
     <IconTooltip
       text={'realm.regenerate_reply_tip'}
       disabled={index.max === 0}
       onClick={handler(async () => {
+        const { histories } = realms;
+        const last = histories.at(-1);
+        // 没有历史是无法重新生成的。
+        if (!last || generating) return;
+        last.index = last.spaces.length;
+        last.spaces.push({ operations: [], outputs: [] });
         await realms.generate();
       })}
     >
@@ -155,45 +170,39 @@ function Viewer() {
       onOpen={handler(
         async () => {
           setLoading(true);
-          const {
-            history: { get },
-          } = realms;
-          const history = await get(null, realm);
+          const history = await realms.history(null, realm);
           // 用当前输入框内容构造一个"虚拟待发历史"，追加到 histories 后走一遍真实构建流程，
           // 让用户预览这次输入实际会发给模型的上下文
           const virtual: RealmHistory = {
             masterId: realm.id,
             sequence: histories.length,
-            prompts: [
+            content: realms.input(),
+            index: 0,
+            spaces: [
               {
-                content: useRealmState.getState().content,
-                variables: [],
-                properties: {},
+                operations: [],
+                outputs: [],
               },
             ],
-            output: -1,
-            outputs: [],
             summary: false,
-            variables: history ? realms.variables(history, true) : {},
+            variables: history ? realms.variables(history) : {},
           };
           const virtuals = [...structuredClone(histories), virtual];
           console.debug(`[input-viewer](histories): `, virtuals);
           // 工具调用初始化，防止虚拟上下文调用工具。
           for (const virtualHistory of virtuals) {
             if (!virtualHistory) continue;
-            for (const outputs of virtualHistory.outputs) {
-              for (const output of outputs) {
-                if (!output.callings?.length) continue;
-                for (const calling of output.callings) {
-                  calling.result ??= '';
-                }
+            const space = realms.space(virtualHistory)!;
+            for (const output of space.outputs) {
+              if (!output.callings?.length) continue;
+              for (const calling of output.callings) {
+                calling.result ??= '';
               }
             }
           }
 
           const { summaries } = await models.processers.prompt({
             controller: new AbortController(),
-            current: false,
             realm: {
               ...realm,
               histories: virtuals,
@@ -246,6 +255,7 @@ function Editor() {
   const formRef = useFormRef();
 
   const { realm } = realms;
+
   return (
     <TooltipDialog
       info={dialogs.info(t, 'realm.edit')}
@@ -255,20 +265,14 @@ function Editor() {
       style={{ maxWidth: '86%', height: '86%' }}
       formRef={formRef}
       onOpen={handler(async () => {
-        const {
-          history: { get },
-        } = realms;
         if (index.cur <= 0) return;
-        const history = await get(index.cur, realm);
+        const history = await realms.history(index.cur, realm);
         setHistory(history);
         refreshKey();
       })}
       onSubmit={handler(async (data) => {
-        const {
-          history: { get, set },
-        } = realms;
         if (index.cur <= 0) return;
-        const history = await get(index.cur, realm);
+        const history = await realms.history(index.cur, realm);
         const variablesText = forms.str(data, 'variables');
         history.variables = jsonUtils.parse(variablesText);
         if (!history.variables)
@@ -276,18 +280,18 @@ function Editor() {
             'json invalid',
             'realm.variable_invalid_json',
           );
-        for (let i = 0; i < history.prompts.length; i++) {
-          const input = history.prompts[i];
-          input.content = forms.str(data, `history_input-${i}`);
-        }
-        for (let i = 0; i < history.outputs.length; i++) {
-          const outputs = history.outputs[i];
-          for (let j = 0; j < outputs.length; j++) {
-            const output = outputs[j];
-            output.content = forms.str(data, `history_output-${i}-${j}`);
+        history.content = forms.str(data, `history_input`);
+        const space = realms.space(history);
+        if (space) {
+          for (let i = 0; i < space.outputs.length; i++) {
+            const output = space.outputs[i];
+            output.content = forms.str(data, `history_output-${i}`);
           }
         }
-        await set(index.cur, realm);
+        await proxy.history.set(realm.id, history.sequence, {
+          content: history.content,
+          spaces: history.spaces,
+        });
         await setIndex();
       })}
     >
@@ -309,36 +313,25 @@ function Editor() {
             </Field>
           </FieldGroup>
           <FieldGroup className={'p-1'}>
-            {history.prompts.map((u, i) => (
+            <Field>
+              <FieldLabel htmlFor={`history_input`}>
+                {t('realm.input')}
+              </FieldLabel>
+              <Textarea
+                defaultValue={history.content}
+                name={`history_input`}
+                id={`history_input`}
+                onKeyDown={submitTargetFormOnKey}
+              />
+            </Field>
+            {realms.space(history)?.outputs.map((u, i) => (
               <Field key={i}>
-                <FieldLabel
-                  htmlFor={`history_input-${i}`}
-                >{`${t('realm.input')} ${i}`}</FieldLabel>
+                <FieldLabel>{`${t('realm.output')} ${i}`}</FieldLabel>
                 <Textarea
                   defaultValue={u.content}
-                  name={`history_input-${i}`}
-                  id={`history_input-${i}`}
+                  name={`history_output-${i}`}
                   onKeyDown={submitTargetFormOnKey}
                 />
-              </Field>
-            ))}
-            {history.outputs.map((u, i) => (
-              <Field key={i}>
-                <FieldLabel
-                  className={history.output === i ? 'text-red-600' : ''}
-                >
-                  {`${t('realm.output')} ${i}`}
-                </FieldLabel>
-                {u
-                  .filter((v) => !v.callings?.length || v.content)
-                  .map((v, vi) => (
-                    <Textarea
-                      key={vi}
-                      defaultValue={v.content}
-                      name={`history_output-${i}-${vi}`}
-                      onKeyDown={submitTargetFormOnKey}
-                    />
-                  ))}
               </Field>
             ))}
           </FieldGroup>

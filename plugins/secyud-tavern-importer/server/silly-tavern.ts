@@ -1,11 +1,11 @@
 import { CharacterCard, OpenAIPreset } from 'parsecard';
 
 import { utils } from '@/database';
-import { Lorebook, LorebookRole } from '@/lorebooks';
-import { AlwaysMatchConfig } from '@/lorebooks/client/matchers/always';
-import { NormalMatchConfig } from '@/lorebooks/client/matchers/normal';
 import { Preset, PresetItem } from '@/presets';
+import { Lorebook, LorebookRole } from '@/presets/lorebooks';
 import { Macro } from '@/presets/macros';
+import { AlwaysMatchConfig } from '@/presets/matchers/client/always';
+import { NormalMatchConfig } from '@/presets/matchers/client/normal';
 import { Regex } from '@/presets/regexes';
 import { Script } from '@/presets/scripts';
 import { Style } from '@/presets/styles';

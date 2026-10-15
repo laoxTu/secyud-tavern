@@ -23,7 +23,7 @@ import { ModelNameValueField, models } from '@/models/client';
 import { PresetNameValuesField, presets } from '@/presets/client';
 import { Realm, Story } from '@/stories';
 import { stories } from '@/stories/client';
-import { RealmInfo, useRealmState } from '@/stories/realms/client';
+import { RealmInfo, realms, useRealmState } from '@/stories/realms/client';
 import { Tool } from '@/tools';
 import { AgentConfig } from '@/tools/agents';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
@@ -209,8 +209,17 @@ function agent(config: AgentConfig, realm: Realm, info: Output): ToolItem {
         const index = histories.length - 1;
         const history = histories[index];
         if (history) {
-          // 这里没有工作区，只能用深拷贝了。后续如果加入工作区，可以改成以工作区为准。
-          histories[index] = structuredClone(history);
+          // 工作区 Agent 共用当前工作区，只有输出列表不引用
+          // 同时最后一个输出的也剔除，这样子Agent也可以操作
+          // 工作区以及历史的属性
+          const space = realms.space(history)!;
+          space.properties ??= {};
+          const clone = {
+            ...history,
+            index: 0,
+            spaces: [{ ...space, outputs: space.outputs.slice(0, -1) }],
+          };
+          histories[index] = clone;
         }
       }
 

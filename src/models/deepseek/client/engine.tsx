@@ -202,7 +202,7 @@ export const engine: ModelEngine = {
     );
 
     const usage = utils.getProperty<TokenUsage>(
-      realms.outputs(ctx.histories.at(-2))?.at(-1),
+      realms.space(ctx.histories.at(-2))?.outputs.at(-1),
       'usage',
     );
 

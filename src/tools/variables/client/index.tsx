@@ -32,7 +32,7 @@ function getVariable(realm: Realm): ToolItem<{ path: string }> {
     async invoke({ args: { path } }) {
       const history = realm.histories.at(-1);
       // 读取当前变量（含本轮未落盘的变更，让模型看到刚改完的状态）。
-      const variables = history ? realms.variables(history, true) : {};
+      const variables = history ? realms.variables(history) : {};
       const { current, exists } = extract(variables, path, false);
       // 返回标准化路径、值和是否存在，供模型判断后续读写。
       return exists ? JSON.stringify(current.item) : `result: not exists`;
@@ -42,8 +42,8 @@ function getVariable(realm: Realm): ToolItem<{ path: string }> {
 
 function operate(operation: Operation, realm: Realm) {
   const history = realm.histories.at(-1);
-  const currentOutput = realms.outputs(history)?.at(-1);
-  if (!currentOutput) {
+  const space = realms.space(history);
+  if (!space) {
     // 没有本轮输出可写，不能报 success，否则模型以为改成功了但什么都没发生
     return 'error: no output to operate.';
   }
@@ -52,7 +52,7 @@ function operate(operation: Operation, realm: Realm) {
   if (validation) {
     return `error: ${validation}`;
   }
-  currentOutput.variables.push(operation);
+  space.operations.push(operation);
   return 'success';
 }
 

@@ -1,6 +1,7 @@
 import { CharacterCard, OpenAIPreset } from 'parsecard';
 
-import { files } from '@/files/server';
+import { files } from '@/database/files/server';
+import { forms } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { route } from '@/interceptors/server';
 import { Preset } from '@/presets';
@@ -9,14 +10,13 @@ import { jsonUtils } from '@/utils';
 import { response } from '@/utils/server';
 
 import { sillyTaverns } from './silly-tavern';
-import { forms } from '@/global';
 
 export default {
   'silly-tavern': {
     import: {
       POST: route(async (request) => {
         const formData = await request.formData();
-        const file = forms.file(formData,'file') ;
+        const file = forms.file(formData, 'file');
         let preset: Preset | null = null;
 
         if (!file) {

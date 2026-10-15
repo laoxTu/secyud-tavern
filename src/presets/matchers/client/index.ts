@@ -7,8 +7,6 @@ import { Lorebook } from '@/presets/lorebooks';
 import { lorebooks } from '@/presets/lorebooks/client';
 import { LorebookCache } from '@/presets/lorebooks/client/realm';
 import { RealmHistory, RealmOutput, RealmSpace } from '@/stories';
-import { realms } from '@/stories/realms/client';
-import { arrUtils } from '@/utils';
 
 export interface MatchContext extends Properties {
   history: RealmHistory;
@@ -45,31 +43,6 @@ export interface Matcher extends Registerable {
 }
 
 const registry = getRegistry<Matcher>('lorebook-matcher');
-
-function content({ properties, output, message }: MatchContext) {
-  const variableName = 'content';
-  let content = properties[variableName] as string;
-  if (!content && content !== '') {
-    if (output) {
-      const callings = (message as RealmOutput).callings;
-      content = `${message.content ?? ''}${arrUtils.join(callings, '', (u) => u.result ?? '')}`;
-    } else {
-      content = message.content ?? '';
-    }
-    properties[variableName] = content;
-  }
-  return content;
-}
-
-function variables({ properties, history, output }: MatchContext) {
-  const variableName = 'variables';
-  let variables = properties[variableName];
-  if (!variables) {
-    variables = realms.variables(history, output);
-    properties[variableName] = variables;
-  }
-  return variables;
-}
 
 /**
  * 匹配输入
@@ -128,10 +101,10 @@ async function output(
  */
 async function spaces(
   total: PresetItem<Lorebook>[],
+  space: RealmSpace | null,
   context: MatchContext,
   recreate: boolean = false,
 ) {
-  const space = realms.space(context.history);
   if (!space) return [];
   if (!recreate) {
     const exists = utils.getProperty<string[]>(space, lorebooks.plural);

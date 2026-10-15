@@ -1,5 +1,5 @@
 import { DataRequest } from '@/database';
-import { files } from '@/files/server';
+import { files } from '@/database/files/server';
 import { forms } from '@/global';
 import { route } from '@/interceptors/server';
 import { response } from '@/utils/server';

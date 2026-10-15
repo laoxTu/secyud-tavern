@@ -28,10 +28,9 @@ import {
   usePresetState,
 } from '@/presets/client';
 import { createPresetEntryState } from '@/presets/client/factory';
+import { matchers } from '@/presets/matchers/client';
 
 import { Lorebook, LorebookRole, lorebooks as main } from '..';
-
-import { lorebooks } from '.';
 
 const roles = ['system', 'user', 'assistant', 'knowledge'];
 
@@ -50,9 +49,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
   const { refresh } = state();
   const form = useFormRef();
   const [language, setLanguage] = useState<string | null>(type);
-  const [editor, setEditor] = useState(
-    lorebooks.matchers.registry.record(match),
-  );
+  const [editor, setEditor] = useState(matchers.registry.record(match));
 
   return (
     <UpdateForm
@@ -171,7 +168,7 @@ function Editor({ entry }: { entry: PresetEntry<Lorebook> }) {
         </FieldLabel>
         <Selector
           id={`lorebook-match_type-${entryId}`}
-          items={lorebooks.matchers.registry.sorted()}
+          items={matchers.registry.sorted()}
           name={'matchType'}
           value={editor}
           onValueChange={setEditor}

@@ -9,7 +9,6 @@ import {
   Processer,
 } from '@/models/client';
 import { Realm, StoryItem } from '@/stories';
-import { realms } from '@/stories/realms/client';
 import { ToolCall } from '@/tools';
 import { arrUtils } from '@/utils';
 
@@ -34,36 +33,25 @@ export interface MemoryCache {
 }
 
 async function create(
-  { histories }: ModelPromptContext,
+  {}: ModelPromptContext,
   { name, caller }: ModelInjectContext,
   cache: MemoryCache,
 ): Promise<InjectMessage> {
   const visited = new Set<number>();
   let simulation = 0;
   return {
-    behind: async (i) => {
-      if (i === histories.length - 1) return;
+    output: async (_history, output, next) => {
       // 需要注入内容
       const items: StoryItem<Memory>[] = [];
-      const visitedKeys = new Set<number>();
-      const history = histories[i];
-      const outputs = realms.outputs(history);
-      if (!outputs) return;
-      for (const output of outputs) {
-        const idsList = memories.codes(output, false);
-        if (!idsList?.length) continue;
-        for (const ids of idsList) {
-          for (const id of ids) {
-            if (visitedKeys.has(id)) continue;
-            visitedKeys.add(id);
-            const memory = cache.memories[id];
-            if (!memory) continue;
-            if (visited.has(id)) continue;
-            visited.add(id);
-            items.push(memory);
-          }
+      for (const ids of memories.codes(output, false) ?? []) {
+        for (const id of ids) {
+          const memory = cache.memories[id];
+          if (visited.has(id) || !memory) continue;
+          visited.add(id);
+          items.push(memory);
         }
       }
+      await next();
       console.debug(`[memroy]: `, items);
       if (items.length) {
         const callings: ToolCall[] = [];

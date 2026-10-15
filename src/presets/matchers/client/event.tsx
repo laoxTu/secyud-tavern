@@ -1,11 +1,9 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
 import { Field, FieldLabel } from '@/components';
-import { Lorebook } from '@/lorebooks';
-import { lorebooks, MatchContext, Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
 import { jsonUtils } from '@/utils';
 
 import { DateEditor, EventDate, getDate } from './date-editor';
@@ -15,6 +13,8 @@ import {
   NormalMatchConfig,
   NormalMatcher,
 } from './normal';
+
+import { Matcher } from '.';
 
 export interface EventMatchConfig extends NormalMatchConfig {
   maxDate: EventDate;
@@ -76,6 +76,25 @@ export function getDateNumber(date: EventDate) {
   return date.day + date.month * 31 + date.year * 31 * 12 - 32;
 }
 
+export function eventMatch(
+  content: string,
+  variables: Record<string, any>,
+  expression: EventMatchConfig,
+) {
+  const relatedDates = variables.relatedDates as EventDate[];
+  if (!relatedDates) return false;
+  const maxDate = getDateNumber(expression.maxDate);
+  const minDate = getDateNumber(expression.minDate);
+  if (
+    !relatedDates.some((u) => {
+      const date = getDateNumber(u);
+      return minDate <= date && maxDate >= date;
+    })
+  )
+    return false;
+  return normalMatch(content, expression);
+}
+
 export const eventMatcher: Matcher = {
   id: 'event',
   configComponent: MacherComponent,
@@ -86,20 +105,18 @@ export const eventMatcher: Matcher = {
       minDate: getDate(data, 'min-date'),
     };
   },
-  match: async (ctx: MatchContext, lorebook) => {
-    const expression: EventMatchConfig = lorebook.expression;
-    const variables = lorebooks.matchers.variables(ctx);
-    const relatedDates = variables.relatedDates as EventDate[];
-    if (!relatedDates) return false;
-    const maxDate = getDateNumber(expression.maxDate);
-    const minDate = getDateNumber(expression.minDate);
-    if (
-      !relatedDates.some((u) => {
-        const date = getDateNumber(u);
-        return minDate <= date && maxDate >= date;
-      })
-    )
-      return false;
-    return normalMatch(ctx, expression);
+  prompt: async (ctx, lorebook) => {
+    return eventMatch(
+      ctx.history.content,
+      ctx.history.variables,
+      lorebook.expression,
+    );
+  },
+  output: async (ctx, output, lorebook) => {
+    return eventMatch(
+      output.content,
+      ctx.history.variables,
+      lorebook.expression,
+    );
   },
 } as const;

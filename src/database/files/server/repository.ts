@@ -5,8 +5,8 @@ import { and, eq, SQL } from 'drizzle-orm';
 import { writeFile } from 'fs/promises';
 
 import { DataRequest, InDto, utils } from '@/database';
+import { FileModel, FileRequestParam } from '@/database/files';
 import { databases } from '@/database/server';
-import { FileModel, FileRequestParam } from '@/files';
 import { config } from '@/global';
 import { checker } from '@/interceptors';
 import { arrUtils } from '@/utils';

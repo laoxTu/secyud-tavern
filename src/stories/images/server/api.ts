@@ -1,4 +1,4 @@
-import { files } from '@/files/server';
+import { files } from '@/database/files/server';
 import { forms } from '@/global';
 import { route } from '@/interceptors/server';
 import { StoryEntry } from '@/stories';

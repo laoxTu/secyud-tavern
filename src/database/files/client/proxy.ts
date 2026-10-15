@@ -1,6 +1,6 @@
 import { del, get, post } from '@/client';
 import { DataRequest, DataResponse } from '@/database';
-import { FileModel, FileRequestParam } from '@/files';
+import { FileModel, FileRequestParam } from '@/database/files';
 
 export const proxy = {
   async get(id: string): Promise<FileModel> {

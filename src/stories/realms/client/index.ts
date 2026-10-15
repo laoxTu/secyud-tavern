@@ -267,6 +267,25 @@ export const realms = {
     realm.changes[history.sequence] = history;
   },
   save,
+  input() {
+    const { content } = useRealmState.getState();
+    let input = content.trim();
+    // 用户输入可以联动内部
+    const window = realms.iframe.contentWindow as any;
+    if (window) {
+      const builders = window?.userInput?.inputBuilders as {
+        id: string;
+        sequence?: number;
+        build: (text: string) => string;
+      }[];
+      builders
+        ?.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
+        .forEach((builder) => {
+          input = builder.build(input);
+        });
+    }
+    return input;
+  },
   // 与iframe 通信
   message: {
     post: postMessage,
