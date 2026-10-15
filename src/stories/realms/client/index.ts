@@ -4,6 +4,7 @@ import { BusinessError } from '@/interceptors';
 import { ConvertContent, models } from '@/models/client';
 import { Realm, RealmHistory } from '@/stories';
 import { stories } from '@/stories/client';
+import { proxy } from '@/stories/client/proxy';
 import { arrUtils, jsonUtils } from '@/utils';
 import { patch } from '@/utils/json-patch';
 
@@ -87,21 +88,25 @@ function opening(realm: Realm) {
       summary: true,
       content: '',
       variables,
-      operations: [],
-      outputs: realm.presets
-        .map((u) => u.opening?.trim())
-        .filter((u) => u)
-        .map((v) => ({
-          content: v!,
-          thought: '',
-          callings: [],
-        })),
+      spaces: [
+        {
+          operations: [],
+          outputs: [
+            {
+              content: '-',
+              thought: '',
+            },
+            ...realm.presets
+              .map((u) => u.opening?.trim())
+              .filter((u) => u)
+              .map((v) => ({
+                content: v!,
+                thought: '',
+              })),
+          ],
+        },
+      ],
     };
-    opening.outputs.push({
-      content: '',
-      thought: '',
-      callings: [],
-    });
     // 懒生成写入，setContent 会检测同键重复初始化
     initContext(realm, key, opening);
     console.log('[realm](opening): ', opening);
@@ -133,12 +138,6 @@ async function getHistory(index: number | null, realm: Realm) {
   return history;
 }
 
-async function setHistory(index: number, realm: Realm) {
-  if (index === 0) return;
-  const history = await getHistory(index, realm);
-  await stories.proxy.history.set(realm.id, history.sequence, history);
-}
-
 function postMessage(type: string, data: any) {
   const window = realms.iframe?.contentWindow;
   if (!window) {
@@ -150,96 +149,38 @@ function postMessage(type: string, data: any) {
   g.__messageData[type] = data;
   window.postMessage({ type }, '*');
 }
-
+/**
+ * 保存改变的历史轮次
+ */
+async function save(realm: Realm) {
+  for (const history of Object.values(realm.changes)) {
+    history.changed = undefined;
+    await proxy.history.set(realm.id, history.sequence, history);
+  }
+}
 /**
  * 生成回复
  */
-async function generate(create: boolean = false) {
+async function generate() {
   const get = useRealmState.getState;
-  const { generating, content, summary, setIndex, setRealmInfo, setSignal } =
-    get();
-  const { realm, histories, iframe } = realms;
   const set = useRealmState.setState;
+  const { generating, setIndex, setRealmInfo, setSignal } = get();
+  const { realm, histories } = realms;
   if (generating) return;
-  set({
-    generating: true,
-    realmInfos: {
-      main: {
-        title: 'realm.generating',
-      },
-    },
-  });
-  if (create) {
-    try {
-      set({ summary: false, content: '' });
-      let variables = undefined;
-      let input = content.trim();
-      if (iframe.contentWindow) {
-        const window = iframe.contentWindow as any;
-        (
-          window?.userInput?.inputBuilders as {
-            id: string;
-            sequence?: number;
-            build: (text: string) => string;
-          }[]
-        )
-          ?.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
-          .forEach((builder) => {
-            input = builder.build(input);
-          });
-      }
 
-      // 如果上一个历史还未输出，合并到上一个历史。
-      // 如果上一个历史已经输出，创建新的历史。
-      // 如果还没有历史，使用开场白变量。
-      let history = histories.at(-1)!;
-
-      if (history) {
-        if (history.outputs.length > 0) {
-          variables = realms.variables(history);
-        }
-      } else {
-        variables = realms.variables(opening(realm));
-      }
-
-      // 有开场variables，意味着创建新历史
-      if (variables) {
-        history = {
-          masterId: realm.id,
-          sequence: histories.length,
-          index: -1,
-          content: '',
-          summary,
-          operations: [],
-          outputs: [],
-          variables,
-        };
-        histories.push(history);
-      }
-
-      history.content = history.content
-        ? `${history.content}\n${input}`
-        : input;
-
-      // 用户输入后立即跳转到最新页面，先渲染用户输入。
-      await setIndex(histories.length);
-      // 有开场variables，新历史需要保存
-      if (variables) {
-        const { sequence } = await stories.proxy.history.add(realm.id, history);
-        history.sequence = sequence;
-      }
-    } catch (err) {
-      // create 阶段在下面的 try/finally 之前，出错时也要自己复位生成态，
-      // 否则 generating 会一直是 true，后续 generate 全部早退。
-      set({ generating: false, summary: false, content: '' });
-      throw err;
-    }
-  }
   // 创建并保存历史后需要生成回复
   try {
+    set({
+      generating: true,
+      realmInfos: {
+        main: {
+          title: 'realm.generating',
+        },
+      },
+    });
     const history = await getHistory(null, realm);
     const setIndexCur = async () => {
-      history.output = history.outputs.length - 1;
+      history.index = history.spaces.length - 1;
       await setIndex(histories.length);
     };
 
@@ -285,7 +226,7 @@ async function generate(create: boolean = false) {
       const { index } = get();
       if (
         index.cur === histories.length &&
-        history.output === history.outputs.length - 1
+        history.index === history.spaces.length - 1
       ) {
         await stories.renderers.stream({ history, realm });
       }
@@ -300,11 +241,10 @@ async function generate(create: boolean = false) {
   } finally {
     set({ generating: false });
     await setIndex(histories.length);
-    await setHistory(histories.length, realm);
+    await save(realm);
     setSignal();
   }
 }
-
 export const realms = {
   realm: null! as Realm,
   iframe: null! as HTMLIFrameElement,
@@ -321,32 +261,35 @@ export const realms = {
   cache<T = any>(realm: Realm, key: string) {
     return context<T>(realm, realms.key(key));
   },
-  history: {
-    get: getHistory,
-    set: setHistory,
+  history: getHistory,
+  change(realm: Realm, history: RealmHistory) {
+    history.changed = true;
+    realm.changes[history.sequence] = history;
   },
+  save,
+  // 与iframe 通信
   message: {
     post: postMessage,
     variables(history: RealmHistory) {
       postMessage('variables', variables(history));
     },
     async content(history: RealmHistory, handler: ConvertContent) {
-      const messages = history.outputs;
+      const outputs = space(history)?.outputs;
       const res = {
         inputs: await handler(history.content, {
           role: 'user',
           type: 'input',
           history,
         }),
-        output: await handler(
-          arrUtils.join(messages, '\n', (u) => u.content).trim(),
+        outputs: await handler(
+          arrUtils.join(outputs, '\n', (u) => u.content).trim(),
           {
             role: 'assistant',
             type: 'output',
             history,
           },
         ),
-        thought: arrUtils.join(messages, '\n', (u) => u.thought).trim(),
+        thought: arrUtils.join(outputs, '\n', (u) => u.thought).trim(),
       };
       postMessage('content', res);
     },

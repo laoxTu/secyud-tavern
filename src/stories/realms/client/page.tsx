@@ -38,6 +38,8 @@ import { error, handler } from '@/interceptors/client';
 import { models } from '@/models/client';
 import { stories } from '@/stories/client';
 
+import { RealmHistory } from '..';
+
 import { realms, useRealmState } from '.';
 
 interface LoadingState {
@@ -90,7 +92,71 @@ function UserInput() {
 
   // 发送输入内容，并尝试创建新历史
   const triggerCreate = handler(async () => {
-    await realms.generate(true);
+    const { histories, iframe, realm } = realms;
+    const { content, summary, setIndex } = useRealmState.getState();
+
+    let input = content.trim();
+    // 用户输入可以联动内部
+    if (iframe.contentWindow) {
+      const window = iframe.contentWindow as any;
+      (
+        window?.userInput?.inputBuilders as {
+          id: string;
+          sequence?: number;
+          build: (text: string) => string;
+        }[]
+      )
+        ?.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
+        .forEach((builder) => {
+          input = builder.build(input);
+        });
+    }
+
+    // 如果第一次没有输入，禁止继续
+    if (!input && !histories.length) return;
+    setSummary(false);
+    setContent('');
+
+    const last = histories.at(-1) ?? realms.opening(realm);
+
+    if (last.spaces.length) {
+      if (input) {
+        // 有输入，前面也有输出，形成连贯回合，创建
+        const history: RealmHistory = {
+          masterId: realm.id,
+          sequence: histories.length,
+          index: -1,
+          content: '',
+          summary,
+          spaces: [
+            {
+              operations: [],
+              outputs: [],
+            },
+          ],
+          variables: realms.variables(last),
+        };
+
+        const { sequence } = await stories.proxy.history.add(realm.id, history);
+        history.sequence = sequence;
+        histories.push(history);
+      }
+      // 没有输入，可以沿用前一回合，实际新回合未必要输入
+    } else {
+      // 前面的输出被清空了，可以合并
+      if (input) {
+        // 加个换行，看上去比较顺眼
+        last.content = last.content ? `${last.content}\n${input}` : input;
+      }
+      last.spaces.push({
+        operations: [],
+        outputs: [],
+      });
+    }
+
+    await setIndex(histories.length);
+
+    await realms.generate();
   });
 
   useEffect(() => {
@@ -155,8 +221,15 @@ function UserInput() {
 }
 
 export function PageControl() {
-  const { index, setIndex, output, setOutput, prepare, setPrepare } =
-    useRealmState();
+  const {
+    index,
+    setIndex,
+    output,
+    setOutput,
+    prepare,
+    generating,
+    setPrepare,
+  } = useRealmState();
 
   useEffect(() => {
     if (prepare) {
@@ -226,7 +299,8 @@ export function PageControl() {
       <ButtonGroup className={'  bg-white rounded-md'}>
         <Button
           onClick={() => changeOutput(output.cur - 1)}
-          disabled={output.cur <= 0}
+          // 生成时不能改变输出，否则会影响解析
+          disabled={output.cur <= 0 || generating}
           variant="outline"
         >
           <ChevronLeftIcon />

@@ -9,61 +9,12 @@ import {
   RealmOutput,
 } from '@/stories/realms';
 import { realms, useRealmState } from '@/stories/realms/client';
-import { ToolCall } from '@/tools';
 
 import { Model } from '..';
 
-import { engines } from './engine';
+import { engines, InjectHandler } from './engine';
 
 import { ConvertContent, models } from '.';
-
-export interface ModelInjectContext {
-  /**
-   * 由索引生成调用名，各个模型可能不一样
-   */
-  name: (index: number) => string;
-  /**
-   * 生成类型，冗余字段，顺便传递
-   */
-  builder: string;
-  /**
-   * 用户输入
-   */
-  prompt: (content: string) => void;
-  /**
-   * ai输出
-   * 也可能是模拟ai输出
-   * 所以output可选
-   */
-  assist: (content: string, output: RealmOutput | null) => void;
-  /**
-   * 工具调用
-   */
-  caller: (
-    content: string,
-    output: RealmOutput | null,
-    callings: ToolCall[],
-  ) => void;
-  /**
-   * 系统提示词
-   */
-  system: (content: string) => void;
-}
-
-/**
- * 在每条消息注入时进行额外操作
- * index: 当前历史的索引
- * before: 在user注入前操作
- * middle: 在user和ai注入间操作
- * behind: 在ai注入后操作
- */
-export interface InjectMessage {
-  before?: (index: number) => Promise<void>;
-  middle?: (index: number) => Promise<void>;
-  behind?: (index: number) => Promise<void>;
-}
-
-export type InjectHandler = (ctx: ModelInjectContext) => Promise<InjectMessage>;
 
 export interface ModelInitContext extends RealmContext {
   id?: string;
@@ -80,12 +31,6 @@ export interface ModelPromptContext extends RealmContext {
    * 当前历史，应为新创建的
    */
   history: RealmHistory;
-  /**
-   * 当前输出是否为后续
-   * 即并非重新开始生成
-   * 而是一个轮次的后续
-   */
-  current: boolean;
   converts: ConvertContent[];
   injects: InjectHandler[];
   /**
@@ -152,12 +97,10 @@ function modelInfo(model: Model) {
 async function prompt({
   realm,
   args,
-  current,
   controller,
 }: {
   realm: Realm;
   args?: any;
-  current: boolean;
   controller: AbortController;
 }) {
   const { engine, model } = modelInfo(realm.model);
@@ -176,10 +119,14 @@ async function prompt({
   histories.reverse();
   console.debug('[realm](histories): ', histories);
 
+  // 临时标记，这个pos就是为了索引
+  for (let i = 0; i < histories.length; i++) {
+    histories[i].pos = i;
+  }
+
   const context: ModelPromptContext = {
     realm,
     properties: { args },
-    current,
     history: histories.at(-1)!,
     histories,
     converts: [],
@@ -238,17 +185,21 @@ export const processers = {
     const { max: maxRetry = 3, interval = 5 } = model.properties?.retry ?? {};
     const { signal } = controller;
     /**
-     * 先准备输出组，注意一轮对话不止有一个输出
+     * TODO 这里清理了输出创建，输出创建由外部整理
+     * 这里默认继续
+     *
+     *  先准备输出组，注意一轮对话不止有一个输出
      * ai的一次请求可能会输出工具调用，调用
      * 的结果需要返回给ai继续进行调用，除非
      * ai明确返回stop。
      * 这里也取设定中的最大迭代次数，做了一个
      * 限制
      */
-    const outputs: RealmOutput[] = [];
+    // const outputs: RealmOutput[] = [];
     const history = await realms.history.get(null, realm);
-    history.output = history.outputs.length;
-    history.outputs.push(outputs);
+    const space = realms.space(history)!;
+    // history.output = history.outputs.length;
+    // history.outputs.push(outputs);
 
     let iteration = iterations;
 
@@ -266,14 +217,13 @@ export const processers = {
     while (iteration > 0) {
       iteration--;
       console.debug(`[realm]: iterations ${iteration}`);
-      const current = outputs.length > 0;
       /**
        * 构造输入上下文，这里的输入上下文应当包含本次的工具调用
        */
       useRealmState.getState().setRealmInfo('main', {
         title: 'story.input_processing',
       });
-      const { input } = await prompt({ args, current, realm, controller });
+      const { input } = await prompt({ args, realm, controller });
 
       /**
        * 准备单次输出
@@ -281,10 +231,8 @@ export const processers = {
       const output: RealmOutput = {
         content: '',
         thought: '',
-        variables: [],
-        properties: {},
       };
-      outputs.push(output);
+      space.outputs.push(output);
 
       // 输出的属性缓存
       const properties: Record<string, any> = {};
@@ -308,7 +256,7 @@ export const processers = {
         if (context.stopped) {
           iteration = 0;
         }
-        return { outputs, output };
+        return { space, output };
       };
 
       /**

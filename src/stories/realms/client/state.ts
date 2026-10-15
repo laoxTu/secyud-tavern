@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { BusinessError } from '@/interceptors';
+import { proxy } from '@/stories/client/proxy';
 
 import { realms } from '.';
 
@@ -103,8 +104,8 @@ export const useRealmState = create<RealmState>()(
         const current = await getHistory(null, realm);
         set({
           output: {
-            cur: current.output,
-            max: current.outputs.length,
+            cur: current.index,
+            max: current.spaces.length,
           },
         });
       },
@@ -112,19 +113,21 @@ export const useRealmState = create<RealmState>()(
         const {
           histories,
           realm,
-          history: { get: getHistory, set: setHistory },
+          history: { get: getHistory },
         } = realms;
-        const { index } = get();
-        if (!histories || histories.length < index.cur) return;
+        const { index, generating } = get();
+        if (!histories || histories.length < index.cur || generating) return;
         let max = 0;
         if (index.cur > 0) {
           const history = await getHistory(index.cur, realm);
-          max = history.outputs.length;
-          cur ??= history.output;
+          max = history.spaces.length;
+          cur ??= history.index;
           if (cur >= max) cur = max - 1;
-          if (history.output != cur) {
-            history.output = cur;
-            await setHistory(index.cur, realm);
+          if (history.index != cur) {
+            history.index = cur;
+            await proxy.history.set(history.masterId, history.sequence, {
+              index: cur,
+            });
           }
         } else {
           cur = -1;

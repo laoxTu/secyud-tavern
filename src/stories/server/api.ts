@@ -89,7 +89,7 @@ export default {
           }),
           PUT: route(async (request, record) => {
             const { id, sequence } = await record.params;
-            const history: RealmHistory = await request.json();
+            const history: Partial<RealmHistory> = await request.json();
             await stories.repository.history.set(id, sequence, history);
             return response.json(null);
           }),

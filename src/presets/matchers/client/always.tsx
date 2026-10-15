@@ -3,10 +3,11 @@ import { useTranslations } from 'next-intl';
 
 import { Checkbox, Field, FieldContent, FieldLabel, Input } from '@/components';
 import { forms } from '@/global';
-import { Lorebook } from '@/lorebooks';
-import { Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
 import { jsonUtils } from '@/utils';
+
+import { Matcher } from '.';
 
 export interface AlwaysMatchConfig {
   /**
@@ -66,8 +67,5 @@ export const alwaysMatcher: Matcher = {
       last: forms.bool(data, 'last'),
       macro: forms.str(data, 'macro'),
     };
-  },
-  async match() {
-    return Promise.resolve(true);
   },
 };

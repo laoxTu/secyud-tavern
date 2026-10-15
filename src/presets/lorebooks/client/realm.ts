@@ -1,9 +1,6 @@
 import { insert } from '@orama/orama';
 
 import { utils } from '@/database';
-import { Lorebook, lorebooks as main } from '@/lorebooks';
-import { lorebooks } from '@/lorebooks/client';
-import { Rag, rags } from '@/memories/client/rag';
 import {
   InjectMessage,
   ModelInjectContext,
@@ -14,18 +11,21 @@ import {
 import { Preset, PresetItem } from '@/presets';
 import { macros } from '@/presets/macros/client';
 import {
-  RealmHistory,
-  RealmMessage,
-  RealmOutput,
-  RealmPrompt,
-} from '@/stories';
+  AlwaysMatchConfig,
+  alwaysMatcher,
+} from '@/presets/matchers/client/always';
+import { vectorMatcher } from '@/presets/matchers/client/vector';
+import { RealmHistory, RealmOutput } from '@/stories';
+import { Rag, rags } from '@/stories/memories/client';
 import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools';
 import { arrUtils, jsonUtils } from '@/utils';
 
-import { matchers } from './matcher';
-import { AlwaysMatchConfig, alwaysMatcher } from './matchers/always';
-import { vectorMatcher } from './matchers/vector';
+import { Lorebook, lorebooks as main } from '..';
+
+import { builders } from './builder';
+
+import { lorebooks } from '.';
 
 const lorebookSchema = {
   name: 'string',
@@ -260,19 +260,12 @@ export const processer: Processer = {
     return cache;
   },
   async prompt(ctx, cache: LorebookCache) {
-    ctx.injects.push((inject) => create(ctx, inject, cache));
-  },
-  async output({ history }, cache: LorebookCache) {
-    const outputs = realms.outputs(history);
-    if (!outputs) return;
-    for (const message of outputs) {
-      await matchers.analyze(cache.entries, {
-        history,
-        message,
-        properties: {},
-        output: true,
-        cache,
-      });
-    }
+    ctx.injects.push((inject) => {
+      const builderName = inject.builder;
+      const builder =
+        builders.registry.record(builderName) ??
+        builders.registry.records[builders.default.id];
+      return builder.create(ctx, inject, cache);
+    });
   },
 };
