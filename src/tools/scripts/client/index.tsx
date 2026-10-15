@@ -155,7 +155,7 @@ function script(config: ScriptConfig, realm: Realm): ToolItem {
         context.window = contentWindow;
       }
       if (config.enableVariable) {
-        const history = await realms.history.get(null, realm);
+        const history = await realms.history(null, realm);
         context.variables = history.variables;
       }
       const result = fn(args, context);

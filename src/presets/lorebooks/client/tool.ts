@@ -1,7 +1,7 @@
 import { search } from '@orama/orama';
 
-import { useRagState } from '@/memories/client';
 import { Realm } from '@/stories';
+import { useRagState } from '@/stories/memories/client';
 import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProvider } from '@/tools/client';
 
@@ -53,8 +53,8 @@ function get(realm: Realm): ToolItem<{
       additionalProperties: false,
     },
     async invoke({ args: { content, limit = 3, min_relevance = 0.3 } }) {
-      const outputs = realms.outputs(await realms.history.get(null, realm));
-      const output = outputs?.at(-1);
+      const space = realms.space(await realms.history(null, realm));
+      const output = space?.outputs?.at(-1);
 
       if (!output) {
         return 'error: output not found';

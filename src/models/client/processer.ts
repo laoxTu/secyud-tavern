@@ -108,7 +108,7 @@ async function prompt({
   const layers = model.properties?.layers;
   const length = realm.histories.length;
   for (let i = length; i > 0; i--) {
-    const history = await realms.history.get(i, realm);
+    const history = await realms.history(i, realm);
     histories.push(history);
     if (history.summary) break;
     if (i === 1) {
@@ -185,21 +185,14 @@ export const processers = {
     const { max: maxRetry = 3, interval = 5 } = model.properties?.retry ?? {};
     const { signal } = controller;
     /**
-     * TODO 这里清理了输出创建，输出创建由外部整理
-     * 这里默认继续
-     *
-     *  先准备输出组，注意一轮对话不止有一个输出
      * ai的一次请求可能会输出工具调用，调用
      * 的结果需要返回给ai继续进行调用，除非
      * ai明确返回stop。
      * 这里也取设定中的最大迭代次数，做了一个
      * 限制
      */
-    // const outputs: RealmOutput[] = [];
-    const history = await realms.history.get(null, realm);
+    const history = await realms.history(null, realm);
     const space = realms.space(history)!;
-    // history.output = history.outputs.length;
-    // history.outputs.push(outputs);
 
     let iteration = iterations;
 

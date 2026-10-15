@@ -95,13 +95,9 @@ export const useRealmState = create<RealmState>()(
       },
       output: { max: 0, cur: -1 },
       async initPager() {
-        const {
-          histories,
-          realm,
-          history: { get: getHistory },
-        } = realms;
+        const { histories, realm } = realms;
         await get().setIndex(histories?.length ?? 0);
-        const current = await getHistory(null, realm);
+        const current = await realms.history(null, realm);
         set({
           output: {
             cur: current.index,
@@ -110,16 +106,12 @@ export const useRealmState = create<RealmState>()(
         });
       },
       async setOutput(cur?: number) {
-        const {
-          histories,
-          realm,
-          history: { get: getHistory },
-        } = realms;
+        const { histories, realm } = realms;
         const { index, generating } = get();
         if (!histories || histories.length < index.cur || generating) return;
         let max = 0;
         if (index.cur > 0) {
-          const history = await getHistory(index.cur, realm);
+          const history = await realms.history(index.cur, realm);
           max = history.spaces.length;
           cur ??= history.index;
           if (cur >= max) cur = max - 1;

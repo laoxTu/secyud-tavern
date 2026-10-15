@@ -7,9 +7,8 @@ import {
 } from '@/models/client';
 import { PresetItem } from '@/presets';
 import { macros } from '@/presets/macros/client';
-import { MatchContext, matchers } from '@/presets/matchers/client';
+import { matchers } from '@/presets/matchers/client';
 import { AlwaysMatchConfig } from '@/presets/matchers/client/always';
-import { realms } from '@/stories/realms/client';
 import { arrUtils } from '@/utils';
 
 import { Lorebook } from '..';
@@ -36,33 +35,49 @@ const defaultBuilder: LorebookBuilder = {
     // 准备好的世界书
     const prepared: PresetItem<Lorebook>[] = [];
     const total = Object.values(cache.entries);
+    // 模拟注入的内容
     let simulation = 0;
-    let index = 0;
     // 首位注入，把always的当作首位
     await fixed(cache.before);
-    let matchContext: MatchContext = null!;
     return {
-      async before(i: number) {
-        const history = histories[i];
-        matchContext = {
-          history,
-          cache,
-        };
-        await prepare(await matchers.prompt(total, matchContext));
+      async prompt(history, next) {
+        await prepare(
+          await matchers.prompt(total, {
+            history,
+            cache,
+          }),
+        );
         // 这里如果是最后一条，还需要准备常驻的后置条目
-        if (i === histories.length - 1) await fixed(cache.after);
+        if (history.index === histories.length - 1) await fixed(cache.after);
         prepared.sort(lorebooks.compare);
-        // 添加user前世界书
         await inject();
-      },
-      async middle() {
-        // 添加user后世界书
+        await next();
         await inject(true);
       },
-      async behind(i: number) {
-        if (i === histories.length - 1) return;
-        const history = histories[i];
-        await moved(history, realms.outputs(history), true);
+      async output(history, output, next) {
+        await prepare(
+          await matchers.output(total, output, {
+            history,
+            cache,
+          }),
+        );
+        prepared.sort(lorebooks.compare);
+        await inject();
+        await next();
+        await inject(true);
+      },
+      async spaces(history, space, next) {
+        if (history.index === histories.length - 1) return;
+        await prepare(
+          await matchers.spaces(total, space, {
+            history,
+            cache,
+          }),
+        );
+        prepared.sort(lorebooks.compare);
+        await inject();
+        await next();
+        await inject(true);
       },
     };
 

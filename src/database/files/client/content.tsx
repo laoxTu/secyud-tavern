@@ -15,8 +15,8 @@ import {
 } from '@/components';
 import { FetchState } from '@/database/client';
 import { states } from '@/database/client/factory';
-import { FileModel, FileRequestParam, files as main } from '@/files';
-import { files } from '@/files/client';
+import { FileModel, FileRequestParam, files as main } from '@/database/files';
+import { files } from '@/database/files/client';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { handler, success } from '@/interceptors/client';
 

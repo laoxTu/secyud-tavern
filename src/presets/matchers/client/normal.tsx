@@ -6,10 +6,11 @@ import { TagBox } from '@/components';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { forms } from '@/global';
-import { Lorebook } from '@/lorebooks';
-import { lorebooks, MatchContext, Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
 import { jsonUtils } from '@/utils';
+
+import { Matcher } from '.';
 
 export interface NormalMatchConfig {
   // 关键词
@@ -103,12 +104,8 @@ export function normalConfig(data: FormData): NormalMatchConfig {
   };
 }
 
-export function normalMatch(
-  context: MatchContext,
-  expression?: NormalMatchConfig,
-) {
+export function normalMatch(content: string, expression?: NormalMatchConfig) {
   if (!expression?.keywordsLength) return false;
-  const content = lorebooks.matchers.content(context);
   let fitCount = 0;
   for (const keywords of expression.keywords) {
     if (keywords.some((keyword) => content.includes(keyword))) {
@@ -125,7 +122,10 @@ export const normalMatcher: Matcher = {
   async configureObject(data, lorebook: Lorebook<NormalMatchConfig>) {
     lorebook.expression = normalConfig(data);
   },
-  match: async (ctx, lorebook) => {
-    return normalMatch(ctx, lorebook.expression);
+  prompt: async (ctx, lorebook) => {
+    return normalMatch(ctx.history.content, lorebook.expression);
+  },
+  output: async (_ctx, output, lorebook) => {
+    return normalMatch(output.content, lorebook.expression);
   },
 } as const;

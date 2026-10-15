@@ -209,6 +209,7 @@ async function getRealm(story: Story) {
     histories,
     model,
     presets: requires,
+    changes: {},
   };
   return realm;
 }

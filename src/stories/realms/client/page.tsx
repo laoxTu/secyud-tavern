@@ -92,25 +92,11 @@ function UserInput() {
 
   // 发送输入内容，并尝试创建新历史
   const triggerCreate = handler(async () => {
-    const { histories, iframe, realm } = realms;
-    const { content, summary, setIndex } = useRealmState.getState();
+    if (generating) return;
+    const { histories, realm } = realms;
+    const { summary, setIndex } = useRealmState.getState();
 
-    let input = content.trim();
-    // 用户输入可以联动内部
-    if (iframe.contentWindow) {
-      const window = iframe.contentWindow as any;
-      (
-        window?.userInput?.inputBuilders as {
-          id: string;
-          sequence?: number;
-          build: (text: string) => string;
-        }[]
-      )
-        ?.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
-        .forEach((builder) => {
-          input = builder.build(input);
-        });
-    }
+    const input = realms.input();
 
     // 如果第一次没有输入，禁止继续
     if (!input && !histories.length) return;
@@ -236,11 +222,7 @@ export function PageControl() {
       handler(async () => {
         setPrepare(false);
         console.debug(`[realm](render page): start`);
-        const {
-          iframe,
-          realm,
-          history: { get },
-        } = realms;
+        const { iframe, realm, history: get } = realms;
         if (!iframe) return;
         const { index } = useRealmState.getState();
         const history = await get(index.cur, realm);

@@ -3,11 +3,12 @@ import { useTranslations } from 'next-intl';
 
 import { Field, FieldLabel, Input } from '@/components';
 import { forms } from '@/global';
-import { Lorebook } from '@/lorebooks';
-import { lorebooks, Matcher } from '@/lorebooks/client';
 import { PresetEntry } from '@/presets';
+import { Lorebook } from '@/presets/lorebooks';
 import { jsonUtils } from '@/utils';
 import { extract } from '@/utils/json-patch';
+
+import { Matcher } from '.';
 
 export interface VariableMatchConfig {
   // 路径
@@ -66,10 +67,12 @@ export const variableMatcher: Matcher = {
       value: forms.str(data, 'match_value'),
     };
   },
-  match: async (context, lorebook) => {
-    const variables = lorebooks.matchers.variables(context);
+  prompt: async (context, lorebook) => {
     const expression: VariableMatchConfig = lorebook.expression;
-    const { exists, current } = extract(variables, expression.path);
+    const { exists, current } = extract(
+      context.history.variables,
+      expression.path,
+    );
     return exists && String(current.item) === expression.value;
   },
 } as const;

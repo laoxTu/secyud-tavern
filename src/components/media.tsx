@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { validate } from 'uuid';
 
-import { files } from '@/files/client';
+import { files } from '@/database/files/client';
 
 interface MediaProps {
   source: string;
