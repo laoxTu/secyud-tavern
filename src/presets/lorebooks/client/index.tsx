@@ -21,10 +21,10 @@ export const lorebooks = {
   cache(realm: Realm) {
     return models.cache<LorebookCache>(realm, main.name);
   },
-  codes(message: RealmOutput, create: boolean = true): string[][] | undefined {
+  codes(output: RealmOutput, create: boolean = true): string[][] | undefined {
     return create
-      ? utils.getProperty(message, 'lorebook_vector', (): string[][] => [])
-      : utils.getProperty(message, 'lorebook_vector');
+      ? utils.getProperty(output, 'lorebook_vector', (): string[][] => [])
+      : utils.getProperty(output, 'lorebook_vector');
   },
   tool,
 };

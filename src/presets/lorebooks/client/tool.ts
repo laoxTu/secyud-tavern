@@ -89,6 +89,7 @@ function get(realm: Realm): ToolItem<{
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
       codes.push(data.map((u) => u.document.name));
+      output.properties![lorebooks.plural] = undefined;
 
       return JSON.stringify(data.map((u) => u.document.title));
     },

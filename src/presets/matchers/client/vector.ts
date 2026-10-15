@@ -7,16 +7,16 @@ export const vectorMatcher: Matcher = {
   id: 'vector',
   output: async (context, output, lorebook) => {
     if (!context.cache.rag) return false;
-    let ids = utils.getProperty<Set<string | undefined>>(
+    const ids = utils.getProperty<Set<string | undefined>>(
       context,
       vectorMatcher.id,
       () => {
-        const list = lorebooks.codes(output);
+        const list = lorebooks.codes(output, false);
         if (!list) return new Set();
-
         return new Set(list.flat());
       },
     );
+    console.debug('[lorebook](vector):', ids);
 
     return ids.has(lorebook.id);
   },

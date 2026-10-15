@@ -64,10 +64,10 @@ async function prompt(
   realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
-  for (const [key, lorebook] of Object.entries(total)) {
+  for (const lorebook of total) {
     const matcher = matchers[lorebook.match];
     const result = await matcher?.prompt?.(context, lorebook);
-    if (result) actives.push(key);
+    if (result) actives.push(lorebook.id!);
   }
   // 输入直接用历史的properties
   utils.setProperty(context.history, lorebooks.plural, actives);
@@ -90,10 +90,10 @@ async function output(
   realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
-  for (const [key, lorebook] of Object.entries(total)) {
+  for (const lorebook of total) {
     const matcher = matchers[lorebook.match];
     const result = await matcher?.output?.(context, output, lorebook);
-    if (result) actives.push(key);
+    if (result) actives.push(lorebook.id!);
   }
   // 输出用输出的properties
   utils.setProperty(output, lorebooks.plural, actives);
@@ -117,10 +117,10 @@ async function spaces(
   realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
-  for (const [key, lorebook] of Object.entries(total)) {
+  for (const lorebook of total) {
     const matcher = matchers[lorebook.match];
     const result = await matcher?.spaces?.(context, space, lorebook);
-    if (result) actives.push(key);
+    if (result) actives.push(lorebook.id!);
   }
   // 空间用空间的properties
   utils.setProperty(space, lorebooks.plural, actives);
