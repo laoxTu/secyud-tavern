@@ -68,7 +68,7 @@ export const proxy = {
     async set(
       id: string,
       sequence: number,
-      history: RealmHistory,
+      history: Partial<RealmHistory>,
     ): Promise<void> {
       await put('stories/{id}/histories/{sequence}', history, {
         params: { id, sequence },

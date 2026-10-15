@@ -5,7 +5,7 @@ import { ToolCall } from '@/tools';
 import { Operation } from '@/utils/json-patch';
 
 // 输出
-export interface RealmOutput {
+export interface RealmOutput extends Properties {
   content: string;
   // 思考内容
   thought: string;
@@ -42,6 +42,11 @@ export interface RealmHistory extends Properties {
   index: number;
   // 空间集合
   spaces: RealmSpace[];
+  // 前端字段，是否改变
+  // TODO 连锁
+  changed?: boolean;
+  // 前端字段，临时索引
+  pos?: number;
 }
 
 /**
@@ -59,6 +64,7 @@ export interface Realm extends Entity, Properties, Entries {
   // 使用的预设
   presets: Preset[];
   context?: Record<string, any>;
+  changes: Record<number, RealmHistory>;
 }
 
 export interface RealmContext extends Properties {

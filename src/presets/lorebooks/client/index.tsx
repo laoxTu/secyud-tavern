@@ -5,17 +5,16 @@ import { Realm, RealmOutput } from '@/stories';
 
 import { lorebooks as main } from '..';
 
+import { builders } from './builder';
 import { tab } from './content';
-import { matchers } from './matcher';
 import { LorebookCache, processer } from './realm';
 import { tool } from './tool';
 
-export type * from './matcher';
-
+export type * from './realm';
 export const lorebooks = {
   ...main,
-  matchers,
   processer,
+  builders,
   tab: {
     preset: tab,
   },
