@@ -52,7 +52,7 @@ export const json = <T = any>(name: string) =>
   text(name, { mode: 'json' }).$type<T>();
 export const boolean = (name: string) =>
   integer(name, { mode: 'boolean' }).$type<boolean>();
-export const foreignKey = (name: string, ref: () => SQLiteColumn) =>
+export const withForeign = (name: string, ref: () => SQLiteColumn) =>
   text(name).references(ref, {
     onDelete: 'cascade',
     onUpdate: 'cascade',
@@ -63,7 +63,7 @@ export const schemas = {
     return sqliteTable(
       name,
       {
-        masterId: foreignKey('master_id', ref).notNull(),
+        masterId: withForeign('master_id', ref).notNull(),
         entryType: text('entry_type').notNull(),
         entryId: integer('entry_id').notNull(),
         name: text('name').notNull().default(''),

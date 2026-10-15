@@ -7,7 +7,7 @@ import {
   text,
 } from 'drizzle-orm/sqlite-core';
 
-import { foreignKey, json } from '@/database/server/factory';
+import { json, withForeign } from '@/database/server/factory';
 
 export const taskSchema = sqliteTable(
   'task',
@@ -30,7 +30,7 @@ export const taskSchema = sqliteTable(
 export const taskHistorySchema = sqliteTable(
   'task_history',
   {
-    masterId: foreignKey('master_id', () => taskSchema.id).notNull(),
+    masterId: withForeign('master_id', () => taskSchema.id).notNull(),
     attempt: integer('attempt').notNull(),
     queue: integer('queue'),
     start: integer('start'),

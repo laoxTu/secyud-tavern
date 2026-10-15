@@ -6,7 +6,7 @@ import {
   text,
 } from 'drizzle-orm/sqlite-core';
 
-import { foreignKey, json } from '@/database/server/factory';
+import { json, withForeign } from '@/database/server/factory';
 
 export const comfyuiModelSchema = sqliteTable(
   'comfyui_model',
@@ -49,7 +49,10 @@ export const comfyuiWorkflowSchema = sqliteTable(
 export const comfyuiParamSchema = sqliteTable(
   'comfyui_param',
   {
-    masterId: foreignKey('master_id', () => comfyuiWorkflowSchema.id).notNull(),
+    masterId: withForeign(
+      'master_id',
+      () => comfyuiWorkflowSchema.id,
+    ).notNull(),
     sequence: integer('sequence').notNull(),
     type: text('type').notNull(),
     name: text('name').notNull(),

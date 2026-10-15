@@ -4,32 +4,44 @@ import { Preset } from '@/presets';
 import { ToolCall } from '@/tools';
 import { Operation } from '@/utils/json-patch';
 
-export interface RealmMessage extends Properties {
-  // 消息内容
-  content: string;
-  // 变量操作
-  variables: Operation[];
-}
-
-// user 提示词
-export interface RealmPrompt extends RealmMessage {}
-
 // 输出
-export interface RealmOutput extends RealmMessage {
+export interface RealmOutput {
+  content: string;
   // 思考内容
   thought: string;
   // 工具调用
   callings?: ToolCall[];
 }
 
-export interface RealmHistory {
+/**
+ * 一个操作空间，是一连串的输出集合
+ * operations 承载继承变量的变化
+ * properties 是操作空间内的属性
+ */
+export interface RealmSpace extends Properties {
+  // 工作区变量操作
+  operations: Operation[];
+  outputs: RealmOutput[];
+}
+
+/**
+ * 一个历史包含输入和工作区集合
+ */
+export interface RealmHistory extends Properties {
+  // 故事ID
   masterId: string;
+  // 序号
   sequence: number;
+  // 是否是汇总
   summary: boolean;
+  // 消息内容
+  content: string;
+  // 工作区的继承初始变量
   variables: Record<string, any>;
-  prompts: RealmPrompt[];
-  output: number;
-  outputs: RealmOutput[][];
+  // 空间索引
+  index: number;
+  // 空间集合
+  spaces: RealmSpace[];
 }
 
 /**

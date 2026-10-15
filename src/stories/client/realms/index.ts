@@ -9,26 +9,22 @@ import { patch } from '@/utils/json-patch';
 
 import { useRealmState } from './state';
 
-function outputs(history?: RealmHistory | null) {
-  if (!history?.outputs.length) return null;
-  const outputId = Math.min(history.outputs.length - 1, history.output);
-  return history.outputs[outputId];
+function space(history?: RealmHistory | null) {
+  if (!history?.spaces.length) return null;
+  const index = Math.min(history.spaces.length - 1, history.index);
+  return history.spaces[index];
 }
 
-function variables(history: RealmHistory, output: boolean = true) {
+/**
+ * 取出历史当前的变量
+ * @param history
+ * @returns
+ */
+function variables(history: RealmHistory) {
   const variables = structuredClone(history.variables);
   console.debug('[variables](before patch): ', history.variables);
+  patch(variables, space(history)?.operations);
   console.debug('[variables](after patch): ', variables);
-  for (const input of history.prompts) {
-    patch(variables, input.variables);
-  }
-  if (output && history.outputs.length > 0) {
-    const list = outputs(history);
-    if (list)
-      for (const output of list) {
-        patch(variables, output.variables);
-      }
-  }
   return variables;
 }
 
@@ -87,29 +83,25 @@ function opening(realm: Realm) {
     opening = {
       masterId: realm.id,
       sequence: -1,
-      prompts: [
-        {
-          content: '',
-          variables: [],
-          properties: {},
-        },
-      ],
+      index: 0,
       summary: true,
-      output: 0,
-      outputs: [],
+      content: '',
       variables,
-    };
-    opening.outputs.push(
-      realm.presets
+      operations: [],
+      outputs: realm.presets
         .map((u) => u.opening?.trim())
         .filter((u) => u)
         .map((v) => ({
           content: v!,
-          variables: [],
-          properties: {},
           thought: '',
+          callings: [],
         })),
-    );
+    };
+    opening.outputs.push({
+      content: '',
+      thought: '',
+      callings: [],
+    });
     // 懒生成写入，setContent 会检测同键重复初始化
     initContext(realm, key, opening);
     console.log('[realm](opening): ', opening);
@@ -201,6 +193,7 @@ async function generate(create: boolean = false) {
       // 如果上一个历史已经输出，创建新的历史。
       // 如果还没有历史，使用开场白变量。
       let history = histories.at(-1)!;
+
       if (history) {
         if (history.outputs.length > 0) {
           variables = realms.variables(history);
@@ -208,25 +201,26 @@ async function generate(create: boolean = false) {
       } else {
         variables = realms.variables(opening(realm));
       }
+
       // 有开场variables，意味着创建新历史
       if (variables) {
         history = {
           masterId: realm.id,
           sequence: histories.length,
-          output: -1,
-          prompts: [],
-          outputs: [],
+          index: -1,
+          content: '',
           summary,
+          operations: [],
+          outputs: [],
           variables,
         };
         histories.push(history);
       }
 
-      history.prompts.push({
-        content: input,
-        variables: [],
-        properties: {},
-      });
+      history.content = history.content
+        ? `${history.content}\n${input}`
+        : input;
+
       // 用户输入后立即跳转到最新页面，先渲染用户输入。
       await setIndex(histories.length);
       // 有开场variables，新历史需要保存
@@ -317,7 +311,7 @@ export const realms = {
   get histories() {
     return realms.realm?.histories!;
   },
-  outputs,
+  space,
   variables,
   model,
   opening,
@@ -337,19 +331,13 @@ export const realms = {
       postMessage('variables', variables(history));
     },
     async content(history: RealmHistory, handler: ConvertContent) {
-      const messages = outputs(history) ?? [];
+      const messages = history.outputs;
       const res = {
-        inputs: await Promise.all(
-          history.prompts
-            .filter((u) => u.content)
-            .map((u) =>
-              handler(u.content, {
-                role: 'user',
-                type: 'input',
-                history,
-              }),
-            ),
-        ),
+        inputs: await handler(history.content, {
+          role: 'user',
+          type: 'input',
+          history,
+        }),
         output: await handler(
           arrUtils.join(messages, '\n', (u) => u.content).trim(),
           {
