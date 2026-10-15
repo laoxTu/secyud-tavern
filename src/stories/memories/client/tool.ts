@@ -1,13 +1,15 @@
 import { insert, search } from '@orama/orama';
 
-import { memories as main, Memory } from '@/memories';
-import { memories, useRagState } from '@/memories/client';
 import { Realm } from '@/stories';
 import { stories } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProvider } from '@/tools/client';
 
-export const provider: ToolProvider = {
+import { memories as main, Memory } from '..';
+
+import { memories, useRagState } from '.';
+
+export const tool: ToolProvider = {
   id: main.name,
   async create(_, realm) {
     return [get(realm), set(realm)];
@@ -70,8 +72,8 @@ function get(realm: Realm): ToolItem<{
     async invoke({
       args: { content, types = [], tags = [], limit = 3, min_relevance = 0.3 },
     }) {
-      const outputs = realms.outputs(await realms.history.get(null, realm));
-      const output = outputs?.at(-1);
+      const space = realms.space(await realms.history.get(null, realm));
+      const output = space?.outputs?.at(-1);
 
       if (!output) {
         return 'error: output not found';

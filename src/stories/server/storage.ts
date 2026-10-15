@@ -1,6 +1,6 @@
 import { Storage } from '@/database/server';
 import { storages } from '@/database/server/factory';
-import { getRegistry } from '@/plugins';
+import { getRegistry } from '@/global';
 import { Story } from '@/stories';
 
 export interface StoryStorage extends Storage<Story> {}

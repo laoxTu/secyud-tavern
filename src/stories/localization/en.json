@@ -1,5 +1,6 @@
 {
   "memory": {
+    "id": "Memory",
     "importance": "Importance",
     "sequence": "Turn",
     "text": "Content"
@@ -54,6 +55,15 @@
         "tooltip": "Image gallery"
       }
     }
+  },
+  "rag": {
+    "cache_limit": "Cache entry limit",
+    "embedding_generator": "Embedding generator",
+    "embedding_generator_model": "Embedding generation model",
+    "huggingface_mirror": "huggingface mirror",
+    "id": "Knowledge base",
+    "limit": "Entry limit",
+    "similarity": "Similarity"
   },
   "realm": {
     "back_home_tip": "Back to home",

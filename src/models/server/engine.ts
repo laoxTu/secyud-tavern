@@ -1,6 +1,6 @@
+import { getRegistry, Registerable } from '@/global';
 import { checker } from '@/interceptors';
 import { Model } from '@/models';
-import { getRegistry, Registerable } from '@/plugins';
 import { hasher } from '@/utils/server';
 
 export interface ModelGenerateContext {

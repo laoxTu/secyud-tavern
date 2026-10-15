@@ -1,5 +1,8 @@
 import { stories as main } from '@/stories';
 import { images } from '@/stories/images/server';
+import { tools } from '@/tools/server';
+
+import { memories } from '../memories/server';
 
 import { repository } from './repository';
 import { storage } from './storage';
@@ -12,4 +15,6 @@ export const stories = {
 
 export default async function () {
   storage.registry.register(images.storage);
+  stories.storage.registry.register(storage);
+  tools.providers.registry.register(memories.tool);
 }

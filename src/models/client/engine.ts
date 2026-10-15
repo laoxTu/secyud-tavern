@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import { getRegistry, Registerable } from '@/global';
 import { Model } from '@/models';
 import {
   ModelInjectContext,
@@ -8,9 +9,8 @@ import {
   ModelResultContext,
   models,
 } from '@/models/client';
-import { getRegistry, Registerable } from '@/plugins';
 import { RealmHistory } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';
 

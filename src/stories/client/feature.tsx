@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 
 export interface Feature extends Registerable {
   component: React.ComponentType;

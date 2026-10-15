@@ -44,12 +44,11 @@ import {
   useFormRef,
   useTabs,
 } from '@/components';
-import { forms } from '@/global';
+import { forms, getRegistry, Registerable } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
 import { BusinessError } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import { ModelNameValueField } from '@/models/client';
-import { getRegistry, Registerable } from '@/plugins';
 import { PresetNameValuesField } from '@/presets/client';
 import { stories as main, Story, StoryEntryClipboard } from '@/stories';
 import { jsonUtils } from '@/utils';

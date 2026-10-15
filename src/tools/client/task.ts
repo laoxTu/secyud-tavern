@@ -1,6 +1,6 @@
 import { signals } from '@/signal';
 import { Realm } from '@/stories';
-import { useRealmState } from '@/stories/client/realms';
+import { useRealmState } from '@/stories/realms/client';
 import { TaskInfo, TaskRunner } from '@/tasks';
 
 import { ToolCall } from '..';

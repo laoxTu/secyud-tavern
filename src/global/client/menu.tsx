@@ -24,8 +24,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components';
+import { getRegistry, Registerable } from '@/global';
 import { locales } from '@/localization/config';
-import { getRegistry, Registerable } from '@/plugins';
 
 import { useGlobalState } from './state';
 

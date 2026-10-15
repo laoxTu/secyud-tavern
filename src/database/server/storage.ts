@@ -1,5 +1,5 @@
 import { Entries } from '@/database';
-import { Registerable } from '@/plugins';
+import { Registerable } from '@/global';
 
 export interface Criteria {
   filter?: string;

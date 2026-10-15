@@ -41,7 +41,7 @@ import { handler } from '@/interceptors/client';
 import { ModelInputSummary, models } from '@/models/client';
 import { RealmHistory } from '@/stories';
 import { Feature, stories } from '@/stories/client';
-import { realms, useRealmState } from '@/stories/client/realms';
+import { realms, useRealmState } from '@/stories/realms/client';
 import { jsonUtils } from '@/utils';
 
 function Deleter() {

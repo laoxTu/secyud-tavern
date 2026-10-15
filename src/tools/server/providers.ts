@@ -1,4 +1,4 @@
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 import { PresetItem } from '@/presets';
 import { PresetArchiveContext } from '@/presets/server/storage';
 

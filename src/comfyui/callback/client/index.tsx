@@ -6,8 +6,8 @@ import { ComfyUIParam } from '@/comfyui';
 import { ComfyUIParamProps, ParamConfigurator } from '@/comfyui/client';
 import { Field, FieldLabel, Input } from '@/components';
 import { forms } from '@/global';
-import { realms } from '@/stories/client/realms';
 import { images } from '@/stories/images';
+import { realms } from '@/stories/realms/client';
 import { jsonUtils } from '@/utils';
 
 import { ImageCallbackConfig, callbacks as main } from '..';

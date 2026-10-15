@@ -27,7 +27,7 @@ import {
   models,
   useModelState,
 } from '@/models/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolCall } from '@/tools';
 import { tools } from '@/tools/client';
 import { arrUtils } from '@/utils';

@@ -1,8 +1,8 @@
 import { ToolProvider } from '@/tools/server';
 
-import { memories as main } from '..';
+import { lorebooks as main } from '..';
 
-export const provider: ToolProvider = {
+export const tool: ToolProvider = {
   async loadArchive() {},
   async saveArchive() {},
   id: main.name,

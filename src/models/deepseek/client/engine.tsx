@@ -24,7 +24,7 @@ import {
 } from '@/models/client';
 import { DeepseekConfig, DeepseekOptions, deepseeks } from '@/models/deepseek';
 import { openais } from '@/models/openai/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools/client';
 
 function Content() {

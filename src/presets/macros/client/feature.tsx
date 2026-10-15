@@ -22,7 +22,7 @@ import { Macro, macros as main } from '@/presets/macros';
 import { macros } from '@/presets/macros/client';
 import { MacroCacheItem } from '@/presets/macros/client/realm';
 import { Feature, stories } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 
 function Component() {
   const t = useTranslations();

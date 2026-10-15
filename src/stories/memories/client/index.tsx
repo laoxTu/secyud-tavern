@@ -1,19 +1,14 @@
 'use client';
 import { utils } from '@/database';
-import { settings } from '@/global/client';
 import { models } from '@/models/client';
 import { Realm, RealmOutput } from '@/stories';
-import { stories } from '@/stories/client';
-import { tools } from '@/tools/client';
 
 import { memories as main } from '..';
 
 import { storyTab } from './content';
-import { rags } from './rag';
 import { MemoryCache, processer } from './realm';
 import { setting } from './setting';
-import { provider } from './tool';
-import { transformers } from './transformer';
+import { tool } from './tool';
 
 export * from './rag';
 
@@ -31,13 +26,6 @@ export const memories = {
   tabs: {
     story: storyTab,
   },
+  tool,
   processer,
 };
-
-export default async function () {
-  settings.tabs.register(setting);
-  rags.registry.register(transformers.embedder);
-  tools.providers.registry.register(provider);
-  stories.tabs.register(storyTab);
-  models.processers.registry.register(memories.processer);
-}

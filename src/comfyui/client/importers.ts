@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { ComfyUIModel } from '@/comfyui';
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 
 /**
  * 导入方式，从各个类别导入模型

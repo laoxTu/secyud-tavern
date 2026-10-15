@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { getRegistry, Manifest, Registerable } from '@/plugins';
+import { getRegistry, Manifest, Registerable } from '@/global';
 import { jsonUtils } from '@/utils';
 import { fileUtils } from '@/utils/server/file';
 

@@ -13,8 +13,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components';
+import { getRegistry, Registerable } from '@/global';
 import { GlobalMenuLabel } from '@/global/client';
-import { getRegistry, Registerable } from '@/plugins';
 
 import styles from './setting.module.css';
 
