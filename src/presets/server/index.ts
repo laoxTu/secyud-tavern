@@ -3,8 +3,10 @@ import { regexes } from '@/presets/regexes/server';
 import { scripts } from '@/presets/scripts/server';
 import { repository } from '@/presets/server/repository';
 import { styles } from '@/presets/styles/server';
+import { tools } from '@/tools/server';
 
 import { presets as main } from '..';
+import { lorebooks } from '../lorebooks/server';
 
 import { storage } from './storage';
 
@@ -20,5 +22,8 @@ export default async function () {
     scripts.storage.preset,
     regexes.storage.preset,
     macros.storage.preset,
+    lorebooks.storage.preset,
   );
+
+  tools.providers.registry.register(lorebooks.tool);
 }

@@ -1,8 +1,6 @@
 import { insert } from '@orama/orama';
 
 import { utils } from '@/database';
-import { memories as main, Memory } from '@/memories';
-import { memories } from '@/memories/client';
 import {
   InjectMessage,
   ModelInjectContext,
@@ -11,11 +9,15 @@ import {
   Processer,
 } from '@/models/client';
 import { Realm, StoryItem } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolCall } from '@/tools';
 import { arrUtils } from '@/utils';
 
+import { memories as main, Memory } from '..';
+
 import { Rag, rags } from './rag';
+
+import { memories } from '.';
 
 export const memorySchema = {
   entryId: 'number',

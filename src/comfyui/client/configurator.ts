@@ -2,7 +2,7 @@
 import React, { RefObject } from 'react';
 
 import { AutoPaintParam, ComfyUIParam, ComfyUIWorkflowInput } from '@/comfyui';
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 import { JsonSchema } from '@/utils';
 
 export interface ComfyUIParamProps<TConfig = any> {

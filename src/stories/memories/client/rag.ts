@@ -5,7 +5,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { dbStorage } from '@/database/client';
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 import { strUtils } from '@/utils';
 
 export interface EmbedContext {

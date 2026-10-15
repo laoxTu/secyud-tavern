@@ -1,7 +1,7 @@
+import { getRegistry, Registerable } from '@/global';
 import { ConvertContent, models } from '@/models/client';
-import { getRegistry, Registerable } from '@/plugins';
-import { realms } from '@/stories/client/realms';
 import { Realm, RealmContext, RealmHistory } from '@/stories/realms';
+import { realms } from '@/stories/realms/client';
 
 export interface RealmInitContext extends RealmContext {
   id?: string;

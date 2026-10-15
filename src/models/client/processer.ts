@@ -1,14 +1,14 @@
+import { getRegistry, Registerable } from '@/global';
 import { BusinessError } from '@/interceptors';
 import { isNetworkError } from '@/interceptors/client';
-import { getRegistry, Registerable } from '@/plugins';
 import { signals, sseUtils } from '@/signal';
-import { realms, useRealmState } from '@/stories/client/realms';
 import {
   Realm,
   RealmContext,
   RealmHistory,
   RealmOutput,
 } from '@/stories/realms';
+import { realms, useRealmState } from '@/stories/realms/client';
 import { ToolCall } from '@/tools';
 
 import { Model } from '..';

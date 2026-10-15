@@ -1,15 +1,17 @@
 import React from 'react';
 
 import { Properties, utils } from '@/database';
-import { Lorebook } from '@/lorebooks';
-import { lorebooks } from '@/lorebooks/client';
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 import { PresetEntry, PresetItem } from '@/presets';
 import { RealmHistory, RealmOutput, RealmPrompt } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { arrUtils } from '@/utils';
 
+import { Lorebook } from '..';
+
 import { LorebookCache } from './realm';
+
+import { lorebooks } from '.';
 
 interface MatchOutputContext {
   output: true;

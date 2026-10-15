@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getRegistry, Registerable } from '@/plugins';
+import { getRegistry, Registerable } from '@/global';
 import { PresetEntry, PresetItem } from '@/presets';
 import { Realm } from '@/stories';
 import { Tool, ToolCall } from '@/tools';

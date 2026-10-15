@@ -14,7 +14,7 @@ import {
 } from '@/components';
 import { handler } from '@/interceptors/client';
 import { Feature, stories } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { tools as main } from '@/tools';
 import { tools } from '@/tools/client';
 

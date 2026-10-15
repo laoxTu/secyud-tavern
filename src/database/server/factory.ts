@@ -17,7 +17,7 @@ import {
   Entry,
   EntryRequestParam,
 } from '@/database';
-import { Registry } from '@/plugins';
+import { Registry } from '@/global';
 
 import { dbProvider } from './provider';
 import { Storage, StorageManager } from './storage';

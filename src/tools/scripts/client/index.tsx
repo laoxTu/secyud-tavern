@@ -18,7 +18,7 @@ import { forms } from '@/global';
 import { checker } from '@/interceptors';
 import { cn } from '@/lib/utils';
 import { Realm } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';
 import { jsonUtils } from '@/utils';
 

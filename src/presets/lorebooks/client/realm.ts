@@ -19,7 +19,7 @@ import {
   RealmOutput,
   RealmPrompt,
 } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { tools } from '@/tools';
 import { arrUtils, jsonUtils } from '@/utils';
 

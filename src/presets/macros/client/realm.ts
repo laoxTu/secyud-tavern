@@ -7,7 +7,7 @@ import { Macro, macros as main } from '@/presets/macros';
 import { regexes as regexMain } from '@/presets/regexes';
 import { Realm, RealmHistory } from '@/stories';
 import { Renderer } from '@/stories/client';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { arrUtils, jsonUtils } from '@/utils';
 
 import { macros } from '.';

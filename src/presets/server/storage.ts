@@ -4,7 +4,7 @@ import { Properties } from '@/database';
 import { Storage } from '@/database/server';
 import { storages } from '@/database/server/factory';
 import { files } from '@/files/server';
-import { getRegistry } from '@/plugins';
+import { getRegistry } from '@/global';
 import { Preset } from '@/presets';
 import { Archive, ArchiveFolder, ArchiveNode, archives } from '@/utils/archive';
 

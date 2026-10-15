@@ -5,7 +5,7 @@ import { proxy } from '@/models/client/proxy';
 import { deepseeks } from '@/models/deepseek/client';
 import { openais } from '@/models/openai/client';
 import { Realm, RealmHistory } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 
 import { models as main } from '..';
 

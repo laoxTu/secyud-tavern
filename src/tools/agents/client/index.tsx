@@ -23,7 +23,7 @@ import { ModelNameValueField, models } from '@/models/client';
 import { PresetNameValuesField, presets } from '@/presets/client';
 import { Realm, Story } from '@/stories';
 import { stories } from '@/stories/client';
-import { RealmInfo, useRealmState } from '@/stories/client/realms';
+import { RealmInfo, useRealmState } from '@/stories/realms/client';
 import { Tool } from '@/tools';
 import { AgentConfig } from '@/tools/agents';
 import { ToolItem, ToolProps, ToolProvider } from '@/tools/client';

@@ -1,5 +1,5 @@
+import { getRegistry, getSingleton, Registerable } from '@/global';
 import { BusinessError } from '@/interceptors';
-import { getRegistry, getSingleton, Registerable } from '@/plugins';
 
 import { TaskInfo, TaskRunner } from '..';
 

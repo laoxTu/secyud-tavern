@@ -64,13 +64,12 @@ import {
   useTabs,
 } from '@/components';
 import { NameValue } from '@/database';
-import { forms } from '@/global';
+import { forms, getRegistry, Registerable } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
 import { BusinessError, checker } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { useModelSettingState } from '@/models/client';
-import { getRegistry, Registerable } from '@/plugins';
 import { Preset, PresetEntryClipboard } from '@/presets';
 import {
   PresetNameValuesField,

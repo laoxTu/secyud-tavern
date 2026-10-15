@@ -1,14 +1,15 @@
 import { search } from '@orama/orama';
 
-import { lorebooks as main } from '@/lorebooks';
 import { useRagState } from '@/memories/client';
 import { Realm } from '@/stories';
-import { realms } from '@/stories/client/realms';
+import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProvider } from '@/tools/client';
+
+import { lorebooks as main } from '..';
 
 import { lorebooks } from '.';
 
-export const provider: ToolProvider = {
+export const tool: ToolProvider = {
   id: main.name,
   async create(_, realm) {
     return [get(realm)];
