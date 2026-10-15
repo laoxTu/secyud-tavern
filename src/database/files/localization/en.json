@@ -1,9 +1,0 @@
-{
-  "file": {
-    "id": "File"
-  },
-  "image": {
-    "id": "Image",
-    "plural": "Image gallery"
-  }
-}
