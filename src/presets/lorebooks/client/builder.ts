@@ -43,12 +43,16 @@ const defaultBuilder: LorebookBuilder = {
       async prompt(history, next) {
         await prepare(
           await matchers.prompt(total, {
+            realm,
             history,
             cache,
           }),
         );
         // 这里如果是最后一条，还需要准备常驻的后置条目
-        if (history.index === histories.length - 1) await fixed(cache.after);
+        if (history.pos === histories.length - 1) {
+          console.debug('[lorebook](after):', cache.after);
+          await fixed(cache.after);
+        }
         prepared.sort(lorebooks.compare);
         await inject();
         await next();
@@ -57,6 +61,7 @@ const defaultBuilder: LorebookBuilder = {
       async output(history, output, next) {
         await prepare(
           await matchers.output(total, output, {
+            realm,
             history,
             cache,
           }),
@@ -67,9 +72,10 @@ const defaultBuilder: LorebookBuilder = {
         await inject(true);
       },
       async spaces(history, space, next) {
-        if (history.index === histories.length - 1) return;
+        if (history.pos === histories.length - 1) return;
         await prepare(
           await matchers.spaces(total, space, {
+            realm,
             history,
             cache,
           }),
@@ -87,11 +93,11 @@ const defaultBuilder: LorebookBuilder = {
      */
     async function inject(remain: boolean = false) {
       if (!prepared.length) return;
-      let last: number | undefined = undefined;
+      let last: number | undefined = prepared.length;
       if (!remain) {
         // 准备，根据层级，注入可能在一条语句的前后
         const i = prepared.findIndex((u) => u.layer >= 100);
-        last = i >= 0 ? i : undefined;
+        last = i >= 0 ? i : prepared.length;
       }
       const items = prepared.splice(0, last);
       const groups = arrUtils.groupSerial(items, (u) => u.role);

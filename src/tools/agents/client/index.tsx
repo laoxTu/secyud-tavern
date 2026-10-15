@@ -159,6 +159,7 @@ async function create(
     properties: {
       agent: 1,
     },
+    changes: {},
   };
   await models.processers.initialize({ realm });
 

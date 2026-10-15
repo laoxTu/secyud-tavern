@@ -111,8 +111,8 @@ function UserInput() {
         const history: RealmHistory = {
           masterId: realm.id,
           sequence: histories.length,
-          index: -1,
-          content: '',
+          index: 0,
+          content: input,
           summary,
           spaces: [
             {
@@ -134,6 +134,7 @@ function UserInput() {
         // 加个换行，看上去比较顺眼
         last.content = last.content ? `${last.content}\n${input}` : input;
       }
+      last.index = last.spaces.length;
       last.spaces.push({
         operations: [],
         outputs: [],

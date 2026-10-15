@@ -6,9 +6,11 @@ import { PresetEntry, PresetItem } from '@/presets';
 import { Lorebook } from '@/presets/lorebooks';
 import { lorebooks } from '@/presets/lorebooks/client';
 import { LorebookCache } from '@/presets/lorebooks/client/realm';
-import { RealmHistory, RealmOutput, RealmSpace } from '@/stories';
+import { Realm, RealmHistory, RealmOutput, RealmSpace } from '@/stories';
+import { realms } from '@/stories/realms/client';
 
 export interface MatchContext extends Properties {
+  realm: Realm;
   history: RealmHistory;
   cache: LorebookCache;
 }
@@ -59,6 +61,7 @@ async function prompt(
     );
     if (exists) return exists;
   }
+  realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
   for (const [key, lorebook] of Object.entries(total)) {
@@ -84,6 +87,7 @@ async function output(
     const exists = utils.getProperty<string[]>(output, lorebooks.plural);
     if (exists) return exists;
   }
+  realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
   for (const [key, lorebook] of Object.entries(total)) {
@@ -110,6 +114,7 @@ async function spaces(
     const exists = utils.getProperty<string[]>(space, lorebooks.plural);
     if (exists) return exists;
   }
+  realms.change(context.realm, context.history);
   const matchers = registry.records;
   const actives: string[] = [];
   for (const [key, lorebook] of Object.entries(total)) {
