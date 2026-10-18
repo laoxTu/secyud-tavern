@@ -157,6 +157,7 @@ async function save(realm: Realm) {
     history.changed = undefined;
     await proxy.history.set(realm.id, history.sequence, history);
   }
+  realm.changes = {};
 }
 /**
  * 生成回复
