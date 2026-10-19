@@ -168,7 +168,7 @@ async function init({ realm }: { realm: Realm }) {
         list.push(item);
       } else {
         cacheItem.singles[code] = item;
-        if (!item.disabled && !cacheItem.select) cacheItem.select = code;
+        if (!item.disabled || !cacheItem.select) cacheItem.select = code;
       }
     },
   );
