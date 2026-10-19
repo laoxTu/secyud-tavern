@@ -81,7 +81,7 @@ export function eventMatch(
   variables: Record<string, any>,
   expression: EventMatchConfig,
 ) {
-  const relatedDates = variables.relatedDates as EventDate[];
+  const relatedDates = variables.related_dates as EventDate[];
   if (!relatedDates) return false;
   const maxDate = getDateNumber(expression.maxDate);
   const minDate = getDateNumber(expression.minDate);
