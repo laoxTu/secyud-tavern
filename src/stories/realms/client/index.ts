@@ -5,7 +5,7 @@ import { ConvertContent, models } from '@/models/client';
 import { Realm, RealmHistory } from '@/stories';
 import { stories } from '@/stories/client';
 import { proxy } from '@/stories/client/proxy';
-import { arrUtils, jsonUtils } from '@/utils';
+import { jsonUtils } from '@/utils';
 import { patch } from '@/utils/json-patch';
 
 import { useRealmState } from './state';
@@ -297,20 +297,22 @@ export const realms = {
     async content(history: RealmHistory, handler: ConvertContent) {
       const outputs = space(history)?.outputs;
       const res = {
-        inputs: await handler(history.content, {
+        prompt: await handler(history.content, {
           role: 'user',
-          type: 'input',
+          type: 'prompt',
           history,
         }),
-        output: await handler(
-          arrUtils.join(outputs, '\n', (u) => u.content).trim(),
-          {
-            role: 'assistant',
-            type: 'output',
-            history,
-          },
+        spaces: await Promise.all(
+          outputs?.map(async (u) => ({
+            output: await handler(u.content, {
+              role: 'assistant',
+              type: 'output',
+              history,
+            }),
+            thought: u.thought,
+            callings: u.callings,
+          })) ?? [],
         ),
-        thought: arrUtils.join(outputs, '\n', (u) => u.thought).trim(),
       };
       console.debug('[realm]: message', res);
       postMessage('content', res);
