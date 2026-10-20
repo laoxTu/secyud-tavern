@@ -5,7 +5,7 @@ import { ConvertContent, models } from '@/models/client';
 import { Realm, RealmHistory } from '@/stories';
 import { stories } from '@/stories/client';
 import { proxy } from '@/stories/client/proxy';
-import { jsonUtils } from '@/utils';
+import { arrUtils, jsonUtils } from '@/utils';
 import { patch } from '@/utils/json-patch';
 
 import { useRealmState } from './state';
@@ -86,19 +86,12 @@ function opening(realm: Realm) {
       sequence: -1,
       index: 0,
       summary: true,
-      content: '',
+      content: arrUtils.join(realm.presets, '\n', (u) => u.opening),
       variables,
       spaces: [
         {
           operations: [],
           outputs: [
-            ...realm.presets
-              .map((u) => u.opening?.trim())
-              .filter((u) => u)
-              .map((v) => ({
-                content: v!,
-                thought: '',
-              })),
             {
               content: '',
               thought: '',
