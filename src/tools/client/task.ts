@@ -42,7 +42,7 @@ class Manager extends TaskRunner<ToolCall> {
           controller: this.controller,
         });
       } else {
-        toolcall.result = '';
+        toolcall.result = `error: tool ${toolcall.name} not found in current tool list.`;
       }
     } catch (err: any) {
       // 错误写回给模型调整，同时 console.error 供人工排查。
