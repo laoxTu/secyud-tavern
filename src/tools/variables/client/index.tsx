@@ -2,7 +2,7 @@
 import { Realm } from '@/stories';
 import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProvider } from '@/tools/client';
-import { extract, Operation, validate } from '@/utils';
+import { extract, jsonUtils, Operation, validate } from '@/utils';
 
 import { variables as main } from '..';
 
@@ -10,7 +10,12 @@ export const variables: ToolProvider = {
   ...main,
   id: main.name,
   async create(entry, realm) {
-    return [getVariable(realm), setVariable(realm), delVariable(realm)];
+    return [
+      getVariable(realm),
+      setVariable(realm),
+      delVariable(realm),
+      setTemp(realm),
+    ];
   },
 };
 
@@ -54,6 +59,33 @@ function operate(operation: Operation, realm: Realm) {
   }
   space.operations.push(operation);
   return 'success';
+}
+
+function setTemp(realm: Realm): ToolItem {
+  return {
+    name: 'set_temp',
+    description:
+      'set current temp property. the parameter should be json object.',
+    parameters: {
+      type: 'object',
+      additionalProperties: true,
+    },
+    async invoke({ args }) {
+      const history = realm.histories.at(-1);
+      const space = realms.space(history);
+      if (!space) {
+        // 没有本轮输出可写，不能报 success，否则模型以为改成功了但什么都没发生
+        return 'error: no output to operate.';
+      }
+      if (typeof args !== 'object') return 'error: arg is not an object';
+      if (args === null) return 'error: arg is null';
+      if (Array.isArray(args)) return 'error: arg cannot be array';
+
+      space.properties ??= {};
+      jsonUtils.merge(space.properties, args);
+      return 'success';
+    },
+  };
 }
 
 function setVariable(realm: Realm): ToolItem {
