@@ -93,13 +93,14 @@ function setTemp(realm: Realm): ToolItem {
         },
       },
     },
-    async invoke({ args: operation }) {
+    async invoke({ args }) {
       const history = realm.histories.at(-1);
       const space = realms.space(history);
       if (!space) {
         // 没有本轮输出可写，不能报 success，否则模型以为改成功了但什么都没发生
         return 'error: no output to operate.';
       }
+      const operation = { ...args, op: 'replace' };
       // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
       const validation = validate(operation);
       if (validation) {
