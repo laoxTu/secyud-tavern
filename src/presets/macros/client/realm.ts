@@ -168,10 +168,15 @@ async function init({ realm }: { realm: Realm }) {
         list.push(item);
       } else {
         cacheItem.singles[code] = item;
-        if (!item.disabled || !cacheItem.select) cacheItem.select = code;
+        if (!item.disabled && !cacheItem.select) cacheItem.select = code;
       }
     },
   );
+  for (const macro of Object.values(cache.macros)) {
+    if (!macro.select) {
+      macro.select = Object.keys(macro.singles).at(0);
+    }
+  }
   return cache;
 }
 
