@@ -8,9 +8,5 @@ export const storage = storages.create<Regex>(
     sorter: `${name}`,
     filter: `${target}${name}`,
   }),
-  async ({}, entry, s) => {
-    const name = `${entry.name}-${s}`;
-    return name;
-  },
-  async () => {},
+  (entry, s) => `${entry.name}-${s}`,
 );

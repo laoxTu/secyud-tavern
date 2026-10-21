@@ -1,22 +1,34 @@
 import { ToolProvider } from '@/tools/server';
-import { archives } from '@/utils/archive';
+import { Accessor, archives } from '@/utils/archive';
 
 import { scripts as main, ScriptConfig } from '..';
 
-const provider: ToolProvider<ScriptConfig> = {
-  async loadArchive({ cur, entry, name }) {
-    const { description, schema, script } = entry.config;
-    archives.set.text(cur, `${name}.desc.txt`, description);
-    archives.set.text(cur, `${name}.schema.json`, schema);
-    archives.set.text(cur, `${name}.script.js`, script);
-    entry.config.description = undefined!;
-    entry.config.schema = undefined!;
-    entry.config.script = undefined!;
+type AccessorKey = 'description' | 'schema' | 'script';
+const accessor: Record<AccessorKey, Accessor<ScriptConfig>> = {
+  description: {
+    get: (i) => i.description,
+    set: (i, t) => (i.description = t),
   },
-  async saveArchive({ cur, entry, name }) {
-    entry.config.description = await archives.get.fuzzy(cur, `${name}.desc.`);
-    entry.config.schema = await archives.get.fuzzy(cur, `${name}.schema.`);
-    entry.config.script = await archives.get.fuzzy(cur, `${name}.script.`);
+  script: {
+    get: (i) => i.script,
+    set: (i, t) => (i.script = t),
+  },
+  schema: {
+    get: (i) => i.schema,
+    set: (i, t) => (i.schema = t),
+  },
+};
+
+const provider: ToolProvider<ScriptConfig> = {
+  async loadArchive({ cur, entry: { config }, name }) {
+    archives.set.value(cur, config, accessor.description, `${name}.desc.txt`);
+    archives.set.value(cur, config, accessor.schema, `${name}.schema.json`);
+    archives.set.value(cur, config, accessor.script, `${name}.script.js`);
+  },
+  async saveArchive({ cur, entry: { config } }) {
+    archives.get.value(cur, config, accessor.description);
+    archives.get.value(cur, config, accessor.schema);
+    archives.get.value(cur, config, accessor.script);
   },
   id: main.name,
 };

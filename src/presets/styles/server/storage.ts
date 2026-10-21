@@ -1,7 +1,15 @@
 import { storages } from '@/presets/server/factory';
-import { archives } from '@/utils/archive';
+import { Accessor, archives } from '@/utils/archive';
 
 import { Style, styles } from '..';
+
+type AccessorKey = 'content';
+const accessor: Record<AccessorKey, Accessor<Style>> = {
+  content: {
+    get: (i) => i.content,
+    set: (i, t) => (i.content = t),
+  },
+};
 
 export const storage = storages.create<Style>(
   styles,
@@ -9,14 +17,12 @@ export const storage = storages.create<Style>(
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async ({ cur }, item, s) => {
-    const name = `${item.code}-${s}`;
-    const ext = item.type === 'link' ? 'txt' : 'css';
-    archives.set.text(cur, `${name}.style.${ext}`, item.content);
-    item.content = undefined;
-    return name;
-  },
+  (entry, s) => `${entry.code}-${s}`,
   async ({ cur }, entry, name) => {
-    entry.content = await archives.get.fuzzy(cur, `${name}.style.`);
+    const ext = entry.type === 'link' ? 'txt' : 'css';
+    archives.set.value(cur, entry, accessor.content, `${name}.style.${ext}`);
+  },
+  async ({ cur }, entry) => {
+    await archives.get.value(cur, entry, accessor.content);
   },
 );
