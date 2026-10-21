@@ -1,5 +1,5 @@
 import { storages } from '@/presets/server/factory';
-import { archives } from '@/utils/archive';
+import { Accessor, archives } from '@/utils/archive';
 
 import { Script, scripts } from '..';
 
@@ -13,20 +13,27 @@ function mapToExt(type: string | null) {
       return 'js';
   }
 }
+
+type AccessorKey = 'content';
+const accessor: Record<AccessorKey, Accessor<Script>> = {
+  content: {
+    get: (i) => i.content,
+    set: (i, t) => (i.content = t),
+  },
+};
+
 export const storage = storages.create<Script>(
   scripts,
   ({ name, data: { code, type, priority } }) => ({
     sorter: `${name}${code}`,
     filter: `${type}${String(priority).padStart(5, '0')}${name}`,
   }),
-  async ({ cur }, entry, s) => {
-    const name = `${entry.code}-${s}`;
-    const ext = mapToExt(entry.type);
-    archives.set.text(cur, `${name}.script.${ext}`, entry.content);
-    entry.content = undefined;
-    return name;
-  },
+  (entry, s) => `${entry.code}-${s}`,
   async ({ cur }, entry, name) => {
-    entry.content = await archives.get.fuzzy(cur, `${name}.script.`);
+    const ext = mapToExt(entry.type);
+    archives.set.value(cur, entry, accessor.content, `${name}.script.${ext}`);
+  },
+  async ({ cur }, entry) => {
+    await archives.get.value(cur, entry, accessor.content);
   },
 );

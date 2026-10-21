@@ -10,9 +10,9 @@ interface ToolArchiveContext<T = any> extends PresetArchiveContext {
 }
 
 export interface ToolProvider<T = any> extends Registerable {
-  loadArchive: (context: ToolArchiveContext<T>) => Promise<void>;
+  loadArchive?: (context: ToolArchiveContext<T>) => Promise<void>;
 
-  saveArchive: (context: ToolArchiveContext<T>) => Promise<void>;
+  saveArchive?: (context: ToolArchiveContext<T>) => Promise<void>;
 }
 
 const registry = getRegistry<ToolProvider>('tool-provider');

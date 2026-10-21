@@ -22,12 +22,11 @@ export const storage = storages.create<Tool>(
     sorter: `${type}${name}`,
     filter: `${type}${name}`,
   }),
-  async (ctx, entry, s) => {
-    const name = `${entry.name}-${s}`;
-    await provider(entry.type).loadArchive({ ...ctx, entry, name });
-    return name;
+  (entry, s) => `${entry.name}-${s}`,
+  async (ctx, entry, name) => {
+    await provider(entry.type).loadArchive?.({ ...ctx, entry, name });
   },
   async (ctx, entry, name) => {
-    await provider(entry.type).saveArchive({ ...ctx, entry, name });
+    await provider(entry.type).saveArchive?.({ ...ctx, entry, name });
   },
 );

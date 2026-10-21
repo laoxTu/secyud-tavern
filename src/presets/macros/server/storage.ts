@@ -1,23 +1,27 @@
 import { storages } from '@/presets/server/factory';
-import { archives } from '@/utils/archive';
+import { Accessor, archives } from '@/utils/archive';
 
 import { Macro, macros } from '..';
 
+type AccessorKey = 'value';
+const accessor: Record<AccessorKey, Accessor<Macro>> = {
+  value: {
+    get: (i) => i.value,
+    set: (i, t) => (i.value = t),
+  },
+};
 export const storage = storages.create<Macro>(
   macros,
   ({ name, data: { key, multiple, hidden } }) => ({
     sorter: `${key}${+multiple}${+hidden}`,
     filter: `${key}${name}`,
   }),
-  async ({ cur }, entry, s) => {
-    const name = `${entry.code}-${entry.key}-${s}`;
-    const ext = entry.json ? 'json' : 'txt';
-
-    archives.set.text(cur, `${name}.value.${ext}`, entry.value);
-    entry.value = undefined;
-    return name;
-  },
+  (entry, s) => `${entry.code}-${entry.key}-${s}`,
   async ({ cur }, entry, name) => {
-    entry.value = await archives.get.fuzzy(cur, `${name}.value.`);
+    const ext = entry.json ? 'json' : 'txt';
+    archives.set.value(cur, entry, accessor.value, `${name}.value.${ext}`);
+  },
+  async ({ cur }, entry) => {
+    await archives.get.value(cur, entry, accessor.value);
   },
 );
