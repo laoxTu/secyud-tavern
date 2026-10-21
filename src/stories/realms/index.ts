@@ -43,7 +43,6 @@ export interface RealmHistory extends Properties {
   // 空间集合
   spaces: RealmSpace[];
   // 前端字段，是否改变
-  // TODO 连锁
   changed?: boolean;
   // 前端字段，临时索引
   pos?: number;
