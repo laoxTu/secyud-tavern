@@ -94,7 +94,7 @@ export const storages = {
               entry,
               name,
             );
-            archives.set.json(cur, `${name}.meta.json`, entry);
+            archives.set.json(folder.nodes, `${name}.meta.json`, entry);
           }
         }
       },
