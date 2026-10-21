@@ -285,7 +285,10 @@ export const realms = {
   message: {
     post: postMessage,
     variables(history: RealmHistory) {
-      postMessage('variables', variables(history));
+      postMessage('variables', {
+        ...variables(history),
+        space: space(history) ?? {},
+      });
     },
     async content(history: RealmHistory, handler: ConvertContent) {
       const outputs = space(history)?.outputs;
