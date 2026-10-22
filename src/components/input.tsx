@@ -27,23 +27,23 @@ interface ImageUploaderProps {
   value?: string | null;
 }
 
-export function useImageUploaderState(name: string) {
+export function useImageState(name: string) {
   const [imageFile, setImageFile] = useState<{
     file: File;
     changed: boolean;
   } | null>(null);
-  const getImageFileId = async (data: FormData, srcName?: string) => {
+  const getImage = async (data: FormData, origin?: string) => {
+    // 文件改变
     if (imageFile?.changed) {
       const { id } = await files.proxy.create(imageFile.file);
       return id;
     }
-    if (srcName) {
-      const src = forms.str(data, srcName);
-      if (files.outer(src)) {
-        return src;
-      }
-    }
-    return forms.str(data, name);
+    const src = forms.str(data, `${name}-field`);
+    // 如果字段已经改成外部网址
+    if (files.outer(src)) return src;
+
+    // 使用默认值
+    return origin;
   };
   const onFileChange = (file: File | null) => {
     setImageFile(
@@ -56,7 +56,7 @@ export function useImageUploaderState(name: string) {
     );
   };
 
-  return { imageFile, setImageFile, getImageFileId, onFileChange };
+  return { imageFile, setImageFile, getImage, onFileChange };
 }
 
 export function ImageUploader({

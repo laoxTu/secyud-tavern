@@ -42,7 +42,7 @@ import {
   Selector,
   TagBox,
   TooltipDialog,
-  useImageUploaderState,
+  useImageState,
 } from '@/components';
 import { forms } from '@/global';
 import { globals } from '@/global/client';
@@ -51,7 +51,7 @@ import { handler, success } from '@/interceptors/client';
 
 function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
   const t = useTranslations();
-  const { getImageFileId, onFileChange } = useImageUploaderState('cover');
+  const { getImage, onFileChange } = useImageState('cover');
   const { fetch } = useComfyUIModelState();
   const [item, setItem] = useState<ComfyUIModel>(nameValueItem);
   const formRef = useRef<HTMLFormElement>(null);
@@ -122,7 +122,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
               html: forms.str(data, 'html'),
               download: forms.str(data, 'download'),
               model: forms.str(data, 'model'),
-              cover: await getImageFileId(data, 'cover_src'),
+              cover: await getImage(data, item.cover),
             });
 
             success(t('message.update.success'));
@@ -136,7 +136,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
                 {t('default.cover')}
               </FieldLabel>
               <ImageUploader
-                name={'cover'}
+                name={'cover-image'}
                 id={`comfyui_model-cover-${item.id}`}
                 className={'max-w-52'}
                 accept={globals.accessImageType}
@@ -151,7 +151,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
               <Input
                 id={`comfyui_model-cover_src-${item.id}`}
                 defaultValue={item.cover}
-                name="cover_src"
+                name="cover_field"
               />
             </Field>
             <Field>
