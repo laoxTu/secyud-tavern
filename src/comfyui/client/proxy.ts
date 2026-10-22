@@ -8,11 +8,10 @@ import {
   ComfyUIParamRequestParam,
   comfyuis,
   ComfyUIWorkflow,
+  ComfyUIWorkflowInput,
   ComfyUIWorkflowRequestParam,
 } from '@/comfyui';
-import { useComfyUIModelSettingState } from '@/comfyui/client/state';
 import { DataRequest, DataResponse, Entity, InDto } from '@/database';
-import { globals } from '@/global/client';
 
 const cache: Record<string, any> = {};
 
@@ -23,17 +22,8 @@ export const proxy = {
    * @param prompt ComfyUI 入参
    * @returns ComfyUI的返回类型
    */
-  async generate(prompt: any) {
-    const setting = useComfyUIModelSettingState.getState();
-    const body = JSON.stringify({
-      client_id: setting.client,
-      prompt,
-    });
-    return await globals.proxy.fetch({
-      method: 'POST',
-      url: `${setting.url}/prompt`,
-      body,
-    });
+  async generate(prompt: ComfyUIWorkflowInput) {
+    await post('comfyuis/generate', prompt);
   },
   model: {
     /**

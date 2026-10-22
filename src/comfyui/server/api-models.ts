@@ -55,7 +55,7 @@ export const models = {
           `download ${model.code}`,
           {
             provider: importers.tasks.id,
-            id,
+            value: { id },
           },
         );
         return response.null();

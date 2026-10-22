@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { databases } from '@/database/server';
 import { dbProvider } from '@/database/server/provider';
 
-import { SettingModel } from '..';
+import { SettingModel, StateSettingModel } from '..';
 
 import { settingSchema } from './schema';
 
@@ -22,6 +22,11 @@ export const settingRepository = {
     }
   },
   get: async <T = any>(id: string): Promise<SettingModel<T> | undefined> => {
-    return await databases.get<SettingModel>(settingSchema, id);
+    return await databases.get<SettingModel<T>>(settingSchema, id);
+  },
+  getState: async <T = any>(
+    id: string,
+  ): Promise<StateSettingModel<T> | undefined> => {
+    return await databases.get<StateSettingModel<T>>(settingSchema, id);
   },
 };

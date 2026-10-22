@@ -1,9 +1,12 @@
 ﻿import { Entity } from '@/database';
+
 export * from './registry';
 
 export interface SettingModel<T = any> extends Entity {
   data: T | null;
 }
+
+export type StateSettingModel<T = any> = SettingModel<{ state: T }>;
 
 export interface ProxyParam {
   method?: string;

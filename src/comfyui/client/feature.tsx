@@ -56,8 +56,8 @@ function Generator() {
           if (!editor) continue;
           await editor.configureInput?.(data, param, input);
         }
-        const { prompt_id } = await comfyuis.proxy.generate(input);
-        success(t('comfyui.prompt_sent', { target: prompt_id }));
+        await comfyuis.proxy.generate(input);
+        success(t('comfyui.prompt_sent'));
       })}
       info={dialogs.info(t, 'comfyui.paint')}
     >
