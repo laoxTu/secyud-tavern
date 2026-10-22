@@ -116,10 +116,10 @@ export function normalMatch(content: string, expression?: NormalMatchConfig) {
   return false;
 }
 
-export const normalMatcher: Matcher = {
+export const normalMatcher: Matcher<NormalMatchConfig> = {
   id: 'normal',
   configComponent: NormalMatcher,
-  async configureObject(data, lorebook: Lorebook<NormalMatchConfig>) {
+  async configureObject(data, lorebook) {
     lorebook.expression = normalConfig(data);
   },
   prompt: async (ctx, lorebook) => {

@@ -95,10 +95,10 @@ export function eventMatch(
   return normalMatch(content, expression);
 }
 
-export const eventMatcher: Matcher = {
+export const eventMatcher: Matcher<EventMatchConfig> = {
   id: 'event',
   configComponent: MacherComponent,
-  async configureObject(data, lorebook: Lorebook<EventMatchConfig>) {
+  async configureObject(data, lorebook) {
     lorebook.expression = {
       ...normalConfig(data),
       maxDate: getDate(data, 'max-date'),

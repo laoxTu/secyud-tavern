@@ -58,17 +58,17 @@ function MatcherComponent({
   );
 }
 
-export const variableMatcher: Matcher = {
+export const variableMatcher: Matcher<VariableMatchConfig> = {
   id: 'variable',
   configComponent: MatcherComponent,
-  async configureObject(data, lorebook: Lorebook<VariableMatchConfig>) {
+  async configureObject(data, lorebook) {
     lorebook.expression = {
       path: forms.str(data, 'match_path'),
       value: forms.str(data, 'match_value'),
     };
   },
   prompt: async (context, lorebook) => {
-    const expression: VariableMatchConfig = lorebook.expression;
+    const expression = lorebook.expression;
     const { exists, current } = extract(
       context.history.variables,
       expression.path,

@@ -1,16 +1,7 @@
-import { insert } from '@orama/orama';
-
 import { utils } from '@/database';
 import { Processer } from '@/models/client';
 import { Preset, PresetItem } from '@/presets';
-import {
-  AlwaysMatchConfig,
-  alwaysMatcher,
-} from '@/presets/matchers/client/always';
-import {
-  VectorMatchConfig,
-  vectorMatcher,
-} from '@/presets/matchers/client/vector';
+import { matchers } from '@/presets/matchers/client';
 import { Rag, rags } from '@/stories/memories/client';
 import { tools } from '@/tools';
 import { jsonUtils } from '@/utils';
@@ -49,34 +40,14 @@ export const processer: Processer = {
       lorebooks.plural,
       async (entry, item) => {
         entry.id = `${item.id}-${entry.code}`;
-        const { disabled, match, type, expression } = entry;
+        const { disabled, match, type } = entry;
         if (disabled) return;
         if (type === 'json') {
           entry.content = jsonUtils.minify(entry.content);
         }
-        if (match === alwaysMatcher.id) {
-          if ((expression as AlwaysMatchConfig)?.last) cache.after.push(entry);
-          else cache.before.push(entry);
-        } else {
-          cache.entries[entry.id ?? ''] = entry;
-        }
-
-        if (cache.rag && entry.match === vectorMatcher.id) {
-          const expression: VectorMatchConfig = entry.expression;
-          const keywords = expression?.keywords?.trim();
-          const text = keywords ? keywords : entry.content?.trim();
-          if (text) {
-            const { embed, database } = cache.rag;
-            const embedding = await embed.generate({
-              content: text,
-            });
-            await insert(database, {
-              name: entry.id,
-              title: entry.name,
-              embedding,
-            });
-          }
-        }
+        cache.entries[entry.id ?? ''] = entry;
+        const matcher = matchers.registry.record(match);
+        if (matcher) await matcher.initialize?.(realm, cache, entry);
       },
     );
     console.debug(`[lorebook](cache): `, cache);

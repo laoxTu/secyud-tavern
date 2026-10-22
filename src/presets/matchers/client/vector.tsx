@@ -1,3 +1,4 @@
+import { insert } from '@orama/orama';
 import { useTranslations } from 'next-intl';
 
 import { Field, FieldLabel, Input } from '@/components';
@@ -41,15 +42,30 @@ function MatcherComponent({
   );
 }
 
-export const vectorMatcher: Matcher = {
+export const vectorMatcher: Matcher<VectorMatchConfig> = {
   id: 'vector',
   configComponent: MatcherComponent,
-  async configureObject(data, lorebook: Lorebook<VectorMatchConfig>) {
+  async configureObject(data, lorebook) {
     lorebook.expression = {
       keywords: forms.str(data, 'keywords'),
     };
   },
-  output: async (context, output, lorebook) => {
+  async initialize(realm, cache, entry) {
+    if (!cache.rag) return;
+    const keywords = entry.expression?.keywords?.trim();
+    const text = keywords ? keywords : entry.content?.trim();
+    if (!text) return;
+    const { embed, database } = cache.rag;
+    const embedding = await embed.generate({
+      content: text,
+    });
+    await insert(database, {
+      name: entry.id,
+      title: entry.name,
+      embedding,
+    });
+  },
+  async output(context, output, lorebook) {
     if (!context.cache.rag) return false;
     const ids = utils.getProperty<Set<string | undefined>>(
       context,
@@ -61,7 +77,6 @@ export const vectorMatcher: Matcher = {
       },
     );
     console.debug('[lorebook](vector):', ids);
-
     return ids.has(lorebook.id);
   },
 };

@@ -15,15 +15,20 @@ export interface MatchContext extends Properties {
   cache: LorebookCache;
 }
 
-export interface Matcher extends Registerable {
-  configComponent?: React.ComponentType<{ entry: PresetEntry<Lorebook> }>;
-  configureObject?: (data: FormData, lorebook: Lorebook) => Promise<void>;
+export interface Matcher<T = any> extends Registerable {
+  configComponent?: React.ComponentType<{ entry: PresetEntry<Lorebook<T>> }>;
+  configureObject?: (data: FormData, lorebook: Lorebook<T>) => Promise<void>;
+  initialize?: (
+    realm: Realm,
+    cache: LorebookCache,
+    entry: PresetItem<Lorebook<T>>,
+  ) => Promise<void>;
   /**
    * 匹配输入，这里是匹配输入信息，从而注入到输入之后
    */
   prompt?: (
     ctx: MatchContext,
-    lorebook: PresetItem<Lorebook>,
+    lorebook: PresetItem<Lorebook<T>>,
   ) => Promise<boolean>;
   /**
    * 匹配输出，这里取一段输出进行匹配，从而注入到输出之后
@@ -31,7 +36,7 @@ export interface Matcher extends Registerable {
   output?: (
     ctx: MatchContext,
     output: RealmOutput,
-    lorebook: PresetItem<Lorebook>,
+    lorebook: PresetItem<Lorebook<T>>,
   ) => Promise<boolean>;
   /**
    * 匹配空间，匹配整个轮次空间，这里是所有输出结束后需要同一匹配一次，
@@ -40,7 +45,7 @@ export interface Matcher extends Registerable {
   spaces?: (
     ctx: MatchContext,
     space: RealmSpace,
-    lorebook: PresetItem<Lorebook>,
+    lorebook: PresetItem<Lorebook<T>>,
   ) => Promise<boolean>;
 }
 
