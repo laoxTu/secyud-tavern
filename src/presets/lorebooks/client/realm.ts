@@ -7,7 +7,10 @@ import {
   AlwaysMatchConfig,
   alwaysMatcher,
 } from '@/presets/matchers/client/always';
-import { vectorMatcher } from '@/presets/matchers/client/vector';
+import {
+  VectorMatchConfig,
+  vectorMatcher,
+} from '@/presets/matchers/client/vector';
 import { Rag, rags } from '@/stories/memories/client';
 import { tools } from '@/tools';
 import { jsonUtils } from '@/utils';
@@ -59,15 +62,20 @@ export const processer: Processer = {
         }
 
         if (cache.rag && entry.match === vectorMatcher.id) {
-          const { embed, database } = cache.rag;
-          const embedding = await embed.generate({
-            content: entry.content ?? '',
-          });
-          await insert(database, {
-            name: entry.id,
-            title: entry.name,
-            embedding,
-          });
+          const expression: VectorMatchConfig = entry.expression;
+          const keywords = expression?.keywords?.trim();
+          const text = keywords ? keywords : entry.content?.trim();
+          if (text) {
+            const { embed, database } = cache.rag;
+            const embedding = await embed.generate({
+              content: text,
+            });
+            await insert(database, {
+              name: entry.id,
+              title: entry.name,
+              embedding,
+            });
+          }
         }
       },
     );
