@@ -59,9 +59,13 @@ function AlwaysMatcher({
   );
 }
 
-export const alwaysMatcher: Matcher = {
+export const alwaysMatcher: Matcher<AlwaysMatchConfig> = {
   id: 'always',
   configComponent: AlwaysMatcher,
+  async initialize(realm, cache, entry) {
+    if (entry.expression?.last) cache.after.push(entry);
+    else cache.before.push(entry);
+  },
   async configureObject(data, lorebook: Lorebook<AlwaysMatchConfig>) {
     lorebook.expression = {
       last: forms.bool(data, 'last'),
