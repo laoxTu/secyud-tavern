@@ -5,12 +5,16 @@ import { TaskInfo, TaskRunner } from '..';
 
 import { repository } from './repository';
 
-export interface TaskArgs {
+export interface TaskArgs<T = any> {
   provider: string;
+  value: T;
 }
 
 export interface TaskProvider<T = any> extends Registerable {
-  execute(args: T, controller: AbortController): Promise<void>;
+  execute(
+    args: TaskArgs<T>,
+    controller: AbortController,
+  ): Promise<string | undefined>;
 }
 
 export const registry = getRegistry<TaskProvider>('task_provider');
@@ -29,8 +33,8 @@ export class TaskManager extends TaskRunner<TaskArgs> {
         'error.task.provider_not_registered',
       ).withValue('type', task.args.provider);
     }
-    await provider.execute(task.args, task.controller);
-    return 'success';
+    const result = await provider.execute(task.args, task.controller);
+    return result ? result : 'success';
   }
 
   protected async finish(task: TaskInfo<TaskArgs>) {
@@ -64,7 +68,7 @@ export class TaskManager extends TaskRunner<TaskArgs> {
     await repository.delete(id);
   }
 
-  async create<T extends TaskArgs = TaskArgs>(name: string, args: T) {
+  async create<T = any>(name: string, args: TaskArgs<T>) {
     const task = await super.create(name, args);
     await repository.create(task);
     return task;

@@ -4,6 +4,7 @@ import { tools } from '@/tools/server';
 
 import { comfyuis as main } from '..';
 
+import { generator } from './generator';
 import { importers } from './importers';
 import { modelRepository } from './repository-model';
 import { workflowRepository } from './repository-workflow';
@@ -14,6 +15,7 @@ export type * from './importers';
 export const comfyuis = {
   ...main,
   importers,
+  generator,
   repository: {
     model: modelRepository,
     workflow: workflowRepository,
