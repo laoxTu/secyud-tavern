@@ -169,7 +169,7 @@ export const engines = {
           if (!history.content) return;
           const content = await models.convert(converts, history.content, {
             role: 'user',
-            type: 'input',
+            type: 'prompt',
             history,
           });
           if (content) prompt(content);

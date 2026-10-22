@@ -82,21 +82,21 @@ async function apply(
         }
       : text;
   }
-  const space = realms.space(history)?.properties;
   const obj = {
     ...variables,
     // 外部传入的参数，子Agent参数
     ...(properties?.args ?? {}),
-    space,
     variables: history.variables,
   };
   /**
    * 世界书也会经过转化
    */
-  const generate = async (str: string) => {
-    return await eta.renderStringAsync(str, obj);
-  };
-  converts.push(generate);
+  converts.push(async (str, ctx) => {
+    return await eta.renderStringAsync(str, {
+      ...obj,
+      space: realms.space(ctx.history)?.properties ?? {},
+    });
+  });
 }
 
 async function init({ realm }: { realm: Realm }) {
@@ -172,6 +172,11 @@ async function init({ realm }: { realm: Realm }) {
       }
     },
   );
+  for (const macro of Object.values(cache.macros)) {
+    if (!macro.select) {
+      macro.select = Object.keys(macro.singles).at(0);
+    }
+  }
   return cache;
 }
 

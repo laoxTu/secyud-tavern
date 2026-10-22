@@ -4,12 +4,12 @@ import { getRegistry, Registerable } from '@/global';
 import { settings } from '@/global/server';
 import { BusinessError, checker } from '@/interceptors';
 import { signals } from '@/signal/server';
-import { TaskArgs, TaskProvider } from '@/tasks/server/manager';
+import { TaskProvider } from '@/tasks/server/manager';
 import { fileUtils } from '@/utils/server';
 
 import { comfyuis } from '.';
 
-export interface ModelDownloadArgs extends TaskArgs {
+export interface ModelDownloadArgs {
   id: string;
 }
 
@@ -25,13 +25,10 @@ const registry = getRegistry<ModelImporter>('comfyui-model-importer');
 
 export async function getDownloadParams(id: string) {
   const model = await comfyuis.repository.model.get(id);
-
-  const setting =
-    (
-      await settings.repository.get<{ state: ComfyUIModelSetting }>(
-        comfyuis.model.setting,
-      )
-    )?.data?.state ?? comfyuis.setting.default;
+  const state = await settings.repository.getState<ComfyUIModelSetting>(
+    comfyuis.model.setting,
+  );
+  const setting = state?.data?.state ?? comfyuis.setting.default;
   checker.notNullOrWhitespace('model.download', model.download, 'comfyui');
   const directory = checker.notNullOrWhitespace(
     'directory',
@@ -57,7 +54,7 @@ const tasks: TaskProvider<ModelDownloadArgs> = {
   id: 'comfyui-model-download',
   async execute(args) {
     try {
-      const { model, filename } = await getDownloadParams(args.id);
+      const { model, filename } = await getDownloadParams(args.value.id);
       if (await fileUtils.exists(filename)) {
         throw new BusinessError('file is exists.', 'comfyui.file_exists');
       }

@@ -1,22 +1,27 @@
 import { storages } from '@/presets/server/factory';
-import { archives } from '@/utils/archive';
+import { Accessor, archives } from '@/utils/archive';
 
 import { Lorebook, lorebooks } from '..';
 
+type AccessorKey = 'content';
+const accessor: Record<AccessorKey, Accessor<Lorebook>> = {
+  content: {
+    get: (i) => i.content,
+    set: (i, t) => (i.content = t),
+  },
+};
 export const storage = storages.create<Lorebook>(
   lorebooks,
   ({ name, data: { code, match } }) => ({
     sorter: `${match}${code}${name}`,
     filter: `${match}${code}${name}`,
   }),
-  async ({ cur }, item, s) => {
-    const name = `${item.code}-${s}`;
-    const ext = lorebooks.typeToExt(item.type);
-    archives.set.text(cur, `${name}.content.${ext}`, item.content);
-    item.content = undefined;
-    return name;
+  (entry, s) => `${entry.code}-${s}`,
+  async ({ cur }, entry, name) => {
+    const ext = lorebooks.typeToExt(entry.type);
+    archives.set.value(cur, entry, accessor.content, `${name}.content.${ext}`);
   },
   async ({ cur }, entry, name) => {
-    entry.content = await archives.get.fuzzy(cur, `${name}.content.`);
+    await archives.get.value(cur, entry, accessor.content);
   },
 );

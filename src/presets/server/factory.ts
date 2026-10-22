@@ -9,21 +9,22 @@ export const storages = {
   create<TData>(
     { name: type, plural }: { name: string; plural: string },
     criteria: (entry: PresetEntry<TData>) => Criteria,
+    namer: (entry: PresetItem<TData>, sequence: number) => string,
     /**
      * sequence是真正的唯一标识
      * 可以用作文件名的一部分
      * 请保证左右文件名前缀一致
      */
-    loadArchive: (
+    loadArchive?: (
       context: PresetArchiveContext,
       entry: PresetItem<TData>,
-      sequence: number,
-    ) => Promise<string>,
+      name: string,
+    ) => Promise<void>,
     /**
      * 注意name是.之前的名称 可能是 name-1
      * 只做解析用，真正的code在meta中
      */
-    saveArchive: (
+    saveArchive?: (
       context: PresetArchiveContext,
       entry: PresetItem<TData>,
       name: string,
@@ -82,7 +83,8 @@ export const storages = {
 
           for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            const name = await loadArchive(
+            const name = namer(entry, i);
+            await loadArchive?.(
               {
                 cur: folder.nodes,
                 root,
@@ -90,9 +92,9 @@ export const storages = {
                 append,
               },
               entry,
-              i,
+              name,
             );
-            archives.set.json(cur, `${name}.meta.json`, entry);
+            archives.set.json(folder.nodes, `${name}.meta.json`, entry);
           }
         }
       },
@@ -115,7 +117,7 @@ export const storages = {
                 node.name,
               );
               if (entry) {
-                await saveArchive(
+                await saveArchive?.(
                   {
                     cur: folder.nodes,
                     root,

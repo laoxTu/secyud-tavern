@@ -60,7 +60,7 @@ import {
   TooltipDialog,
   UpdateForm,
   useFormRef,
-  useImageUploaderState,
+  useImageState,
   useTabs,
 } from '@/components';
 import { NameValue } from '@/database';
@@ -463,7 +463,7 @@ export function MenuContent() {
 
 function PropertyTab() {
   const t = useTranslations();
-  const { onFileChange, getImageFileId } = useImageUploaderState('cover');
+  const { onFileChange, getImage } = useImageState('cover');
   const { item, setItem, refresh } = usePresetState();
   const form = useFormRef();
 
@@ -476,7 +476,7 @@ function PropertyTab() {
         const { id } = await presets.proxy.update(item.id, {
           id: forms.str(data, 'code'),
           name: forms.str(data, 'name'),
-          cover: await getImageFileId(data, 'cover_src'),
+          cover: await getImage(data, item.cover),
           version: forms.str(data, 'version'),
           description: forms.str(data, 'description'),
           opening: forms.str(data, 'opening'),
@@ -540,12 +540,10 @@ function PropertyTab() {
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor={`preset-cover_src`}>
-          {t('default.cover_src')}
-        </FieldLabel>
+        <FieldLabel htmlFor={`preset-cover`}>{t('default.cover')}</FieldLabel>
         <Input
-          name="cover_src"
-          id={`preset-cover_src`}
+          name="cover-field"
+          id={`preset-cover`}
           defaultValue={item.cover}
         />
       </Field>

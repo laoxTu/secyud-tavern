@@ -2,7 +2,7 @@
 import { Realm } from '@/stories';
 import { realms } from '@/stories/realms/client';
 import { ToolItem, ToolProvider } from '@/tools/client';
-import { extract, Operation, validate } from '@/utils';
+import { extract, Operation, patchOne, validate } from '@/utils';
 
 import { variables as main } from '..';
 
@@ -10,7 +10,12 @@ export const variables: ToolProvider = {
   ...main,
   id: main.name,
   async create(entry, realm) {
-    return [getVariable(realm), setVariable(realm), delVariable(realm)];
+    return [
+      getVariable(realm),
+      setVariable(realm),
+      delVariable(realm),
+      setTemp(realm),
+    ];
   },
 };
 
@@ -54,6 +59,59 @@ function operate(operation: Operation, realm: Realm) {
   }
   space.operations.push(operation);
   return 'success';
+}
+
+function setTemp(realm: Realm): ToolItem {
+  return {
+    name: 'set_temp',
+    description:
+      'set current temp property. the parameter should be json object.',
+    parameters: {
+      type: 'object',
+      required: ['path', 'value'],
+      properties: {
+        path: {
+          type: 'string',
+          description: 'A JSON Pointer path. split by "/"',
+        },
+        value: {
+          anyOf: [
+            {
+              type: 'object',
+              additionalProperties: true,
+            },
+            {
+              type: 'string',
+            },
+            {
+              type: 'number',
+            },
+            {
+              type: 'boolean',
+            },
+          ],
+        },
+      },
+    },
+    async invoke({ args }) {
+      const history = realm.histories.at(-1);
+      const space = realms.space(history);
+      if (!space) {
+        // 没有本轮输出可写，不能报 success，否则模型以为改成功了但什么都没发生
+        return 'error: no output to operate.';
+      }
+      const operation = { ...args, op: 'replace' };
+      // 变更记入本轮输出的 variables，输出保存后由 generateCurrentVariables 统一应用。
+      const validation = validate(operation);
+      if (validation) {
+        return `error: ${validation}`;
+      }
+
+      space.properties ??= {};
+      patchOne(space.properties, operation);
+      return 'success';
+    },
+  };
 }
 
 function setVariable(realm: Realm): ToolItem {

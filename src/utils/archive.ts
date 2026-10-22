@@ -3,6 +3,11 @@ import JSZip from 'jszip';
 import { jsonUtils } from './json';
 import { strUtils } from './str';
 
+export interface Accessor<T> {
+  get: (t: T) => string | undefined;
+  set: (t: T, text: string | undefined) => void;
+}
+
 // 文件
 export interface ArchiveFile {
   // 文件名称
@@ -135,6 +140,20 @@ const set = {
   json(archive: Archive, name: string, json?: any) {
     return set.text(archive, name, json ? JSON.stringify(json) : undefined);
   },
+  /**
+   * 这个是用来设置引用值的，引用值会用一个额外的文件存储
+   * @returns
+   */
+  value<T>(
+    archive: Archive,
+    item: T,
+    accessor: Accessor<T>,
+    name: string,
+  ): ArchiveFile {
+    const content = accessor.get(item);
+    accessor.set(item, `$file$${name}`);
+    return set.text(archive, name, content);
+  },
 };
 
 const get = {
@@ -165,6 +184,24 @@ const get = {
   },
   async json<T = any>(nodes: Archive, name: string): Promise<T | undefined> {
     return jsonUtils.parse(await get.text(nodes, name));
+  },
+  /**
+   * 读取引用值，用另外文件存储
+   * @returns
+   */
+  async value<T>(
+    archive: Archive,
+    item: T,
+    accessor: Accessor<T>,
+  ): Promise<string | undefined> {
+    const name = accessor.get(item);
+    if (!name) return;
+    if (name.startsWith('$file$')) {
+      const content = await get.text(archive, name.substring(6));
+      accessor.set(item, content);
+      return content;
+    }
+    return name;
   },
 };
 

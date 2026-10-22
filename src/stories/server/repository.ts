@@ -175,10 +175,10 @@ const history = {
 
 async function getRealm(story: Story) {
   if (!story.model) {
-    const modelSetting = await settings.repository.get<ModelSetting>(
+    const modelSetting = await settings.repository.getState<ModelSetting>(
       models.state.setting,
     );
-    story.model = modelSetting?.data?.model;
+    story.model = modelSetting?.data?.state?.model;
   }
 
   if (!story.model) {

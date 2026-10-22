@@ -1,5 +1,5 @@
 export interface StoryImage {
-  image?: string | null;
+  image?: string;
   updateAt: string;
 }
 

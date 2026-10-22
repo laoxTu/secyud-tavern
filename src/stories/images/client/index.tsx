@@ -20,7 +20,7 @@ import {
   ItemTitle,
   LinkTooltip,
   TooltipDialog,
-  useImageUploaderState,
+  useImageState,
 } from '@/components';
 import { forms } from '@/global';
 import { globals } from '@/global/client';
@@ -50,7 +50,7 @@ function ContentItem({
 }) {
   const { refresh } = state();
   const t = useTranslations();
-  const { onFileChange, getImageFileId } = useImageUploaderState('image');
+  const { onFileChange, getImage } = useImageState('image');
   return (
     <div className={'min-w-1/5 w-96 h-auto p-2'}>
       <Item
@@ -91,7 +91,7 @@ function ContentItem({
                 {
                   name: forms.str(data, 'name'),
                   data: {
-                    image: await getImageFileId(data, 'image_src'),
+                    image: await getImage(data, image),
                     updateAt: Date(),
                   },
                 },
@@ -117,7 +117,7 @@ function ContentItem({
                   {t('default.cover')}
                 </FieldLabel>
                 <ImageUploader
-                  name={'image'}
+                  name={'image-image'}
                   id={`story-image-${entryId}`}
                   className={'max-w-52'}
                   accept={globals.accessImageType}
@@ -131,8 +131,8 @@ function ContentItem({
                 </FieldLabel>
                 <Input
                   id={`story-image_src-${entryId}`}
-                  defaultValue={image ?? undefined}
-                  name={'image_src'}
+                  defaultValue={image}
+                  name={'image-field'}
                 />
               </Field>
             </FieldGroup>

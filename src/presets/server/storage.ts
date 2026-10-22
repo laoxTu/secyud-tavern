@@ -1,3 +1,4 @@
+import { fileTypeFromBuffer } from 'file-type';
 import { validate } from 'uuid';
 
 import { Properties } from '@/database';
@@ -6,7 +7,13 @@ import { Storage } from '@/database/server';
 import { storages } from '@/database/server/factory';
 import { getRegistry } from '@/global';
 import { Preset } from '@/presets';
-import { Archive, ArchiveFolder, ArchiveNode, archives } from '@/utils/archive';
+import {
+  Accessor,
+  Archive,
+  ArchiveFolder,
+  ArchiveNode,
+  archives,
+} from '@/utils/archive';
 
 export interface PresetArchiveContext extends Properties {
   root: Archive;
@@ -15,7 +22,17 @@ export interface PresetArchiveContext extends Properties {
   // 追加code
   append(id: string): void;
 }
-
+type AccessorKey = 'variables' | 'opening';
+const accessor: Record<AccessorKey, Accessor<Preset>> = {
+  variables: {
+    get: (i) => i.variables,
+    set: (i, t) => (i.variables = t),
+  },
+  opening: {
+    get: (i) => i.opening,
+    set: (i, t) => (i.opening = t),
+  },
+};
 const extensionMap: Record<string, string> = {
   // PNG
   'image/png': 'png',
@@ -106,7 +123,7 @@ export const storage = {
         if (ext) {
           const name = `cover.${ext}`;
           const file = archives.set.buffer(node.nodes, name, cover.buffer);
-          (item as any).coverType = cover.type;
+          item.cover = name;
           // 图片不压缩
           file.level = 0;
         }
@@ -114,14 +131,12 @@ export const storage = {
         console.error(err);
       }
     }
-    archives.set.text(node.nodes, 'variables.json', item.variables);
-    archives.set.text(node.nodes, 'opening.txt', item.opening);
+    archives.set.value(node.nodes, item, accessor.variables, 'variables.json');
+    archives.set.value(node.nodes, item, accessor.opening, 'opening.txt');
     // 元数据
     archives.set.json(node.nodes, 'meta.json', {
       ...item,
       entries: undefined,
-      variables: undefined,
-      opening: undefined,
     });
 
     // 压入工作区
@@ -142,17 +157,13 @@ export const storage = {
     if (node.type !== 'folder') return null;
     const item = await archives.get.json<Preset>(node.nodes, 'meta.json');
     if (!item) return null;
-    item.variables = await archives.get.text(node.nodes, 'variables.json');
-    item.opening = await archives.get.fuzzy(node.nodes, 'opening.');
-    const type = (item as any).coverType;
-    const buffer = await archives.get.buffer(
-      node.nodes,
-      `cover.${extensionMap[type]}`,
-    );
+    await archives.get.value(node.nodes, item, accessor.variables);
+    await archives.get.value(node.nodes, item, accessor.opening);
+    const buffer = await archives.get.buffer(node.nodes, item.cover ?? '');
     if (buffer) {
+      const type = await fileTypeFromBuffer(buffer);
       const cover = await files.repository.create({
-        // coverType 里存的是完整 MIME，直接用
-        type,
+        type: type?.mime ?? '',
         args: null,
         buffer,
       });

@@ -86,19 +86,12 @@ function opening(realm: Realm) {
       sequence: -1,
       index: 0,
       summary: true,
-      content: '',
+      content: arrUtils.join(realm.presets, '\n', (u) => u.opening),
       variables,
       spaces: [
         {
           operations: [],
           outputs: [
-            ...realm.presets
-              .map((u) => u.opening?.trim())
-              .filter((u) => u)
-              .map((v) => ({
-                content: v!,
-                thought: '',
-              })),
             {
               content: '',
               thought: '',
@@ -292,25 +285,30 @@ export const realms = {
   message: {
     post: postMessage,
     variables(history: RealmHistory) {
-      postMessage('variables', variables(history));
+      postMessage('variables', {
+        ...variables(history),
+        space: space(history)?.properties ?? {},
+      });
     },
     async content(history: RealmHistory, handler: ConvertContent) {
       const outputs = space(history)?.outputs;
       const res = {
-        inputs: await handler(history.content, {
+        prompt: await handler(history.content, {
           role: 'user',
-          type: 'input',
+          type: 'prompt',
           history,
         }),
-        output: await handler(
-          arrUtils.join(outputs, '\n', (u) => u.content).trim(),
-          {
-            role: 'assistant',
-            type: 'output',
-            history,
-          },
+        spaces: await Promise.all(
+          outputs?.map(async (u) => ({
+            output: await handler(u.content, {
+              role: 'assistant',
+              type: 'output',
+              history,
+            }),
+            thought: u.thought,
+            callings: u.callings,
+          })) ?? [],
         ),
-        thought: arrUtils.join(outputs, '\n', (u) => u.thought).trim(),
       };
       console.debug('[realm]: message', res);
       postMessage('content', res);
