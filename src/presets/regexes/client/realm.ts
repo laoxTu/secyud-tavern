@@ -21,7 +21,7 @@ async function apply(
     if (role === 'tool') return text;
     if (!text || text == '') return '';
     for (const { pattern, replacement } of cache.regexes) {
-      text = text.replace(pattern, replacement);
+      text = text.replace(pattern, replacement ?? '');
     }
     return text;
   };
