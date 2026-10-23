@@ -36,7 +36,7 @@ const options: DeepseekOptions = {
 export const deepseeks = {
   name: 'deepseek',
   models: ['deepseek-flash', 'deepseek-pro'],
-  reasoningEfforts: ['high', 'max'],
+  reasoningEfforts: ['low', 'high', 'max'],
   default: {
     options,
     config,
