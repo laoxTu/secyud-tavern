@@ -1,6 +1,6 @@
 export interface Regex {
   pattern: string;
-  replacement: string;
+  replacement?: string;
   target: string;
 }
 const defaultEntry: Regex = {
