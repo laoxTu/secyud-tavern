@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Button,
@@ -88,7 +88,6 @@ function UserInput() {
     useRealmState();
 
   const t = useTranslations();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // 发送输入内容，并尝试创建新历史
   const triggerCreate = handler(async () => {
@@ -146,26 +145,27 @@ function UserInput() {
     await realms.generate();
   });
 
-  useEffect(() => {
-    const window = realms.iframe?.contentWindow as any;
-    if (!window) return;
-    window.userInput = {
-      text: {
-        element: () => inputRef.current,
-        get: () => content,
-        set: (value: any) => setContent(value),
-      },
-      summary: { get: () => summary, set: (value: any) => setSummary(value) },
-      inputBuilders: [], // { id: string, sequence?: number, build: (text: string) => string }
-    };
-  }, [inputRef]);
-
   return (
     <>
       <form action={triggerCreate}>
         <InputGroup className={'bg-white'}>
           <InputGroupTextarea
-            ref={inputRef}
+            ref={(ref) => {
+              if (ref) {
+                realms.api.input = {
+                  text: {
+                    element: () => ref,
+                    get: () => content,
+                    set: (value: any) => setContent(value),
+                  },
+                  summary: {
+                    get: () => summary,
+                    set: (value: any) => setSummary(value),
+                  },
+                  builders: [], // { id: string, sequence?: number, build: (text: string) => string }
+                };
+              }
+            }}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t('default.ctrl_enter_submit')}
@@ -365,6 +365,11 @@ export default function RealmPage({
         key={1}
         ref={(iframe) => {
           realms.iframe = iframe!;
+          if (iframe?.contentWindow) {
+            const window = iframe.contentWindow as any;
+            // 注册外部API
+            window.__api = realms.api;
+          }
         }}
         width={'100%'}
         height={'100%'}
