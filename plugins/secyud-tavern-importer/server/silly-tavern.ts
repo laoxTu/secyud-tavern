@@ -115,7 +115,7 @@ async function preset(card: OpenAIPreset, cover?: string) {
         expression: {},
         content,
         priority: 100,
-        layer: 0,
+        layer: 100,
         role: role(entry.role),
         name: entry.name,
       };
@@ -170,17 +170,18 @@ async function preset(card: OpenAIPreset, cover?: string) {
 
   return preset;
   function macro(macro: Partial<PresetItem<Macro>>) {
-    macros.push({
-      name: '',
-      disabled: false,
-      code: '',
-      key: '',
-      value: '',
-      json: false,
-      multiple: false,
-      hidden: false,
-      ...macro,
-    });
+    if (macro.value)
+      macros.push({
+        name: '',
+        disabled: false,
+        code: '',
+        key: '',
+        value: '',
+        json: false,
+        multiple: false,
+        hidden: false,
+        ...macro,
+      });
   }
 }
 
@@ -290,7 +291,7 @@ async function chara(card: CharacterCard, cover?: string) {
         expression: {},
         content,
         priority: 100,
-        layer: 0,
+        layer: 100,
         role: role(entry.role),
         name: entry.comment,
       };
@@ -382,6 +383,7 @@ async function chara(card: CharacterCard, cover?: string) {
 
   return preset;
   function macro(macro: Partial<PresetItem<Macro>>) {
+    if (!macro.value) return;
     const value = extract(macro.value ?? null, records);
 
     macros.push({

@@ -26,7 +26,7 @@ function get(realm: Realm): ToolItem<{
   const { limit, similarity } = useRagState.getState();
   return {
     name: 'get_lorebook',
-    description: 'get the titles of lorebook. lorebook is injected in context.',
+    description: 'get the summary of lorebook. content is provided.',
     parameters: {
       type: 'object',
       required: ['content'],

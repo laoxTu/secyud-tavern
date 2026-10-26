@@ -26,8 +26,7 @@ function get(realm: Realm): ToolItem<{
   const { limit, similarity } = useRagState.getState();
   return {
     name: 'get_memory',
-    description:
-      'get the titles of memory. memory is injected by knowledge tool.',
+    description: 'get the summary of memory. content is provided.',
     parameters: {
       type: 'object',
       required: ['content'],
@@ -46,8 +45,7 @@ function get(realm: Realm): ToolItem<{
         },
         tags: {
           type: 'array',
-          description:
-            'the tags to filter. (max 3; English/ASCII only — tags are stored as English words)',
+          description: 'the tags to filter. (max 3; English only)',
           items: {
             type: 'string',
           },

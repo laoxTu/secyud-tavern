@@ -64,8 +64,7 @@ function operate(operation: Operation, realm: Realm) {
 function setTemp(realm: Realm): ToolItem {
   return {
     name: 'set_temp',
-    description:
-      'set current temp property. the parameter should be json object.',
+    description: 'set current temp property. (temp maintained in an agent_run)',
     parameters: {
       type: 'object',
       required: ['path', 'value'],
