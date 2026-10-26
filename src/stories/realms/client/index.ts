@@ -240,7 +240,10 @@ async function generate() {
     setSignal();
   }
 }
+const outerApi: Record<string, any> = {};
+
 export const realms = {
+  api: outerApi,
   realm: null! as Realm,
   iframe: null! as HTMLIFrameElement,
   get histories() {
@@ -266,13 +269,12 @@ export const realms = {
     const { content } = useRealmState.getState();
     let input = content.trim();
     // 用户输入可以联动内部
-    const window = realms.iframe.contentWindow as any;
-    if (window) {
-      const builders = window?.userInput?.inputBuilders as {
-        id: string;
-        sequence?: number;
-        build: (text: string) => string;
-      }[];
+    const builders = realms.api.input?.builders as {
+      id: string;
+      sequence?: number;
+      build: (text: string) => string;
+    }[];
+    if (builders) {
       builders
         ?.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
         .forEach((builder) => {

@@ -190,7 +190,13 @@ export const processer: Processer = {
 export const renderer: Renderer = {
   id: main.name,
   requires: [regexMain.name],
-  init,
+  async init(ctx) {
+    const cache = await init(ctx);
+    realms.api.macros = {
+      cache,
+    };
+    return cache;
+  },
   output: apply,
   stream: apply,
 };
