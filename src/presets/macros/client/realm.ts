@@ -28,7 +28,7 @@ export interface MacroCacheItem {
   select?: string;
   hidden: boolean;
 }
-
+const etaTagPrefix = /<%[-=~]?/;
 export interface MacroCache {
   macros: Record<string, MacroCacheItem>;
   multiples: Record<string, MacroItem[]>;
@@ -92,10 +92,18 @@ async function apply(
    * 世界书也会经过转化
    */
   converts.push(async (str, ctx) => {
-    return await eta.renderStringAsync(str, {
+    const param = {
       ...obj,
       space: realms.space(ctx.history)?.properties ?? {},
-    });
+    };
+    let result = str;
+    let count = 4;
+    while (etaTagPrefix.test(result) && count-- > 0) {
+      const next = await eta.renderStringAsync(result, param);
+      if (next === result) break; // 收敛即停
+      result = next;
+    }
+    return result;
   });
 }
 
