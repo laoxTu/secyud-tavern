@@ -150,6 +150,7 @@ function UserInput() {
       <form action={triggerCreate}>
         <InputGroup className={'bg-white'}>
           <InputGroupTextarea
+            style={{ maxHeight: '50vh' }}
             ref={(ref) => {
               if (ref) {
                 realms.api.input = {
