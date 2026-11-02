@@ -4,12 +4,17 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
   element,
   Field,
   FieldContent,
   FieldLabel,
   Input,
-  Selector,
   UpdateForm,
   useFormRef,
 } from '@/components';
@@ -91,15 +96,26 @@ function Editor({ entry }: { entry: PresetEntry<Tool> }) {
         <FieldLabel htmlFor={`model-tool_provider-${entry.entryId}`}>
           {t('tool.provider_type')}
         </FieldLabel>
-        <Selector
+        <Combobox
           id={`model-tool_provider-${entry.entryId}`}
           items={tools.providers.registry.sorted()}
-          name={'provider'}
+          isItemEqualToValue={(l, r) => l.id === r.id}
+          itemToStringLabel={(u) => t(`tool.provider.${u.id}`)}
           value={editor}
           onValueChange={setEditor}
-          valueAccessor={(u) => u.id}
-          labelAccessor={(u) => t(`tool.provider.${u.id}`)}
-        />
+        >
+          <ComboboxInput />
+          <ComboboxContent>
+            <ComboboxEmpty>{t('default.empty_items')}</ComboboxEmpty>
+            <ComboboxList>
+              {(item) => (
+                <ComboboxItem key={item.id} value={item}>
+                  {t(`tool.provider.${item.id}`)}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
       </Field>
       {element(editor?.configComponent, { entry, formRef: form })}
     </UpdateForm>
