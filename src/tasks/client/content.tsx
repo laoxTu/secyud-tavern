@@ -121,7 +121,7 @@ function Content() {
                     await fetch();
                   })}
                 />
-                <UISlot slot={'task.item.actions'} />
+                <UISlot slot={'task.item.actions'} props={{ item }} />
               </ItemActions>
             </>
           );

@@ -447,7 +447,10 @@ export function MenuContent() {
                   </ItemContent>
                   <ItemContent className="flex-none text-center">
                     <ItemDescription>{item.version}</ItemDescription>
-                    <UISlot slot={'preset.list_item.actions'} />
+                    <UISlot
+                      slot={'preset.list_item.actions'}
+                      props={{ item }}
+                    />
                   </ItemContent>
                 </>
               );

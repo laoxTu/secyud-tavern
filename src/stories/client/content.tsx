@@ -292,7 +292,7 @@ function Content() {
                   >
                     <CornerDownLeftIcon />
                   </IconTooltip>
-                  <UISlot slot={'story.list_item.actions'} />
+                  <UISlot slot={'story.list_item.actions'} props={{ item }} />
                 </ItemContent>
               </>
             )}

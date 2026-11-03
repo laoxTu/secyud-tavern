@@ -3,9 +3,9 @@ import { element } from '@/components';
 
 import { getSingleton, Registerable, Registry } from '..';
 
-export interface UI extends Registerable {
+export interface UI<T = any> extends Registerable {
   slot: string;
-  component: React.ComponentType;
+  component: React.ComponentType<T>;
 }
 
 class UIRegistry extends Registry<UI> {
@@ -39,12 +39,12 @@ class UIRegistry extends Registry<UI> {
 
 export const uis = getSingleton('uis', () => new UIRegistry());
 
-interface SlotProps {
+interface SlotProps<T = any> {
   slot: string;
-  props?: any;
+  props?: T;
 }
 
-export function UISlot({ slot, props }: SlotProps) {
+export function UISlot<T = any>({ slot, props }: SlotProps<T>) {
   const uiComponents = uis.group(slot);
   return (
     <>
