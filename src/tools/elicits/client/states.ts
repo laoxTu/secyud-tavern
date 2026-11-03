@@ -3,12 +3,20 @@ import { create } from 'zustand';
 import { Entity } from '@/database';
 import { Mutex } from '@/utils/mutex';
 
+// 一个选项
+interface Option {
+  title: string;
+  text: string;
+}
+
 export interface ElicitItem extends Entity {
   question: string;
-  examples: string[];
+  examples: Option[];
   // 是否允许自定义项
   custom?: boolean;
-  reply: (answer: string) => Promise<void>;
+  // 是否单选
+  single?: boolean;
+  reply: (answer: string[]) => Promise<void>;
 }
 const mutex: Mutex = new Mutex();
 // 当前轮次的 items

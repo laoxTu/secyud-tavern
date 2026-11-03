@@ -1,17 +1,24 @@
+import { CircleAlertIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Field,
+  FieldLabel,
+  GridField,
+  IconTooltip,
   Input,
   Label,
   RadioGroup,
   RadioGroupItem,
+  spanFull,
 } from '@/components';
 import { forms } from '@/global';
 import { handler } from '@/interceptors/client';
@@ -33,12 +40,29 @@ function Component() {
             action={handler(async (data: FormData) => {
               const { item, pop } = useElicitState.getState();
               if (!item) return;
-              const select = forms.str(data, 'elicit');
-              const value =
-                select === 'custom'
-                  ? forms.str(data, 'custom')
-                  : item?.examples[Number(select)] || '';
-              await item.reply(value);
+              const answers: string[] = [];
+              const examples = item.examples.map((t) => t.title);
+              if (item.single) {
+                const select = forms.str(data, 'elicit');
+                const value =
+                  select === 'custom'
+                    ? forms.str(data, 'custom')
+                    : examples[Number(select)] || '';
+                answers.push(value);
+              } else {
+                for (let i = 0; i < item.examples.length; i++) {
+                  if (forms.bool(data, `example-${i}`)) {
+                    answers.push(examples[i]);
+                  }
+                }
+                if (item.custom && forms.bool(data, 'custom-enabled')) {
+                  const customAnswer = forms.str(data, 'custom');
+                  if (customAnswer) {
+                    answers.push(customAnswer);
+                  }
+                }
+              }
+              await item.reply(answers);
               await pop(item);
             })}
           />
@@ -51,30 +75,86 @@ function Component() {
               <DialogDescription>{item.question}</DialogDescription>
             </DialogHeader>
             <div className="flex-1 overflow-auto">
-              <RadioGroup
-                key={render}
-                name="elicit"
-                defaultValue={0}
-                className="w-fit"
-              >
-                {item.examples.map((t, i) => {
-                  return (
-                    <div key={i} className="flex items-center gap-3">
-                      <RadioGroupItem value={i} id={`elicit-${i}`} />
-                      <Label htmlFor={`elicit-${i}`}>{t}</Label>
+              {item.single ? (
+                <RadioGroup
+                  key={render}
+                  name="elicit"
+                  defaultValue={0}
+                  className="w-fit"
+                >
+                  {item.examples.map((t, i) => {
+                    return (
+                      <div key={i} className="flex items-center gap-3">
+                        <RadioGroupItem value={i} id={`elicit-${i}`} />
+                        <Label htmlFor={`elicit-${i}`}>
+                          {t.title}
+                          <IconTooltip
+                            label={
+                              <div
+                                className={
+                                  'overflow-auto max-h-96 scrollbar-none'
+                                }
+                              >
+                                <pre className="wrap-break-word whitespace-pre-wrap">
+                                  {t.text}
+                                </pre>
+                              </div>
+                            }
+                          >
+                            <CircleAlertIcon />
+                          </IconTooltip>
+                        </Label>
+                      </div>
+                    );
+                  })}
+                  {item.custom && (
+                    <div key="custom" className="flex items-center gap-3">
+                      <RadioGroupItem value="custom" />
+                      <Input
+                        name="custom"
+                        placeholder={t('elicit.custom.placeholder')}
+                      />
                     </div>
-                  );
-                })}
-                {item.custom && (
-                  <div key="custom" className="flex items-center gap-3">
-                    <RadioGroupItem value="custom" id="elicit-custom" />
-                    <Input
-                      name="custom"
-                      placeholder={t('elicit.custom.placeholder')}
-                    />
-                  </div>
-                )}
-              </RadioGroup>
+                  )}
+                </RadioGroup>
+              ) : (
+                <GridField>
+                  {item.examples.map((t, i) => {
+                    return (
+                      <Field key={i} orientation="horizontal">
+                        <Checkbox name={`example-${i}`} />
+                        <FieldLabel htmlFor={`elicit-${i}`}>
+                          {t.title}
+                          <IconTooltip
+                            label={
+                              <div
+                                className={
+                                  'overflow-auto max-h-96 scrollbar-none'
+                                }
+                              >
+                                <pre className="wrap-break-word whitespace-pre-wrap">
+                                  {t.text}
+                                </pre>
+                              </div>
+                            }
+                          >
+                            <CircleAlertIcon />
+                          </IconTooltip>
+                        </FieldLabel>
+                      </Field>
+                    );
+                  })}
+                  {item.custom && (
+                    <Field className={spanFull} orientation="horizontal">
+                      <Checkbox name="custom-enabled" />
+                      <Input
+                        name="custom"
+                        placeholder={t('elicit.custom.placeholder')}
+                      />
+                    </Field>
+                  )}
+                </GridField>
+              )}
             </div>
             <DialogFooter>
               <Button type="submit">{t('default.ensure')}</Button>

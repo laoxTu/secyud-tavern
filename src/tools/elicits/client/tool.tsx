@@ -18,7 +18,8 @@ export const tool: ToolProvider = {
 function elicit(): ToolItem<ElicitItem> {
   return {
     name: 'ask_user',
-    description: 'ask user for answer',
+    description:
+      'ask user for answer, return titles and custom answer if allowed',
     parameters: {
       type: 'object',
       additionalProperties: false,
@@ -30,12 +31,19 @@ function elicit(): ToolItem<ElicitItem> {
         },
         examples: {
           type: 'array',
-          items: { type: 'string' },
+          items: {
+            type: 'object',
+            properties: { title: { type: 'string' }, text: { type: 'string' } },
+          },
           description: 'user can select one of them',
         },
         custom: {
           type: 'boolean',
           description: 'whether allow custom answer, true for default',
+        },
+        single: {
+          type: 'boolean',
+          description: 'whether allow single answer, true for default',
         },
       },
     },
@@ -47,8 +55,8 @@ function elicit(): ToolItem<ElicitItem> {
           reject(new BusinessError('User did not answer in time'));
         }, 900000);
         try {
-          const reply = async (answer: string) => {
-            resolve(answer);
+          const reply = async (answer: string[]) => {
+            resolve(answer.join(';'));
             clear();
           };
           item = { ...item, reply, id: utils.uuid() };
