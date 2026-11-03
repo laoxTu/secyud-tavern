@@ -41,9 +41,16 @@ export const uis = getSingleton('uis', () => new UIRegistry());
 
 interface SlotProps {
   slot: string;
+  props?: any;
 }
 
-export function UISlot({ slot }: SlotProps) {
+export function UISlot({ slot, props }: SlotProps) {
   const uiComponents = uis.group(slot);
-  return <>{uiComponents.map((ui) => element(ui.component, { key: ui.id }))}</>;
+  return (
+    <>
+      {uiComponents.map((ui) =>
+        element(ui.component, { ...(props ?? {}), key: ui.id }),
+      )}
+    </>
+  );
 }

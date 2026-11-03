@@ -27,6 +27,7 @@ import {
 import { getRegistry, Registerable } from '@/global';
 import { locales } from '@/localization/config';
 
+import { UISlot } from './slots';
 import { useGlobalState } from './state';
 
 export interface GlobalMenuItem extends Registerable {
@@ -97,6 +98,7 @@ function AppSidebar() {
     <>
       <SidebarHeader>
         <SidebarTrigger />
+        <UISlot slot={'global.sidebar.header'} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -110,6 +112,7 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <UISlot slot={'global.sidebar.footer'} />
         <LanguageSwitcher />
         <ThemeSwitcher />
       </SidebarFooter>
@@ -164,6 +167,7 @@ export function GlobalMenu() {
       <main className={'overflow-hidden flex-1'}>
         {element(menus.record(menu)?.content)}
       </main>
+      <UISlot slot={'global.overlay'} />
       <Trigger />
     </SidebarProvider>
   );

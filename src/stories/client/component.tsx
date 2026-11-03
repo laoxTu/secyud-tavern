@@ -25,6 +25,7 @@ import {
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
 import { forms } from '@/global';
+import { UISlot } from '@/global/client/slots';
 import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { StoryEntry, StoryEntryClipboard } from '@/stories';
@@ -107,6 +108,7 @@ export function StoryEntryUpdate<TData>({
             })}
             itemName={`${name}.id`}
           />
+          <UISlot slot={'story.entry.tools'} props={{ state, entry }} />
         </>
       }
     >
@@ -186,6 +188,7 @@ export function StoryEntryList<TData>({
             <Input name={'name'} required id={`story-${name}-create-name`} />
           </Field>
         </TooltipDialog>
+        <UISlot slot={'story.entry_list.actions'} props={{ state }} />
       </div>
 
       <div className={cn('flex-1 flex flex-col', className)}>

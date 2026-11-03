@@ -20,6 +20,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { SettingTab } from '@/global/client';
+import { UISlot } from '@/global/client/slots';
 import { BusinessError } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import {
@@ -268,6 +269,7 @@ export function ModelSettingContent() {
         >
           {<StarIcon color={item?.id === model?.value ? 'green' : 'orange'} />}
         </IconTooltip>
+        <UISlot slot={'model.setting.actions'} />
       </div>
       <ModelPropertyContent key={item?.id ?? 'model'} />
     </>

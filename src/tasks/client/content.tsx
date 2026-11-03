@@ -25,6 +25,7 @@ import {
   TooltipDialog,
 } from '@/components';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
+import { UISlot } from '@/global/client/slots';
 import { handler, success } from '@/interceptors/client';
 import { useSse } from '@/signal/client';
 
@@ -120,6 +121,7 @@ function Content() {
                     await fetch();
                   })}
                 />
+                <UISlot slot={'task.item.actions'} />
               </ItemActions>
             </>
           );

@@ -16,6 +16,7 @@ import {
 import { getRegistry, Registerable } from '@/global';
 import { GlobalMenuLabel } from '@/global/client';
 
+import { UISlot } from './slots';
 import styles from './setting.module.css';
 
 export interface SettingTab extends Registerable {
@@ -116,6 +117,7 @@ function Content() {
             );
           })}
         </TabsList>
+        <UISlot slot={'setting.tab_actions'} />
       </Tabs>
       {tabs.sorted().map((tab) => (
         <Card key={tab.id}>

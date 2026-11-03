@@ -30,6 +30,7 @@ import {
 import { EntryCollapsiable } from '@/components/collapsible';
 import { DataRequest, NameValue, utils } from '@/database';
 import { forms } from '@/global';
+import { UISlot } from '@/global/client/slots';
 import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
 import { PresetEntry, PresetEntryClipboard } from '@/presets';
@@ -172,6 +173,7 @@ export function PresetEntryUpdate<TData>({
             })}
             itemName={`${name}.id`}
           />
+          <UISlot slot={'preset.entry.tools'} props={{ state, entry }} />
         </>
       }
     >
@@ -252,6 +254,7 @@ export function PresetEntryList<TData>({
             <Input name={'name'} required id={`preset-${name}-create-name`} />
           </Field>
         </TooltipDialog>
+        <UISlot slot={'preset.entry_list.actions'} props={{ state }} />
       </div>
       <div className={cn('flex-1 flex flex-col', className)}>
         <PagedItemList

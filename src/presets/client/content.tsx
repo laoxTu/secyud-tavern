@@ -212,6 +212,7 @@ function TabContent() {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        <UISlot slot={'preset.tab_actions'} />
         <TooltipDialog
           tooltip={<SquareArrowRightEnterIcon />}
           onSubmit={handler(async () => {
@@ -446,6 +447,7 @@ export function MenuContent() {
                   </ItemContent>
                   <ItemContent className="flex-none text-center">
                     <ItemDescription>{item.version}</ItemDescription>
+                    <UISlot slot={'preset.list_item.actions'} />
                   </ItemContent>
                 </>
               );

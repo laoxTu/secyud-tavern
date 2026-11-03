@@ -46,6 +46,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { globals } from '@/global/client';
+import { UISlot } from '@/global/client/slots';
 import { BusinessError } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 
@@ -236,6 +237,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
             </Field>
           </FieldGroup>
         </TooltipDialog>
+        <UISlot slot={'comfyui.model.card_actions'} props={{ item }} />
       </ItemActions>
     </Item>
   );
@@ -358,6 +360,7 @@ export function ModelContent() {
             {element(importer?.configComponent)}
           </FieldGroup>
         </TooltipDialog>
+        <UISlot slot={'comfyui.model.main_button'} />
       </div>
       <div className={'flex-1 flex flex-col overflow-hidden'}>
         <PagedItemList<ComfyUIModel>

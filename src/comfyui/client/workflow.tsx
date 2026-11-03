@@ -46,6 +46,7 @@ import {
 } from '@/components';
 import { EntryCollapsiable } from '@/components/collapsible';
 import { forms } from '@/global';
+import { UISlot } from '@/global/client/slots';
 import { handler, success } from '@/interceptors/client';
 
 function Property() {
@@ -179,6 +180,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
             })}
             itemName={`comfyui.param.id`}
           />
+          <UISlot slot={'comfyui.param.tools'} props={{ entry }} />
         </>
       }
     >
@@ -293,6 +295,7 @@ function Params() {
             <Input name={'name'} required id={`preset-${name}-create-name`} />
           </Field>
         </TooltipDialog>
+        <UISlot slot={'comfyui.param.main_button'} />
         <Button className={'opacity-0'}></Button>
       </div>
       <div className={'flex-1 flex flex-col'}>
@@ -426,6 +429,7 @@ export function WorkflowContent() {
                 success(t('message.delete.success'));
               })}
             />
+            <UISlot slot={'comfyui.workflow.main_button'} />
           </div>
           {item && <Property key={item.id} />}
         </div>

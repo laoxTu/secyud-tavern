@@ -46,6 +46,7 @@ import {
 } from '@/components';
 import { forms, getRegistry, Registerable } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel } from '@/global/client';
+import { UISlot } from '@/global/client/slots';
 import { BusinessError } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import { ModelNameValueField } from '@/models/client';
@@ -137,6 +138,7 @@ function TabContent() {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        <UISlot slot={'story.tab_actions'} />
         <TooltipDialog
           tooltip={<ClipboardPasteIcon />}
           onSubmit={handler(async () => {
@@ -258,6 +260,7 @@ function Content() {
                   <Input id={`story-name`} name="name" required />
                 </Field>
               </TooltipDialog>
+              <UISlot slot={'story.main_button'} />
             </div>
           </div>
           <PagedItemList<Story>
@@ -289,6 +292,7 @@ function Content() {
                   >
                     <CornerDownLeftIcon />
                   </IconTooltip>
+                  <UISlot slot={'story.list_item.actions'} />
                 </ItemContent>
               </>
             )}

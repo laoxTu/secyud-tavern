@@ -34,6 +34,7 @@ import {
 } from '@/components';
 import { forms } from '@/global';
 import { Loading } from '@/global/client/loading';
+import { UISlot } from '@/global/client/slots';
 import { error, handler } from '@/interceptors/client';
 import { models } from '@/models/client';
 import { stories } from '@/stories/client';
@@ -173,6 +174,7 @@ function UserInput() {
             onKeyDown={submitTargetFormOnKey}
           />
           <InputGroupAddon align="inline-end">
+            <UISlot slot={'realm.input.addon'} />
             <InputGroupText>
               <Checkbox
                 name={'summary'}
