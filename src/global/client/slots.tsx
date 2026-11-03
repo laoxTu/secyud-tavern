@@ -1,3 +1,4 @@
+'use client';
 import { element } from '@/components';
 
 import { getSingleton, Registerable, Registry } from '..';

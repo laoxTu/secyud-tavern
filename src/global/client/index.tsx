@@ -8,6 +8,7 @@ import { uis } from './slots';
 export * from './loading';
 export * from './menu';
 export type * from './setting';
+export * from './slots';
 export * from './state';
 
 export const globals = {
