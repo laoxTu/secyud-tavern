@@ -9,21 +9,30 @@
     }
   },
   "importer": {
-    "id":"导入",
-    "title": "导入数据",
     "description": "从其他酒馆/前端导入数据",
-    "sillyTavernPreset": "SillyTavern 预设",
-    "sillyTavernCharacter": "SillyTavern 角色卡",
-    "importing": "导入中…",
-    "importSuccess": "导入成功",
+    "file": "选择文件",
+    "id": "导入",
     "importFailed": "导入失败",
-    "file": "选择文件"
+    "importSuccess": "导入成功",
+    "importing": "导入中…",
+    "sillyTavernCharacter": "SillyTavern 角色卡",
+    "sillyTavernPreset": "SillyTavern 预设",
+    "title": "导入数据"
+  },
+  "message": {
+    "silly_tavern": {
+      "importer": {
+        "desc": "从SillyTavern导入",
+        "title": "从SillyTavern导入",
+        "tooltip": "从SillyTavern导入"
+      }
+    }
   },
   "plugin": {
-    "no_file": "未选择文件",
     "invalid_json": "JSON 文件无效",
+    "invalid_st_char": "不是有效的 SillyTavern 角色卡",
     "invalid_st_preset": "不是有效的 SillyTavern 预设",
-    "invalid_st_char": "不是有效的 SillyTavern 角色卡"
+    "no_file": "未选择文件"
   },
   "silly_tavern": {
     "import": "从SillyTavern导入"

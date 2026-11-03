@@ -46,6 +46,7 @@
       "type_model_select": "模型选择",
       "type_number": "数字",
       "type_power_lora_select": "Lora 选择",
+      "type_prompt": "提示词",
       "type_select": "选择",
       "type_text": "文本"
     },

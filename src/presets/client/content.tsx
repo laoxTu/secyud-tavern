@@ -66,6 +66,7 @@ import {
 import { NameValue } from '@/database';
 import { forms, getRegistry, Registerable } from '@/global';
 import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
+import { UISlot } from '@/global/client/slots';
 import { BusinessError, checker } from '@/interceptors';
 import { handler, success } from '@/interceptors/client';
 import { cn } from '@/lib/utils';
@@ -382,7 +383,7 @@ export function MenuContent() {
                 </InputGroupAddon>
               </InputGroup>
             </form>
-            <div className={'flex flex-col'}>
+            <div className={'grid grid-flow-col grid-rows-2'}>
               <TooltipDialog
                 tooltip={<SquarePlusIcon />}
                 onSubmit={handler(async (data) => {
@@ -413,6 +414,7 @@ export function MenuContent() {
                 </Field>
               </TooltipDialog>
               <ImportDialog />
+              <UISlot slot={'preset.main_button'} />
             </div>
           </div>
           <PagedItemList<Preset>

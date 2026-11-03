@@ -3,90 +3,47 @@ import { useTranslations } from 'next-intl';
 /**
  * Secyud Tavern Importer 插件
  */
-import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Field, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Field, FieldLabel, Input } from '@/components';
+import { dialogs, TooltipDialog } from '@/components/dialog';
 import { forms } from '@/global';
-import { GlobalMenuItem, GlobalMenuLabel, globals } from '@/global/client';
+import { globals } from '@/global/client';
 import { handler, success } from '@/interceptors/client';
 
 import { proxy } from './proxy';
 
 function Content() {
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-full items-center justify-center min-h-[60vh] gap-8 p-8">
-      <p className="text-sm text-muted-foreground max-w-sm text-center leading-relaxed">
-        {t('importer.description')}
-      </p>
-
-      <div className="flex flex-col items-center gap-3">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger onClick={() => setOpen(true)} render={<Button />}>
-            {t(`silly_tavern.import`)}
-          </DialogTrigger>
-          <DialogContent
-            render={
-              <form
-                action={handler(async (data) => {
-                  await proxy.import(forms.file(data, 'file'));
-                  setOpen(false);
-                  success(t('message.import.success'));
-                })}
-              />
-            }
-          >
-            <DialogHeader>
-              <DialogTitle>{t(`silly_tavern.import`)}</DialogTitle>
-              <DialogDescription>{t('silly_tavern.import')}</DialogDescription>
-            </DialogHeader>
-
-            <Field>
-              <FieldLabel htmlFor={`import-silly_tavern`}>
-                {t('importer.file')}
-              </FieldLabel>
-              <Input
-                id={`import-silly_tavern`}
-                name="file"
-                type="file"
-                accept={'.json,.png'}
-                required
-              />
-            </Field>
-
-            <DialogFooter>
-              <Button type="submit">{t('default.ensure')}</Button>
-              <DialogClose render={<Button variant="outline" />}>
-                {t('default.cancel')}
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </div>
+    <TooltipDialog
+      tooltip={<ImportIcon />}
+      onSubmit={handler(async (data) => {
+        await proxy.import(forms.file(data, 'file'));
+        success(t('message.import.success'));
+      })}
+      info={dialogs.info(t, 'silly_tavern.importer')}
+    >
+      <Field>
+        <FieldLabel htmlFor={`import-silly_tavern`}>
+          {t('importer.file')}
+        </FieldLabel>
+        <Input
+          id={`import-silly_tavern`}
+          name="file"
+          type="file"
+          accept={'.json,.png'}
+          required
+        />
+      </Field>
+    </TooltipDialog>
   );
 }
 
-const menu: GlobalMenuItem = {
-  id: 'importer',
-  label: () => <GlobalMenuLabel name={'importer'} icon={<ImportIcon />} />,
-  content: Content,
-};
-
 export default function () {
-  globals.menus.register(menu);
+  globals.uis.register({
+    id: 'preset.main_button.st_importer',
+    slot: 'preset.main_button',
+    component: Content,
+  });
 }

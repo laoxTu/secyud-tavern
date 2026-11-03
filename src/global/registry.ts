@@ -164,7 +164,7 @@ export class Registry<T extends Registerable> {
   /**
    * 清空缓存
    */
-  private invalidateCache(): void {
+  protected invalidateCache(): void {
     this.sortedItems = null;
   }
 }
