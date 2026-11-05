@@ -43,7 +43,7 @@ function elicit(): ToolItem<ElicitItem> {
         },
         single: {
           type: 'boolean',
-          description: 'whether allow single answer, true for default',
+          description: 'whether allow single answer, false for default',
         },
       },
     },
