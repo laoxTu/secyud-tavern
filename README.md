@@ -72,16 +72,16 @@ Secyud Tavern 是一个在自己电脑上运行的 AI 互动故事平台。
 
 项目里已经准备了 8 套玩法，导入就能玩，也能拆开当教材。
 
-| 玩法 | 一句话 |
-| --- | --- |
-| **默认设置** | 工具和开关的总控台，其他玩法都靠它打底 |
-| **默认交互** | 最基础的聊天界面，第一次可以先玩这个 |
-| **预设作家** | 给 AI 一套写故事的骨架 |
-| **模拟经营** | 带数值和状态面板的经营玩法 |
-| **疯狂水世界** | 在水世界里求生、抽奖、攒资源 |
-| **终末** | 资料量很大的末日故事，适合慢慢探索 |
-| **思维分析Agent** | 让 AI 叫一个「分身」来分析角色心理 |
-| **弹幕** | 满屏弹幕飘过的互动界面 |
+| 玩法              | 一句话                                 |
+| ----------------- | -------------------------------------- |
+| **默认设置**      | 工具和开关的总控台，其他玩法都靠它打底 |
+| **默认交互**      | 最基础的聊天界面，第一次可以先玩这个   |
+| **预设作家**      | 给 AI 一套写故事的骨架                 |
+| **模拟经营**      | 带数值和状态面板的经营玩法             |
+| **疯狂水世界**    | 在水世界里求生、抽奖、攒资源           |
+| **终末**          | 资料量很大的末日故事，适合慢慢探索     |
+| **思维分析Agent** | 让 AI 叫一个「分身」来分析角色心理     |
+| **弹幕**          | 满屏弹幕飘过的互动界面                 |
 
 > 第一次导入，建议 8 套全选。有些玩法要搭配别的玩法一起用，导入时不会自动帮你补。
 
@@ -96,7 +96,7 @@ Secyud Tavern 是一个在自己电脑上运行的 AI 互动故事平台。
 **Windows**
 
 ```powershell
-git clone --recursive https://github.com/laoxTu/secyud-tavern.git
+git clone https://github.com/laoxTu/secyud-tavern.git
 cd secyud-tavern
 .\start.bat
 ```
@@ -104,7 +104,7 @@ cd secyud-tavern
 **Linux / macOS**
 
 ```bash
-git clone --recursive https://github.com/laoxTu/secyud-tavern.git
+git clone https://github.com/laoxTu/secyud-tavern.git
 cd secyud-tavern
 bash start.sh
 ```
@@ -164,13 +164,13 @@ OpenAI、DeepSeek、Claude，以及兼容 OpenAI 的服务。
 
 ## 更多文档
 
-| 想做什么 | 看这里 |
-| --- | --- |
+| 想做什么                        | 看这里                                                                                                                                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 安装（Windows / Linux / macOS） | [Windows](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/install/windows.md) · [Linux / macOS](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/install/linux.md) |
-| 选模型、做预设、玩故事、画图 | [使用指南](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/guide/readme.md) |
-| 从零做一个预设 | [预设教程集](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/archive/readme.md) |
-| 看懂自带的 8 套玩法 | [模板详解](https://github.com/laoxTu/secyud-tavern-docs/blob/main/templates/readme.md) |
-| English | [English docs](https://github.com/laoxTu/secyud-tavern-docs/blob/main/en/readme.md) |
+| 选模型、做预设、玩故事、画图    | [使用指南](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/guide/readme.md)                                                                                                 |
+| 从零做一个预设                  | [预设教程集](https://github.com/laoxTu/secyud-tavern-docs/blob/main/zh/archive/readme.md)                                                                                             |
+| 看懂自带的 8 套玩法             | [模板详解](https://github.com/laoxTu/secyud-tavern-docs/blob/main/templates/readme.md)                                                                                                |
+| English                         | [English docs](https://github.com/laoxTu/secyud-tavern-docs/blob/main/en/readme.md)                                                                                                   |
 
 ---
 
