@@ -6,12 +6,12 @@ import { Mutex } from '@/utils/mutex';
 // 一个选项
 interface Option {
   title: string;
-  text: string;
+  detail: string;
 }
 
 export interface ElicitItem extends Entity {
   question: string;
-  examples: Option[];
+  options: Option[];
   // 是否允许自定义项
   custom?: boolean;
   // 是否单选

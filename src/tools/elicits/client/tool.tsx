@@ -23,17 +23,20 @@ function elicit(): ToolItem<ElicitItem> {
     parameters: {
       type: 'object',
       additionalProperties: false,
-      required: ['question', 'examples', 'custom'],
+      required: ['question', 'options', 'custom'],
       properties: {
         question: {
           type: 'string',
           description: 'question to ask',
         },
-        examples: {
+        options: {
           type: 'array',
           items: {
             type: 'object',
-            properties: { title: { type: 'string' }, text: { type: 'string' } },
+            properties: {
+              title: { type: 'string' },
+              detail: { type: 'string' },
+            },
           },
           description: 'user can select one of them',
         },

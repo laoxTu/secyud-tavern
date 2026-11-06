@@ -41,18 +41,18 @@ function Component() {
               const { item, pop } = useElicitState.getState();
               if (!item) return;
               const answers: string[] = [];
-              const examples = item.examples.map((t) => t.title);
+              const options = item.options.map((t) => t.title);
               if (item.single) {
                 const select = forms.str(data, 'elicit');
                 const value =
                   select === 'custom'
                     ? forms.str(data, 'custom')
-                    : examples[Number(select)] || '';
+                    : options[Number(select)] || '';
                 answers.push(value);
               } else {
-                for (let i = 0; i < item.examples.length; i++) {
-                  if (forms.bool(data, `example-${i}`)) {
-                    answers.push(examples[i]);
+                for (let i = 0; i < item.options.length; i++) {
+                  if (forms.bool(data, `option-${i}`)) {
+                    answers.push(options[i]);
                   }
                 }
                 if (item.custom && forms.bool(data, 'custom-enabled')) {
@@ -82,7 +82,7 @@ function Component() {
                   defaultValue={0}
                   className="w-fit"
                 >
-                  {item.examples.map((t, i) => {
+                  {item.options.map((t, i) => {
                     return (
                       <div key={i} className="flex items-center gap-3">
                         <RadioGroupItem value={i} id={`elicit-${i}`} />
@@ -96,7 +96,7 @@ function Component() {
                                 }
                               >
                                 <pre className="wrap-break-word whitespace-pre-wrap">
-                                  {t.text}
+                                  {t.detail}
                                 </pre>
                               </div>
                             }
@@ -119,10 +119,10 @@ function Component() {
                 </RadioGroup>
               ) : (
                 <GridField>
-                  {item.examples.map((t, i) => {
+                  {item.options.map((t, i) => {
                     return (
                       <Field key={i} orientation="horizontal">
-                        <Checkbox name={`example-${i}`} />
+                        <Checkbox name={`option-${i}`} />
                         <FieldLabel htmlFor={`elicit-${i}`}>
                           {t.title}
                           <IconTooltip
@@ -133,7 +133,7 @@ function Component() {
                                 }
                               >
                                 <pre className="wrap-break-word whitespace-pre-wrap">
-                                  {t.text}
+                                  {t.detail}
                                 </pre>
                               </div>
                             }
