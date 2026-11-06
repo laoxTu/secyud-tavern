@@ -19,28 +19,27 @@ export const renderer: Renderer = {
       entries: [],
       importMap: '{}',
     };
-    const map: any = {};
-    const set = new Set<string>();
+    const importMap: any = {};
+    const map = new Map<string, PresetItem<Script>>();
     await utils.forEachItemsList<PresetItem<Script>, Preset>(
       realm.presets,
       scripts.plural,
       async (entry) => {
         const { disabled, type, content, id, code } = entry;
-        if (disabled || set.has(code)) return;
-        set.add(code);
+        if (disabled) return;
         if (type === 'importmap') {
           try {
-            jsonUtils.merge(map, JSON.parse(content ?? '{}'));
+            jsonUtils.merge(importMap, JSON.parse(content ?? '{}'));
           } catch (err) {
             console.error(`import map error for script ${id}.${code}.`, err);
           }
         } else {
-          cache.entries.push(entry);
+          map.set(code, entry);
         }
       },
     );
-    cache.entries.sort((a, b) => a.priority - b.priority);
-    cache.importMap = JSON.stringify(map);
+    cache.entries = [...map.values()].sort((a, b) => a.priority - b.priority);
+    cache.importMap = JSON.stringify(importMap);
     return cache;
   },
   output: async ({}, cache: ScriptCache) => {

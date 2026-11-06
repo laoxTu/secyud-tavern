@@ -16,18 +16,17 @@ export const renderer: Renderer = {
     const cache: StyleCache = {
       entries: [],
     };
-    const set = new Set<string>();
+    const map = new Map<string, PresetItem<Style>>();
     await utils.forEachItemsList<PresetItem<Style>, Preset>(
       realm.presets,
       styles.plural,
       async (entry) => {
         const { disabled, code } = entry;
-        if (disabled || set.has(code)) return;
-        set.add(code);
-        cache.entries.push(entry);
+        if (disabled) return;
+        map.set(code, entry);
       },
     );
-    cache.entries.sort((a, b) => a.priority - b.priority);
+    cache.entries = [...map.values()].sort((a, b) => a.priority - b.priority);
     return cache;
   },
   output: async ({}, cache: StyleCache) => {
