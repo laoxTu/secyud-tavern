@@ -20,12 +20,14 @@ export const renderer: Renderer = {
       importMap: '{}',
     };
     const map: any = {};
+    const set = new Set<string>();
     await utils.forEachItemsList<PresetItem<Script>, Preset>(
       realm.presets,
       scripts.plural,
       async (entry) => {
         const { disabled, type, content, id, code } = entry;
-        if (disabled) return;
+        if (disabled || set.has(code)) return;
+        set.add(code);
         if (type === 'importmap') {
           try {
             jsonUtils.merge(map, JSON.parse(content ?? '{}'));
@@ -55,10 +57,8 @@ export const renderer: Renderer = {
         document.head.appendChild(script);
       }
 
-      const set = new Set<string>();
       for (const { code, type, content } of cache.entries) {
         const id = `${prefix}-${code}`;
-        if (set.has(id)) continue;
         const script = document.createElement('script');
         script.id = id;
         // link 类型意味着链接：await onload 保证按优先级顺序依次加载；

@@ -16,11 +16,14 @@ export const renderer: Renderer = {
     const cache: StyleCache = {
       entries: [],
     };
+    const set = new Set<string>();
     await utils.forEachItemsList<PresetItem<Style>, Preset>(
       realm.presets,
       styles.plural,
       async (entry) => {
-        if (entry.disabled) return;
+        const { disabled, code } = entry;
+        if (disabled || set.has(code)) return;
+        set.add(code);
         cache.entries.push(entry);
       },
     );
@@ -33,10 +36,8 @@ export const renderer: Renderer = {
     if (!window.__injectedStyleInitialized && document) {
       window.__injectedStyleInitialized = true;
       console.debug('[style]: start inject');
-      const set = new Set<string>();
       for (const { code, type, content } of cache.entries) {
         const id = `${prefix}-${code}`;
-        if (set.has(id)) continue;
         if (type === 'link') {
           const link = document.createElement('link');
           link.rel = 'stylesheet';

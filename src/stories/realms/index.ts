@@ -60,7 +60,7 @@ export interface Realm extends Entity, Properties, Entries {
   histories: (RealmHistory | null)[];
   // 使用的模型
   model: Model;
-  // 使用的预设
+  // 使用的预设，倒置，头在末尾
   presets: Preset[];
   context?: Record<string, any>;
   changes: Record<number, RealmHistory>;
