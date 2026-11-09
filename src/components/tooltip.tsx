@@ -116,7 +116,7 @@ export function IconTooltip({
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   return (
-    <Tooltip>
+    <Tooltip open={open}>
       <TooltipTrigger
         onClick={() => setOpen(!open)}
         onMouseEnter={() => setOpen(true)}
