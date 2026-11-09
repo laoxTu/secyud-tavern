@@ -16,8 +16,8 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
+  ClickTooltip,
   element,
-  IconTooltip,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -395,20 +395,20 @@ export default function RealmPage({
               </>
             )}
             <div className="bg-background">
-              <IconTooltip
+              <ClickTooltip
                 text={'realm.back_home_tip'}
                 onClick={() => route.replace('/')}
               >
                 <ArrowBigLeftIcon />
-              </IconTooltip>
+              </ClickTooltip>
             </div>
             <div className="bg-background">
-              <IconTooltip
+              <ClickTooltip
                 text={pinned ? 'realm.unpin_chatbox' : 'realm.pin_chatbox'}
                 onClick={() => setPinned(!pinned)}
               >
                 {pinned ? <PinOffIcon /> : <PinIcon />}
-              </IconTooltip>
+              </ClickTooltip>
             </div>
           </fieldset>
           <fieldset className={'w-full'} disabled={!loadingState.success}>

@@ -18,13 +18,13 @@ import {
   AspectRatio,
   AutoMedia,
   Badge,
+  ClickTooltip,
   DeleteDialog,
   dialogs,
   element,
   Field,
   FieldGroup,
   FieldLabel,
-  IconTooltip,
   ImageUploader,
   Input,
   InputGroup,
@@ -91,7 +91,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
         {item.url && <LinkTooltip href={item.url} />}
 
         {item.download && (
-          <IconTooltip
+          <ClickTooltip
             onClick={handler(async () => {
               await comfyuis.proxy.model.download(item.id);
               success(t('comfyui.download_started'));
@@ -99,7 +99,7 @@ function ContentItem({ item: nameValueItem }: { item: ComfyUIModel }) {
             text={'comfyui.download_server'}
           >
             <DownloadIcon />
-          </IconTooltip>
+          </ClickTooltip>
         )}
         <DeleteDialog
           onDelete={handler(async () => {

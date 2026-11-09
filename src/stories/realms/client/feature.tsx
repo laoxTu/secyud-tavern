@@ -20,12 +20,12 @@ import {
   Card,
   CardContent,
   CardHeader,
+  ClickTooltip,
   dialogs,
   Field,
   FieldGroup,
   FieldLabel,
   FieldSet,
-  IconTooltip,
   MonacoEditor,
   Skeleton,
   submitTargetFormOnKey,
@@ -137,7 +137,7 @@ function Deleter() {
 function Regenerator() {
   const { index, generating } = useRealmState();
   return (
-    <IconTooltip
+    <ClickTooltip
       text={'realm.regenerate_reply_tip'}
       disabled={index.max === 0}
       onClick={handler(async () => {
@@ -151,7 +151,7 @@ function Regenerator() {
       })}
     >
       <RotateCcwIcon />
-    </IconTooltip>
+    </ClickTooltip>
   );
 }
 

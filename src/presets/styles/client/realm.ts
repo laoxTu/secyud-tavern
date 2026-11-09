@@ -10,6 +10,9 @@ export interface StyleCache {
   entries: PresetItem<Style>[];
 }
 
+interface StyleWindow {
+  __style_injected?: boolean;
+}
 export const renderer: Renderer = {
   id: styles.name,
   init: async ({ realm }) => {
@@ -31,9 +34,9 @@ export const renderer: Renderer = {
   },
   output: async ({}, cache: StyleCache) => {
     const { contentWindow, contentDocument: document } = realms.iframe;
-    const window = contentWindow as any;
-    if (!window.__injectedStyleInitialized && document) {
-      window.__injectedStyleInitialized = true;
+    const window = contentWindow as StyleWindow;
+    if (!window.__style_injected && document) {
+      window.__style_injected = true;
       console.debug('[style]: start inject');
       for (const { code, type, content } of cache.entries) {
         const id = `${prefix}-${code}`;

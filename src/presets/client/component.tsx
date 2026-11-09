@@ -12,11 +12,11 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 import {
+  ClickTooltip,
   DeleteDialog,
   dialogs,
   Field,
   FieldLabel,
-  IconTooltip,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -97,7 +97,7 @@ export function PresetEntryUpdate<TData>({
       title={entry.name}
       tools={
         <>
-          <IconTooltip
+          <ClickTooltip
             text={disabled ? 'default.disable_item' : 'default.enable_item'}
             onClick={handler(async () => {
               await presets.proxy.entry.set<TData>(
@@ -119,8 +119,8 @@ export function PresetEntryUpdate<TData>({
             ) : (
               <PlayIcon color={'green'} />
             )}
-          </IconTooltip>
-          <IconTooltip
+          </ClickTooltip>
+          <ClickTooltip
             text={'message.copy.tooltip'}
             onClick={handler(async () => {
               const json: PresetEntryClipboard = {
@@ -136,7 +136,7 @@ export function PresetEntryUpdate<TData>({
             })}
           >
             <ClipboardCopyIcon />
-          </IconTooltip>
+          </ClickTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
             onSubmit={handler(async (data) => {

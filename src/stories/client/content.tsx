@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   Button,
+  ClickTooltip,
   combobox,
   DeleteDialog,
   dialogs,
@@ -25,7 +26,6 @@ import {
   EmptySelectContent,
   Field,
   FieldLabel,
-  IconTooltip,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -284,14 +284,14 @@ function Content() {
                   </ItemDescription>
                 </ItemContent>
                 <ItemContent className="flex-none text-center">
-                  <IconTooltip
+                  <ClickTooltip
                     text={'story.enter'}
                     onClick={handler(async () => {
                       router.push(`/${item.id}`);
                     })}
                   >
                     <CornerDownLeftIcon />
-                  </IconTooltip>
+                  </ClickTooltip>
                   <UISlot slot={'story.list_item.actions'} props={{ item }} />
                 </ItemContent>
               </>

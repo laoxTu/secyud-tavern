@@ -1,7 +1,7 @@
 import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Button,
@@ -36,7 +36,7 @@ export function TextTooltip({ text, len }: { text?: string; len?: number }) {
   );
 }
 
-interface IconTooltipProps {
+interface ClickTooltipProps {
   children: React.ReactNode;
   text?: string;
   label?: React.ReactNode;
@@ -45,14 +45,14 @@ interface IconTooltipProps {
   className?: string;
 }
 
-export function IconTooltip({
+export function ClickTooltip({
   children,
   className,
   label,
   text,
   onClick,
   disabled,
-}: IconTooltipProps) {
+}: ClickTooltipProps) {
   const t = useTranslations();
   return (
     <Tooltip>
@@ -93,6 +93,42 @@ export function LinkTooltip({
       </TooltipTrigger>
       <TooltipContent>
         <p>{t(text)}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+interface IconTooltipProps {
+  children: React.ReactNode;
+  text?: string;
+  label?: React.ReactNode;
+  disabled?: boolean;
+  className?: string;
+}
+
+export function IconTooltip({
+  children,
+  className,
+  label,
+  text,
+  disabled,
+}: IconTooltipProps) {
+  const t = useTranslations();
+  const [open, setOpen] = useState(false);
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        onClick={() => setOpen(!open)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className={className}
+        render={<Button disabled={disabled} variant={'ghost'} />}
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{text && t(text)}</p>
+        {label}
       </TooltipContent>
     </Tooltip>
   );

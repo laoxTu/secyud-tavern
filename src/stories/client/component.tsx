@@ -10,11 +10,11 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 import {
+  ClickTooltip,
   DeleteDialog,
   dialogs,
   Field,
   FieldLabel,
-  IconTooltip,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -57,7 +57,7 @@ export function StoryEntryUpdate<TData>({
       title={entry.name}
       tools={
         <>
-          <IconTooltip
+          <ClickTooltip
             text={'message.copy.tooltip'}
             onClick={handler(async () => {
               const { masterId, entryType, entryId } = entry;
@@ -74,7 +74,7 @@ export function StoryEntryUpdate<TData>({
             })}
           >
             <ClipboardCopyIcon />
-          </IconTooltip>
+          </ClickTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
             onSubmit={handler(async (data) => {

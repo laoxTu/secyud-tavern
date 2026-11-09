@@ -21,13 +21,13 @@ import {
 } from '@/comfyui/client/state';
 import {
   Button,
+  ClickTooltip,
   DeleteDialog,
   dialogs,
   element,
   EmptySelectContent,
   Field,
   FieldLabel,
-  IconTooltip,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -96,7 +96,7 @@ function Property() {
         <Field className={spanFull}>
           <FieldLabel htmlFor={`comfyui_workflow-workflow_content`}>
             {t('default.content')}
-            <IconTooltip
+            <ClickTooltip
               text={'comfyui.workflow.generate_params'}
               onClick={handler(async () => {
                 await comfyuis.proxy.workflow.param.generate(item.id);
@@ -106,7 +106,7 @@ function Property() {
               })}
             >
               <TriangleIcon />
-            </IconTooltip>
+            </ClickTooltip>
           </FieldLabel>
           <MonacoEditor
             name={'content'}
@@ -139,7 +139,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
       title={entry.name}
       tools={
         <>
-          <IconTooltip
+          <ClickTooltip
             text={'message.copy.tooltip'}
             onClick={handler(async () => {
               const json: ComfyUIParamClipboard = {
@@ -153,7 +153,7 @@ function ParamProperty({ entry }: { entry: ComfyUIParam }) {
             })}
           >
             <ClipboardCopyIcon />
-          </IconTooltip>
+          </ClickTooltip>
           <TooltipDialog
             tooltip={<CopyIcon />}
             onSubmit={handler(async (data) => {
@@ -388,7 +388,7 @@ export function WorkflowContent() {
                 />
               </Field>
             </TooltipDialog>
-            <IconTooltip
+            <ClickTooltip
               disabled={!item}
               text={'default.export'}
               onClick={handler(async () => {
@@ -396,7 +396,7 @@ export function WorkflowContent() {
               })}
             >
               <FileUpIcon />
-            </IconTooltip>
+            </ClickTooltip>
             <TooltipDialog
               tooltip={<FileDownIcon />}
               onSubmit={handler(async (data) => {

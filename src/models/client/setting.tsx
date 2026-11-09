@@ -5,13 +5,13 @@ import { useState } from 'react';
 
 import {
   Checkbox,
+  ClickTooltip,
   DeleteDialog,
   dialogs,
   element,
   Field,
   FieldContent,
   FieldLabel,
-  IconTooltip,
   Input,
   Selector,
   TooltipDialog,
@@ -260,7 +260,7 @@ export function ModelSettingContent() {
             />
           </Field>
         </TooltipDialog>
-        <IconTooltip
+        <ClickTooltip
           text={'model.default'}
           label={` (${model?.name ?? ''})`}
           onClick={handler(async () => {
@@ -268,7 +268,7 @@ export function ModelSettingContent() {
           })}
         >
           {<StarIcon color={item?.id === model?.value ? 'green' : 'orange'} />}
-        </IconTooltip>
+        </ClickTooltip>
         <UISlot slot={'model.setting.actions'} />
       </div>
       <ModelPropertyContent key={item?.id ?? 'model'} />

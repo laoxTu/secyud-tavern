@@ -20,6 +20,7 @@ import {
   AutoMedia,
   Button,
   Checkbox,
+  ClickTooltip,
   combobox,
   DeleteDialog,
   dialogs,
@@ -33,7 +34,6 @@ import {
   FieldContent,
   FieldGroup,
   FieldLabel,
-  IconTooltip,
   ImageUploader,
   Input,
   InputGroup,
@@ -232,14 +232,14 @@ function TabContent() {
           })}
           info={dialogs.info(t, 'story_enter', 'preset.id')}
         />
-        <IconTooltip
+        <ClickTooltip
           onClick={handler(async () => {
             await presets.proxy.export(item.id);
           })}
           text={'message.export.tooltip'}
         >
           <FileUpIcon />
-        </IconTooltip>
+        </ClickTooltip>
         <TooltipDialog
           tooltip={<CopyIcon />}
           onSubmit={handler(async (data) => {

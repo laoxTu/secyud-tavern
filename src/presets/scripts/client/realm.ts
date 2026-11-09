@@ -12,6 +12,10 @@ export interface ScriptCache {
   entries: Script[];
 }
 
+interface ScriptWindow {
+  __script_injected?: boolean;
+}
+
 export const renderer: Renderer = {
   id: scripts.name,
   init: async ({ realm }) => {
@@ -44,9 +48,9 @@ export const renderer: Renderer = {
   },
   output: async ({}, cache: ScriptCache) => {
     const { contentWindow, contentDocument: document } = realms.iframe;
-    const window = contentWindow as any;
-    if (!window.__injectedScriptInitialized && document) {
-      window.__injectedScriptInitialized = true;
+    const window = contentWindow as ScriptWindow;
+    if (!window.__script_injected && document) {
+      window.__script_injected = true;
       console.debug('[script]: start inject');
       if (cache.importMap !== '{}') {
         const script = document.createElement('script');
