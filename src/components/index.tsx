@@ -95,6 +95,7 @@ export * from './ui/item';
 export * from './ui/label';
 export * from './ui/navigation-menu';
 export * from './ui/pagination';
+export * from './ui/popover';
 export * from './ui/progress';
 export * from './ui/radio-group';
 export * from './ui/resizable';

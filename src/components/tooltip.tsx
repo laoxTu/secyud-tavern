@@ -1,11 +1,16 @@
 import { LinkIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
+
+import { useIsMobile } from '@/utils/client/hooks/use-mobile';
 
 import {
   Button,
   buttonVariants,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -105,7 +110,8 @@ interface IconTooltipProps {
   disabled?: boolean;
   className?: string;
 }
-
+const tooltipContentClassName =
+  'w-auto max-w-xs rounded-md border-0 bg-primary px-3 py-1.5 text-xs text-primary-foreground shadow-none';
 export function IconTooltip({
   children,
   className,
@@ -114,13 +120,23 @@ export function IconTooltip({
   disabled,
 }: IconTooltipProps) {
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
-  return (
-    <Tooltip open={open}>
+  const isMobile = useIsMobile();
+  return isMobile ? (
+    <Popover>
+      <PopoverTrigger
+        className={className}
+        render={<Button disabled={disabled} variant={'ghost'} />}
+      >
+        {children}
+      </PopoverTrigger>
+      <PopoverContent className={tooltipContentClassName}>
+        <p>{text && t(text)}</p>
+        {label}
+      </PopoverContent>
+    </Popover>
+  ) : (
+    <Tooltip>
       <TooltipTrigger
-        onClick={() => setOpen(!open)}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
         className={className}
         render={<Button disabled={disabled} variant={'ghost'} />}
       >
