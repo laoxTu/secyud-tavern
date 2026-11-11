@@ -74,7 +74,7 @@ function Component() {
               <DialogTitle>{t('elicit.title')}</DialogTitle>
               <DialogDescription>{item.question}</DialogDescription>
             </DialogHeader>
-            <div className="flex-1 overflow-auto">
+            <div key={item.id} className="flex-1 overflow-auto">
               {item.single ? (
                 <RadioGroup
                   key={render}
